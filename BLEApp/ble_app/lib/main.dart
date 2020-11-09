@@ -5,9 +5,8 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:ble_app/src/widgets.dart';
 import 'package:ble_app/src/device_screen.dart';
 
-void main() {
-  runApp(FlutterBlueApp());
-}
+void main() => runApp(FlutterBlueApp());
+
 
 class FlutterBlueApp extends StatelessWidget {
   @override
