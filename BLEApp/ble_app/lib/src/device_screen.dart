@@ -20,8 +20,9 @@ class _DeviceScreenState extends State<DeviceScreen> {
   final _writeController = TextEditingController();
   bool isReady;
   //Stream<List<int>> dataStream;
-  String value = "";
-  //String curValue = ""; // which will be appended to
+  String value = ""; // will be updated every packet
+  String curValue = ""; // which will be appended to
+  int counter = 0;
 
   @override
   void initState() { 
@@ -31,11 +32,31 @@ class _DeviceScreenState extends State<DeviceScreen> {
   }   
 
   listenToCharacteristic(BluetoothCharacteristic characteristic){
-    characteristic.value.listen((event) {
+    characteristic.value.listen((event) { // event is List<int>
       if(event.length != 0){
-        setState(() {
-          value += _dataParser(event);
-        });
+        if(event.contains(10)){
+          //List<int> finalList = List();  
+          for(int i = 0; i < event.length; i++){
+            //curValue += event.elementAt(i).toString();
+            //finalList.add(event.elementAt(i));
+            if(event.elementAt(i) == 10){
+              //curValue += _dataParser(finalList);
+              setState(() {
+                value = curValue;
+                counter++;
+                curValue = "";
+                //finalList = [];
+              });
+            } 
+            else{
+              List<int> curList = [event.elementAt(i)];
+              curValue += _dataParser(curList);
+             } //the problem was that I wasn't updating curValue after passing the '\n' in the packet
+          }
+        }
+        else{
+          curValue += _dataParser(event);
+        }
         //value += _dataParser(event);
         //if(event.last == 10){
          // curValue += _dataParser(event);
@@ -95,16 +116,16 @@ class _DeviceScreenState extends State<DeviceScreen> {
             //dataStream = characteristic.value; 
             //writeData("Abcdefghijklmnopq");
             //setState(() {
-              isReady = true;
+              //isReady = true;
             //});
           }
         }
       }
     }
 
-    if(!isReady){
-      _Pop();
-    }
+    //if(!isReady){
+     // _Pop();
+    //}
   }
 
   _Pop(){
@@ -201,16 +222,8 @@ class _DeviceScreenState extends State<DeviceScreen> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
-                                      Text('Device MTU:' ,
-                                        style: TextStyle(
-                                          fontSize: 14
-                                        )
-                                      ),
-                                      Text('$widget.device.mtu', style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 24
-                                          ) 
-                                      ),
+                                      Text('$counter',
+                                          style: TextStyle(fontSize: 14)),
                                       Text('Current values read: ',
                                           style: TextStyle(fontSize: 14)),
                                       Text('$value',
