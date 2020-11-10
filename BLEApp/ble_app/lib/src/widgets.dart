@@ -1,117 +1,103 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:ble_app/src/widgets/progressBars.dart';
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'dart:ui';
 
-class ScanResultTile extends StatelessWidget {
-  const ScanResultTile({Key key, this.result, this.onTap}) : super(key: key);
+class ProgressRows extends StatelessWidget {
+  final double temperature;
+  final double voltage;
 
-  final ScanResult result;
-  final VoidCallback onTap;
+  const ProgressRows({@required this.temperature, this.voltage});
 
-  Widget _buildTitle(BuildContext context) {
-    if (result.device.name.length > 0) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            result.device.name,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            result.device.id.toString(),
-            style: Theme.of(context).textTheme.caption,
-          )
-        ],
-      );
-    } else {
-      return Text(result.device.id.toString());
-    }
-  }
-
-  Widget _buildAdvRow(BuildContext context, String title, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Text(title, style: Theme.of(context).textTheme.caption),
-          SizedBox(
-            width: 12.0,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              ProgressRow(
+                  title: 'Temperature',
+                  progressBar:
+                      TemperatureProgressBar(temperatureValue: temperature)),
+              // more text here
+            ],
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: Theme.of(context)
-                  .textTheme
-                  .caption
-                  .apply(color: Colors.black),
-              softWrap: true,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              ProgressRow(
+                title: 'Voltage',
+                progressBar: VoltageProgressBar(voltageValue: voltage),
+              )
+            ],
           ),
         ],
       ),
     );
   }
+}
 
-  String getNiceHexArray(List<int> bytes) {
-    return '[${bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join(', ')}]'
-        .toUpperCase();
-  }
+class TemperatureProgressBar extends StatelessWidget {
+  final double temperatureValue;
 
-  String getNiceManufacturerData(Map<int, List<int>> data) {
-    if (data.isEmpty) {
-      return null;
-    }
-    List<String> res = [];
-    data.forEach((id, bytes) {
-      res.add(
-          '${id.toRadixString(16).toUpperCase()}: ${getNiceHexArray(bytes)}');
-    });
-    return res.join(', ');
-  }
-
-  String getNiceServiceData(Map<String, List<int>> data) {
-    if (data.isEmpty) {
-      return null;
-    }
-    List<String> res = [];
-    data.forEach((id, bytes) {
-      res.add('${id.toUpperCase()}: ${getNiceHexArray(bytes)}');
-    });
-    return res.join(', ');
-  }
+  const TemperatureProgressBar({@required this.temperatureValue});
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionTile(
-      title: _buildTitle(context),
-      leading: Text(result.rssi.toString()),
-      trailing: RaisedButton(
-        child: Text('CONNECT'),
-        color: Colors.black,
-        textColor: Colors.white,
-        onPressed: (result.advertisementData.connectable) ? onTap : null,
+    return SleekCircularSlider(
+      appearance: appearance04,
+      min: 0.00,
+      max: 2000.0,
+      initialValue: temperatureValue,
+    );
+  }
+}
+
+class VoltageProgressBar extends StatelessWidget {
+  final double voltageValue;
+
+  const VoltageProgressBar({@required this.voltageValue});
+
+  @override
+  Widget build(BuildContext context) {
+    return SleekCircularSlider(
+        appearance: appearance09,
+        min: 0.00,
+        max: 48.0,
+        initialValue: voltageValue);
+  }
+}
+
+class ProgressRow extends StatelessWidget {
+  // contains description and visible progress bar
+  final String title;
+  final Widget progressBar;
+
+  const ProgressRow({this.title, this.progressBar});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            title,
+            style: TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0),
+          ),
+          progressBar
+        ],
       ),
-      children: <Widget>[
-        _buildAdvRow(
-            context, 'Complete Local Name', result.advertisementData.localName),
-        _buildAdvRow(context, 'Tx Power Level',
-            '${result.advertisementData.txPowerLevel ?? 'N/A'}'),
-        _buildAdvRow(
-            context,
-            'Manufacturer Data',
-            getNiceManufacturerData(
-                    result.advertisementData.manufacturerData) ??
-                'N/A'),
-        _buildAdvRow(
-            context,
-            'Service UUIDs',
-            (result.advertisementData.serviceUuids.isNotEmpty)
-                ? result.advertisementData.serviceUuids.join(', ').toUpperCase()
-                : 'N/A'),
-        _buildAdvRow(context, 'Service Data',
-            getNiceServiceData(result.advertisementData.serviceData) ?? 'N/A'),
-      ],
     );
   }
 }

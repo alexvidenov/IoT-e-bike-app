@@ -1,40 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
-final customWidth01 =
-    CustomSliderWidths(trackWidth: 2, progressBarWidth: 20, shadowWidth: 50);
+Color firstColor = Color(0xFF7A36DC);
+Color secondColor = Color(0xFF7A36DC).withOpacity(0.5);
+Color thirdColor = Color(0xFF7A36DC).withOpacity(0.2);
 
-final customColors01 = CustomSliderColors(
-    dotColor: Colors.white.withOpacity(0.8),
-    trackColor: HexColor('#FF8282').withOpacity(0.6),
-    progressBarColors: [
-      HexColor('#FFE2E2').withOpacity(0.9),
-      HexColor('#FFAD8D').withOpacity(0.9),
-      HexColor('#FE6490').withOpacity(0.5)
-    ],
-    shadowColor: HexColor('#FFD7E2'),
-    shadowMaxOpacity: 0.08);
+Color greyColor = Color(0xFFE6E6E6);
+Color darkGreyColor = Color(0xFFB8B2CB);
 
-final info = InfoProperties(
-    mainLabelStyle: TextStyle(
-        color: Colors.white, fontSize: 60, fontWeight: FontWeight.w100
-    ),
-    modifier: percentageModifier
-  );
+final appTheme = ThemeData(
+  primarySwatch: Colors.blue,
+);
 
-final CircularSliderAppearance appearance01 = CircularSliderAppearance(
-    customWidths: customWidth01,
-    customColors: customColors01,
-    infoProperties: info,
-    startAngle: 180,
-    angleRange: 180,
-    size: 250.0);
-
-String percentageModifier(double value){
+String percentageModifier(double value) {
   final roundedValue = value.ceil().toInt().toString();
   return '$roundedValue km/h';
 }
-
 
 class HexColor extends Color {
   static int _getColorFromHex(String hexColor) {

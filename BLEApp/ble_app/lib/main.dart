@@ -2,11 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:ble_app/src/widgets.dart';
+import 'package:ble_app/src/widgets/scanResult.dart';
 import 'package:ble_app/src/device_screen.dart';
 
 void main() => runApp(FlutterBlueApp());
-
 
 class FlutterBlueApp extends StatelessWidget {
   @override
@@ -138,7 +137,7 @@ class FindDevicesScreen extends StatelessWidget {
             return FloatingActionButton(
                 child: Icon(Icons.search),
                 onPressed: () => FlutterBlue.instance
-                    .startScan(timeout: Duration(seconds: 4)));
+                    .startScan(timeout: Duration(seconds: 10)));
           }
         },
       ),
