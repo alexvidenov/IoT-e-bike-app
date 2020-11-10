@@ -51,7 +51,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
             else{
               List<int> curList = [event.elementAt(i)];
               curValue += _dataParser(curList);
-             } //the problem was that I wasn't updating curValue after passing the '\n' in the packet
+            } //the problem was that I wasn't updating curValue after passing the '\n' in the packet
           }
         }
         else{
@@ -72,6 +72,12 @@ class _DeviceScreenState extends State<DeviceScreen> {
     });
   }
 
+  periodicWriteToCharacteristic(){
+    new Timer.periodic(Duration(milliseconds: 500), (Timer t) {
+      writeData("S");
+    });
+  }
+  
   connectToDevice() async {
     if(widget.device == null){
       _Pop();
@@ -113,6 +119,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
             characteristic.setNotifyValue(true);
             bluetoothCharacteristic = characteristic;
             listenToCharacteristic(bluetoothCharacteristic);
+            periodicWriteToCharacteristic();
             //dataStream = characteristic.value; 
             //writeData("Abcdefghijklmnopq");
             //setState(() {
@@ -167,7 +174,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
  @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
