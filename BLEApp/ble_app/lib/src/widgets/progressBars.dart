@@ -96,7 +96,7 @@ final CircularSliderAppearance appearance09 = CircularSliderAppearance(
     customWidths: customWidth09,
     customColors: customColors09,
     infoProperties: infoProperties09,
-    startAngle: 55,
+    startAngle: 60,
     angleRange: 110,
     size: 230.0,
     animationEnabled: true,
