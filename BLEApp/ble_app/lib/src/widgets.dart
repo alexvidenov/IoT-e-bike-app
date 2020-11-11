@@ -6,14 +6,9 @@ import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'dart:ui';
 
-import 'modules/shortStatusViewModel.dart';
+import 'modules/shortStatusModel.dart';
 
 class ProgressRows extends StatelessWidget {
-  final int temperature;
-  final double voltage;
-
-  const ProgressRows({@required this.temperature, this.voltage});
-
   @override
   Widget build(BuildContext context) {
     return Flexible(
@@ -26,12 +21,11 @@ class ProgressRows extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(10),
-                child: ProgressRow(
+                  padding: const EdgeInsets.all(10),
+                  child: ProgressRow(
                     title: 'Temp',
-                    progressBar:
-                        TemperatureProgressBar(temperatureValue: temperature)),
-              )
+                    progressBar: TemperatureProgressBar(),
+                  ))
               // more text here
             ],
           ),
@@ -59,7 +53,7 @@ class ProgressRows extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 20),
                 child: ProgressRow(
                   title: 'Battery Voltage',
-                  progressBar: VoltageProgressBar(voltageValue: voltage),
+                  progressBar: VoltageProgressBar(),
                 ),
               )
             ],
@@ -70,50 +64,124 @@ class ProgressRows extends StatelessWidget {
   }
 }
 
-class TemperatureProgressBar extends StatefulWidget {
-  final int temperatureValue;
+class CurrentRow extends StatelessWidget {
+  const CurrentRow({
+    Key key,
+  }) : super(key: key);
 
-  const TemperatureProgressBar({@required this.temperatureValue});
-
-  @override
-  _TemperatureProgressBarState createState() => _TemperatureProgressBarState();
-}
-
-class _TemperatureProgressBarState extends State<TemperatureProgressBar> {
   @override
   Widget build(BuildContext context) {
-    //here will go the BlocBuilder
-    return Container(
-      height: 250,
-      width: 80,
-      child: FAProgressBar(
-        currentValue: widget.temperatureValue,
-        maxValue: 2000,
-        animatedDuration: const Duration(milliseconds: 300),
-        direction: Axis.vertical,
-        verticalDirection: VerticalDirection.up,
-        backgroundColor: Colors.white,
-        progressColor: Colors.green,
-        changeColorValue: 1500,
-        changeProgressColor: Colors.red,
-        displayText: 'C',
-      ),
-    );
+    return BlocBuilder<ShortStatusBloc, ShortStatusModel>(
+        builder: (_, shortStatus) {
+      var currentCharge = shortStatus.getCurrentCharge;
+      var currentDischarge = shortStatus.getCurrentDischarge;
+
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Center(
+                child: Text(
+                  "Discharge",
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0),
+                ),
+              ),
+              Container(
+                width: 150,
+                height: 50,
+                child: RotatedBox(
+                  quarterTurns: 2,
+                  child: FAProgressBar(
+                    currentValue: 21, // fix that afterwards cuz its baaaad
+                    size: 50,
+                    maxValue: 27,
+                    changeColorValue: 20,
+                    changeProgressColor: Colors.red,
+                    backgroundColor: Colors.white,
+                    progressColor: Colors.blue,
+                    animatedDuration: const Duration(milliseconds: 700),
+                    direction: Axis.horizontal,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Column(
+            children: <Widget>[
+              Center(
+                child: Text(
+                  "Charge",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0),
+                ),
+              ),
+              Container(
+                width: 400,
+                height: 50,
+                child: FAProgressBar(
+                  currentValue: 16, // fix that as well currentDischarge.toInt()
+                  size: 50,
+                  maxValue: 25,
+                  changeColorValue: 20,
+                  changeProgressColor: Colors.red,
+                  backgroundColor: Colors.white,
+                  progressColor: Colors.blue,
+                  animatedDuration: const Duration(milliseconds: 700),
+                  direction: Axis.horizontal,
+                ),
+              ),
+            ],
+          )
+        ],
+      );
+    });
+  }
+}
+
+class TemperatureProgressBar extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ShortStatusBloc, ShortStatusModel>(
+        builder: (_, shortStatus) {
+      var temperature = shortStatus.getTemperature;
+      return Container(
+        height: 250,
+        width: 80,
+        child: FAProgressBar(
+          currentValue: 1000, // temperature.toInt()
+          maxValue: 2000,
+          animatedDuration: const Duration(milliseconds: 300),
+          direction: Axis.vertical,
+          verticalDirection: VerticalDirection.up,
+          backgroundColor: Colors.white,
+          progressColor: Colors.green,
+          changeColorValue: 1500,
+          changeProgressColor: Colors.red,
+          displayText: 'C',
+        ),
+      );
+    });
   }
 }
 
 class VoltageProgressBar extends StatelessWidget {
-  final double voltageValue;
-
-  const VoltageProgressBar({@required this.voltageValue});
-
   @override
   Widget build(BuildContext context) {
-    return SleekCircularSlider(
-        appearance: appearance09,
-        min: 0.00,
-        max: 48.0,
-        initialValue: voltageValue);
+    return BlocBuilder<ShortStatusBloc, ShortStatusModel>(
+        builder: (_, shortStatus) {
+      var voltage = shortStatus.getTotalVoltage;
+      return SleekCircularSlider(
+          appearance: appearance09, min: 0.00, max: 48.0, initialValue: 36.00);
+    });
   }
 }
 
@@ -182,7 +250,7 @@ class ProgressText extends StatelessWidget {
 class TestWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(child: BlocBuilder<ShortStatusBloc, ShortStatusViewModel>(
+    return Container(child: BlocBuilder<ShortStatusBloc, ShortStatusModel>(
         builder: (_, shortStatus) {
       var charge = shortStatus.getCurrentCharge;
       var discharge = shortStatus.getCurrentDischarge;

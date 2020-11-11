@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ble_app/src/blocs/btConnectionBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -114,9 +115,18 @@ class FindDevicesScreen extends StatelessWidget {
                           onTap: () => Navigator.of(context)
                               .push(MaterialPageRoute(builder: (context) {
                             r.device.connect();
-                            return BlocProvider(
-                                create: (context) => ShortStatusBloc(),
-                                child: DeviceScreen(device: r.device));
+                            return MultiBlocProvider(
+                                providers: [
+                                  BlocProvider<ConnectionBloc>(
+                                    create: (context) => ConnectionBloc(),
+                                  ),
+                                  BlocProvider<ShortStatusBloc>(
+                                    create: (context) => ShortStatusBloc(),
+                                  )
+                                ],
+                                child: DeviceScreen(
+                                  device: r.device,
+                                ));
                           })),
                         ),
                       )

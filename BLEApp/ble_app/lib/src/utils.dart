@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'modules/shortStatusModel.dart';
 
 Color firstColor = Color(0xFF7A36DC);
 Color secondColor = Color(0xFF7A36DC).withOpacity(0.5);
@@ -27,4 +27,18 @@ class HexColor extends Color {
   }
 
   HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+}
+
+class Converter {
+  static ShortStatusModel generateShortStatus(String rawData) {
+    List<String> splittedObject = rawData.split(' ');
+    var voltage = double.parse(splittedObject.elementAt(0));
+    var currentCharge = double.parse(splittedObject.elementAt(1));
+    var currentDischarge = double.parse(splittedObject.elementAt(2));
+    var temperature = double.parse(splittedObject.elementAt(3));
+    ShortStatusModel shortStatusViewModel = ShortStatusModel();
+    shortStatusViewModel.setParameters(
+        voltage, currentCharge, currentDischarge, temperature);
+    return shortStatusViewModel;
+  }
 }

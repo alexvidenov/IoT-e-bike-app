@@ -1,22 +1,15 @@
 import 'dart:async';
-import 'package:ble_app/src/modules/shortStatusViewModel.dart';
+import 'package:ble_app/src/modules/shortStatusModel.dart';
+import 'package:ble_app/src/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ShortStatusEvent {
-  ShortStatusViewModel shortStatusViewModel;
-
-  ShortStatusEvent({this.shortStatusViewModel});
-
-  ShortStatusViewModel getShortStatus() => shortStatusViewModel;
-}
-
-class ShortStatusBloc extends Bloc<ShortStatusEvent, ShortStatusViewModel> {
+class ShortStatusBloc extends Bloc<String, ShortStatusModel> {
   @override
-  get initialState => ShortStatusViewModel();
+  get initialState => ShortStatusModel();
 
   @override
-  Stream<ShortStatusViewModel> mapEventToState(event) async* {
-    // the logic handling the event will be here. Event will be String
-    yield event.getShortStatus();
+  Stream<ShortStatusModel> mapEventToState(event) async* {
+    var shortStatus = Converter.generateShortStatus(event);
+    yield shortStatus;
   }
 }

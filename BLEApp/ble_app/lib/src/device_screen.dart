@@ -1,15 +1,13 @@
 import 'dart:async';
 import 'dart:convert' show utf8;
+import 'package:ble_app/src/blocs/btConnectionBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
-import 'package:ble_app/src/modules/shortStatusViewModel.dart';
 import 'package:ble_app/src/widgets.dart';
 import 'package:ble_app/src/widgets/progressBars.dart';
 import 'package:ble_app/src/widgets/topBar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
-import 'package:ble_app/src/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DeviceScreen extends StatefulWidget {
@@ -24,9 +22,9 @@ class _DeviceScreenState extends State<DeviceScreen> {
   final String SERVICE_UUID =
       "0000ffe0-0000-1000-8000-00805f9b34fb"; // for HM-10
   final String CHARACTERISTIC_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
+
   BluetoothCharacteristic bluetoothCharacteristic;
   bool isReady = false;
-  //Stream<List<int>> dataStream;
   String value = ""; // will be updated every packet
   String curValue = ""; // which will be appended to
   int counter = 0;
@@ -46,11 +44,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
           for (int i = 0; i < event.length; i++) {
             if (event.elementAt(i) == 10) {
               value = curValue;
-              ShortStatusViewModel shortStatusViewModel =
-                  ShortStatusViewModel.generateObject(value);
-
-              context.bloc<ShortStatusBloc>().add(
-                  ShortStatusEvent(shortStatusViewModel: shortStatusViewModel));
+              context.bloc<ShortStatusBloc>().add(value);
               curValue = "";
             } else {
               List<int> curList = [event.elementAt(i)];
@@ -72,16 +66,19 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
   connectToDevice() async {
     if (widget.device == null) {
-      _Pop();
+      //context.bloc<ConnectionBloc>().add(ConnectionEvent.FailedToConnect);
       return;
     }
 
+    context.bloc<ConnectionBloc>().add(ConnectionEvent.Connected);
+    //context.bloc<ConnectionBloc>().add(ConnectionEvent.Connecting);
+
     //new Timer(const Duration(seconds: 15), () {
     //if (!isReady) {
-    // disconnectFromDevice();
-    // _Pop();
-    // }
-    // });
+    //disconnectFromDevice();
+    //_Pop();
+    //}
+    //});
 
     await widget.device.connect();
     discoverServices();
@@ -98,8 +95,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
   discoverServices() async {
     if (widget.device == null) {
-      _Pop();
-      return;
+      //context.bloc<ConnectionBloc>().add(ConnectionEvent.FailedToConnect);
     }
 
     List<BluetoothService> services = await widget.device.discoverServices();
@@ -113,9 +109,8 @@ class _DeviceScreenState extends State<DeviceScreen> {
             bluetoothCharacteristic = characteristic;
             //listenToCharacteristic(bluetoothCharacteristic);
             //periodicWriteToCharacteristic();
-            setState(() {
-              isReady = true;
-            });
+            isReady = true;
+            context.bloc<ConnectionBloc>().add(ConnectionEvent.Connected);
           }
         }
       }
@@ -145,19 +140,19 @@ class _DeviceScreenState extends State<DeviceScreen> {
     return showDialog(
         context: context,
         builder: (context) =>
-            new AlertDialog(
+            AlertDialog(
               title: Text('Are you sure?'),
               content: Text('Do you want to disconnect device and go back?'),
               actions: <Widget>[
-                new FlatButton(
+                FlatButton(
                     onPressed: () => Navigator.of(context).pop(false),
-                    child: new Text('No')),
-                new FlatButton(
+                    child: Text('No')),
+                FlatButton(
                     onPressed: () {
                       disconnectFromDevice();
                       Navigator.of(context).pop(true);
                     },
-                    child: new Text('Yes')),
+                    child: Text('Yes')),
               ],
             ) ??
             false);
@@ -172,185 +167,119 @@ class _DeviceScreenState extends State<DeviceScreen> {
           title: Text('Device Screen'),
         ),
         body: Container(
-          child: //!isReady
-              //? Center(
-              //child: Text(
-              // "Waiting...",
-              //  style: TextStyle(fontSize: 24, color: Colors.red),
-              // ),
-              //  )
-              // :
-              Stack(
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  Stack(
-                    children: <Widget>[
-                      TopBar(),
-                      Positioned(
-                        top: 20.0,
-                        left: 0.0,
-                        right: 0.0,
-                        child: Row(
-                          children: <Widget>[
-                            Column(
-                              children: <Widget>[
-                                Text(
-                                  'Parameters',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 24.0,
-                                      color: Colors.white,
-                                      letterSpacing: 1.2),
-                                ),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.arrow_back_ios,
-                                    color: Colors.white,
-                                    size: 35.0,
-                                  ),
-                                  onPressed:
-                                      () {}, // later on this will move to the previous page
-                                ),
-                              ],
-                            ),
-                            Expanded(
-                              child: Column(
-                                children: <Widget>[
-                                  Text(
-                                    'Ble app',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 24.0,
-                                        color: Colors.white,
-                                        letterSpacing: 1.2),
-                                  ),
-                                  Text(
-                                    'Short status',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 24.0,
-                                        color: Colors.white,
-                                        letterSpacing: 1.2),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              children: <Widget>[
-                                Text(
-                                  'Full status page',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 24.0,
-                                      color: Colors.white,
-                                      letterSpacing: 1.2),
-                                ),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Colors.white,
-                                    size: 35.0,
-                                  ),
-                                  onPressed:
-                                      () {}, // later on this will move to the next page
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ), // here ends the top nav
-                  SleekCircularSlider(
-                    appearance: appearance01,
-                    min: 0.00,
-                    max: 80.00,
-                    initialValue: 50, // will fetch data from gps eventually
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+          child: BlocBuilder<ConnectionBloc, ConnectionEvent>(
+            builder: (_, state) {
+              switch (state) {
+                case ConnectionEvent.Connected:
+                  //return TestWidget();
+                  return Stack(
                     children: <Widget>[
                       Column(
                         children: <Widget>[
-                          Center(
-                            child: Text(
-                              "Discharge",
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20.0),
-                            ),
-                          ),
-                          Container(
-                            width: 150,
-                            height: 50,
-                            child: RotatedBox(
-                              quarterTurns: 2,
-                              child: FAProgressBar(
-                                currentValue: 22,
-                                size: 50,
-                                maxValue: 27,
-                                changeColorValue: 20,
-                                changeProgressColor: Colors.red,
-                                backgroundColor: Colors.white,
-                                progressColor: Colors.blue,
-                                animatedDuration:
-                                    const Duration(milliseconds: 700),
-                                direction: Axis.horizontal,
+                          Stack(
+                            children: <Widget>[
+                              TopBar(),
+                              Positioned(
+                                top: 20.0,
+                                left: 0.0,
+                                right: 0.0,
+                                child: Row(
+                                  children: <Widget>[
+                                    Column(
+                                      children: <Widget>[
+                                        Text(
+                                          'Parameters',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 24.0,
+                                              color: Colors.white,
+                                              letterSpacing: 1.2),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.arrow_back_ios,
+                                            color: Colors.white,
+                                            size: 35.0,
+                                          ),
+                                          onPressed:
+                                              () {}, // later on this will move to the previous page
+                                        ),
+                                      ],
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        children: <Widget>[
+                                          Text(
+                                            'Ble app',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 24.0,
+                                                color: Colors.white,
+                                                letterSpacing: 1.2),
+                                          ),
+                                          Text(
+                                            'Short status',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 24.0,
+                                                color: Colors.white,
+                                                letterSpacing: 1.2),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Column(
+                                      children: <Widget>[
+                                        Text(
+                                          'Full status page',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 24.0,
+                                              color: Colors.white,
+                                              letterSpacing: 1.2),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: Colors.white,
+                                            size: 35.0,
+                                          ),
+                                          onPressed:
+                                              () {}, // later on this will move to the next page
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
+                            ],
+                          ), // here ends the top nav
+                          SleekCircularSlider(
+                            appearance: appearance01,
+                            min: 0.00,
+                            max: 80.00,
+                            initialValue:
+                                50, // will fetch data from gps eventually
                           ),
+                          CurrentRow(),
+                          //Divider(),
+                          // uncomment to test communication
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30),
+                            child: ProgressRows(), // this will be the Consumer
+                          ),
+                          // here goes the horizontal progress bar (or two of them)
                         ],
                       ),
-                      Column(
-                        children: <Widget>[
-                          Center(
-                            child: Text(
-                              "Charge",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20.0),
-                            ),
-                          ),
-                          Container(
-                            width: 400,
-                            height: 50,
-                            child: FAProgressBar(
-                              currentValue: 5,
-                              size: 50,
-                              maxValue: 25,
-                              changeColorValue: 20,
-                              changeProgressColor: Colors.red,
-                              backgroundColor: Colors.white,
-                              progressColor: Colors.blue,
-                              animatedDuration:
-                                  const Duration(milliseconds: 700),
-                              direction: Axis.horizontal,
-                            ),
-                          ),
-                        ],
-                      )
                     ],
-                  ),
-                  //Divider(),
-                  //TestWidget(), // uncomment to test communication
-                  Padding(
-                    padding: const EdgeInsets.only(top: 30),
-                    child: ProgressRows(
-                      // this will be the Consumer
-                      temperature: 1000,
-                      voltage: 36,
-                    ),
-                  ),
-                  // here goes the horizontal progress bar (or two of them)
-                ],
-              ),
-            ],
+                  );
+                case ConnectionEvent.Connecting:
+                  return Center(child: CircularProgressIndicator());
+                case ConnectionEvent.FailedToConnect:
+                  _Pop();
+              }
+              return Center(child: CircularProgressIndicator());
+            },
           ),
         ),
       ),
