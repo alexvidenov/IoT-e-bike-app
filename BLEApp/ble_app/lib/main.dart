@@ -1,12 +1,13 @@
 import 'dart:async';
 
+import 'package:ble_app/src/blocs/BluetoothRepository.dart';
 import 'package:ble_app/src/blocs/btConnectionBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:ble_app/src/widgets/scanResult.dart';
 import 'package:ble_app/src/device_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(FlutterBlueApp());
 
@@ -14,6 +15,7 @@ class FlutterBlueApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      //themeMode: ThemeMode.dark,
       color: Colors.lightBlue,
       home: StreamBuilder<BluetoothState>(
           stream: FlutterBlue.instance.state,
@@ -90,12 +92,13 @@ class FindDevicesScreen extends StatelessWidget {
                                 if (snapshot.data ==
                                     BluetoothDeviceState.connected) {
                                   return RaisedButton(
-                                    child: Text('OPEN'),
-                                    onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                DeviceScreen(device: d))),
-                                  );
+                                      child: Text('OPEN'),
+                                      onPressed: () =>
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DeviceScreen()),
+                                          ));
                                 }
                                 return Text(snapshot.data.toString());
                               },
@@ -114,19 +117,20 @@ class FindDevicesScreen extends StatelessWidget {
                           result: r,
                           onTap: () => Navigator.of(context)
                               .push(MaterialPageRoute(builder: (context) {
-                            r.device.connect();
-                            return MultiBlocProvider(
-                                providers: [
-                                  BlocProvider<ConnectionBloc>(
-                                    create: (context) => ConnectionBloc(),
-                                  ),
-                                  BlocProvider<ShortStatusBloc>(
-                                    create: (context) => ShortStatusBloc(),
-                                  )
-                                ],
-                                child: DeviceScreen(
-                                  device: r.device,
-                                ));
+                            var device = r.device;
+                            var bluetoothRepository = BluetoothRepository(
+                                device); // actually inject the repository here
+                            device.connect();
+                            return MultiProvider(providers: [
+                              Provider<ConnectionBloc>(
+                                create: (context) => ConnectionBloc(
+                                    repository: bluetoothRepository),
+                              ),
+                              Provider<ShortStatusBloc>(
+                                create: (context) => ShortStatusBloc(
+                                    repository: bluetoothRepository),
+                              )
+                            ], child: DeviceScreen());
                           })),
                         ),
                       )
