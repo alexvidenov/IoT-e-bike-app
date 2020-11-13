@@ -1,16 +1,14 @@
 import 'dart:async';
-
-import 'package:ble_app/src/modules/shortStatusModel.dart';
-import 'package:ble_app/src/utils.dart';
-import 'package:flutter/material.dart';
-import 'package:ble_app/src/blocs/BluetoothRepository.dart';
-import 'package:ble_app/src/blocs/Bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
-class ShortStatusBloc extends Bloc {
-  final BluetoothRepository repository;
+import 'package:ble_app/src/blocs/StreamOwner.dart';
+import 'package:ble_app/src/modules/shortStatusModel.dart';
+import 'package:ble_app/src/blocs/BluetoothRepository.dart';
+import 'package:ble_app/src/utils.dart';
+import 'package:flutter/material.dart';
 
-  //final _shortStatus$ = StreamController<ShortStatusModel>();
+class ShortStatusBloc extends StreamOwner {
+  final BluetoothRepository repository;
 
   final _shortStatus$ = BehaviorSubject<ShortStatusModel>();
 
@@ -26,5 +24,6 @@ class ShortStatusBloc extends Bloc {
   @override
   void dispose() {
     _shortStatus$.close();
+    repository.dispose();
   }
 }

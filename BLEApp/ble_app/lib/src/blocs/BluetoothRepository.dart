@@ -3,17 +3,14 @@ import 'dart:convert';
 
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:ble_app/src/BluetoothUtils.dart';
+import 'package:ble_app/src/blocs/StreamOwner.dart';
 import 'package:rxdart/rxdart.dart';
-
-abstract class StreamOwner {
-  void dispose();
-}
 
 class BluetoothRepository extends StreamOwner {
   static BluetoothDevice
       bluetooth; // static device for the whole application session
 
-  bool _isReady = false;
+  bool _isConnected;
   String _value = ""; // will be updated every packet
   String _curValue = ""; // which will be appended to
   BluetoothCharacteristic _characteristic;
@@ -40,7 +37,9 @@ class BluetoothRepository extends StreamOwner {
     return _instance;
   }
 
-  BluetoothRepository._internal();
+  BluetoothRepository._internal() {
+    _isConnected = false;
+  }
 
   _addConnectionEvent(ConnectionEvent event) {
     _connectionSink.add(event);
@@ -56,11 +55,13 @@ class BluetoothRepository extends StreamOwner {
       return;
     }
 
-    _addConnectionEvent(ConnectionEvent.Connecting);
+    _addConnectionEvent(
+        ConnectionEvent.Connecting); // change this later!!!! to connecting
 
     new Timer(const Duration(seconds: 15), () {
-      if (!_isReady) {
+      if (!_isConnected) {
         disconnectFromDevice();
+        _isConnected = false;
         _addConnectionEvent(ConnectionEvent.FailedToConnect);
       }
     });
@@ -94,15 +95,15 @@ class BluetoothRepository extends StreamOwner {
             characteristic.setNotifyValue(true);
             this._characteristic = characteristic;
             _addConnectionEvent(ConnectionEvent.Connected);
-            _isReady = true;
-            listenToCharacteristic();
+            _isConnected = true;
+            listenToCharacteristic(); // dont call these immediately here
             periodicWriteToCharacteristic();
           }
         }
       }
     }
 
-    if (!_isReady) {
+    if (!_isConnected) {
       _addConnectionEvent(ConnectionEvent.FailedToConnect);
     }
   }

@@ -20,10 +20,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    Provider.of<ConnectionBloc>(context, listen: false).connect();
+    Provider.of<ConnectionBloc>(context, listen: false)
+        .connect(); // REMOVE THISFUCKING HTING FROM HEREM ITS AUTISTIC
   }
 
-  _Pop() {
+  _pop() {
     Navigator.of(context).pop(true);
   }
 
@@ -54,9 +55,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
   void dispose() {
     super.dispose();
     Provider.of<ConnectionBloc>(context).dispose();
-    Provider.of<ConnectionBloc>(context).repository.dispose();
     Provider.of<ShortStatusBloc>(context).dispose();
-    Provider.of<ShortStatusBloc>(context).repository.dispose();
   }
 
   @override
@@ -65,9 +64,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Device Screen'),
-        ),
         body: Container(
           child: StreamBuilder<ConnectionEvent>(
             stream: connectionBloc.bluetoothState, // the connection stream
@@ -75,13 +71,14 @@ class _DeviceScreenState extends State<DeviceScreen> {
               if (snapshot.connectionState == ConnectionState.active) {
                 switch (snapshot.data) {
                   case ConnectionEvent.Connected:
-                    return TestWidget();
+                    //return TestWidget();
+                    return RadialNonLinearLabel();
                   case ConnectionEvent.Connecting:
                     return Center(child: CircularProgressIndicator());
                   case ConnectionEvent.FailedToConnect:
-                    _Pop();
+                    _pop();
                 }
-                return Center(child: CircularProgressIndicator());
+                //return Center(child: CircularProgressIndicator());
               } else
                 return Container();
               // this is snapshot of a connectionEvent

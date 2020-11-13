@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/BluetoothUtils.dart';
 import 'package:ble_app/src/blocs/BluetoothRepository.dart';
-import 'package:ble_app/src/blocs/Bloc.dart';
+import 'package:ble_app/src/blocs/StreamOwner.dart';
 import 'package:rxdart/rxdart.dart';
 
-class ConnectionBloc extends Bloc {
+class ConnectionBloc extends StreamOwner {
   final BluetoothRepository repository;
 
   final _bluetoothState$ = BehaviorSubject<
@@ -33,5 +33,6 @@ class ConnectionBloc extends Bloc {
   @override
   void dispose() {
     _bluetoothState$.close();
+    repository.dispose();
   }
 }
