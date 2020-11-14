@@ -56,7 +56,7 @@ class BluetoothRepository extends StreamOwner {
     }
 
     _addConnectionEvent(
-        ConnectionEvent.Connecting); // change this later!!!! to connecting
+        ConnectionEvent.Connected); // change this later!!!! to connecting
 
     new Timer(const Duration(seconds: 15), () {
       if (!_isConnected) {

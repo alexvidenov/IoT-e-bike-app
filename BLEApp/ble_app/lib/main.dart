@@ -4,10 +4,10 @@ import 'package:ble_app/src/blocs/BluetoothRepository.dart';
 import 'package:ble_app/src/blocs/btConnectionBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/screens/home.dart';
+import 'package:ble_app/src/screens/shortStatusPage.dart';
+import 'package:ble_app/src/widgets/scanResultTile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:ble_app/src/widgets/scanResult.dart';
-import 'package:ble_app/src/screens/device_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(FlutterBlueApp());
@@ -116,8 +116,8 @@ class FindDevicesScreen extends StatelessWidget {
                       .map(
                         (r) => ScanResultTile(
                           result: r,
-                          onTap: () => Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(builder: (context) {
+                          onTap: () => Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
                             var device = r.device;
                             var bluetoothRepository = BluetoothRepository(
                                 device); // actually inject the repository here

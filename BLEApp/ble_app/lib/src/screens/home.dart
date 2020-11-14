@@ -1,7 +1,7 @@
-import 'package:ble_app/src/screens/device_screen.dart';
 import 'package:ble_app/src/screens/fullStatusPage.dart';
 import 'package:ble_app/src/screens/mapPage.dart';
-import 'package:ble_app/src/widgets/Drawer.dart';
+import 'package:ble_app/src/screens/shortStatusPage.dart';
+import 'package:ble_app/src/widgets/navigationDrawer.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
