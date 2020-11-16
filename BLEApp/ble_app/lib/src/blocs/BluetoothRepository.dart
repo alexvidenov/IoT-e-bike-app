@@ -14,6 +14,7 @@ class BluetoothRepository extends StreamOwner {
   String _value = ""; // will be updated every packet
   String _curValue = ""; // which will be appended to
   BluetoothCharacteristic _characteristic;
+  Timer _characteristicTimer;
 
   static final BluetoothRepository _instance = BluetoothRepository._internal();
 
@@ -132,9 +133,18 @@ class BluetoothRepository extends StreamOwner {
   }
 
   periodicWriteToCharacteristic() {
-    new Timer.periodic(Duration(milliseconds: 500), (Timer t) {
+    _characteristicTimer =
+        Timer.periodic(Duration(milliseconds: 500), (Timer t) {
       writeData("S");
     });
+  }
+
+  cancelTimer() {
+    _characteristicTimer.cancel();
+  }
+
+  resumeTimer() {
+    periodicWriteToCharacteristic();
   }
 
   writeData(String data) {

@@ -1,13 +1,13 @@
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:ble_app/src/modules/shortStatusModel.dart';
 
 class TemperatureProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var bloc = Provider.of<ShortStatusBloc>(context);
+    var bloc = GetIt.I<ShortStatusBloc>();
     return StreamBuilder<ShortStatusModel>(
         stream: bloc.shortStatus,
         builder: (_, shortStatus) {

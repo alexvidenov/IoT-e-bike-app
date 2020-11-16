@@ -8,7 +8,7 @@ import 'package:ble_app/src/screens/shortStatusPage.dart';
 import 'package:ble_app/src/widgets/scanResultTile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 
 void main() => runApp(FlutterBlueApp());
 
@@ -18,6 +18,7 @@ class FlutterBlueApp extends StatelessWidget {
     return MaterialApp(
       //themeMode: ThemeMode.dark,
       color: Colors.lightBlue,
+      theme: ThemeData(fontFamily: 'Europe_Ext'),
       home: StreamBuilder<BluetoothState>(
           stream: FlutterBlue.instance.state,
           initialData: BluetoothState.unknown,
@@ -69,7 +70,7 @@ class FindDevicesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Find Devices'),
+        title: Text('Find Devices', style: TextStyle(fontFamily: 'Europe_Ext')),
       ),
       body: RefreshIndicator(
         onRefresh: () =>
@@ -119,19 +120,17 @@ class FindDevicesScreen extends StatelessWidget {
                           onTap: () => Navigator.of(context)
                               .push(MaterialPageRoute(builder: (context) {
                             var device = r.device;
-                            var bluetoothRepository = BluetoothRepository(
-                                device); // actually inject the repository here
                             device.connect();
-                            return MultiProvider(providers: [
-                              Provider<ConnectionBloc>(
-                                create: (context) => ConnectionBloc(
-                                    repository: bluetoothRepository),
-                              ),
-                              Provider<ShortStatusBloc>(
-                                create: (context) => ShortStatusBloc(
-                                    repository: bluetoothRepository),
-                              )
-                            ], child: HomeScreen());
+                            GetIt.I.registerLazySingleton(
+                                () => BluetoothRepository(device));
+
+                            GetIt.I
+                                .registerLazySingleton(() => ConnectionBloc());
+
+                            GetIt.I
+                                .registerLazySingleton(() => ShortStatusBloc());
+
+                            return HomeScreen();
                           })),
                         ),
                       )

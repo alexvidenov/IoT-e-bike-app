@@ -3,8 +3,8 @@ import 'package:ble_app/src/widgets/progressBars/speedometer.dart';
 import 'package:ble_app/src/widgets/progressBars/temperatureProgressBar.dart';
 import 'package:ble_app/src/widgets/progressBars/voltageProgressBar.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
+import 'package:get_it/get_it.dart';
 
 import 'modules/shortStatusModel.dart';
 
@@ -20,16 +20,9 @@ class ProgressRows extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                ProgressRow(
-                  title: 'Temp',
-                  progressBar: TemperatureProgressBar(),
-                )
-                // more text here
-              ],
+            ProgressRow(
+              title: 'Temp',
+              progressBar: TemperatureProgressBar(),
             ),
             Padding(
                 padding: const EdgeInsets.only(top: 36),
@@ -107,19 +100,27 @@ class ProgressRows extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: ProgressRow(
-                      title: 'Bat.',
-                      progressBar: VoltageProgressBar(),
-                    )),
-                Text(
-                  "65%",
-                  style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                      fontSize: 30,
-                      color: Colors.black),
+                ProgressRow(
+                  title: 'Bat.',
+                  progressBar: VoltageProgressBar(),
+                ),
+                Column(
+                  children: <Widget>[
+                    Text(
+                      "65",
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 20,
+                          color: Colors.black),
+                    ),
+                    Text("%",
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 20,
+                            color: Colors.black))
+                  ],
                 )
+
                 // more text here
               ],
             )
@@ -146,7 +147,7 @@ class ProgressRows extends StatelessWidget {
 class CurrentRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var bloc = Provider.of<ShortStatusBloc>(context);
+    var bloc = GetIt.I<ShortStatusBloc>();
     return StreamBuilder<ShortStatusModel>(
         stream: bloc.shortStatus,
         builder: (_, shortStatus) {
@@ -215,7 +216,8 @@ class CurrentRow extends StatelessWidget {
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
-                          fontSize: 20.0),
+                          fontSize: 20.0,
+                          fontFamily: 'Europe_Ext'),
                     ),
                   ],
                 )
@@ -245,7 +247,10 @@ class ProgressRow extends StatelessWidget {
           title,
           textAlign: TextAlign.center,
           style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20.0),
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 15.0,
+              fontFamily: 'Europe_Ext'),
         ),
       ],
     );
@@ -269,14 +274,16 @@ class ProgressText extends StatelessWidget {
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w400,
-                fontSize: 20.0),
+                fontSize: 20.0,
+                fontFamily: 'Europe_Ext'),
           ),
           Text(
             content,
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
-                fontSize: 20.0),
+                fontSize: 20.0,
+                fontFamily: 'Europe_Ext'),
           ),
         ],
       ),
@@ -288,7 +295,7 @@ class ProgressText extends StatelessWidget {
 class TestWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var shortStatusBloc = Provider.of<ShortStatusBloc>(context, listen: true);
+    var shortStatusBloc = GetIt.I<ShortStatusBloc>();
     return Container(
         child: StreamBuilder<ShortStatusModel>(
             stream: shortStatusBloc.shortStatus,
