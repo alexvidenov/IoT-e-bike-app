@@ -16,36 +16,63 @@ class ProgressRows extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            ProgressRow(
-              title: 'Temp',
-              progressBar: TemperatureProgressBar(),
-            ),
-            Padding(
-                padding: const EdgeInsets.only(top: 36),
-                child: Column(
+            Column(
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      "20",
-                      style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 25,
-                          color: Colors.black),
-                    ),
-                    Text(
-                      "C",
-                      style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 25,
-                          color: Colors.black),
+                    TemperatureProgressBar(),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            "20",
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 28,
+                                color: Colors.black),
+                          ),
+                          Text(
+                            "C",
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 25,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
-                )),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "Temp.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                      fontFamily: 'Europe_Ext'),
+                ),
+                Text(
+                  "Cell",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                      fontFamily: 'Europe_Ext'),
+                ),
+              ],
+            ),
             Padding(
-                padding: EdgeInsets.only(top: 100),
+                padding: EdgeInsets.only(
+                    top: 100), // find a way to replace that fixed padding
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
@@ -55,7 +82,7 @@ class ProgressRows extends StatelessWidget {
                         RadialNonLinearLabel(),
                         Padding(
                             padding: EdgeInsets.only(
-                              top: 80,
+                              top: 110,
                             ), // find a way for these to not be hardcoded
                             child: Column(
                               children: <Widget>[
@@ -63,7 +90,7 @@ class ProgressRows extends StatelessWidget {
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 40)),
+                                        fontSize: 49)),
                                 Text("km/h",
                                     style: TextStyle(
                                         color: Colors.black,
@@ -74,54 +101,62 @@ class ProgressRows extends StatelessWidget {
                             )
                       ],
                     ),
+                    Text("Battery power",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 18)),
                     CurrentRow(),
                   ],
                 )),
-            Padding(
-                padding: const EdgeInsets.only(top: 36),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      "56.7",
-                      style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 25,
-                          color: Colors.black),
-                    ),
-                    Text(
-                      "V",
-                      style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 25,
-                          color: Colors.black),
-                    ),
-                  ],
-                )),
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                ProgressRow(
-                  title: 'Bat.',
-                  progressBar: VoltageProgressBar(),
-                ),
-                Column(
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      "65",
-                      style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 20,
-                          color: Colors.black),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            "56.7",
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 28,
+                                color: Colors.black),
+                          ),
+                          Text(
+                            "V",
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 25,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text("%",
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 20,
-                            color: Colors.black))
+                    VoltageProgressBar(),
                   ],
-                )
-
-                // more text here
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "Batt",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                      fontFamily: 'Europe_Ext'),
+                ),
+                Text(
+                  "65 %",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25.0,
+                      fontFamily: 'Europe_Ext'),
+                ),
               ],
             )
           ],
@@ -129,13 +164,13 @@ class ProgressRows extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            ProgressText(title: 'Consumed power', content: '50 W/h'),
+            ProgressText(title: 'Inst Cons', content: '15 Wh/km'),
             Divider(),
-            ProgressText(title: 'Odo', content: '1000 km'),
+            ProgressText(title: 'Trip Dist', content: '100 km'),
             Divider(),
             ProgressText(
-              title: "Current power",
-              content: "56 W",
+              title: "Rem Dist",
+              content: "20 km",
             ) // this
           ],
         )
@@ -149,7 +184,7 @@ class CurrentRow extends StatelessWidget {
   Widget build(BuildContext context) {
     var bloc = GetIt.I<ShortStatusBloc>();
     return StreamBuilder<ShortStatusModel>(
-        stream: bloc.shortStatus,
+        stream: bloc.behaviourSubject$,
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
             var currentCharge = shortStatus.data.getCurrentCharge;
@@ -166,7 +201,7 @@ class CurrentRow extends StatelessWidget {
                       child: RotatedBox(
                         quarterTurns: 2,
                         child: FAProgressBar(
-                          currentValue: currentCharge
+                          currentValue: currentCharge //currentCharge
                               .toInt(), // fix that afterwards cuz its baaaad
                           size: 50,
                           maxValue: 27,
@@ -191,13 +226,13 @@ class CurrentRow extends StatelessWidget {
                   ],
                 ),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Container(
                       width: 200, // experimental values
                       height: 30,
                       child: FAProgressBar(
-                        currentValue: currentDischarge
+                        currentValue: currentDischarge //currentDischarge
                             .toInt(), // fix that as well currentDischarge.toInt()
                         size: 50,
                         maxValue: 25,
@@ -209,16 +244,29 @@ class CurrentRow extends StatelessWidget {
                         direction: Axis.horizontal,
                       ),
                     ),
-                    Text(
-                      "DH",
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
-                          fontFamily: 'Europe_Ext'),
-                    ),
+                    Row(
+                      children: <Widget>[
+                        Text("1130W",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24.0,
+                                fontFamily: 'Europe_Ext')),
+                        const SizedBox(
+                          width: 30,
+                        ),
+                        Text(
+                          "DH",
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                              fontFamily: 'Europe_Ext'),
+                        )
+                      ],
+                    )
                   ],
                 )
               ],
@@ -239,17 +287,16 @@ class ProgressRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         progressBar,
-        Divider(),
         Text(
           title,
           textAlign: TextAlign.center,
           style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
-              fontSize: 15.0,
+              fontSize: 16.0,
               fontFamily: 'Europe_Ext'),
         ),
       ],
@@ -282,7 +329,7 @@ class ProgressText extends StatelessWidget {
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
-                fontSize: 20.0,
+                fontSize: 25.0,
                 fontFamily: 'Europe_Ext'),
           ),
         ],
@@ -298,7 +345,7 @@ class TestWidget extends StatelessWidget {
     var shortStatusBloc = GetIt.I<ShortStatusBloc>();
     return Container(
         child: StreamBuilder<ShortStatusModel>(
-            stream: shortStatusBloc.shortStatus,
+            stream: shortStatusBloc.behaviourSubject$,
             builder: (_, shortStatus) {
               if (shortStatus.connectionState == ConnectionState.active) {
                 var model = shortStatus.data;

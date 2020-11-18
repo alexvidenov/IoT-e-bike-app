@@ -9,15 +9,16 @@ class TemperatureProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     var bloc = GetIt.I<ShortStatusBloc>();
     return StreamBuilder<ShortStatusModel>(
-        stream: bloc.shortStatus,
+        stream: bloc.behaviourSubject$,
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
             var temperature = shortStatus.data.getTemperature;
             return Container(
-              height: 250,
+              height: 180,
               width: 40,
               child: FAProgressBar(
-                currentValue: temperature.toInt(), // temperature.toInt()
+                currentValue: temperature
+                    .toInt(), //temperature.toInt(), // temperature.toInt()
                 maxValue: 2000,
                 animatedDuration: const Duration(milliseconds: 300),
                 direction: Axis.vertical,

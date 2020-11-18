@@ -10,12 +10,12 @@ class VoltageProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     var bloc = GetIt.I<ShortStatusBloc>();
     return StreamBuilder<ShortStatusModel>(
-        stream: bloc.shortStatus,
+        stream: bloc.behaviourSubject$,
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
             var voltage = shortStatus.data.getTotalVoltage;
             return Container(
-              height: 250,
+              height: 180,
               width: 40,
               child: FAProgressBar(
                 currentValue: voltage.toInt(), // temperature.toInt()

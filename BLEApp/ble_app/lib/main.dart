@@ -1,16 +1,16 @@
-import 'dart:async';
-
 import 'package:ble_app/src/blocs/BluetoothRepository.dart';
 import 'package:ble_app/src/blocs/btConnectionBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/screens/home.dart';
-import 'package:ble_app/src/screens/shortStatusPage.dart';
 import 'package:ble_app/src/widgets/scanResultTile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get_it/get_it.dart';
 
-void main() => runApp(FlutterBlueApp());
+void main() {
+  GetIt.I.allowReassignment = true;
+  runApp(FlutterBlueApp());
+}
 
 class FlutterBlueApp extends StatelessWidget {
   @override
@@ -78,37 +78,6 @@ class FindDevicesScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              StreamBuilder<List<BluetoothDevice>>(
-                stream: Stream.periodic(Duration(seconds: 2))
-                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
-                initialData: [],
-                builder: (c, snapshot) => Column(
-                  children: snapshot.data
-                      .map((d) => ListTile(
-                            title: Text(d.name),
-                            subtitle: Text(d.id.toString()),
-                            trailing: StreamBuilder<BluetoothDeviceState>(
-                              stream: d.state,
-                              initialData: BluetoothDeviceState.disconnected,
-                              builder: (c, snapshot) {
-                                if (snapshot.data ==
-                                    BluetoothDeviceState.connected) {
-                                  return RaisedButton(
-                                      child: Text('OPEN'),
-                                      onPressed: () =>
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DeviceScreen()),
-                                          ));
-                                }
-                                return Text(snapshot.data.toString());
-                              },
-                            ),
-                          ))
-                      .toList(),
-                ),
-              ),
               StreamBuilder<List<ScanResult>>(
                 stream: FlutterBlue.instance.scanResults,
                 initialData: [],
@@ -121,15 +90,14 @@ class FindDevicesScreen extends StatelessWidget {
                               .push(MaterialPageRoute(builder: (context) {
                             var device = r.device;
                             device.connect();
-                            GetIt.I.registerLazySingleton(
-                                () => BluetoothRepository(device));
-
+                            // register abstract factory as lazy singleton, and then from the blocs call that abstract factory constructor, which will returns the needed specific repositroy instance.
                             GetIt.I
                                 .registerLazySingleton(() => ConnectionBloc());
-
                             GetIt.I
                                 .registerLazySingleton(() => ShortStatusBloc());
-
+                            GetIt.I.registerLazySingleton(
+                              () => BluetoothRepository(device),
+                            );
                             return HomeScreen();
                           })),
                         ),

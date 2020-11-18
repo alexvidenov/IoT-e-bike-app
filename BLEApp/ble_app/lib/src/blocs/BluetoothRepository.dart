@@ -1,16 +1,38 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:ble_app/src/bluetoothUtils.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:ble_app/src/BluetoothUtils.dart';
 import 'package:ble_app/src/blocs/StreamOwner.dart';
 import 'package:rxdart/rxdart.dart';
+/*
+abstract class AbstractBluetoothRepositoryFactory<T> extends StreamOwner<T> {
+  // prolly constrain it to only handle models T extends Model
+  final behaviorSubject = BehaviorSubject<T>();
+
+  Stream<T> get stream => behaviorSubject.stream;
+
+  Sink<T> get sink => behaviorSubject.sink;
+
+  @override
+  void dispose() {
+    behaviorSubject.close();
+  }
+
+  @override
+  void addEvent(T event) {
+    sink.add(event);
+  }
+
+  void connect();
+}
+*/
 
 class BluetoothRepository extends StreamOwner {
   static BluetoothDevice
       bluetooth; // static device for the whole application session
 
-  bool _isConnected;
+  bool _isConnected = false;
   String _value = ""; // will be updated every packet
   String _curValue = ""; // which will be appended to
   BluetoothCharacteristic _characteristic;
@@ -38,9 +60,7 @@ class BluetoothRepository extends StreamOwner {
     return _instance;
   }
 
-  BluetoothRepository._internal() {
-    _isConnected = false;
-  }
+  BluetoothRepository._internal();
 
   _addConnectionEvent(ConnectionEvent event) {
     _connectionSink.add(event);
@@ -132,15 +152,15 @@ class BluetoothRepository extends StreamOwner {
     });
   }
 
+  cancelTimer() {
+    _characteristicTimer.cancel();
+  }
+
   periodicWriteToCharacteristic() {
     _characteristicTimer =
         Timer.periodic(Duration(milliseconds: 500), (Timer t) {
       writeData("S");
     });
-  }
-
-  cancelTimer() {
-    _characteristicTimer.cancel();
   }
 
   resumeTimer() {

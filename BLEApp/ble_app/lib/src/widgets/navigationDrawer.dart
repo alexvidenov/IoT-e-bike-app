@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class NavigationDrawer extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {               
-    return Drawer(                              
-      child: ListView(    
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
         padding: EdgeInsets.zero,
-        children: <Widget>[                
+        children: <Widget>[
           _createHeader(),
           _createDrawerItem(
             icon: Icons.home,
@@ -27,7 +27,7 @@ class NavigationDrawer extends StatelessWidget {
     );
   }
 
-  Widget _createHeader() {               
+  Widget _createHeader() {
     return DrawerHeader(
         margin: EdgeInsets.zero,
         padding: EdgeInsets.zero,
@@ -36,7 +36,7 @@ class NavigationDrawer extends StatelessWidget {
                 fit: BoxFit.fill,
                 image: AssetImage(
                     'path/to/header_background.png'))), // think of a real picture later on
-        child: Stack(children: <Widget>[           
+        child: Stack(children: <Widget>[
           Positioned(
               bottom: 12.0,
               left: 16.0,

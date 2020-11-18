@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:ble_app/src/BluetoothUtils.dart';
+import 'package:ble_app/src/bluetoothUtils.dart';
 import 'package:ble_app/src/blocs/btConnectionBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/widgets.dart';
@@ -98,7 +98,7 @@ class _DeviceScreenState extends State<DeviceScreen>
         child: Scaffold(
           body: Container(
             child: StreamBuilder<ConnectionEvent>(
-              stream: connectionBloc.bluetoothState, // the connection stream
+              stream: connectionBloc.behaviourSubject$, // the connection stream
               builder: (_, snapshot) {
                 if (snapshot.connectionState == ConnectionState.active) {
                   switch (snapshot.data) {
@@ -114,6 +114,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                     case ConnectionEvent.FailedToConnect:
                       _pop();
                   }
+                  //return Container();
                   //return Center(child: CircularProgressIndicator());
                 } else
                   return Container();
