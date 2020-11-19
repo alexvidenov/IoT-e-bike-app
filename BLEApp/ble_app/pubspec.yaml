@@ -25,6 +25,8 @@ dependencies:
   visibility_detector: ^0.1.5
   syncfusion_flutter_gauges: ^18.2.44
   syncfusion_flutter_charts: ^18.2.47
+  google_maps_flutter: ^0.5.28+1
+  location: ^3.0.0
   flutter_animation_progress_bar: ^1.0.0
   syncfusion_flutter_core: ^18.2.46+1
 

@@ -65,7 +65,7 @@ class _FullStatusPageState extends State<FullStatusPage> {
 
   List<BarSeries<FullStatusDataModel, int>> getBarSeries() {
     final List<FullStatusDataModel> chartData = [
-      // this will be dynamic
+      // this will be dynamic. Update a var chartData through a streambuilder
       FullStatusDataModel(1, 59.7, Colors.red),
       FullStatusDataModel(2, 34.2, Colors.blue),
       FullStatusDataModel(3, 40, Colors.blue),

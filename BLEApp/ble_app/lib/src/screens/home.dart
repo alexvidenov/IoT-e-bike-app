@@ -1,5 +1,5 @@
 import 'package:ble_app/src/screens/fullStatusPage.dart';
-import 'package:ble_app/src/screens/mapPage.dart';
+import 'package:ble_app/src/screens/googleMapsPage.dart';
 import 'package:ble_app/src/screens/shortStatusPage.dart';
 import 'package:ble_app/src/widgets/navigationDrawer.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               DeviceScreen(),
               FullStatusPage(),
-              MapPage(),
+              MapPage(title: "Location"),
             ],
           ),
         ));
