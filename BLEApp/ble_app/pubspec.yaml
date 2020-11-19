@@ -24,6 +24,7 @@ dependencies:
   flutter_blue: ^0.7.1+1
   visibility_detector: ^0.1.5
   syncfusion_flutter_gauges: ^18.2.44
+  syncfusion_flutter_charts: ^18.2.47
   flutter_animation_progress_bar: ^1.0.0
   syncfusion_flutter_core: ^18.2.46+1
 

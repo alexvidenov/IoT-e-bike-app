@@ -185,6 +185,7 @@ class CurrentRow extends StatelessWidget {
     var bloc = GetIt.I<ShortStatusBloc>();
     return StreamBuilder<ShortStatusModel>(
         stream: bloc.behaviourSubject$,
+        initialData: ShortStatusModel(),
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
             var currentCharge = shortStatus.data.getCurrentCharge;
@@ -274,33 +275,6 @@ class CurrentRow extends StatelessWidget {
           } else
             return Container();
         });
-  }
-}
-
-class ProgressRow extends StatelessWidget {
-  // contains description and visible progress bar
-  final String title;
-  final Widget progressBar;
-
-  const ProgressRow({this.title, this.progressBar});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        progressBar,
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-              fontFamily: 'Europe_Ext'),
-        ),
-      ],
-    );
   }
 }
 

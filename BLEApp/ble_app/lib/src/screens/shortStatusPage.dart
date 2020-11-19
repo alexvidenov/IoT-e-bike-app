@@ -99,6 +99,7 @@ class _DeviceScreenState extends State<DeviceScreen>
           body: Container(
             child: StreamBuilder<ConnectionEvent>(
               stream: connectionBloc.behaviourSubject$, // the connection stream
+              initialData: ConnectionEvent.Connecting,
               builder: (_, snapshot) {
                 if (snapshot.connectionState == ConnectionState.active) {
                   switch (snapshot.data) {

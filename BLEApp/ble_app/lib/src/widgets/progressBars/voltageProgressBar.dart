@@ -11,6 +11,7 @@ class VoltageProgressBar extends StatelessWidget {
     var bloc = GetIt.I<ShortStatusBloc>();
     return StreamBuilder<ShortStatusModel>(
         stream: bloc.behaviourSubject$,
+        initialData: ShortStatusModel(),
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
             var voltage = shortStatus.data.getTotalVoltage;

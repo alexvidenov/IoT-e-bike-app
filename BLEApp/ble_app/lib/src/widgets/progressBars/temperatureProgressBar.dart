@@ -10,6 +10,7 @@ class TemperatureProgressBar extends StatelessWidget {
     var bloc = GetIt.I<ShortStatusBloc>();
     return StreamBuilder<ShortStatusModel>(
         stream: bloc.behaviourSubject$,
+        initialData: ShortStatusModel(),
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
             var temperature = shortStatus.data.getTemperature;
