@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -6,27 +5,21 @@ import 'package:ble_app/src/modules/shortStatusModel.dart';
 import 'package:ble_app/src/blocs/BluetoothRepository.dart';
 import 'package:ble_app/src/utils.dart';
 
-class ShortStatusBloc extends Bloc<ShortStatusModel> {
-  StreamSubscription<String> _characteristicSubscription;
-
+class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
   ShortStatusBloc() {
-    // convert to factory
-    _characteristicSubscription = GetIt.I<BluetoothRepository>()
+    streamSubscription = GetIt.I<BluetoothRepository>()
         .characteristicValueStream
-        .listen((event) {
-      var model = Converter.generateShortStatus(event);
-      behaviourSubject$.sink.add(model);
-    });
+        .listen((event) => addEvent(Converter.generateShortStatus(event)));
   }
 
-  cancel() {
+  dynamic cancel() {
     GetIt.I<BluetoothRepository>()
         .cancelTimer(); // later on have different timers, depending on short / full status
-    _characteristicSubscription.pause();
+    pauseSubscription();
   }
 
   resume() {
-    _characteristicSubscription.resume();
+    resumeSubscription();
     GetIt.I<BluetoothRepository>().resumeTimer();
   }
 }

@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:ble_app/src/bluetoothUtils.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:ble_app/src/blocs/StreamOwner.dart';
 import 'package:rxdart/rxdart.dart';
 /*
 abstract class AbstractBluetoothRepositoryFactory<T> extends StreamOwner<T> {
@@ -28,7 +27,7 @@ abstract class AbstractBluetoothRepositoryFactory<T> extends StreamOwner<T> {
 }
 */
 
-class BluetoothRepository extends StreamOwner {
+class BluetoothRepository {
   static BluetoothDevice
       bluetooth; // static device for the whole application session
 
@@ -78,16 +77,16 @@ class BluetoothRepository extends StreamOwner {
     _characteristicValueSink.add(event);
   }
 
-  connectToDevice() async {
+  Future<void> connectToDevice() async {
     await bluetooth.connect();
-    _discoverServices();
+    await _discoverServices();
   }
 
-  disconnectFromDevice() {
-    bluetooth.disconnect();
+  Future<dynamic> disconnectFromDevice() async {
+    await bluetooth.disconnect();
   }
 
-  _discoverServices() async {
+  Future<void> _discoverServices() async {
     List<BluetoothService> services = await bluetooth.discoverServices();
     await bluetooth.requestMtu(512);
     for (BluetoothService service in services) {
@@ -156,7 +155,6 @@ class BluetoothRepository extends StreamOwner {
     return utf8.decode(dataFromDevice);
   }
 
-  @override
   void dispose() {
     _bluetoothController.close();
     _characteristicController.close();

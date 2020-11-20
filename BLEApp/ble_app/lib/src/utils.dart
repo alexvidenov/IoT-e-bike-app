@@ -41,4 +41,16 @@ class Converter {
         voltage, currentCharge, currentDischarge, temperature);
     return shortStatusViewModel;
   }
+
+  static List<double> generateFullStatus(String rawData) {
+    List<String> splittedObjects = rawData.split(' ');
+
+    List<double> cellVoltages = List(20);
+
+    for (int i = 0; i < 20; i++) {
+      cellVoltages[i] = double.parse(splittedObjects.elementAt(i));
+    }
+
+    return cellVoltages;
+  }
 }

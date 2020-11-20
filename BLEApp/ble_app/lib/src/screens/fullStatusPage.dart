@@ -1,3 +1,4 @@
+import 'package:ble_app/src/modules/fullStatusBarGraphModel.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -122,11 +123,4 @@ class _FullStatusPageState extends State<FullStatusPage> {
       ),
     ];
   }
-}
-
-class FullStatusDataModel {
-  final int x;
-  final double y;
-  final Color color;
-  FullStatusDataModel(this.x, this.y, this.color);
 }

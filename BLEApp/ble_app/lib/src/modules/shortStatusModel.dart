@@ -4,7 +4,7 @@ class ShortStatusModel {
   double _currentDischarge;
   double _temperature;
 
-  ShortStatusModel() {
+  ShortStatusMode() {
     this._totalVoltage = 0;
     this._currentCharge = 0;
     this._currentDischarge = 0;
