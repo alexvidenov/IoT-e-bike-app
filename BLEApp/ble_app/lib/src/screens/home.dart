@@ -15,9 +15,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return DefaultTabController(
         length: 3,
         child: Scaffold(
+          backgroundColor: Colors.black,
           appBar: AppBar(
+            backgroundColor: Colors.white12,
             title: Text("Home"),
             bottom: TabBar(
+              labelColor: Colors.lightBlueAccent,
+              unselectedLabelColor: Colors.white,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicator: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10)),
+                  color: Colors.black),
               tabs: [
                 Tab(
                   text: "Short Status",
@@ -37,9 +47,11 @@ class _HomeScreenState extends State<HomeScreen> {
           drawer: NavigationDrawer(),
           body: TabBarView(
             children: [
-              DeviceScreen(),
-              FullStatusPage(),
-              MapPage(title: "Location"),
+              DeviceScreen(
+                key: Key('Device Screen'),
+              ),
+              FullStatusPage(key: Key('Full status page')),
+              MapPage(key: Key('Map page')),
             ],
           ),
         ));

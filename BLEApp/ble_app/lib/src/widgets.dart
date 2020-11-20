@@ -1,3 +1,4 @@
+import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/widgets/progressBars/speedometer.dart';
 import 'package:ble_app/src/widgets/progressBars/temperatureProgressBar.dart';
@@ -5,12 +6,14 @@ import 'package:ble_app/src/widgets/progressBars/voltageProgressBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:get_it/get_it.dart';
+import 'package:location/location.dart';
 
 import 'modules/shortStatusModel.dart';
 
 class ProgressRows extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final bloc = GetIt.I<LocationBloc>();
     return Flexible(
         child: Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -31,18 +34,18 @@ class ProgressRows extends StatelessWidget {
                       child: Column(
                         children: <Widget>[
                           Text(
-                            "20",
+                            "20", // StreamBuilder
                             style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 28,
-                                color: Colors.black),
+                                color: Colors.white),
                           ),
                           Text(
                             "C",
                             style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 25,
-                                color: Colors.black),
+                                color: Colors.white),
                           ),
                         ],
                       ),
@@ -54,7 +57,7 @@ class ProgressRows extends StatelessWidget {
                   "Temp.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
                       fontFamily: 'Europe_Ext'),
@@ -63,7 +66,7 @@ class ProgressRows extends StatelessWidget {
                   "Cell",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
                       fontFamily: 'Europe_Ext'),
@@ -79,21 +82,31 @@ class ProgressRows extends StatelessWidget {
                     Stack(
                       alignment: Alignment.center,
                       children: <Widget>[
-                        RadialNonLinearLabel(),
+                        Speedometer(),
                         Padding(
                             padding: EdgeInsets.only(
                               top: 110,
                             ), // find a way for these to not be hardcoded
                             child: Column(
                               children: <Widget>[
-                                Text("60",
+                                StreamBuilder<LocationData>(
+                                    stream: bloc.stream,
+                                    builder: (context, snapshot) {
+                                      final speed = snapshot?.data?.speed
+                                          ?.toStringAsPrecision(2);
+                                      String text = snapshot.connectionState ==
+                                              ConnectionState.active
+                                          ? speed
+                                          : '0';
+                                      return Text(text,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 49));
+                                    }),
+                                Text('km/h',
                                     style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 49)),
-                                Text("km/h",
-                                    style: TextStyle(
-                                        color: Colors.black,
+                                        color: Colors.white,
                                         fontWeight: FontWeight.w300,
                                         fontSize: 25)),
                               ],
@@ -101,11 +114,9 @@ class ProgressRows extends StatelessWidget {
                             )
                       ],
                     ),
-                    Text("Battery power",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 18)),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     CurrentRow(),
                   ],
                 )),
@@ -123,14 +134,14 @@ class ProgressRows extends StatelessWidget {
                             style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 28,
-                                color: Colors.black),
+                                color: Colors.white),
                           ),
                           Text(
                             "V",
                             style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 25,
-                                color: Colors.black),
+                                color: Colors.white),
                           ),
                         ],
                       ),
@@ -143,7 +154,7 @@ class ProgressRows extends StatelessWidget {
                   "Batt",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
                       fontFamily: 'Europe_Ext'),
@@ -152,7 +163,7 @@ class ProgressRows extends StatelessWidget {
                   "65 %",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 25.0,
                       fontFamily: 'Europe_Ext'),
@@ -184,7 +195,7 @@ class CurrentRow extends StatelessWidget {
   Widget build(BuildContext context) {
     var bloc = GetIt.I<ShortStatusBloc>();
     return StreamBuilder<ShortStatusModel>(
-        stream: bloc.behaviourSubject$,
+        stream: bloc.stream,
         initialData: ShortStatusModel(),
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
@@ -199,6 +210,15 @@ class CurrentRow extends StatelessWidget {
                     Container(
                       width: 100,
                       height: 30,
+                      decoration: BoxDecoration(
+                          color: Colors.black26,
+                          shape: BoxShape.rectangle,
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.white,
+                                blurRadius: 7.0,
+                                spreadRadius: 5.0),
+                          ]),
                       child: RotatedBox(
                         quarterTurns: 2,
                         child: FAProgressBar(
@@ -207,9 +227,9 @@ class CurrentRow extends StatelessWidget {
                           size: 50,
                           maxValue: 27,
                           changeColorValue: 20,
-                          changeProgressColor: Colors.red,
-                          backgroundColor: Colors.grey,
-                          progressColor: Colors.blue,
+                          changeProgressColor: Colors.redAccent,
+                          backgroundColor: Colors.black,
+                          progressColor: Colors.lightBlueAccent,
                           animatedDuration: const Duration(milliseconds: 700),
                           direction: Axis.horizontal,
                         ),
@@ -220,7 +240,7 @@ class CurrentRow extends StatelessWidget {
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       style: TextStyle(
-                          color: Colors.black,
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0),
                     ),
@@ -232,15 +252,24 @@ class CurrentRow extends StatelessWidget {
                     Container(
                       width: 200, // experimental values
                       height: 30,
+                      decoration: BoxDecoration(
+                          color: Colors.black26,
+                          shape: BoxShape.rectangle,
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.white,
+                                blurRadius: 5.0,
+                                spreadRadius: 5.0),
+                          ]),
                       child: FAProgressBar(
                         currentValue: currentDischarge //currentDischarge
                             .toInt(), // fix that as well currentDischarge.toInt()
                         size: 50,
                         maxValue: 25,
                         changeColorValue: 20,
-                        changeProgressColor: Colors.red,
-                        backgroundColor: Colors.grey,
-                        progressColor: Colors.blue,
+                        changeProgressColor: Colors.redAccent,
+                        backgroundColor: Colors.black,
+                        progressColor: Colors.lightBlueAccent,
                         animatedDuration: const Duration(milliseconds: 700),
                         direction: Axis.horizontal,
                       ),
@@ -249,7 +278,7 @@ class CurrentRow extends StatelessWidget {
                       children: <Widget>[
                         Text("1130W",
                             style: TextStyle(
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 24.0,
                                 fontFamily: 'Europe_Ext')),
@@ -261,7 +290,7 @@ class CurrentRow extends StatelessWidget {
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 20.0,
                               fontFamily: 'Europe_Ext'),
@@ -293,7 +322,7 @@ class ProgressText extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontWeight: FontWeight.w400,
                 fontSize: 20.0,
                 fontFamily: 'Europe_Ext'),
@@ -301,7 +330,7 @@ class ProgressText extends StatelessWidget {
           Text(
             content,
             style: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 25.0,
                 fontFamily: 'Europe_Ext'),
@@ -319,7 +348,7 @@ class TestWidget extends StatelessWidget {
     var shortStatusBloc = GetIt.I<ShortStatusBloc>();
     return Container(
         child: StreamBuilder<ShortStatusModel>(
-            stream: shortStatusBloc.behaviourSubject$,
+            stream: shortStatusBloc.stream,
             builder: (_, shortStatus) {
               if (shortStatus.connectionState == ConnectionState.active) {
                 var model = shortStatus.data;

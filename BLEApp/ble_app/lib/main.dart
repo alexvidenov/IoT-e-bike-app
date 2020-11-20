@@ -1,7 +1,10 @@
 import 'package:ble_app/src/blocs/BluetoothRepository.dart';
+import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/btConnectionBloc.dart';
+import 'package:ble_app/src/blocs/fullStatusBloc.dart';
+import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
-import 'package:ble_app/src/screens/home.dart';
+import 'package:ble_app/src/screens/authenticationPage.dart';
 import 'package:ble_app/src/widgets/scanResultTile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -95,10 +98,15 @@ class FindDevicesScreen extends StatelessWidget {
                                 .registerLazySingleton(() => ConnectionBloc());
                             GetIt.I
                                 .registerLazySingleton(() => ShortStatusBloc());
+                            GetIt.I
+                                .registerLazySingleton(() => FullStatusBloc());
+                            GetIt.I.registerLazySingleton(
+                                () => BluetoothAuthBloc());
+                            GetIt.I.registerLazySingleton(() => LocationBloc());
                             GetIt.I.registerLazySingleton(
                               () => BluetoothRepository(device),
                             );
-                            return HomeScreen();
+                            return AuthenticationScreen();
                           })),
                         ),
                       )

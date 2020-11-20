@@ -1,67 +1,91 @@
+import 'package:ble_app/src/blocs/fullStatusBloc.dart';
 import 'package:ble_app/src/modules/fullStatusBarGraphModel.dart';
+import 'package:ble_app/src/screens/abstractVisibleWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../widgets.dart';
 
-class FullStatusPage extends StatefulWidget {
-  @override
-  _FullStatusPageState createState() => _FullStatusPageState();
-}
+class FullStatusPage extends VisibleWidget {
+  final bloc = GetIt.I<FullStatusBloc>();
 
-class _FullStatusPageState extends State<FullStatusPage> {
+  FullStatusPage({@required Key key}) : super(key: key);
+
+  List<FullStatusDataModel> _chartData;
+
   @override
-  Widget build(BuildContext context) => Column(
-        // get the full status BLoC here
-        children: <Widget>[
-          Padding(
-            // might even remove Padding completely and just use MainAxisAlignment.spaceEvenyl for the Column
-            padding: EdgeInsets.only(top: 10, bottom: 5),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                ProgressText(title: 'Umin.', content: '10V'),
-                ProgressText(
-                  title: 'Ubal.',
-                  content: '56V',
-                ),
-                ProgressText(
-                  title: 'Umax.',
-                  content: '60V',
-                )
-              ],
-            ),
+  Widget buildWidget() {
+    return Column(
+      children: <Widget>[
+        Padding(
+          // might even remove Padding completely and just use MainAxisAlignment.spaceEvenyl for the Column
+          padding: EdgeInsets.only(top: 10, bottom: 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              ProgressText(title: 'Umin.', content: '10V'),
+              ProgressText(
+                title: 'Ubal.',
+                content: '56V',
+              ),
+              ProgressText(
+                title: 'Umax.',
+                content: '60V',
+              )
+            ],
           ),
-          Padding(
-            padding: EdgeInsets.only(top: 10, bottom: 5),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                ProgressText(title: 'Charge', content: '5A'),
-                ProgressText(
-                  title: 'Discharge',
-                  content: '10A',
-                ),
-                ProgressText(
-                  title: 'Total voltage',
-                  content: '60V',
-                )
-              ],
-            ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 10, bottom: 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              ProgressText(title: 'Charge', content: '5A'),
+              ProgressText(
+                title: 'Discharge',
+                content: '10A',
+              ),
+              ProgressText(
+                title: 'Total voltage',
+                content: '60V',
+              )
+            ],
           ),
-          Expanded(child: getBarChart()),
-        ],
-      );
+        ),
+        Expanded(
+            child: StreamBuilder<List<FullStatusDataModel>>(
+                stream: bloc.stream,
+                builder: (_, snapshot) {
+                  _chartData = snapshot.data;
+                  return getBarChart();
+                })),
+      ],
+    );
+  }
+
+  @override
+  void onCreate() {
+    bloc.startGeneratingFullStatus();
+  }
+
+  @override
+  void onPause() {
+    bloc.cancel();
+  }
+
+  @override
+  void onResume() {
+    bloc.resume();
+  }
+
+  @override
+  void onDestroy() {
+    bloc.dispose();
+  }
 
   SfCartesianChart getBarChart() => SfCartesianChart(
         plotAreaBorderWidth: 0,
-        title: ChartTitle(
-            text: 'Cell voltages',
-            textStyle: TextStyle(
-              fontSize: 20,
-              fontFamily: 'Europe_Ext',
-              fontWeight: FontWeight.bold,
-            )),
         primaryXAxis: NumericAxis(
           interval: 1.0,
           minimum: 0,
@@ -80,39 +104,16 @@ class _FullStatusPageState extends State<FullStatusPage> {
       );
 
   List<BarSeries<FullStatusDataModel, int>> getBarSeries() {
-    final List<FullStatusDataModel> chartData = [
-      // this will be dynamic. Update a var chartData through a streambuilder
-      FullStatusDataModel(1, 59.7, Colors.red),
-      FullStatusDataModel(2, 34.2, Colors.blue),
-      FullStatusDataModel(3, 40, Colors.blue),
-      FullStatusDataModel(4, 50.5, Colors.red),
-      FullStatusDataModel(5, 20.8, Colors.blue),
-      FullStatusDataModel(6, 30, Colors.blue),
-      FullStatusDataModel(7, 40, Colors.blue),
-      FullStatusDataModel(8, 58, Colors.red),
-      FullStatusDataModel(9, 20.5, Colors.blue),
-      FullStatusDataModel(10, 30, Colors.blue),
-      FullStatusDataModel(11, 20, Colors.blue),
-      FullStatusDataModel(12, 55, Colors.red),
-      FullStatusDataModel(13, 40, Colors.blue),
-      FullStatusDataModel(14, 34, Colors.blue),
-      FullStatusDataModel(15, 20, Colors.blue),
-      FullStatusDataModel(16, 33.3, Colors.blue),
-      FullStatusDataModel(17, 40, Colors.blue),
-      FullStatusDataModel(18, 30, Colors.blue),
-      FullStatusDataModel(19, 0, Colors.blue),
-      FullStatusDataModel(20, 0, Colors.blue),
-    ];
     return <BarSeries<FullStatusDataModel, int>>[
       BarSeries<FullStatusDataModel, int>(
-        dataSource: chartData,
+        animationDuration: 0.5,
+        dataSource: _chartData,
         borderRadius: BorderRadius.circular(3),
-        trackColor: const Color.fromRGBO(198, 201, 207, 1),
-
-        /// If we enable this property as true, then we can show the track of series.
+        trackColor: Colors.white12,
         isTrackVisible: true,
         dataLabelSettings: DataLabelSettings(
             isVisible: true,
+            labelPosition: ChartDataLabelPosition.inside,
             labelAlignment: ChartDataLabelAlignment.top,
             textStyle: TextStyle(fontSize: 20)),
         dataLabelMapper: (FullStatusDataModel status, _) =>

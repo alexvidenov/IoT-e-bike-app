@@ -10,22 +10,31 @@ class VoltageProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     var bloc = GetIt.I<ShortStatusBloc>();
     return StreamBuilder<ShortStatusModel>(
-        stream: bloc.behaviourSubject$,
+        stream: bloc.stream,
         initialData: ShortStatusModel(),
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
             var voltage = shortStatus.data.getTotalVoltage;
             return Container(
               height: 180,
-              width: 40,
+              width: 20,
+              decoration: BoxDecoration(
+                  color: Colors.black26,
+                  shape: BoxShape.rectangle,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.white,
+                        blurRadius: 7.0,
+                        spreadRadius: 8.0),
+                  ]),
               child: FAProgressBar(
-                currentValue: voltage.toInt(), // temperature.toInt()
+                currentValue: voltage.toInt(),
                 maxValue: 2000,
                 animatedDuration: const Duration(milliseconds: 300),
                 direction: Axis.vertical,
                 verticalDirection: VerticalDirection.up,
-                backgroundColor: Colors.blueGrey,
-                progressColor: Colors.green,
+                backgroundColor: Colors.black87,
+                progressColor: Colors.blue,
                 changeColorValue: 1500,
                 changeProgressColor: Colors.red,
               ),

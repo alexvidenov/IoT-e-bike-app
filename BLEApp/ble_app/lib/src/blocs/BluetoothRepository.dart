@@ -98,7 +98,7 @@ class BluetoothRepository {
             characteristic.setNotifyValue(true);
             this._characteristic = characteristic;
             listenToCharacteristic(); // dont call these immediately here
-            periodicWriteToCharacteristic();
+            //periodicWriteToCharacteristic();
           }
         }
       }
@@ -129,25 +129,37 @@ class BluetoothRepository {
   }
 
   cancelTimer() {
-    _characteristicTimer.cancel();
+    _characteristicTimer?.cancel();
   }
 
-  periodicWriteToCharacteristic() {
+  writeToCharacteristic(String data) => _writeData(data);
+
+  periodicShortStatus() {
+    if (_characteristicTimer?.isActive == true) {
+      cancelTimer();
+    }
     _characteristicTimer =
         Timer.periodic(Duration(milliseconds: 500), (Timer t) {
-      writeData("S");
+      _writeData("S");
     });
   }
 
-  resumeTimer() {
-    periodicWriteToCharacteristic();
+  periodicFullStatus() {
+    if (_characteristicTimer?.isActive == true) {
+      cancelTimer();
+    }
+    _characteristicTimer =
+        Timer.periodic(Duration(milliseconds: 500), (Timer t) {
+      _writeData("F");
+    });
   }
 
-  writeData(String data) {
-    if (_characteristic == null) return;
+  resumeTimer(bool isShort) =>
+      isShort ? periodicShortStatus() : periodicFullStatus();
 
+  _writeData(String data) {
     List<int> bytes = utf8.encode(data);
-    _characteristic.write(bytes);
+    _characteristic?.write(bytes);
   }
 
   String _dataParser(List<int> dataFromDevice) {

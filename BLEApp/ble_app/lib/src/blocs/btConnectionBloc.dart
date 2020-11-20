@@ -8,7 +8,7 @@ class ConnectionBloc extends Bloc<BluetoothDeviceState, BluetoothDeviceState> {
     streamSubscription =
         GetIt.I<BluetoothRepository>().connectionStream.listen((event) {
       // rename the repo status to something else to make more sense. Here, just switch the repo status and emit ConnectionEvent.
-      behaviourSubject$.sink.add(event);
+      addEvent(event);
     });
   }
 

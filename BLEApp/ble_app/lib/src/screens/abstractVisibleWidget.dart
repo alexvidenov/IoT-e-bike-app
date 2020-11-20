@@ -4,34 +4,50 @@ import 'package:get_it/get_it.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 abstract class VisibleWidget extends StatefulWidget {
-  final String name;
+  const VisibleWidget({@required Key key}) : super(key: key);
 
-  VisibleWidget({@required this.name});
+  Widget buildWidget();
 
   void onResume();
 
   void onPause();
 
-  Widget buildWidget();
-
   void onCreate();
+
+  void onDestroy();
 
   @override
   _VisibleWidgetState createState() => _VisibleWidgetState();
 }
 
 class _VisibleWidgetState extends State<VisibleWidget>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
+  bool _isVisible = false;
+
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
     this.widget.onCreate();
+    super.initState();
   }
 
   @override
   bool get wantKeepAlive => true;
 
-  bool _isDisposed = false;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        _isVisible &&
+        widget.onResume != null) {
+      widget.onResume();
+    }
+
+    if (state == AppLifecycleState.paused &&
+        _isVisible &&
+        widget.onPause != null) {
+      widget.onPause();
+    }
+  }
 
   Future<bool> _onWillPop() {
     final bloc = GetIt.I<ConnectionBloc>();
@@ -59,15 +75,13 @@ class _VisibleWidgetState extends State<VisibleWidget>
   }
 
   _onVisibilityHandler(VisibilityInfo info) {
-    var visiblePercentage = info.visibleFraction * 100;
-    if (visiblePercentage < 1) {
-      // widget is disposed
-      this.widget.onPause();
-      _isDisposed = true;
-    } else if (visiblePercentage > 1 && _isDisposed == true) {
-      // widget comes into foreground
-      this.widget.onResume();
-      _isDisposed = false;
+    _isVisible = info.visibleFraction > 0;
+    if (_isVisible && widget.onResume != null) {
+      widget.onResume();
+    }
+
+    if (!_isVisible && widget.onPause != null) {
+      widget.onPause();
     }
   }
 
@@ -77,11 +91,19 @@ class _VisibleWidgetState extends State<VisibleWidget>
     return WillPopScope(
       onWillPop: _onWillPop,
       child: VisibilityDetector(
-        key: Key(widget.name),
+        key: widget
+            .key, // this makes sure that the VisibilityDetector acts separately for every widget.
         onVisibilityChanged: (VisibilityInfo info) =>
             _onVisibilityHandler(info),
         child: this.widget.buildWidget(), // the actual different implementation
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    this.widget.onDestroy();
+    super.dispose();
   }
 }
