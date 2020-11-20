@@ -89,7 +89,7 @@ class FindDevicesScreen extends StatelessWidget {
                           onTap: () => Navigator.of(context)
                               .push(MaterialPageRoute(builder: (context) {
                             var device = r.device;
-                            device.connect();
+                            //device.connect();
                             // register abstract factory as lazy singleton, and then from the blocs call that abstract factory constructor, which will returns the needed specific repositroy instance.
                             GetIt.I
                                 .registerLazySingleton(() => ConnectionBloc());

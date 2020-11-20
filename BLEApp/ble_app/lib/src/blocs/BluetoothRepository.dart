@@ -32,7 +32,6 @@ class BluetoothRepository extends StreamOwner {
   static BluetoothDevice
       bluetooth; // static device for the whole application session
 
-  bool _isConnected = false;
   String _value = ""; // will be updated every packet
   String _curValue = ""; // which will be appended to
   BluetoothCharacteristic _characteristic;
@@ -40,14 +39,15 @@ class BluetoothRepository extends StreamOwner {
 
   static final BluetoothRepository _instance = BluetoothRepository._internal();
 
-  final _bluetoothController = BehaviorSubject<ConnectionEvent>();
+  final _bluetoothController = BehaviorSubject<BluetoothDeviceState>();
 
   final _characteristicController =
       BehaviorSubject<String>(); // packets, emmited from bluetooth
 
-  Stream<ConnectionEvent> get connectionStream => _bluetoothController.stream;
+  Stream<BluetoothDeviceState> get connectionStream =>
+      _bluetoothController.stream;
 
-  Sink<ConnectionEvent> get _connectionSink => _bluetoothController.sink;
+  Sink<BluetoothDeviceState> get _connectionSink => _bluetoothController.sink;
 
   Stream<String> get characteristicValueStream =>
       _characteristicController.stream;
@@ -60,9 +60,17 @@ class BluetoothRepository extends StreamOwner {
     return _instance;
   }
 
-  BluetoothRepository._internal();
+  BluetoothRepository._internal() {
+    _listenToBluetoothState();
+  }
 
-  _addConnectionEvent(ConnectionEvent event) {
+  _listenToBluetoothState() {
+    bluetooth.state.listen((event) {
+      _addConnectionEvent(event);
+    });
+  }
+
+  _addConnectionEvent(BluetoothDeviceState event) {
     _connectionSink.add(event);
   }
 
@@ -71,40 +79,15 @@ class BluetoothRepository extends StreamOwner {
   }
 
   connectToDevice() async {
-    if (bluetooth == null) {
-      _addConnectionEvent(ConnectionEvent.FailedToConnect);
-      return;
-    }
-
-    _addConnectionEvent(
-        ConnectionEvent.Connected); // change this later!!!! to connecting
-
-    new Timer(const Duration(seconds: 15), () {
-      if (!_isConnected) {
-        disconnectFromDevice();
-        _isConnected = false;
-        _addConnectionEvent(ConnectionEvent.FailedToConnect);
-      }
-    });
-
     await bluetooth.connect();
     _discoverServices();
   }
 
   disconnectFromDevice() {
-    if (bluetooth == null) {
-      _addConnectionEvent(ConnectionEvent.FailedToConnect);
-      return;
-    }
-
     bluetooth.disconnect();
   }
 
   _discoverServices() async {
-    if (bluetooth == null) {
-      _addConnectionEvent(ConnectionEvent.FailedToConnect);
-    }
-
     List<BluetoothService> services = await bluetooth.discoverServices();
     await bluetooth.requestMtu(512);
     for (BluetoothService service in services) {
@@ -115,17 +98,11 @@ class BluetoothRepository extends StreamOwner {
               BluetoothUtils.CHARACTERISTIC_UUID) {
             characteristic.setNotifyValue(true);
             this._characteristic = characteristic;
-            _addConnectionEvent(ConnectionEvent.Connected);
-            _isConnected = true;
             listenToCharacteristic(); // dont call these immediately here
             periodicWriteToCharacteristic();
           }
         }
       }
-    }
-
-    if (!_isConnected) {
-      _addConnectionEvent(ConnectionEvent.FailedToConnect);
     }
   }
 

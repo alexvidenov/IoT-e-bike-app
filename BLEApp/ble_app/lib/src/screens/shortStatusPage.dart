@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:ble_app/src/bluetoothUtils.dart';
 import 'package:ble_app/src/blocs/btConnectionBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:get_it/get_it.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -97,26 +97,29 @@ class _DeviceScreenState extends State<DeviceScreen>
             _onVisibilityHandler(info),
         child: Scaffold(
           body: Container(
-            child: StreamBuilder<ConnectionEvent>(
-              stream: connectionBloc.behaviourSubject$, // the connection stream
-              initialData: ConnectionEvent.Connecting,
+            child: StreamBuilder<BluetoothDeviceState>(
+              stream: connectionBloc
+                  .behaviourSubject$.stream, // the connection stream
+              initialData: BluetoothDeviceState.disconnected,
               builder: (_, snapshot) {
                 if (snapshot.connectionState == ConnectionState.active) {
                   switch (snapshot.data) {
-                    case ConnectionEvent.Connected:
+                    case BluetoothDeviceState.connected:
                       //return TestWidget();
                       return Column(
                         children: <Widget>[
                           ProgressRows(),
                         ],
                       );
-                    case ConnectionEvent.Connecting:
+                    case BluetoothDeviceState.connecting:
                       return Center(child: CircularProgressIndicator());
-                    case ConnectionEvent.FailedToConnect:
+                    case BluetoothDeviceState.disconnected:
+                      return Center(
+                        child: Text("Disconnected"),
+                      );
+                    case BluetoothDeviceState.disconnecting:
                       _pop();
                   }
-                  //return Container();
-                  //return Center(child: CircularProgressIndicator());
                 } else
                   return Container();
               },

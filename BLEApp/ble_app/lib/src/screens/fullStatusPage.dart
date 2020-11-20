@@ -10,58 +10,73 @@ class FullStatusPage extends StatefulWidget {
 
 class _FullStatusPageState extends State<FullStatusPage> {
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 20, bottom: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              ProgressText(title: 'Umin.', content: '10V'),
-              ProgressText(
-                title: 'Ubal.',
-                content: '56V',
-              ),
-              ProgressText(
-                title: 'Umax.',
-                content: '60V',
-              )
-            ],
+  Widget build(BuildContext context) => Column(
+        // get the full status BLoC here
+        children: <Widget>[
+          Padding(
+            // might even remove Padding completely and just use MainAxisAlignment.spaceEvenyl for the Column
+            padding: EdgeInsets.only(top: 10, bottom: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                ProgressText(title: 'Umin.', content: '10V'),
+                ProgressText(
+                  title: 'Ubal.',
+                  content: '56V',
+                ),
+                ProgressText(
+                  title: 'Umax.',
+                  content: '60V',
+                )
+              ],
+            ),
           ),
-        ),
-        Expanded(child: getBarChart()),
-      ],
-    );
-  }
+          Padding(
+            padding: EdgeInsets.only(top: 10, bottom: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                ProgressText(title: 'Charge', content: '5A'),
+                ProgressText(
+                  title: 'Discharge',
+                  content: '10A',
+                ),
+                ProgressText(
+                  title: 'Total voltage',
+                  content: '60V',
+                )
+              ],
+            ),
+          ),
+          Expanded(child: getBarChart()),
+        ],
+      );
 
-  SfCartesianChart getBarChart() {
-    return SfCartesianChart(
-      plotAreaBorderWidth: 0,
-      title: ChartTitle(
-          text: 'Cell voltages',
-          textStyle: TextStyle(
-            fontSize: 20,
-            fontFamily: 'Europe_Ext',
-            fontWeight: FontWeight.bold,
-          )),
-      primaryXAxis: NumericAxis(
-        interval: 1.0,
-        minimum: 0,
-        maximum: 21,
-        labelStyle: TextStyle(fontSize: 20),
-        majorGridLines: MajorGridLines(width: 0),
-      ),
-      primaryYAxis: NumericAxis(
-          majorGridLines: MajorGridLines(width: 0),
-          isVisible: false,
-          title: AxisTitle(text: ''),
+  SfCartesianChart getBarChart() => SfCartesianChart(
+        plotAreaBorderWidth: 0,
+        title: ChartTitle(
+            text: 'Cell voltages',
+            textStyle: TextStyle(
+              fontSize: 20,
+              fontFamily: 'Europe_Ext',
+              fontWeight: FontWeight.bold,
+            )),
+        primaryXAxis: NumericAxis(
+          interval: 1.0,
           minimum: 0,
-          maximum: 60, // inject the max voltage here
-          majorTickLines: MajorTickLines(size: 0)),
-      series: getBarSeries(),
-    );
-  }
+          maximum: 21,
+          labelStyle: TextStyle(fontSize: 20),
+          majorGridLines: MajorGridLines(width: 0),
+        ),
+        primaryYAxis: NumericAxis(
+            majorGridLines: MajorGridLines(width: 0),
+            isVisible: false,
+            title: AxisTitle(text: ''),
+            minimum: 0,
+            maximum: 60, // inject the max voltage here
+            majorTickLines: MajorTickLines(size: 0)),
+        series: getBarSeries(),
+      );
 
   List<BarSeries<FullStatusDataModel, int>> getBarSeries() {
     final List<FullStatusDataModel> chartData = [

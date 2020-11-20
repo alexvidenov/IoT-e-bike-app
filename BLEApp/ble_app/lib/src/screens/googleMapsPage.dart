@@ -21,7 +21,7 @@ class _MapPageState extends State<MapPage> {
 
   static final CameraPosition initialLocation = CameraPosition(
     target: LatLng(37.42796133580664,
-        -122.085749655962), 
+        -122.085749655962), // probably don't have initial location, but dynami
     zoom: 14.4746,
   );
 
@@ -107,7 +107,7 @@ class _MapPageState extends State<MapPage> {
           _controller = controller;
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton( // move that logic in initState / didChangeDependancies. And cancel stream subscription upon leaving. 
           child: Icon(Icons.location_searching),
           onPressed: () {
             getCurrentLocation();
