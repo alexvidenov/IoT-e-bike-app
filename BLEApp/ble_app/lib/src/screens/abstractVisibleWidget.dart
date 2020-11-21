@@ -1,6 +1,4 @@
-import 'package:ble_app/src/blocs/btConnectionBloc.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 abstract class VisibleWidget extends StatefulWidget {
@@ -48,7 +46,7 @@ class _VisibleWidgetState extends State<VisibleWidget>
       widget.onPause();
     }
   }
-
+  /*
   Future<bool> _onWillPop() {
     final bloc = GetIt.I<ConnectionBloc>();
     return showDialog(
@@ -73,6 +71,7 @@ class _VisibleWidgetState extends State<VisibleWidget>
             ) ??
             false);
   }
+  */
 
   _onVisibilityHandler(VisibilityInfo info) {
     _isVisible = info.visibleFraction > 0;
@@ -89,7 +88,7 @@ class _VisibleWidgetState extends State<VisibleWidget>
   Widget build(BuildContext context) {
     super.build(context);
     return WillPopScope(
-      onWillPop: _onWillPop,
+      onWillPop: null,
       child: VisibilityDetector(
         key: widget
             .key, // this makes sure that the VisibilityDetector acts separately for every widget.

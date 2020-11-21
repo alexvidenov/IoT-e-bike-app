@@ -21,7 +21,8 @@ dependencies:
     sdk: flutter
   rxdart: ^0.24.1
   get_it: ^4.0.4
-  flutter_blue: ^0.7.1+1
+  provider: ^4.3.2
+  flutter_ble_lib: ^2.2.9
   visibility_detector: ^0.1.5
   syncfusion_flutter_gauges: ^18.2.44
   syncfusion_flutter_charts: ^18.2.47

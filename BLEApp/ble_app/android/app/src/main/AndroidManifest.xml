@@ -14,7 +14,7 @@
         android:label="ble_app"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="You thought I'm going to put my API key here, didn't you?"/>
+            android:value="You thought I'm going to put my Api key here, didn't you?"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

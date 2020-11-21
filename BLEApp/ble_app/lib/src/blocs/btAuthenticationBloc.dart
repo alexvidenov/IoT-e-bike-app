@@ -1,13 +1,13 @@
 import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:ble_app/src/blocs/BluetoothRepository.dart';
+import 'package:ble_app/src/data/DeviceRepository.dart';
 import 'package:get_it/get_it.dart';
 
 class BluetoothAuthBloc extends Bloc<bool, String> {
-  BluetoothRepository _repository;
+  DeviceRepository _repository;
 
   BluetoothAuthBloc() {
     addEvent(false);
-    _repository = GetIt.I<BluetoothRepository>();
+    _repository = GetIt.I<DeviceRepository>();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       if (event.length > 1) {
         addEvent(

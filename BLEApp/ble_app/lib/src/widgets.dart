@@ -14,6 +14,7 @@ class ProgressRows extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = GetIt.I<LocationBloc>();
+    bloc.startTrackingLocation();
     return Flexible(
         child: Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -92,8 +93,10 @@ class ProgressRows extends StatelessWidget {
                                 StreamBuilder<LocationData>(
                                     stream: bloc.stream,
                                     builder: (context, snapshot) {
-                                      final speed = snapshot?.data?.speed
-                                          ?.toStringAsPrecision(2);
+                                      var speedInKMH =
+                                          snapshot?.data?.speed * 3.6;
+                                      final speed =
+                                          speedInKMH?.toStringAsPrecision(2);
                                       String text = snapshot.connectionState ==
                                               ConnectionState.active
                                           ? speed

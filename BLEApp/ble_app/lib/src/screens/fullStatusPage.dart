@@ -8,7 +8,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import '../widgets.dart';
 
 class FullStatusPage extends VisibleWidget {
-  final bloc = GetIt.I<FullStatusBloc>();
+  final fullStatusBloc = GetIt.I<FullStatusBloc>();
 
   FullStatusPage({@required Key key}) : super(key: key);
 
@@ -55,7 +55,7 @@ class FullStatusPage extends VisibleWidget {
         ),
         Expanded(
             child: StreamBuilder<List<FullStatusDataModel>>(
-                stream: bloc.stream,
+                stream: fullStatusBloc.stream,
                 builder: (_, snapshot) {
                   _chartData = snapshot.data;
                   return getBarChart();
@@ -66,22 +66,22 @@ class FullStatusPage extends VisibleWidget {
 
   @override
   void onCreate() {
-    bloc.startGeneratingFullStatus();
+    fullStatusBloc.startGeneratingFullStatus();
   }
 
   @override
   void onPause() {
-    bloc.cancel();
+    fullStatusBloc.cancel();
   }
 
   @override
   void onResume() {
-    bloc.resume();
+    fullStatusBloc.resume();
   }
 
   @override
   void onDestroy() {
-    bloc.dispose();
+    fullStatusBloc.dispose();
   }
 
   SfCartesianChart getBarChart() => SfCartesianChart(

@@ -16,7 +16,7 @@ class Speedometer extends StatelessWidget {
     return StreamBuilder<LocationData>(
         stream: bloc.stream,
         builder: (_, snapshot) {
-          final _speed = snapshot?.data?.speed;
+          final _speed = snapshot?.data?.speed * 3.6;
           return Container(
             decoration: BoxDecoration(
                 color: Colors.black,
@@ -56,7 +56,7 @@ class Speedometer extends StatelessWidget {
                           value:
                               snapshot.connectionState == ConnectionState.active
                                   ? _speed
-                                  : 70,
+                                  : 0,
                           lengthUnit: GaugeSizeUnit.factor,
                           animationDuration: 500,
                           needleStartWidth: 10,
@@ -69,7 +69,7 @@ class Speedometer extends StatelessWidget {
                           value:
                               snapshot.connectionState == ConnectionState.active
                                   ? _speed
-                                  : 70,
+                                  : 0,
                           width: 0.15,
                           sizeUnit: GaugeSizeUnit.factor,
                           animationDuration: 1300,

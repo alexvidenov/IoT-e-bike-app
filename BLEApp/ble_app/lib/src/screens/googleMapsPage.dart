@@ -19,7 +19,7 @@ class MapPage extends VisibleWidget {
                 var marker = bloc.generateNewMarker(snapshot.data);
                 var circle = bloc.generateNewCircle(snapshot.data);
                 return GoogleMap(
-                  mapType: MapType.hybrid,
+                  mapType: MapType.normal,
                   initialCameraPosition: bloc.initialLocation,
                   markers: Set.of((marker != null) ? [marker] : []),
                   circles: Set.of((circle != null) ? [circle] : []),

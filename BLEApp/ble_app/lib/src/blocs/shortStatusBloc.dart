@@ -1,18 +1,17 @@
 import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/data/DeviceRepository.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:ble_app/src/modules/shortStatusModel.dart';
-import 'package:ble_app/src/blocs/BluetoothRepository.dart';
 import 'package:ble_app/src/utils.dart';
 
 class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
-  final repository = GetIt.I<BluetoothRepository>();
+  final repository = GetIt.I<DeviceRepository>();
 
   ShortStatusBloc();
 
   _listenToShortStatus() {
-    streamSubscription = repository
-        .characteristicValueStream // I guess we gotta make streams for..everything.
+    streamSubscription = repository.characteristicValueStream
         .listen((event) => addEvent(Converter.generateShortStatus(event)));
   }
 
@@ -22,8 +21,7 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
   }
 
   dynamic cancel() {
-    repository
-        .cancelTimer(); // later on have different timers, depending on short / full status
+    repository.cancel();
     pauseSubscription();
   }
 

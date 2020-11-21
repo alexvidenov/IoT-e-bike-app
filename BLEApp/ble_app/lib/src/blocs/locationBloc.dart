@@ -33,7 +33,7 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
         streamSubscription.cancel();
       }
 
-      streamSubscription = _location.onLocationChanged.listen((newLocalData) {
+      streamSubscription = _location.onLocationChanged.listen((newLocalData) {              
         if (_controller != null) {
           _controller.animateCamera(CameraUpdate.newCameraPosition(
               CameraPosition(
@@ -41,8 +41,8 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
                   target: LatLng(newLocalData.latitude, newLocalData.longitude),
                   tilt: 0,
                   zoom: 18.00)));
-          addEvent(newLocalData);
         }
+        addEvent(newLocalData);
       });
     } on PlatformException catch (e) {
       if (e.code == 'PERMISSION_DENIED') {
