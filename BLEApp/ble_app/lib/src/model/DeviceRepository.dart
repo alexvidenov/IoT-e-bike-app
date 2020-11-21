@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:ble_app/src/bluetoothUtils.dart';
-import 'package:ble_app/src/data/BleDevice.dart';
+import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -22,7 +22,7 @@ class DeviceRepository {
   Timer _characteristicTimer;
 
   final _characteristicController =
-      BehaviorSubject<String>(); // packets, emmited from bluetooth
+      PublishSubject<String>(); // packets, emmited from bluetooth
 
   Stream<String> get characteristicValueStream =>
       _characteristicController.stream;
@@ -110,8 +110,8 @@ class DeviceRepository {
     return utf8.decode(dataFromDevice);
   }
 
-  discoverServicesAndStartMonitoring() async {
-    _discover()
+  Future<void> discoverServicesAndStartMonitoring() async {
+    await _discover()
         .then((c) => this._characteristic = c)
         .then((c) => _listenToCharacteristic());
   }
@@ -140,6 +140,6 @@ class DeviceRepository {
 
   void dispose() {
     _characteristicSubscription.cancel();
-    //_characteristicController.close();
+    _characteristicController.close();
   }
 }

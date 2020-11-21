@@ -3,16 +3,12 @@ import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
 class BleDevice {
   final Peripheral peripheral;
-  final ScanResult result;
 
   String get id => peripheral.identifier;
 
-  String get name =>
-      peripheral.name ?? result.advertisementData.localName ?? "Unknown";
+  String get name => peripheral.name ?? peripheral.identifier ?? "Unknown";
 
-  BleDevice(ScanResult scanResult)
-      : peripheral = scanResult.peripheral,
-        result = scanResult;
+  BleDevice({Peripheral peripheral}) : this.peripheral = peripheral;
 
   @override
   int get hashCode => id.hashCode;

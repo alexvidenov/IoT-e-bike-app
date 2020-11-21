@@ -1,15 +1,12 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
-import 'package:ble_app/src/data/BleDevice.dart';
-import 'package:ble_app/src/data/DeviceRepository.dart';
+import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/screens/authenticationPage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 
-typedef DeviceTapListener = void Function();
+typedef _DeviceTapListener = void Function();
 
 class DevicesListScreen extends StatefulWidget {
   @override
@@ -33,10 +30,7 @@ class DeviceListScreenState extends State<DevicesListScreen> {
       await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => Provider(
-              create: (_) => DeviceBloc(DeviceRepository(), BleManager()),
-              child: AuthenticationScreen(),
-            ),
+            builder: (_) => AuthenticationScreen(),
           ));
       setState(() {
         _shouldRunOnResume = true;
@@ -48,7 +42,7 @@ class DeviceListScreenState extends State<DevicesListScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_devicesBloc == null) {
-      _devicesBloc = Provider.of<DevicesBloc>(context);
+      _devicesBloc = GetIt.I<DevicesBloc>();
       if (_shouldRunOnResume) {
         _shouldRunOnResume = false;
         _onResume();
@@ -71,7 +65,7 @@ class DeviceListScreenState extends State<DevicesListScreen> {
         stream: _devicesBloc.visibleDevices,
         builder: (context, snapshot) => RefreshIndicator(
           onRefresh: _devicesBloc.refresh,
-          child: DevicesList(_devicesBloc, snapshot.data),
+          child: _DevicesList(_devicesBloc, snapshot.data),
         ),
       ),
     );
@@ -84,8 +78,8 @@ class DeviceListScreenState extends State<DevicesListScreen> {
   }
 }
 
-class DevicesList extends ListView {
-  DevicesList(DevicesBloc devicesBloc, List<BleDevice> devices)
+class _DevicesList extends ListView {
+  _DevicesList(DevicesBloc devicesBloc, List<BleDevice> devices)
       : super.separated(
             separatorBuilder: (context, index) => Divider(
                   color: Colors.grey[300],
@@ -98,7 +92,7 @@ class DevicesList extends ListView {
                   _createTapListener(devicesBloc, devices[i]));
             });
 
-  static DeviceTapListener _createTapListener(
+  static _DeviceTapListener _createTapListener(
       DevicesBloc devicesBloc, BleDevice bleDevice) {
     return () => devicesBloc.devicePicker.add(bleDevice);
   }
@@ -111,7 +105,7 @@ class DevicesList extends ListView {
   }
 
   static Widget _buildRow(BuildContext context, BleDevice device,
-      DeviceTapListener deviceTapListener) {
+      _DeviceTapListener deviceTapListener) {
     return ListTile(
       leading: Padding(
         padding: const EdgeInsets.only(top: 8),

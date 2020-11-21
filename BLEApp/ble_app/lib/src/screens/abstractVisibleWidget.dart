@@ -75,7 +75,7 @@ class _VisibleWidgetState extends State<VisibleWidget>
 
   _onVisibilityHandler(VisibilityInfo info) {
     _isVisible = info.visibleFraction > 0;
-    if (_isVisible && widget.onResume != null) {
+    if (info.visibleFraction >= 0.9 && widget.onResume != null) {
       widget.onResume();
     }
 

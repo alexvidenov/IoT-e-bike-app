@@ -1,5 +1,5 @@
 import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:ble_app/src/data/DeviceRepository.dart';
+import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:get_it/get_it.dart';
 
 class BluetoothAuthBloc extends Bloc<bool, String> {
@@ -10,6 +10,7 @@ class BluetoothAuthBloc extends Bloc<bool, String> {
     _repository = GetIt.I<DeviceRepository>();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       if (event.length > 1) {
+        // here check that the characteristic emiited exactly "password"
         addEvent(
             true); // that means that the characteristic emitted something, and that is the password since at that time, nothing else is to be emitted.
       }

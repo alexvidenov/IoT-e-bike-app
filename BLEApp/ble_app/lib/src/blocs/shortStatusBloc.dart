@@ -1,9 +1,9 @@
 import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:ble_app/src/data/DeviceRepository.dart';
+import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:ble_app/src/modules/shortStatusModel.dart';
-import 'package:ble_app/src/utils.dart';
+import 'package:ble_app/src/utils/Converter.dart';
 
 class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
   final repository = GetIt.I<DeviceRepository>();
@@ -25,7 +25,7 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
     pauseSubscription();
   }
 
-  dynamic resume() {
+  dynamic resume() async {
     repository.resumeTimer(true);
     resumeSubscription();
   }

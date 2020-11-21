@@ -1,12 +1,18 @@
 import 'dart:async';
-import 'package:ble_app/src/data/BleDevice.dart';
-import 'package:ble_app/src/data/DeviceRepository.dart';
+import 'package:ble_app/src/model/BleDevice.dart';
+import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:rxdart/rxdart.dart';
 
 class DeviceBloc {
   final BleManager _bleManager;
   final DeviceRepository _deviceRepository;
+
+  BehaviorSubject<bool> _isDeviceReadyController;
+
+  Stream<bool> get deviceReady => _isDeviceReadyController.stream;
+
+  Sink<bool> get _setDeviceReady => _isDeviceReadyController.sink;
 
   BehaviorSubject<BleDevice> _deviceController;
 
@@ -28,6 +34,7 @@ class DeviceBloc {
     _deviceController = BehaviorSubject<BleDevice>.seeded(device);
 
     _connectionStateController = BehaviorSubject<PeripheralConnectionState>();
+    _isDeviceReadyController = BehaviorSubject<bool>.seeded(false);
   }
 
   void init() {
@@ -63,8 +70,10 @@ class DeviceBloc {
       var peripheral = bleDevice.peripheral;
       await peripheral
           .connect()
-          .then((_) => _observeConnectionState())
-          .then((_) => _deviceRepository.discoverServicesAndStartMonitoring());
+          .then((value) async => await _observeConnectionState())
+          .then((_) async =>
+              await _deviceRepository.discoverServicesAndStartMonitoring())
+          .then((_) => _setDeviceReady.add(true));
     });
   }
 
@@ -74,5 +83,7 @@ class DeviceBloc {
 
     await _connectionStateController.drain();
     _connectionStateController.close();
+
+    _isDeviceReadyController.close();
   }
 }

@@ -22,7 +22,11 @@ dependencies:
   rxdart: ^0.24.1
   get_it: ^4.0.4
   provider: ^4.3.2
-  flutter_ble_lib: ^2.2.9
+  shared_preferences: ^0.5.8
+  flutter_ble_lib:
+    git:
+      url: git://github.com/Polidea/FlutterBleLib.git
+      ref: feature/#295-connect-without-scan
   visibility_detector: ^0.1.5
   syncfusion_flutter_gauges: ^18.2.44
   syncfusion_flutter_charts: ^18.2.47

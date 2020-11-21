@@ -93,13 +93,15 @@ class ProgressRows extends StatelessWidget {
                                 StreamBuilder<LocationData>(
                                     stream: bloc.stream,
                                     builder: (context, snapshot) {
-                                      var speedInKMH =
-                                          snapshot?.data?.speed * 3.6;
-                                      final speed =
-                                          speedInKMH?.toStringAsPrecision(2);
+                                      String _speedInKMH = '0.0';
+                                      if (snapshot.data != null) {
+                                        _speedInKMH =
+                                            (snapshot.data.speed * 3.6)
+                                                .toStringAsPrecision(2);
+                                      }
                                       String text = snapshot.connectionState ==
                                               ConnectionState.active
-                                          ? speed
+                                          ? _speedInKMH
                                           : '0';
                                       return Text(text,
                                           style: TextStyle(

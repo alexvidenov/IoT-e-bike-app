@@ -1,3 +1,4 @@
+import 'package:ble_app/src/screens/settingsPage.dart';
 import 'package:flutter/material.dart';
 
 class NavigationDrawer extends StatelessWidget {
@@ -16,6 +17,8 @@ class NavigationDrawer extends StatelessWidget {
           _createDrawerItem(
             icon: Icons.settings,
             text: 'Settings',
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (_) => Settings())),
           ),
           Divider(),
           ListTile(

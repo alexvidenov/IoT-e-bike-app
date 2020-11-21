@@ -16,7 +16,10 @@ class Speedometer extends StatelessWidget {
     return StreamBuilder<LocationData>(
         stream: bloc.stream,
         builder: (_, snapshot) {
-          final _speed = snapshot?.data?.speed * 3.6;
+          double _speed = 0.0;
+          if (snapshot.data != null) {
+            _speed = snapshot.data.speed * 3.6;
+          }
           return Container(
             decoration: BoxDecoration(
                 color: Colors.black,
@@ -29,7 +32,7 @@ class Speedometer extends StatelessWidget {
               enableLoadingAnimation: true,
               animationDuration: 500,
               axes: <RadialAxis>[
-                CustomAxis(
+                _CustomAxis(
                     labelOffset: 15,
                     axisLineStyle: AxisLineStyle(
                         thicknessUnit: GaugeSizeUnit.factor, thickness: 0.15),
@@ -90,8 +93,8 @@ class Speedometer extends StatelessWidget {
   }
 }
 
-class CustomAxis extends RadialAxis {
-  CustomAxis({
+class _CustomAxis extends RadialAxis {
+  _CustomAxis({
     double radiusFactor = 1,
     List<GaugePointer> pointers,
     GaugeTextStyle axisLabelStyle,

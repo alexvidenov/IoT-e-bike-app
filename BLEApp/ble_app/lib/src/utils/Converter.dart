@@ -1,30 +1,4 @@
-import 'package:flutter/material.dart';
-import 'modules/shortStatusModel.dart';
-
-Color firstColor = Color(0xFF7A36DC);
-Color secondColor = Color(0xFF7A36DC).withOpacity(0.5);
-Color thirdColor = Color(0xFF7A36DC).withOpacity(0.2);
-
-Color greyColor = Color(0xFFE6E6E6);
-Color darkGreyColor = Color(0xFFB8B2CB);
-
-final appTheme = ThemeData(
-  primarySwatch: Colors.blue,
-);
-
-String percentageModifier(double value) {
-  final roundedValue = value.ceil().toInt().toString();
-  return '$roundedValue km/h';
-}
-
-Color fromHex(String hexString) {
-  final buffer = StringBuffer();
-  if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
-  buffer.write(hexString.replaceFirst('#', ''));
-  return Color(int.parse(buffer.toString(), radix: 16));
-}
-
-class AppTheme {}
+import 'package:ble_app/src/modules/shortStatusModel.dart';
 
 class Converter {
   static ShortStatusModel generateShortStatus(String rawData) {

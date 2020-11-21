@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:ble_app/src/data/BleDevice.dart';
-import 'package:ble_app/src/data/DeviceRepository.dart';
+import 'package:ble_app/src/model/BleDevice.dart';
+import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -36,10 +36,7 @@ class DevicesBloc {
 
   void init() {
     bleDevices.clear();
-    _bleManager
-        .createClient(restoreStateIdentifier: "com.ble_app")
-        .then((_) => _checkBluetooth())
-        .then((_) => _startScan());
+    _checkBluetooth().then((_) => _startScan());
 
     if (_visibleDevicesController.isClosed) {
       _visibleDevicesController =
@@ -62,7 +59,7 @@ class DevicesBloc {
     _scanSubscription =
         _bleManager.startPeripheralScan().listen((ScanResult scanResult) {
       // add uuids later on
-      var bleDevice = BleDevice(scanResult);
+      var bleDevice = BleDevice(peripheral: scanResult.peripheral);
       if (scanResult.advertisementData.localName != null &&
           !bleDevices.contains(bleDevice)) {
         bleDevices.add(bleDevice);

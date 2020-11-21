@@ -7,6 +7,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../widgets.dart';
 
+// ignore: must_be_immutable
 class FullStatusPage extends VisibleWidget {
   final fullStatusBloc = GetIt.I<FullStatusBloc>();
 

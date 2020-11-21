@@ -23,8 +23,8 @@ class DeviceScreen extends VisibleWidget {
   }
 
   @override
-  void onResume() {
-    bloc.resume();
+  void onResume() async {
+    await bloc.resume();
   }
 
   @override
