@@ -5,18 +5,21 @@ import 'package:ble_app/src/widgets/progressBars/temperatureProgressBar.dart';
 import 'package:ble_app/src/widgets/progressBars/voltageProgressBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
-import 'package:get_it/get_it.dart';
 import 'package:location/location.dart';
 
+import 'di/serviceLocator.dart';
 import 'modules/shortStatusModel.dart';
 
 class ProgressRows extends StatelessWidget {
+  final ShortStatusBloc shortStatusBloc;
+
+  const ProgressRows({@required this.shortStatusBloc});
+
   @override
   Widget build(BuildContext context) {
-    final bloc = GetIt.I<LocationBloc>();
-    bloc.startTrackingLocation();
-    return Flexible(
-        child: Column(
+    final locationBloc = locator<LocationBloc>();
+    locationBloc.startTrackingLocation();
+    return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Row(
@@ -29,7 +32,7 @@ class ProgressRows extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    TemperatureProgressBar(),
+                    TemperatureProgressBar(bloc: this.shortStatusBloc),
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0),
                       child: Column(
@@ -83,7 +86,7 @@ class ProgressRows extends StatelessWidget {
                     Stack(
                       alignment: Alignment.center,
                       children: <Widget>[
-                        Speedometer(),
+                        Speedometer(locationBloc: locationBloc),
                         Padding(
                             padding: EdgeInsets.only(
                               top: 110,
@@ -91,7 +94,7 @@ class ProgressRows extends StatelessWidget {
                             child: Column(
                               children: <Widget>[
                                 StreamBuilder<LocationData>(
-                                    stream: bloc.stream,
+                                    stream: locationBloc.stream,
                                     builder: (context, snapshot) {
                                       String _speedInKMH = '0.0';
                                       if (snapshot.data != null) {
@@ -122,7 +125,7 @@ class ProgressRows extends StatelessWidget {
                     const SizedBox(
                       height: 10,
                     ),
-                    CurrentRow(),
+                    CurrentRow(bloc: this.shortStatusBloc),
                   ],
                 )),
             Column(
@@ -151,7 +154,7 @@ class ProgressRows extends StatelessWidget {
                         ],
                       ),
                     ),
-                    VoltageProgressBar(),
+                    VoltageProgressBar(bloc: this.shortStatusBloc),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -191,14 +194,17 @@ class ProgressRows extends StatelessWidget {
           ],
         )
       ],
-    ));
+    );
   }
 }
 
 class CurrentRow extends StatelessWidget {
+  final ShortStatusBloc bloc;
+
+  const CurrentRow({@required this.bloc});
+
   @override
   Widget build(BuildContext context) {
-    var bloc = GetIt.I<ShortStatusBloc>();
     return StreamBuilder<ShortStatusModel>(
         stream: bloc.stream,
         initialData: ShortStatusModel(),
@@ -350,7 +356,7 @@ class ProgressText extends StatelessWidget {
 class TestWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var shortStatusBloc = GetIt.I<ShortStatusBloc>();
+    var shortStatusBloc = locator<ShortStatusBloc>();
     return Container(
         child: StreamBuilder<ShortStatusModel>(
             stream: shortStatusBloc.stream,

@@ -15,11 +15,10 @@ class NavigationDrawer extends StatelessWidget {
           ),
           Divider(),
           _createDrawerItem(
-            icon: Icons.settings,
-            text: 'Settings',
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => Settings())),
-          ),
+              icon: Icons.settings,
+              text: 'Settings',
+              onTap: () => Navigator.of(context, rootNavigator: true)
+                  .push(MaterialPageRoute(builder: (_) => Settings()))),
           Divider(),
           ListTile(
             title: Text('Vertion 0.0.1. All rights reserved. '),

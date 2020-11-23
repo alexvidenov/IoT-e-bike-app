@@ -1,59 +1,54 @@
-import 'package:ble_app/src/screens/fullStatusPage.dart';
-import 'package:ble_app/src/screens/googleMapsPage.dart';
-import 'package:ble_app/src/screens/shortStatusPage.dart';
-import 'package:ble_app/src/widgets/navigationDrawer.dart';
 import 'package:flutter/material.dart';
+import 'package:ble_app/src/blocs/deviceBloc.dart';
+import 'package:ble_app/src/blocs/devicesBloc.dart';
+import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/screens/devicesListScreen.dart';
+import 'package:ble_app/src/utils/Router.dart';
+import 'package:ble_app/src/widgets/navigationDrawer.dart';
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
+RouteObserver<PageRoute> routeObserver;
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreen extends StatelessWidget {
+  final SettingsBloc _prefsBloc;
+  final DeviceBloc _deviceBloc;
+
+  const HomeScreen(this._prefsBloc, this._deviceBloc);
+
+  _createObserver() {
+    routeObserver = RouteObserver<PageRoute>();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          backgroundColor: Colors.black,
-          appBar: AppBar(
-            backgroundColor: Colors.white12,
-            title: Text("Home"),
-            bottom: TabBar(
-              labelColor: Colors.lightBlueAccent,
-              unselectedLabelColor: Colors.white,
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicator: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10)),
-                  color: Colors.black),
-              tabs: [
-                Tab(
-                  text: "Short Status",
-                  icon: Icon(Icons.home),
-                ),
-                Tab(
-                  text: "Full Status",
-                  icon: Icon(Icons.dashboard),
-                ),
-                Tab(
-                  text: "Map",
-                  icon: Icon(Icons.zoom_out_map),
-                )
-              ],
-            ),
-          ),
-          drawer: NavigationDrawer(),
-          body: TabBarView(
-            children: [
-              DeviceScreen(
-                key: Key('Device Screen'),
-              ),
-              FullStatusPage(key: Key('Full status page')),
-              MapPage(key: Key('Map page')),
-            ],
-          ),
-        ));
+    _createObserver();
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.white12,
+        title: Text("Home"),
+        actions: <Widget>[
+          RaisedButton(
+              color: Colors.lightBlueAccent,
+              child: Text('BT Devices', style: TextStyle(color: Colors.white)),
+              onPressed: () => _prefsBloc
+                  .clearAllPrefs()
+                  .then((_) => _deviceBloc.disconnect())
+                  .then((value) => Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DevicesListScreen(locator<DevicesBloc>()),
+                      ),
+                      (Route<dynamic> route) => false))),
+        ],
+      ),
+      drawer: NavigationDrawer(),
+      body: Navigator(
+        initialRoute: '/',
+        onGenerateRoute: Router.generateRoute,
+        observers: [routeObserver],
+      ),
+    );
   }
 }

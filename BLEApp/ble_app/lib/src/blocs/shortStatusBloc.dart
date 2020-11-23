@@ -1,32 +1,32 @@
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
-import 'package:get_it/get_it.dart';
 
 import 'package:ble_app/src/modules/shortStatusModel.dart';
 import 'package:ble_app/src/utils/Converter.dart';
 
 class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
-  final repository = GetIt.I<DeviceRepository>();
+  final DeviceRepository _repository;
 
-  ShortStatusBloc();
+  ShortStatusBloc(this._repository) : super();
 
   _listenToShortStatus() {
-    streamSubscription = repository.characteristicValueStream
+    streamSubscription = _repository.characteristicValueStream
         .listen((event) => addEvent(Converter.generateShortStatus(event)));
   }
 
+  init() => _listenToShortStatus();
+
   startGeneratingShortStatus() {
-    repository.periodicShortStatus();
-    _listenToShortStatus();
+    _repository.periodicShortStatus();
   }
 
-  dynamic cancel() {
-    repository.cancel();
+  dynamic pause() {
+    _repository.cancel();
     pauseSubscription();
   }
 
-  dynamic resume() async {
-    repository.resumeTimer(true);
+  dynamic resume() {
+    _repository.resumeTimer(true);
     resumeSubscription();
   }
 }

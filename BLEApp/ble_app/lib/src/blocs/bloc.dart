@@ -6,12 +6,15 @@ abstract class Bloc<T, S> {
   // state and event
   // T, S, R
   // data, stream subscription, and repository
-  final _behaviourSubject$ = BehaviorSubject<T>();
+  PublishSubject<T> _publishSubject$;
 
-  Stream<T> get stream =>
-      _behaviourSubject$.stream; // should expose only that!!
+  Bloc() {
+    this._publishSubject$ = PublishSubject<T>();
+  }
 
-  Sink<T> get _sink => _behaviourSubject$.sink;
+  Stream<T> get stream => _publishSubject$.stream; // should expose only that!!
+
+  Sink<T> get _sink => _publishSubject$.sink;
 
   StreamSubscription<S> streamSubscription;
 
@@ -24,11 +27,11 @@ abstract class Bloc<T, S> {
   }
 
   resumeSubscription() {
-    streamSubscription?.resume();
+    streamSubscription.resume();
   }
 
   void dispose() {
     streamSubscription?.cancel();
-    _behaviourSubject$?.close();
+    _publishSubject$?.close();
   }
 }

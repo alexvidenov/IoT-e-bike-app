@@ -1,48 +1,53 @@
 import 'dart:async';
 
+import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
+import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
+import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/screens/authenticationPage.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
 typedef _DeviceTapListener = void Function();
 
 class DevicesListScreen extends StatefulWidget {
+  final DevicesBloc _devicesBloc;
+
+  const DevicesListScreen(this._devicesBloc);
+
   @override
-  State<DevicesListScreen> createState() => DeviceListScreenState();
+  State<DevicesListScreen> createState() => _DeviceListScreenState();
 }
 
-class DeviceListScreenState extends State<DevicesListScreen> {
-  DevicesBloc _devicesBloc;
+class _DeviceListScreenState extends State<DevicesListScreen> {
   StreamSubscription _appStateSubscription;
   bool _shouldRunOnResume = true;
 
   void _onPause() {
     _appStateSubscription.cancel();
-    _devicesBloc.dispose();
+    widget._devicesBloc.dispose();
   }
 
   void _onResume() {
-    _devicesBloc.init();
-    _appStateSubscription = _devicesBloc.pickedDevice.listen((bleDevice) async {
+    widget._devicesBloc.init();
+    _appStateSubscription =
+        widget._devicesBloc.pickedDevice.listen((bleDevice) async {
       _onPause();
       await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(),
+            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
+                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()),
           ));
-      setState(() {
-        _shouldRunOnResume = true;
-      });
+      setState(() => _shouldRunOnResume = true);
     });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_devicesBloc == null) {
-      _devicesBloc = GetIt.I<DevicesBloc>();
+    if (widget._devicesBloc == null) {
       if (_shouldRunOnResume) {
         _shouldRunOnResume = false;
         _onResume();
@@ -61,11 +66,11 @@ class DeviceListScreenState extends State<DevicesListScreen> {
         title: Text('Bluetooth devices'),
       ),
       body: StreamBuilder<List<BleDevice>>(
-        initialData: _devicesBloc.visibleDevices.value,
-        stream: _devicesBloc.visibleDevices,
+        initialData: widget._devicesBloc.visibleDevices.value,
+        stream: widget._devicesBloc.visibleDevices,
         builder: (context, snapshot) => RefreshIndicator(
-          onRefresh: _devicesBloc.refresh,
-          child: _DevicesList(_devicesBloc, snapshot.data),
+          onRefresh: widget._devicesBloc.refresh,
+          child: _DevicesList(widget._devicesBloc, snapshot.data),
         ),
       ),
     );
@@ -87,48 +92,44 @@ class _DevicesList extends ListView {
                   indent: 0,
                 ),
             itemCount: devices.length,
-            itemBuilder: (context, i) {
-              return _buildRow(context, devices[i],
-                  _createTapListener(devicesBloc, devices[i]));
-            });
+            itemBuilder: (context, i) => _buildRow(context, devices[i],
+                _createTapListener(devicesBloc, devices[i])));
 
   static _DeviceTapListener _createTapListener(
       DevicesBloc devicesBloc, BleDevice bleDevice) {
     return () => devicesBloc.devicePicker.add(bleDevice);
   }
 
-  static Widget _buildAvatar(BuildContext context, BleDevice device) {
-    return CircleAvatar(
-        child: Icon(Icons.bluetooth),
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Colors.white);
-  }
+  static Widget _buildAvatar(BuildContext context, BleDevice device) =>
+      CircleAvatar(
+          child: Icon(Icons.bluetooth),
+          backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Colors.white);
 
   static Widget _buildRow(BuildContext context, BleDevice device,
-      _DeviceTapListener deviceTapListener) {
-    return ListTile(
-      leading: Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: _buildAvatar(context, device),
-      ),
-      title: Text(device.name),
-      trailing: Padding(
-        padding: const EdgeInsets.only(top: 16),
-        child: Icon(Icons.chevron_right, color: Colors.grey),
-      ),
-      subtitle: Column(
-        children: <Widget>[
-          Text(
-            device.id.toString(),
-            style: TextStyle(fontSize: 10),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          )
-        ],
-        crossAxisAlignment: CrossAxisAlignment.start,
-      ),
-      onTap: deviceTapListener,
-      contentPadding: EdgeInsets.fromLTRB(16, 0, 16, 12),
-    );
-  }
+          _DeviceTapListener deviceTapListener) =>
+      ListTile(
+        leading: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: _buildAvatar(context, device),
+        ),
+        title: Text(device.name),
+        trailing: Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: Icon(Icons.chevron_right, color: Colors.grey),
+        ),
+        subtitle: Column(
+          children: <Widget>[
+            Text(
+              device.id.toString(),
+              style: TextStyle(fontSize: 10),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            )
+          ],
+          crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        onTap: deviceTapListener,
+        contentPadding: EdgeInsets.fromLTRB(16, 0, 16, 12),
+      );
 }

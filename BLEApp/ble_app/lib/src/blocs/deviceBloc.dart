@@ -29,7 +29,7 @@ class DeviceBloc {
   Stream<BleDevice> get disconnectedDevice => _deviceRepository.pickedDevice
       .skipWhile((bleDevice) => bleDevice != null);
 
-  DeviceBloc(this._deviceRepository, this._bleManager) {
+  DeviceBloc(this._bleManager, this._deviceRepository) {
     var device = _deviceRepository.pickedDevice.value;
     _deviceController = BehaviorSubject<BleDevice>.seeded(device);
 
@@ -41,10 +41,8 @@ class DeviceBloc {
     _bleManager.stopPeripheralScan();
   }
 
-  Future<void> disconnect() async {
-    _disconnectManual();
-    return _deviceRepository.pickDevice(null);
-  }
+  Future<void> disconnect() async =>
+      _disconnectManual().then((_) => _deviceRepository.pickDevice(null));
 
   Future<void> _disconnectManual() async {
     if (await device.value.peripheral.isConnected()) {
@@ -53,7 +51,7 @@ class DeviceBloc {
     }
   }
 
-  _observeConnectionState() {
+  void _observeConnectionState() {
     device.listen((bleDevice) {
       var peripheral = bleDevice.peripheral;
       peripheral
@@ -70,7 +68,7 @@ class DeviceBloc {
       var peripheral = bleDevice.peripheral;
       await peripheral
           .connect()
-          .then((value) async => await _observeConnectionState())
+          .then((value) => _observeConnectionState())
           .then((_) async =>
               await _deviceRepository.discoverServicesAndStartMonitoring())
           .then((_) => _setDeviceReady.add(true));

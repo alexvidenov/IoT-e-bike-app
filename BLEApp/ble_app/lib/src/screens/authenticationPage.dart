@@ -3,20 +3,26 @@ import 'dart:async';
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/home.dart';
+import 'package:ble_app/src/screens/shortStatusPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-import 'package:get_it/get_it.dart';
 
 class AuthenticationScreen extends StatefulWidget {
+  final DeviceBloc _deviceBloc;
+  final BluetoothAuthBloc _authBloc;
+  final SettingsBloc _settingsBloc;
+
+  const AuthenticationScreen(
+      this._deviceBloc, this._authBloc, this._settingsBloc);
+
   @override
   _AuthenticationScreenState createState() => _AuthenticationScreenState();
 }
 
 class _AuthenticationScreenState extends State<AuthenticationScreen> {
-  DeviceBloc _deviceBloc;
-  BluetoothAuthBloc _authBloc;
-  SettingsBloc _settingsBloc;
   final _writeController = TextEditingController();
 
   StreamSubscription<PeripheralConnectionState> _streamSubscriptionState;
@@ -27,11 +33,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _deviceBloc = GetIt.I<DeviceBloc>();
-    _settingsBloc = GetIt.I<SettingsBloc>();
-    _deviceBloc.init();
-    _authBloc = GetIt.I<BluetoothAuthBloc>();
-    _deviceBloc.connect().then((_) => _init());
+    widget._deviceBloc.init();
+    widget._deviceBloc.connect().then((_) => _init());
   }
 
   _init() {
@@ -42,23 +45,20 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   @override
   void dispose() {
     super.dispose();
-    _deviceBloc.disconnect();
-    _deviceBloc.dispose();
+    widget._deviceBloc.disconnect();
+    widget._deviceBloc.dispose();
   }
 
   _listenToConnectBloc() {
-    _streamSubscriptionState = _deviceBloc.connectionState.listen((event) {
+    _streamSubscriptionState =
+        widget._deviceBloc.connectionState.listen((event) {
       if (event == PeripheralConnectionState.connected) {
-        if (_settingsBloc.isPasswordRemembered() == true) {
-          _deviceBloc.deviceReady.listen((event) {
-            print('dddddddddoooooooooooooooooooooooddddddddddddddddd: ' +
-                _settingsBloc.getPassword());
+        if (widget._settingsBloc.isPasswordRemembered() == true) {
+          widget._deviceBloc.deviceReady.listen((event) {
             if (event == true) {
-              GetIt.I<BluetoothAuthBloc>()
-                  .authenticate(_settingsBloc.getPassword());
+              widget._authBloc.authenticate(widget._settingsBloc.getPassword());
             }
           });
-          //print('dooooooooooooood' + _settingsBloc.getPassword());
         } else {
           _presentDialog(context);
         }
@@ -67,29 +67,28 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   }
 
   _listenToAuthBloc() {
-    _streamSubscriptionAuth = _authBloc.stream.listen((event) {
+    _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
       if (event == true) {
         _isAuthenticated = true;
-        GetIt.I<BluetoothAuthBloc>().dispose();
-        _streamSubscriptionState.cancel();
-        _streamSubscriptionAuth.cancel();
-        // later on have a method here that nullifies the characteristic's value
         Navigator.push(
-            context, MaterialPageRoute(builder: (_) => HomeScreen()));
+            context,
+            MaterialPageRoute(
+                builder: (_) =>
+                    HomeScreen(widget._settingsBloc, widget._deviceBloc)));
+        //_authBloc.dispose();
+        //_streamSubscriptionState.cancel();
+        //_streamSubscriptionAuth.cancel();
       }
     });
   }
 
-  _retry() {
-    Future.delayed(Duration(seconds: 4), () {
-      if (_isAuthenticated == false) {
-        _presentDialog(context);
-      }
-    });
-  }
+  _retry() => Future.delayed(Duration(seconds: 4), () {
+        if (_isAuthenticated == false) {
+          _presentDialog(context);
+        }
+      });
 
   Future<void> _presentDialog(BuildContext widgetContext) async {
-    final settingsBloc = GetIt.I<SettingsBloc>();
     await showDialog(
       context: widgetContext,
       builder: (context) {
@@ -97,14 +96,13 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           title: Text("Enter your password"),
           content: TextField(
             controller: _writeController,
-            onChanged: settingsBloc.setPassword,
+            onChanged: widget._settingsBloc.setPassword,
           ),
           actions: <Widget>[
             FlatButton(
               child: Text("Send"),
               onPressed: () {
-                GetIt.I<BluetoothAuthBloc>()
-                    .authenticate(_writeController.value.text);
+                widget._authBloc.authenticate(_writeController.value.text);
                 _retry();
                 Navigator.of(context).pop(false);
               },
@@ -130,7 +128,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                     child: Text('No')),
                 FlatButton(
                     onPressed: () {
-                      _deviceBloc.disconnect();
+                      widget._deviceBloc.disconnect();
                       Navigator.of(context).pop(true);
                     },
                     child: Text('Yes')),
@@ -147,7 +145,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
         body: Container(
           color: Colors.black,
           child: StreamBuilder<PeripheralConnectionState>(
-            stream: _deviceBloc.connectionState,
+            stream: widget._deviceBloc.connectionState,
             initialData: PeripheralConnectionState.disconnected,
             builder: (_, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {

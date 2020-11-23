@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
 class BleDevice {
@@ -8,7 +9,7 @@ class BleDevice {
 
   String get name => peripheral.name ?? peripheral.identifier ?? "Unknown";
 
-  BleDevice({Peripheral peripheral}) : this.peripheral = peripheral;
+  BleDevice({@required this.peripheral});
 
   @override
   int get hashCode => id.hashCode;

@@ -1,13 +1,17 @@
+import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
 class Settings extends StatelessWidget {
+  final DeviceRepository deviceRepository = DeviceRepository();
+  final SettingsBloc settingsBloc = locator<SettingsBloc>();
+
+  final _writeController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final deviceBloc = GetIt.I<DeviceRepository>();
-    final settingsBloc = GetIt.I<SettingsBloc>();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -32,8 +36,7 @@ class Settings extends StatelessWidget {
                     leading: Icon(Icons.lock_outline, color: Colors.black),
                     title: Text("Change password"),
                     trailing: Icon(Icons.keyboard_arrow_right),
-                    onTap: () =>
-                        {}, // just show a dialog here and save in prefs the result
+                    onTap: () => _presentDialog(context),
                   ),
                 ],
               ),
@@ -56,8 +59,8 @@ class Settings extends StatelessWidget {
                     title: Text("Remember this device"),
                     onChanged: (value) {
                       value == true
-                          ? settingsBloc
-                              .saveDeviceId(deviceBloc.pickedDevice.value.id)
+                          ? settingsBloc.saveDeviceId(
+                              deviceRepository.pickedDevice.value.id)
                           : settingsBloc.removeDeviceId();
                     },
                   );
@@ -96,6 +99,31 @@ class Settings extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _presentDialog(BuildContext widgetContext) async {
+    await showDialog(
+      context: widgetContext,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Change your password"),
+          content: TextField(
+            controller: _writeController,
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Confirm"),
+              onPressed: () {
+                locator<BluetoothAuthBloc>()
+                    .changePassword(_writeController.value.text);
+                settingsBloc.setPassword(_writeController.value.text);
+                Navigator.of(context).pop(false);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:ble_app/src/bluetoothUtils.dart';
+import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
+import 'package:ble_app/src/utils/DataParser.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -19,7 +20,7 @@ class DeviceRepository {
   String _value = ""; // will be updated every packet
   String _curValue = ""; // which will be appended to
 
-  Timer _characteristicTimer;
+  Timer _timer;
 
   final _characteristicController =
       PublishSubject<String>(); // packets, emmited from bluetooth
@@ -29,9 +30,12 @@ class DeviceRepository {
 
   Sink<String> get _characteristicValueSink => _characteristicController.sink;
 
-  factory DeviceRepository() {
-    return _deviceRepository;
-  }
+  ValueStream<BleDevice> get pickedDevice =>
+      _deviceController.stream.shareValueSeeded(_bleDevice);
+
+  bool get hasPickedDevice => _bleDevice != null;
+
+  factory DeviceRepository() => _deviceRepository;
 
   DeviceRepository._internal() {
     _deviceController = BehaviorSubject<BleDevice>.seeded(_bleDevice);
@@ -57,11 +61,11 @@ class DeviceRepository {
               _curValue = "";
             } else {
               List<int> curList = [event.elementAt(i)];
-              _curValue += _dataParser(curList);
+              _curValue += DataParser.parseList(curList);
             } //the problem was that I wasn't updating curValue after passing the '\n' in the packet
           }
         } else {
-          _curValue += _dataParser(event);
+          _curValue += DataParser.parseList(event);
         }
       }
     });
@@ -75,40 +79,22 @@ class DeviceRepository {
   writeToCharacteristic(String data) => _writeData(data);
 
   periodicShortStatus() {
-    if (_characteristicTimer?.isActive == true) {
-      _cancelTimer();
-    }
-    _characteristicTimer =
-        Timer.periodic(Duration(milliseconds: 500), (Timer t) {
-      _writeData("S");
-    });
+    _timer?.cancel();
+    _timer =
+        Timer.periodic(Duration(milliseconds: 500), (_) => _writeData("S"));
   }
 
   periodicFullStatus() {
-    if (_characteristicTimer?.isActive == true) {
-      _cancelTimer();
-    }
-    _characteristicTimer =
-        Timer.periodic(Duration(milliseconds: 500), (Timer t) {
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(milliseconds: 500), (_) {
       _writeData("F");
     });
   }
 
-  cancel() => _cancelTimer();
-
-  _cancelTimer() {
-    _characteristicTimer?.cancel();
-  }
+  cancel() => _timer?.cancel();
 
   resumeTimer(bool isShort) =>
       isShort ? periodicShortStatus() : periodicFullStatus();
-
-  resetCharacteristic() => _writeData("");
-
-  String _dataParser(List<int> dataFromDevice) {
-    // prolly move it to Utils class
-    return utf8.decode(dataFromDevice);
-  }
 
   Future<void> discoverServicesAndStartMonitoring() async {
     await _discover()
@@ -132,11 +118,6 @@ class DeviceRepository {
 
     return c;
   }
-
-  ValueStream<BleDevice> get pickedDevice =>
-      _deviceController.stream.shareValueSeeded(_bleDevice);
-
-  bool get hasPickedDevice => _bleDevice != null;
 
   void dispose() {
     _characteristicSubscription.cancel();

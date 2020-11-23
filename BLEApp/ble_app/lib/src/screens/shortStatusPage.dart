@@ -1,39 +1,61 @@
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/screens/home.dart';
 import 'package:ble_app/src/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
-import 'abstractVisibleWidget.dart';
+class DeviceScreen extends StatefulWidget {
+  final ShortStatusBloc _shortStatusBloc;
 
-class DeviceScreen extends VisibleWidget {
-  final bloc = GetIt.I<ShortStatusBloc>();
-
-  DeviceScreen({@required Key key}) : super(key: key);
+  const DeviceScreen(this._shortStatusBloc);
 
   @override
-  Widget buildWidget() {
-    return Container(
-      child: ProgressRows(),
-    );
+  _DeviceScreenState createState() => _DeviceScreenState();
+}
+
+class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
+  @override
+  void initState() {
+    super.initState();
+    widget._shortStatusBloc.init();
   }
 
   @override
-  void onPause() {
-    bloc.cancel();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
   }
 
   @override
-  void onResume() async {
-    await bloc.resume();
+  void didPush() {
+    super.didPush();
+    widget._shortStatusBloc.resume();
   }
 
   @override
-  void onCreate() {
-    bloc.startGeneratingShortStatus();
+  void didPushNext() {
+    super.didPushNext();
+    widget._shortStatusBloc.pause();
   }
 
   @override
-  void onDestroy() {
-    bloc.dispose();
+  void didPopNext() {
+    super.didPopNext();
+    widget._shortStatusBloc.resume();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => Navigator.of(context).pushNamed('/full'),
+      child: Container(
+        child: ProgressRows(shortStatusBloc: widget._shortStatusBloc),
+      ),
+    ); //);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget._shortStatusBloc.dispose();
   }
 }

@@ -6,6 +6,9 @@ import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:rxdart/rxdart.dart';
 
 class DevicesBloc {
+  final DeviceRepository _deviceRepository;
+  final BleManager _bleManager;
+
   final List<BleDevice> bleDevices = <BleDevice>[];
 
   BehaviorSubject<List<BleDevice>> _visibleDevicesController =
@@ -22,13 +25,10 @@ class DevicesBloc {
 
   Sink<BleDevice> get devicePicker => _devicePickerController.sink;
 
-  DeviceRepository _deviceRepository;
-  BleManager _bleManager;
-
   Stream<BleDevice> get pickedDevice => _deviceRepository.pickedDevice
       .skipWhile((bleDevice) => bleDevice == null);
 
-  DevicesBloc(this._deviceRepository, this._bleManager);
+  DevicesBloc(this._bleManager, this._deviceRepository);
 
   void _handlePickedDevice(BleDevice bleDevice) {
     _deviceRepository.pickDevice(bleDevice);

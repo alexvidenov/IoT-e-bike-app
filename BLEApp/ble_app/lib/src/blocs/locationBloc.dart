@@ -33,7 +33,7 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
         streamSubscription.cancel();
       }
 
-      streamSubscription = _location.onLocationChanged.listen((newLocalData) {              
+      streamSubscription = _location.onLocationChanged.listen((newLocalData) {
         if (_controller != null) {
           _controller.animateCamera(CameraUpdate.newCameraPosition(
               CameraPosition(

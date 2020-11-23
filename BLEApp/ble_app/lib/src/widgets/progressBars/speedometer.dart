@@ -1,20 +1,18 @@
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 import 'package:location/location.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class Speedometer extends StatelessWidget {
-  const Speedometer({
-    Key key,
-  }) : super(key: key);
+  final LocationBloc locationBloc;
+
+  Speedometer({Key key, @required this.locationBloc}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var bloc = GetIt.I<LocationBloc>();
     return StreamBuilder<LocationData>(
-        stream: bloc.stream,
+        stream: locationBloc.stream,
         builder: (_, snapshot) {
           double _speed = 0.0;
           if (snapshot.data != null) {

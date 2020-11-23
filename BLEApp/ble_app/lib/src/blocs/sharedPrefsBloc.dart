@@ -23,6 +23,8 @@ class SharedPrefsService {
 
   Future _removePrefs(String key) async => await _preferences.remove(key);
 
+  Future clearAllPrefs() async => await _preferences.clear();
+
   Future<void> _savePrefs<T>(String key, T value) async {
     if (value is String) {
       await _preferences.setString(key, value);
@@ -67,15 +69,4 @@ class SharedPrefsService {
   String getOptionalDevice() => _getPrefs(PrefsKeys.DEVICE_ID) ?? 'empty';
 
   String getOptionalPassword() => _getPrefs(PrefsKeys.PASSWORD) ?? 'empty';
-  /*
-  String isDeviceRemembered() {
-    String deviceId = _getPrefs(PrefsKeys.DEVICE_ID);
-    if (deviceId == null) {
-      return 'empty';
-    } else {
-      return deviceId;
-    }
-  }
-  */
-
 }

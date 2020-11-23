@@ -1,5 +1,5 @@
 import 'package:ble_app/src/blocs/sharedPrefsBloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:rxdart/rxdart.dart';
 
 class SettingsBloc {
@@ -7,11 +7,15 @@ class SettingsBloc {
   final _deviceRememberedController = BehaviorSubject<bool>();
   final _passwordRememberedController = BehaviorSubject<bool>();
 
-  final _preferencesService = GetIt.I<SharedPrefsService>();
+  SharedPrefsService _preferencesService;
+
+  SettingsBloc() : this._preferencesService = locator<SharedPrefsService>();
 
   bool isDeviceRemembered() => _preferencesService.getDeviceExists();
 
   bool isPasswordRemembered() => _preferencesService.isPasswordRemembered();
+
+  Future clearAllPrefs() async => await _preferencesService.clearAllPrefs();
 
   void saveDeviceId(String deviceId) {
     _preferencesService

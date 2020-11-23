@@ -1,6 +1,6 @@
 import 'package:ble_app/src/modules/shortStatusModel.dart';
 
-class Converter {
+abstract class Converter {
   static ShortStatusModel generateShortStatus(String rawData) {
     List<String> splittedObject = rawData.split(' ');
     var voltage = double.parse(splittedObject.elementAt(0));

@@ -1,55 +1,103 @@
 import 'package:ble_app/src/blocs/locationBloc.dart';
-import 'package:ble_app/src/screens/abstractVisibleWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-class MapPage extends VisibleWidget {
-  MapPage({@required Key key}) : super(key: key);
+class MapPage extends StatefulWidget {
+  final LocationBloc _locationBloc;
 
-  final bloc = GetIt.I<LocationBloc>();
+  const MapPage(Key key, this._locationBloc) : super(key: key);
 
   @override
-  Widget buildWidget() => Scaffold(
-        body: StreamBuilder<LocationData>(
-            stream: bloc.stream,
-            builder: (_, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                var marker = bloc.generateNewMarker(snapshot.data);
-                var circle = bloc.generateNewCircle(snapshot.data);
-                return GoogleMap(
-                  mapType: MapType.normal,
-                  initialCameraPosition: bloc.initialLocation,
-                  markers: Set.of((marker != null) ? [marker] : []),
-                  circles: Set.of((circle != null) ? [circle] : []),
-                  onMapCreated: (GoogleMapController controller) {
-                    bloc.controller = controller;
-                  },
-                );
-              } else
-                return Container();
-            }),
-      );
+  _MapPageState createState() => _MapPageState();
+}
+
+class _MapPageState extends State<MapPage> {
+  @override
+  void initState() {
+    super.initState();
+    widget._locationBloc.startTrackingLocation();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget._locationBloc.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<LocationData>(
+        stream: widget._locationBloc.stream,
+        builder: (_, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            var marker = widget._locationBloc.generateNewMarker(snapshot.data);
+            var circle = widget._locationBloc.generateNewCircle(snapshot.data);
+            return InkWell(
+              onLongPress: () => Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/', (_) => false),
+              child: GoogleMap(
+                mapType: MapType.normal,
+                initialCameraPosition: widget._locationBloc.initialLocation,
+                markers: Set.of((marker != null) ? [marker] : []),
+                circles: Set.of((circle != null) ? [circle] : []),
+                onMapCreated: (GoogleMapController controller) {
+                  widget._locationBloc.controller = controller;
+                },
+              ),
+            );
+          } else
+            return Container();
+        });
+  }
+}
+
+/*
+class MapPage extends AppBarWidget {
+  final LocationBloc _locationBloc;
+
+  const MapPage(Key key, this._locationBloc) : super(key: key);
+
+  @override
+  Widget buildWidget(BuildContext context) {
+    return StreamBuilder<LocationData>(
+        stream: _locationBloc.stream,
+        builder: (_, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            var marker = _locationBloc.generateNewMarker(snapshot.data);
+            var circle = _locationBloc.generateNewCircle(snapshot.data);
+            return InkWell(
+              onLongPress: () => Navigator.of(context)
+                  .popUntil((ModalRoute.withName('short'))),
+              child: GoogleMap(
+                mapType: MapType.normal,
+                initialCameraPosition: _locationBloc.initialLocation,
+                markers: Set.of((marker != null) ? [marker] : []),
+                circles: Set.of((circle != null) ? [circle] : []),
+                onMapCreated: (GoogleMapController controller) {
+                  _locationBloc.controller = controller;
+                },
+              ),
+            );
+          } else
+            return Container();
+        });
+  }
 
   @override
   void onCreate() {
-    bloc.startTrackingLocation();
+    _locationBloc.startTrackingLocation();
   }
 
   @override
   void onDestroy() {
-    bloc.dispose();
+    _locationBloc.dispose();
   }
 
   @override
-  void onPause() {
-    bloc.pauseSubscription();
-  }
+  void onPause() {}
 
   @override
-  void onResume() {
-    bloc.resumeSubscription();
-    bloc.startTrackingLocation();
-  }
+  void onResume() {}
 }
+*/

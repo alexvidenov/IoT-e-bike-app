@@ -2,33 +2,29 @@ import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/modules/fullStatusBarGraphModel.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:ble_app/src/utils/Converter.dart';
 
 class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
-  final repository = GetIt.I<DeviceRepository>();
+  final DeviceRepository _repository;
 
-  FullStatusBloc();
+  FullStatusBloc(this._repository) : super();
 
   _listenToFullStatus() {
-    streamSubscription = repository.characteristicValueStream.listen(
+    streamSubscription = _repository.characteristicValueStream.listen(
         (event) => // if(event.lenght > someArbitrary shit)
             addEvent(_generateFullStatusDataModel(
                 Converter.generateFullStatus(event))));
   }
 
-  startGeneratingFullStatus() {
-    repository.periodicFullStatus();
-    _listenToFullStatus();
-  }
+  init() => _listenToFullStatus();
 
-  dynamic cancel() {
-    repository.cancel();
+  dynamic pause() {
+    _repository.cancel();
     pauseSubscription();
   }
 
   dynamic resume() {
-    repository.resumeTimer(false); // change this boolean please
+    _repository.resumeTimer(false); // change this boolean please
     resumeSubscription();
   }
 

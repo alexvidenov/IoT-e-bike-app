@@ -48,7 +48,7 @@ class _VisibleWidgetState extends State<VisibleWidget>
   }
   /*
   Future<bool> _onWillPop() {
-    final bloc = GetIt.I<ConnectionBloc>();
+    final bloc = locator<ConnectionBloc>();
     return showDialog(
         context: context,
         builder: (context) =>
@@ -75,7 +75,7 @@ class _VisibleWidgetState extends State<VisibleWidget>
 
   _onVisibilityHandler(VisibilityInfo info) {
     _isVisible = info.visibleFraction > 0;
-    if (info.visibleFraction >= 0.9 && widget.onResume != null) {
+    if (info.visibleFraction == 1.0 && widget.onResume != null) {
       widget.onResume();
     }
 
