@@ -9,24 +9,19 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
 
   ShortStatusBloc(this._repository) : super();
 
-  _listenToShortStatus() {
-    streamSubscription = _repository.characteristicValueStream
-        .listen((event) => addEvent(Converter.generateShortStatus(event)));
-  }
-
-  init() => _listenToShortStatus();
-
-  startGeneratingShortStatus() {
-    _repository.periodicShortStatus();
-  }
-
-  dynamic pause() {
+  @override
+  pause() {
     _repository.cancel();
     pauseSubscription();
   }
 
-  dynamic resume() {
+  @override
+  resume() {
     _repository.resumeTimer(true);
     resumeSubscription();
   }
+
+  @override
+  void create() => streamSubscription = _repository.characteristicValueStream
+      .listen((event) => addEvent(Converter.generateShortStatus(event)));
 }

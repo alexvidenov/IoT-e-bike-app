@@ -1,3 +1,5 @@
+import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/blocs/navigationService.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
@@ -13,40 +15,76 @@ class HomeScreen extends StatelessWidget {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
 
-  const HomeScreen(this._prefsBloc, this._deviceBloc);
+  final NavigationService _navigationService;
 
-  _createObserver() {
-    routeObserver = RouteObserver<PageRoute>();
-  }
+  final NavigationBloc _navigationBloc = locator<NavigationBloc>();
+
+  HomeScreen(this._prefsBloc, this._deviceBloc)
+      : this._navigationService = locator<NavigationService>();
+
+  _instantiateObserver() => routeObserver = RouteObserver<PageRoute>();
 
   @override
   Widget build(BuildContext context) {
-    _createObserver();
+    _instantiateObserver();
+    _navigationService.generateGlobalKey();
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.white12,
-        title: Text("Home"),
+        title: StreamBuilder<CurrentPage>(
+            stream: _navigationBloc.page,
+            initialData: CurrentPage.Short,
+            builder: (_, snapshot) {
+              String _title;
+              Function _onPressed;
+              switch (snapshot.data) {
+                case CurrentPage.Short:
+                  _onPressed =
+                      () => _navigationService.innerNavigateTo('/full');
+                  _title = 'Short Status';
+                  break;
+                case CurrentPage.Full:
+                  _onPressed = () => _navigationService.innerNavigateTo('/map');
+                  _title = 'Full Status';
+                  break;
+                case CurrentPage.Map:
+                  _onPressed = () => _navigationService.returnToFirstInner();
+                  _title = 'Map';
+                  break;
+              }
+              return RaisedButton(
+                  color: Colors.lightBlueAccent,
+                  onPressed: _onPressed,
+                  child: Text(
+                    _title,
+                    style: TextStyle(color: Colors.white),
+                  ));
+            }),
+        centerTitle: true,
         actions: <Widget>[
           RaisedButton(
-              color: Colors.lightBlueAccent,
-              child: Text('BT Devices', style: TextStyle(color: Colors.white)),
-              onPressed: () => _prefsBloc
-                  .clearAllPrefs()
-                  .then((_) => _deviceBloc.disconnect())
-                  .then((value) => Navigator.pushAndRemoveUntil(
+            color: Colors.lightBlueAccent,
+            child: Text('BT Devices', style: TextStyle(color: Colors.white)),
+            onPressed: () => _prefsBloc
+                .clearAllPrefs()
+                .then((_) => _deviceBloc.disconnect())
+                .then((value) => Navigator.push(
+                      // think of implementing the popUntil
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
                             DevicesListScreen(locator<DevicesBloc>()),
                       ),
-                      (Route<dynamic> route) => false))),
+                    )),
+          )
         ],
       ),
       drawer: NavigationDrawer(),
       body: Navigator(
         initialRoute: '/',
-        onGenerateRoute: Router.generateRoute,
+        key: _navigationService.innerNavigatorKey,
+        onGenerateRoute: Router.generateRouteSecondNavigator,
         observers: [routeObserver],
       ),
     );

@@ -4,23 +4,27 @@ import 'package:rxdart/rxdart.dart';
 
 abstract class Bloc<T, S> {
   // state and event
-  // T, S, R
-  // data, stream subscription, and repository
+  // T, S
+
   PublishSubject<T> _publishSubject$;
 
-  Bloc() {
-    this._publishSubject$ = PublishSubject<T>();
-  }
-
-  Stream<T> get stream => _publishSubject$.stream; // should expose only that!!
+  Stream<T> get stream => _publishSubject$.stream;
 
   Sink<T> get _sink => _publishSubject$.sink;
 
   StreamSubscription<S> streamSubscription;
 
-  addEvent(T event) => _sink.add(event);
+  Bloc() {
+    this._publishSubject$ = PublishSubject<T>();
+  }
 
-  // eventually implement constructor calling generic Stream getter. Type of repo is R
+  void create();
+
+  void pause();
+
+  void resume();
+
+  addEvent(T event) => _sink.add(event);
 
   pauseSubscription() {
     streamSubscription?.pause();

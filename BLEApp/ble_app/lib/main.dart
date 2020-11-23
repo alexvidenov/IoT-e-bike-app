@@ -1,13 +1,9 @@
-import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
-import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/navigationService.dart';
 import 'package:ble_app/src/blocs/sharedPrefsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
-import 'package:ble_app/src/screens/authenticationPage.dart';
-import 'package:ble_app/src/screens/devicesListScreen.dart';
-import 'package:ble_app/src/screens/home.dart';
+import 'package:ble_app/src/utils/Router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
@@ -37,10 +33,11 @@ class BleApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.active &&
               snapshot.hasData) {
             return MaterialApp(
-                color: Colors.lightBlue,
-                theme: ThemeData(fontFamily: 'Europe_Ext'),
-                home: AuthenticationScreen(locator<DeviceBloc>(),
-                    locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
+              color: Colors.lightBlue,
+              theme: ThemeData(fontFamily: 'Europe_Ext'),
+              initialRoute: '/',
+              onGenerateRoute: Router.generateRouteMainNavigatorStartsWithAuth,
+            );
           } else
             return Container();
         },
@@ -49,7 +46,9 @@ class BleApp extends StatelessWidget {
       return MaterialApp(
         color: Colors.lightBlue,
         theme: ThemeData(fontFamily: 'Europe_Ext'),
-        home: DevicesListScreen(locator<DevicesBloc>()),
+        initialRoute: '/',
+        onGenerateRoute: Router.generateRouteMainNavigatorStartsWithDevices,
+        //home: DevicesListScreen(locator<DevicesBloc>()),
       );
     }
   }

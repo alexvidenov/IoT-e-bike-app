@@ -227,7 +227,7 @@ class CurrentRow extends StatelessWidget {
                           boxShadow: [
                             BoxShadow(
                                 color: Colors.white,
-                                blurRadius: 7.0,
+                                blurRadius: 5.0,
                                 spreadRadius: 5.0),
                           ]),
                       child: RotatedBox(

@@ -4,6 +4,7 @@ import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/blocs/fullStatusBloc.dart';
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/blocs/navigationService.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/blocs/sharedPrefsBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
@@ -23,7 +24,8 @@ Future<void> setUpDependencies() async {
   locator.registerLazySingleton(() => SettingsBloc());
   locator.registerLazySingleton(() => DevicesBloc(_bleManager, _repository));
   locator.registerLazySingleton(() => DeviceBloc(_bleManager, _repository));
-  locator.registerFactory(() => NavigationBloc());
+  locator.registerLazySingleton(() => NavigationService());
+  locator.registerLazySingleton(() => NavigationBloc());
   await SharedPrefsService.getInstance()
       .then((settingsBloc) => locator.registerSingleton(settingsBloc))
       .then((_) => BleManager()

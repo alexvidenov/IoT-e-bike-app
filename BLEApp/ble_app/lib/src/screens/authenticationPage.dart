@@ -3,10 +3,6 @@ import 'dart:async';
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/screens/home.dart';
-import 'package:ble_app/src/screens/shortStatusPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
@@ -34,6 +30,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     widget._deviceBloc.init();
+    //widget._authBloc.create();
     widget._deviceBloc.connect().then((_) => _init());
   }
 
@@ -49,38 +46,32 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     widget._deviceBloc.dispose();
   }
 
-  _listenToConnectBloc() {
-    _streamSubscriptionState =
-        widget._deviceBloc.connectionState.listen((event) {
-      if (event == PeripheralConnectionState.connected) {
-        if (widget._settingsBloc.isPasswordRemembered() == true) {
-          widget._deviceBloc.deviceReady.listen((event) {
-            if (event == true) {
-              widget._authBloc.authenticate(widget._settingsBloc.getPassword());
-            }
-          });
-        } else {
-          _presentDialog(context);
+  _listenToConnectBloc() => _streamSubscriptionState =
+          widget._deviceBloc.connectionState.listen((event) {
+        if (event == PeripheralConnectionState.connected) {
+          if (widget._settingsBloc.isPasswordRemembered() == true) {
+            widget._deviceBloc.deviceReady.listen((event) {
+              if (event == true) {
+                widget._authBloc
+                    .authenticate(widget._settingsBloc.getPassword());
+              }
+            });
+          } else {
+            _presentDialog(context);
+          }
         }
-      }
-    });
-  }
+      });
 
-  _listenToAuthBloc() {
-    _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
-      if (event == true) {
-        _isAuthenticated = true;
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) =>
-                    HomeScreen(widget._settingsBloc, widget._deviceBloc)));
-        //_authBloc.dispose();
-        //_streamSubscriptionState.cancel();
-        //_streamSubscriptionAuth.cancel();
-      }
-    });
-  }
+  _listenToAuthBloc() =>
+      _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
+        if (event == true) {
+          _isAuthenticated = true;
+          Navigator.of(context).pushNamed('/home');
+          //widget._authBloc.dispose(); .// this dispose will be in the back button of home or something
+          //_streamSubscriptionState.cancel();
+          //_streamSubscriptionAuth.cancel();
+        }
+      });
 
   _retry() => Future.delayed(Duration(seconds: 4), () {
         if (_isAuthenticated == false) {

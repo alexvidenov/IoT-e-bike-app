@@ -9,23 +9,26 @@ class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
 
   FullStatusBloc(this._repository) : super();
 
+  @override
+  void create() => _listenToFullStatus();
+
+  @override
+  pause() {
+    _repository.cancel();
+    pauseSubscription();
+  }
+
+  @override
+  resume() {
+    _repository.resumeTimer(false); // change this boolean please
+    resumeSubscription();
+  }
+
   _listenToFullStatus() {
     streamSubscription = _repository.characteristicValueStream.listen(
         (event) => // if(event.lenght > someArbitrary shit)
             addEvent(_generateFullStatusDataModel(
                 Converter.generateFullStatus(event))));
-  }
-
-  init() => _listenToFullStatus();
-
-  dynamic pause() {
-    _repository.cancel();
-    pauseSubscription();
-  }
-
-  dynamic resume() {
-    _repository.resumeTimer(false); // change this boolean please
-    resumeSubscription();
   }
 
   List<FullStatusDataModel> _generateFullStatusDataModel(

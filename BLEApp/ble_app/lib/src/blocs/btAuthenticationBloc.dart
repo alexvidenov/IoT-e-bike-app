@@ -13,6 +13,15 @@ class BluetoothAuthBloc extends Bloc<bool, String> {
     });
   }
 
+  @override
+  void create() {}
+
+  @override
+  void pause() => pauseSubscription();
+
+  @override
+  void resume() => resumeSubscription();
+
   authenticate(String password) => _repository.writeToCharacteristic(password);
 
   changePassword(String newPassword) =>

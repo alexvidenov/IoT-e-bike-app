@@ -1,12 +1,7 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
-import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
-import 'package:ble_app/src/screens/authenticationPage.dart';
 import 'package:flutter/material.dart';
 
 typedef _DeviceTapListener = void Function();
@@ -34,12 +29,7 @@ class _DeviceListScreenState extends State<DevicesListScreen> {
     _appStateSubscription =
         widget._devicesBloc.pickedDevice.listen((bleDevice) async {
       _onPause();
-      await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
-                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()),
-          ));
+      await Navigator.of(context).pushNamed('/auth');
       setState(() => _shouldRunOnResume = true);
     });
   }

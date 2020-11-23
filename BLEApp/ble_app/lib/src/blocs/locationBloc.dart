@@ -70,4 +70,13 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
         anchor: Offset(0.5, 0.5),
         //icon: BitmapDescriptor.fromBytes(imageData) add icon later on, you know
       );
+
+  @override
+  void create() => startTrackingLocation();
+
+  @override
+  void pause() {}
+
+  @override
+  void resume() {}
 }

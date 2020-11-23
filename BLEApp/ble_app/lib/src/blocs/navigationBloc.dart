@@ -1,17 +1,19 @@
 import 'package:rxdart/rxdart.dart';
 
-class NavigationBloc {
-  BehaviorSubject<int> _stackIndexController;
-  Stream<int> get stackIndex => _stackIndexController.stream;
-  Sink<int> get _setStackIndex => _stackIndexController.sink;
+enum CurrentPage { Short, Full, Map }
 
-  Function(int) get setStackIndex => _setStackIndex.add;
+class NavigationBloc {
+  BehaviorSubject<CurrentPage> _pageController;
+  Stream<CurrentPage> get page => _pageController.stream;
+  Sink<CurrentPage> get _setPage => _pageController.sink;
+
+  Function(CurrentPage) get setCurrentPage => _setPage.add;
 
   NavigationBloc() {
-    _stackIndexController = BehaviorSubject<int>();
+    _pageController = BehaviorSubject<CurrentPage>();
   }
 
   void dispose() {
-    _stackIndexController.close();
+    _pageController.close();
   }
 }
