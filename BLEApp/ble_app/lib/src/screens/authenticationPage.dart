@@ -30,7 +30,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     widget._deviceBloc.init();
-    //widget._authBloc.create();
     widget._deviceBloc.connect().then((_) => _init());
   }
 
@@ -44,6 +43,9 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     super.dispose();
     widget._deviceBloc.disconnect();
     widget._deviceBloc.dispose();
+    widget._authBloc.dispose();
+    _streamSubscriptionState.cancel();
+    _streamSubscriptionAuth.cancel();
   }
 
   _listenToConnectBloc() => _streamSubscriptionState =
@@ -67,9 +69,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
         if (event == true) {
           _isAuthenticated = true;
           Navigator.of(context).pushNamed('/home');
-          //widget._authBloc.dispose(); .// this dispose will be in the back button of home or something
-          //_streamSubscriptionState.cancel();
-          //_streamSubscriptionAuth.cancel();
         }
       });
 
@@ -105,6 +104,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   }
 
   Future<bool> _onWillPop() {
+    // move this to home widget
     return showDialog(
         context: context,
         builder: (context) =>

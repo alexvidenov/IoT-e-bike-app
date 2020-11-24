@@ -2,7 +2,6 @@ import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/modules/fullStatusBarGraphModel.dart';
 import 'package:flutter/material.dart';
-import 'package:ble_app/src/utils/Converter.dart';
 
 class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
   final DeviceRepository _repository;
@@ -25,10 +24,9 @@ class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
   }
 
   _listenToFullStatus() {
-    streamSubscription = _repository.characteristicValueStream.listen(
-        (event) => // if(event.lenght > someArbitrary shit)
-            addEvent(_generateFullStatusDataModel(
-                Converter.generateFullStatus(event))));
+    streamSubscription = _repository.characteristicValueStream
+        .listen((event) => // if(event.lenght > someArbitrary shit)
+            addEvent(_generateFullStatusDataModel(_generateFullStatus(event))));
   }
 
   List<FullStatusDataModel> _generateFullStatusDataModel(
@@ -42,5 +40,17 @@ class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
       fullStatus.add(FullStatusDataModel(i + 1, voltages.elementAt(i), color));
     }
     return fullStatus;
+  }
+
+  List<double> _generateFullStatus(String rawData) {
+    List<String> splittedObjects = rawData.split(' ');
+
+    List<double> cellVoltages = List(20);
+
+    for (int i = 0; i < 20; i++) {
+      cellVoltages[i] = double.parse(splittedObjects.elementAt(i));
+    }
+
+    return cellVoltages;
   }
 }

@@ -7,7 +7,13 @@ abstract class RouteAwareWidget<T extends Bloc> extends StatefulWidget {
 
   final T bloc;
 
+  void onCreate() {}
+
+  void onPause() {}
+
   void onResume() {}
+
+  void onDestroy() {}
 
   const RouteAwareWidget({@required this.bloc});
 
@@ -26,6 +32,7 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   void didChangeDependencies() {
     super.didChangeDependencies();
     routeObserver.subscribe(this, ModalRoute.of(context));
+    widget.onCreate();
   }
 
   @override
@@ -39,6 +46,7 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   void didPushNext() {
     super.didPushNext();
     widget.bloc.pause();
+    widget.onPause();
   }
 
   @override
@@ -57,8 +65,9 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   @override
   void dispose() {
     super.dispose();
-    widget.bloc.dispose();
     routeObserver.unsubscribe(this);
+    widget.bloc.dispose();
+    widget.onDestroy();
   }
 
   @override

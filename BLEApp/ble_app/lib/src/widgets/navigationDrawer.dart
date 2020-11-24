@@ -16,7 +16,8 @@ class NavigationDrawer extends StatelessWidget {
           _createDrawerItem(
               icon: Icons.settings,
               text: 'Settings',
-              onTap: () => Navigator.of(context).pushNamed('/settings')),
+              onTap: () => Navigator.of(context, rootNavigator: true)
+                  .pushNamed('/settings')),
           Divider(),
           ListTile(
             title: Text('Vertion 0.0.1. All rights reserved. '),

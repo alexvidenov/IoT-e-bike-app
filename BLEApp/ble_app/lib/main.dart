@@ -1,5 +1,4 @@
 import 'package:ble_app/src/blocs/devicesBloc.dart';
-import 'package:ble_app/src/blocs/navigationService.dart';
 import 'package:ble_app/src/blocs/sharedPrefsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
@@ -48,7 +47,6 @@ class BleApp extends StatelessWidget {
         theme: ThemeData(fontFamily: 'Europe_Ext'),
         initialRoute: '/',
         onGenerateRoute: Router.generateRouteMainNavigatorStartsWithDevices,
-        //home: DevicesListScreen(locator<DevicesBloc>()),
       );
     }
   }

@@ -1,14 +1,34 @@
+import 'dart:async';
+
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter/material.dart';
 
+enum ConnectionSettings { Manual, AutoConnect, AutoPassword }
+
+// ignore: must_be_immutable
 class Settings extends StatelessWidget {
   final DeviceRepository deviceRepository = DeviceRepository();
   final SettingsBloc settingsBloc = locator<SettingsBloc>();
 
   final _writeController = TextEditingController();
+
+  ConnectionSettings _connectionSettings;
+
+  Settings() {
+    _listenToConnectionSettingsChanges();
+    if (settingsBloc.isPasswordRemembered())
+      _connectionSettings = ConnectionSettings.AutoPassword;
+    else if (settingsBloc.isDeviceRemembered())
+      _connectionSettings = ConnectionSettings.AutoConnect;
+    else
+      _connectionSettings = ConnectionSettings.Manual;
+  }
+
+  _listenToConnectionSettingsChanges() => settingsBloc.connectionSettingsChanged
+      .listen((event) => _connectionSettings = event);
 
   @override
   Widget build(BuildContext context) {
@@ -48,59 +68,66 @@ class Settings extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 )),
-            StreamBuilder<bool>(
-                stream: settingsBloc.deviceExists,
-                initialData: settingsBloc.isDeviceRemembered(),
-                builder: (context, snapshot) {
-                  return SwitchListTile(
-                    contentPadding: EdgeInsets.all(0),
+            StreamBuilder<ConnectionSettings>(
+                stream: settingsBloc.connectionSettingsChanged,
+                builder: (_, __) {
+                  return RadioListTile<ConnectionSettings>(
                     activeColor: Colors.lightBlueAccent,
-                    value: snapshot.data,
-                    title: Text("Remember this device"),
-                    onChanged: (value) {
-                      value == true
-                          ? settingsBloc.saveDeviceId(
-                              deviceRepository.pickedDevice.value.id)
-                          : settingsBloc.removeDeviceId();
-                    },
+                    value: ConnectionSettings.Manual,
+                    title: Text("Manual"),
+                    onChanged: (_) => settingsBloc.setManual(),
+                    groupValue: _connectionSettings,
                   );
                 }),
-            StreamBuilder<bool>(
-                stream: settingsBloc.deviceExists,
-                initialData: settingsBloc.isDeviceRemembered(),
-                builder: (_, snapshot) {
-                  if (snapshot.data == false) {
-                    return SwitchListTile(
-                      contentPadding: EdgeInsets.all(0),
-                      activeColor: Colors.lightBlueAccent,
-                      value: false,
-                      title: Text("Remember my password"),
-                      onChanged: null,
-                    );
-                  } else {
-                    return StreamBuilder<bool>(
-                        stream: settingsBloc.passwordExists,
-                        initialData: settingsBloc.isPasswordRemembered(),
-                        builder: (context, snapshot) {
-                          return SwitchListTile(
-                              contentPadding: EdgeInsets.all(0),
-                              activeColor: Colors.lightBlueAccent,
-                              value: snapshot.data,
-                              title: Text("Remember my password"),
-                              onChanged: (value) {
-                                value == true
-                                    ? settingsBloc.savePassword(
-                                        settingsBloc.password.value)
-                                    : settingsBloc.removePassword();
-                              });
-                        });
-                  }
+            StreamBuilder<ConnectionSettings>(
+                stream: settingsBloc.connectionSettingsChanged,
+                builder: (_, __) {
+                  return RadioListTile<ConnectionSettings>(
+                    secondary: Icon(Icons.settings_bluetooth),
+                    activeColor: Colors.lightBlueAccent,
+                    value: ConnectionSettings.AutoConnect,
+                    title: Text("Auto connect"),
+                    onChanged: (_) => settingsBloc
+                        .setAutoconnect(deviceRepository.pickedDevice.value.id),
+                    groupValue: _connectionSettings,
+                  );
+                }),
+            StreamBuilder<ConnectionSettings>(
+                stream: settingsBloc.connectionSettingsChanged,
+                builder: (_, __) {
+                  return RadioListTile<ConnectionSettings>(
+                    activeColor: Colors.lightBlueAccent,
+                    secondary: Icon(Icons.security),
+                    value: ConnectionSettings.AutoPassword,
+                    groupValue: _connectionSettings,
+                    title: Text("Remember my password"),
+                    onChanged: (_) => settingsBloc.setAutoPassword(
+                        deviceRepository.pickedDevice.value.id),
+                  );
                 }),
           ],
         ),
       ),
     );
   }
+
+  // for future use
+  Widget _generateListTileStreamBuilder(
+          {@required ConnectionSettings value,
+          @required String title,
+          @required Function onChanged,
+          Widget secondary}) =>
+      StreamBuilder(
+        stream: settingsBloc.connectionSettingsChanged,
+        builder: (_, __) => RadioListTile<ConnectionSettings>(
+          activeColor: Colors.lightBlueAccent,
+          secondary: secondary ?? null,
+          value: value,
+          title: Text(title),
+          onChanged: onChanged,
+          groupValue: _connectionSettings,
+        ),
+      );
 
   Future<void> _presentDialog(BuildContext widgetContext) async {
     await showDialog(

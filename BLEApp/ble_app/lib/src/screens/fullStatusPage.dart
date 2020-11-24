@@ -46,7 +46,7 @@ class FullStatusPage extends RouteAwareWidget {
             isVisible: true,
             labelPosition: ChartDataLabelPosition.inside,
             labelAlignment: ChartDataLabelAlignment.top,
-            textStyle: TextStyle(fontSize: 20)),
+            textStyle: TextStyle(color: Colors.white, fontSize: 20)),
         dataLabelMapper: (FullStatusDataModel status, _) =>
             status.y.toString() + "V",
         enableTooltip: true,

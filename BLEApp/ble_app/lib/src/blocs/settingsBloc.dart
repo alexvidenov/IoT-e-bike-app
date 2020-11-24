@@ -1,11 +1,12 @@
 import 'package:ble_app/src/blocs/sharedPrefsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/screens/settingsPage.dart';
 import 'package:rxdart/rxdart.dart';
 
 class SettingsBloc {
   final _passwordController = BehaviorSubject<String>();
-  final _deviceRememberedController = BehaviorSubject<bool>();
-  final _passwordRememberedController = BehaviorSubject<bool>();
+
+  final _connectionSettingsController = BehaviorSubject<ConnectionSettings>();
 
   SharedPrefsService _preferencesService;
 
@@ -17,45 +18,57 @@ class SettingsBloc {
 
   Future clearAllPrefs() async => await _preferencesService.clearAllPrefs();
 
-  void saveDeviceId(String deviceId) {
-    _preferencesService
-        .saveDeviceId(deviceId)
-        .then((value) => setDeviceExists(true));
+  void setAutoPassword(String deviceId) {
+    _saveDevice(deviceId);
+    _savePassword(
+        password.value); // actually call the internal valuestream here
+    setConnectionSetting(ConnectionSettings.AutoPassword);
   }
 
-  void removeDeviceId() {
-    _preferencesService.removeDeviceId();
-    setDeviceExists(false);
+  void setAutoconnect(String deviceId) {
+    _saveDevice(deviceId);
+    removePassword();
+    setConnectionSetting(ConnectionSettings.AutoConnect);
   }
 
-  void savePassword(String password) {
-    _preferencesService
-        .savePassword(password)
-        .then((value) => setPasswordExists(true));
+  void setManual() {
+    _removeDeviceId();
+    setConnectionSetting(ConnectionSettings.Manual);
+  }
+
+  _saveDevice(String deviceId) => _preferencesService.saveDeviceId(deviceId);
+
+  _savePassword(String password) {
+    _preferencesService.savePassword(password);
   }
 
   void removePassword() {
     _preferencesService.removePasswordRemembrance();
-    setPasswordExists(false);
+  }
+
+  void _removeDeviceId() {
+    _preferencesService.removeDeviceId();
   }
 
   String getPassword() => _preferencesService.getOptionalPassword();
 
   ValueStream<String> get password => _passwordController.stream;
-  Stream<bool> get deviceExists => _deviceRememberedController.stream;
-  Stream<bool> get passwordExists => _passwordRememberedController.stream;
+
+  Stream<ConnectionSettings> get connectionSettingsChanged =>
+      _connectionSettingsController.stream;
 
   Sink<String> get _changePassword => _passwordController.sink;
-  Sink<bool> get _changeDeviceExists => _deviceRememberedController.sink;
-  Sink<bool> get _changePasswordExists => _passwordRememberedController.sink;
+
+  Sink<ConnectionSettings> get _changeConnectionSettings =>
+      _connectionSettingsController.sink;
 
   Function(String) get setPassword => _changePassword.add;
-  Function(bool) get setDeviceExists => _changeDeviceExists.add;
-  Function(bool) get setPasswordExists => _changePasswordExists.add;
+
+  Function(ConnectionSettings) get setConnectionSetting =>
+      _changeConnectionSettings.add;
 
   void dispose() {
     _passwordController.close();
-    _deviceRememberedController.close();
-    _passwordRememberedController.close();
+    _connectionSettingsController.close();
   }
 }
