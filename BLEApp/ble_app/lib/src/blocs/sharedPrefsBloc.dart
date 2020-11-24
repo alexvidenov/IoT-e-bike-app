@@ -14,7 +14,7 @@ class SharedPrefsService {
     }
     if (_preferences == null) {
       _preferences = await SharedPreferences.getInstance();
-      //_preferences.clear(); // test.
+      //_preferences.clear();
     }
     return _instance;
   }
@@ -39,6 +39,10 @@ class SharedPrefsService {
       await _preferences.setDouble(key, value);
     }
   }
+
+  String userData() => _getPrefs(PrefsKeys.USER_DATA);
+
+  void setUserData(String json) => _savePrefs(PrefsKeys.USER_DATA, json);
 
   void _setDeviceExists(bool deviceExists) =>
       _savePrefs(PrefsKeys.DEVICE_EXISTS, deviceExists);

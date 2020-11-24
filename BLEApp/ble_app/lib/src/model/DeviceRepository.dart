@@ -46,9 +46,7 @@ class DeviceRepository {
     _deviceController.add(_bleDevice);
   }
 
-  _addCharacteristicEvent(String event) {
-    _characteristicValueSink.add(event);
-  }
+  _addCharacteristicEvent(String event) => _characteristicValueSink.add(event);
 
   _listenToCharacteristic() {
     _characteristicSubscription = _characteristic?.monitor()?.listen((event) {
@@ -86,9 +84,8 @@ class DeviceRepository {
 
   periodicFullStatus() {
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(milliseconds: 500), (_) {
-      _writeData("F");
-    });
+    _timer =
+        Timer.periodic(Duration(milliseconds: 500), (_) => _writeData("F"));
   }
 
   cancel() => _timer?.cancel();
@@ -96,11 +93,9 @@ class DeviceRepository {
   resumeTimer(bool isShort) =>
       isShort ? periodicShortStatus() : periodicFullStatus();
 
-  Future<void> discoverServicesAndStartMonitoring() async {
-    await _discover()
-        .then((c) => this._characteristic = c)
-        .then((c) => _listenToCharacteristic());
-  }
+  Future<void> discoverServicesAndStartMonitoring() async => await _discover()
+      .then((c) => this._characteristic = c)
+      .then((c) => _listenToCharacteristic());
 
   Future<Characteristic> _discover() async {
     await _bleDevice.peripheral.discoverAllServicesAndCharacteristics();

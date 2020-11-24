@@ -30,6 +30,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     widget._deviceBloc.init();
+    widget._authBloc.create();
     widget._deviceBloc.connect().then((_) => _init());
   }
 
@@ -41,9 +42,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   @override
   void dispose() {
     super.dispose();
-    widget._deviceBloc.disconnect();
     widget._deviceBloc.dispose();
-    widget._authBloc.dispose();
     _streamSubscriptionState.cancel();
     _streamSubscriptionAuth.cancel();
   }
@@ -104,14 +103,15 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   }
 
   Future<bool> _onWillPop() {
-    // move this to home widget
+    // move this to home widget prolly
     return showDialog(
         context: context,
         builder: (context) =>
             AlertDialog(
               title: Text('Are you sure?',
                   style: TextStyle(fontFamily: 'Europe_Ext')),
-              content: Text('Do you want to disconnect device and go back?',
+              content: Text(
+                  'Do you want to disconnect from the device and go back?',
                   style: TextStyle(fontFamily: 'Europe_Ext')),
               actions: <Widget>[
                 FlatButton(
@@ -128,6 +128,14 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             false);
   }
 
+  Widget _generateMessageWidget(String message) => Center(
+      child: Text(message,
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+            fontFamily: 'Europe_Ext',
+          )));
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -142,30 +150,13 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
               if (snapshot.connectionState == ConnectionState.active) {
                 switch (snapshot.data) {
                   case PeripheralConnectionState.connected:
-                    return Container(
-                      color: Colors.black,
-                      child: Center(
-                        child: Text("Connected",
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontFamily: 'Europe_Ext',
-                            )),
-                      ),
-                    );
+                    return _generateMessageWidget('Connected');
                   case PeripheralConnectionState.connecting:
                     return Center(child: CircularProgressIndicator());
                   case PeripheralConnectionState.disconnected:
-                    return Center(
-                      child: Text("Disconnected",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontFamily: 'Europe_Ext',
-                          )),
-                    );
+                    return _generateMessageWidget('disconnected');
                   case PeripheralConnectionState.disconnecting:
-                    break; // think what to do here
+                    return _generateMessageWidget('disconnecting');
                 }
               } else
                 return Center(child: CircularProgressIndicator());

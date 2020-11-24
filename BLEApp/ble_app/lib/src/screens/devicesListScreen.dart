@@ -2,74 +2,49 @@ import 'dart:async';
 
 import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
+import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
 
 typedef _DeviceTapListener = void Function();
 
-class DevicesListScreen extends StatefulWidget {
+// ignore: must_be_immutable
+class DevicesListScreen extends RouteAwareWidget {
   final DevicesBloc _devicesBloc;
+  StreamSubscription _pickedDevicesSubscription;
 
-  const DevicesListScreen(this._devicesBloc);
+  DevicesListScreen(DevicesBloc devicesBloc)
+      : this._devicesBloc = devicesBloc,
+        super(bloc: devicesBloc);
 
-  @override
-  State<DevicesListScreen> createState() => _DeviceListScreenState();
-}
-
-class _DeviceListScreenState extends State<DevicesListScreen> {
-  StreamSubscription _appStateSubscription;
-  bool _shouldRunOnResume = true;
-
-  void _onPause() {
-    _appStateSubscription.cancel();
-    widget._devicesBloc.dispose();
-  }
-
-  void _onResume() {
-    widget._devicesBloc.init();
-    _appStateSubscription =
-        widget._devicesBloc.pickedDevice.listen((bleDevice) async {
-      _onPause();
-      await Navigator.of(context).pushNamed('/auth');
-      setState(() => _shouldRunOnResume = true);
-    });
-  }
+  _listenForPickedDevice(BuildContext context) =>
+      _pickedDevicesSubscription = _devicesBloc.pickedDevice.listen((_) {
+        this.onPause();
+        Navigator.of(context)
+            .pushNamed('/auth'); // this route does not exist lmao
+      });
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (widget._devicesBloc == null) {
-      if (_shouldRunOnResume) {
-        _shouldRunOnResume = false;
-        _onResume();
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_shouldRunOnResume) {
-      _shouldRunOnResume = false;
-      _onResume();
-    }
+  Widget buildWidget(BuildContext context) {
+    _listenForPickedDevice(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Bluetooth devices'),
       ),
       body: StreamBuilder<List<BleDevice>>(
-        initialData: widget._devicesBloc.visibleDevices.value,
-        stream: widget._devicesBloc.visibleDevices,
-        builder: (context, snapshot) => RefreshIndicator(
-          onRefresh: widget._devicesBloc.refresh,
-          child: _DevicesList(widget._devicesBloc, snapshot.data),
+        initialData: _devicesBloc.visibleDevices.value,
+        stream: _devicesBloc.visibleDevices,
+        builder: (_, snapshot) => RefreshIndicator(
+          onRefresh: _devicesBloc.refresh,
+          child: _DevicesList(_devicesBloc, snapshot.data),
         ),
       ),
     );
   }
 
   @override
-  void dispose() {
-    _onPause();
-    super.dispose();
+  void onPause() {
+    super.onPause();
+    _pickedDevicesSubscription.cancel();
   }
 }
 
@@ -86,9 +61,8 @@ class _DevicesList extends ListView {
                 _createTapListener(devicesBloc, devices[i])));
 
   static _DeviceTapListener _createTapListener(
-      DevicesBloc devicesBloc, BleDevice bleDevice) {
-    return () => devicesBloc.devicePicker.add(bleDevice);
-  }
+          DevicesBloc devicesBloc, BleDevice bleDevice) =>
+      () => devicesBloc.addEvent(bleDevice);
 
   static Widget _buildAvatar(BuildContext context, BleDevice device) =>
       CircleAvatar(

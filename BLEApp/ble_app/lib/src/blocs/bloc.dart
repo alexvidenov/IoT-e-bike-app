@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class Bloc<T, S> {
@@ -24,16 +25,13 @@ abstract class Bloc<T, S> {
 
   void resume();
 
-  addEvent(T event) => _sink.add(event);
+  Function(T) get addEvent => _sink.add;
 
-  pauseSubscription() {
-    streamSubscription?.pause();
-  }
+  pauseSubscription() => streamSubscription?.pause();
 
-  resumeSubscription() {
-    streamSubscription.resume();
-  }
+  resumeSubscription() => streamSubscription.resume();
 
+  @mustCallSuper
   void dispose() {
     streamSubscription?.cancel();
     _publishSubject$?.close();

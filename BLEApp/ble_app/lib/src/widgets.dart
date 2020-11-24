@@ -100,7 +100,7 @@ class ProgressRows extends StatelessWidget {
                                       if (snapshot.data != null) {
                                         _speedInKMH =
                                             (snapshot.data.speed * 3.6)
-                                                .toStringAsPrecision(2);
+                                                .toStringAsPrecision(1);
                                       }
                                       String text = snapshot.connectionState ==
                                               ConnectionState.active
@@ -110,7 +110,7 @@ class ProgressRows extends StatelessWidget {
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.w500,
-                                              fontSize: 49));
+                                              fontSize: 56));
                                     }),
                                 Text('km/h',
                                     style: TextStyle(
@@ -246,15 +246,15 @@ class CurrentRow extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text(
-                      "CH",
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0),
-                    ),
+                    const SizedBox(height: 15),
+                    Text("Ch",
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                            letterSpacing: 1.5)),
                   ],
                 ),
                 Column(
@@ -285,25 +285,28 @@ class CurrentRow extends StatelessWidget {
                         direction: Axis.horizontal,
                       ),
                     ),
+                    const SizedBox(height: 15),
                     Row(
                       children: <Widget>[
-                        Text("1130W",
+                        Text("1130w",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 24.0,
+                                fontSize: 25.0,
+                                letterSpacing: 1.5,
                                 fontFamily: 'Europe_Ext')),
                         const SizedBox(
                           width: 30,
                         ),
                         Text(
-                          "DH",
+                          "Dh",
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 20.0,
+                              letterSpacing: 1.5,
                               fontFamily: 'Europe_Ext'),
                         )
                       ],

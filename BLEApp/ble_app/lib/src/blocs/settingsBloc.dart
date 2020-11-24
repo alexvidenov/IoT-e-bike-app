@@ -8,15 +8,20 @@ class SettingsBloc {
 
   final _connectionSettingsController = BehaviorSubject<ConnectionSettings>();
 
-  SharedPrefsService _preferencesService;
+  final SharedPrefsService _preferencesService;
 
   SettingsBloc() : this._preferencesService = locator<SharedPrefsService>();
+
+  String getUserData() => _preferencesService.userData() ?? 'empty';
+
+  void setUserData(String json) => _preferencesService.setUserData(json);
 
   bool isDeviceRemembered() => _preferencesService.getDeviceExists();
 
   bool isPasswordRemembered() => _preferencesService.isPasswordRemembered();
 
-  Future clearAllPrefs() async => await _preferencesService.clearAllPrefs();
+  Future clearAllPrefs() async =>
+      await _preferencesService.clearAllPrefs().then((_) => setManual());
 
   void setAutoPassword(String deviceId) {
     _saveDevice(deviceId);
@@ -38,17 +43,13 @@ class SettingsBloc {
 
   _saveDevice(String deviceId) => _preferencesService.saveDeviceId(deviceId);
 
-  _savePassword(String password) {
-    _preferencesService.savePassword(password);
-  }
+  _savePassword(String password) => _preferencesService.savePassword(password);
 
-  void removePassword() {
-    _preferencesService.removePasswordRemembrance();
-  }
+  void removePassword() => _preferencesService.removePasswordRemembrance();
 
-  void _removeDeviceId() {
-    _preferencesService.removeDeviceId();
-  }
+  void _removeDeviceId() => _preferencesService.removeDeviceId();
+
+  String getOptionalDeviceId() => _preferencesService.getOptionalDevice();
 
   String getPassword() => _preferencesService.getOptionalPassword();
 

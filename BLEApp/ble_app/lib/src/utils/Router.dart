@@ -3,6 +3,7 @@ import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/blocs/fullStatusBloc.dart';
 import 'package:ble_app/src/blocs/locationBloc.dart';
+import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
@@ -39,10 +40,17 @@ class Router {
                 locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
       case '/home':
         return MaterialPageRoute(
-            builder: (_) =>
-                HomeScreen(locator<SettingsBloc>(), locator<DeviceBloc>()));
+            builder: (_) => HomeScreen(locator<SettingsBloc>(),
+                locator<DeviceBloc>(), locator<NavigationBloc>()));
       case '/settings':
         return MaterialPageRoute(builder: (_) => Settings());
+      case '/devices':
+        return MaterialPageRoute(
+            builder: (_) => DevicesListScreen(locator<DevicesBloc>()));
+      case '/auth':
+        return MaterialPageRoute(
+            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
+                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
     }
   }
 
@@ -58,10 +66,13 @@ class Router {
                 locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
       case '/home':
         return MaterialPageRoute(
-            builder: (_) =>
-                HomeScreen(locator<SettingsBloc>(), locator<DeviceBloc>()));
+            builder: (_) => HomeScreen(locator<SettingsBloc>(),
+                locator<DeviceBloc>(), locator<NavigationBloc>()));
       case '/settings':
         return MaterialPageRoute(builder: (_) => Settings());
+      case '/devices':
+        return MaterialPageRoute(
+            builder: (_) => DevicesListScreen(locator<DevicesBloc>()));
     }
   }
 }

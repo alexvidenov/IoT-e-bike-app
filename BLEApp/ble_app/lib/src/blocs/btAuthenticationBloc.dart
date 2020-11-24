@@ -4,17 +4,16 @@ import 'package:ble_app/src/model/DeviceRepository.dart';
 class BluetoothAuthBloc extends Bloc<bool, String> {
   final DeviceRepository _repository;
 
-  BluetoothAuthBloc(this._repository) : super() {
-    streamSubscription = _repository.characteristicValueStream.listen((event) {
-      if (event.startsWith('pass')) {
-        // later on change to what the actual parameter name will be
-        addEvent(true);
-      }
-    });
-  }
+  BluetoothAuthBloc(this._repository) : super();
 
   @override
-  void create() {}
+  void create() => streamSubscription =
+          _repository.characteristicValueStream.listen((event) {
+        if (event.startsWith('pass')) {
+          // later on change to what the actual parameter name will be
+          addEvent(true);
+        }
+      });
 
   @override
   void pause() => pauseSubscription();

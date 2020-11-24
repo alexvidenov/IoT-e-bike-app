@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
@@ -10,8 +9,8 @@ enum ConnectionSettings { Manual, AutoConnect, AutoPassword }
 
 // ignore: must_be_immutable
 class Settings extends StatelessWidget {
-  final DeviceRepository deviceRepository = DeviceRepository();
-  final SettingsBloc settingsBloc = locator<SettingsBloc>();
+  final DeviceRepository _deviceRepository = DeviceRepository();
+  final SettingsBloc _settingsBloc = locator<SettingsBloc>();
 
   final _writeController = TextEditingController();
 
@@ -19,16 +18,17 @@ class Settings extends StatelessWidget {
 
   Settings() {
     _listenToConnectionSettingsChanges();
-    if (settingsBloc.isPasswordRemembered())
+    if (_settingsBloc.isPasswordRemembered())
       _connectionSettings = ConnectionSettings.AutoPassword;
-    else if (settingsBloc.isDeviceRemembered())
+    else if (_settingsBloc.isDeviceRemembered())
       _connectionSettings = ConnectionSettings.AutoConnect;
     else
       _connectionSettings = ConnectionSettings.Manual;
   }
 
-  _listenToConnectionSettingsChanges() => settingsBloc.connectionSettingsChanged
-      .listen((event) => _connectionSettings = event);
+  _listenToConnectionSettingsChanges() =>
+      _settingsBloc.connectionSettingsChanged
+          .listen((event) => _connectionSettings = event);
 
   @override
   Widget build(BuildContext context) {
@@ -43,82 +43,56 @@ class Settings extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.lock_outline, color: Colors.black),
-                    title: Text("Change password"),
-                    trailing: Icon(Icons.keyboard_arrow_right),
-                    onTap: () => _presentDialog(context),
-                  ),
-                ],
-              ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                  leading: Icon(Icons.lock_outline, color: Colors.black),
+                  title: Text("Change password"),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () => _presentDialog(context),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            Text("Device Settings: ",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                )),
-            StreamBuilder<ConnectionSettings>(
-                stream: settingsBloc.connectionSettingsChanged,
-                builder: (_, __) {
-                  return RadioListTile<ConnectionSettings>(
-                    activeColor: Colors.lightBlueAccent,
-                    value: ConnectionSettings.Manual,
-                    title: Text("Manual"),
-                    onChanged: (_) => settingsBloc.setManual(),
-                    groupValue: _connectionSettings,
-                  );
-                }),
-            StreamBuilder<ConnectionSettings>(
-                stream: settingsBloc.connectionSettingsChanged,
-                builder: (_, __) {
-                  return RadioListTile<ConnectionSettings>(
-                    secondary: Icon(Icons.settings_bluetooth),
-                    activeColor: Colors.lightBlueAccent,
-                    value: ConnectionSettings.AutoConnect,
-                    title: Text("Auto connect"),
-                    onChanged: (_) => settingsBloc
-                        .setAutoconnect(deviceRepository.pickedDevice.value.id),
-                    groupValue: _connectionSettings,
-                  );
-                }),
-            StreamBuilder<ConnectionSettings>(
-                stream: settingsBloc.connectionSettingsChanged,
-                builder: (_, __) {
-                  return RadioListTile<ConnectionSettings>(
-                    activeColor: Colors.lightBlueAccent,
-                    secondary: Icon(Icons.security),
-                    value: ConnectionSettings.AutoPassword,
-                    groupValue: _connectionSettings,
-                    title: Text("Remember my password"),
-                    onChanged: (_) => settingsBloc.setAutoPassword(
-                        deviceRepository.pickedDevice.value.id),
-                  );
-                }),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10),
+          Text("Connection Settings: ",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              )),
+          _generateListTileStreamBuilder(
+              value: ConnectionSettings.Manual,
+              title: 'Manual',
+              onChanged: (_) => _settingsBloc.setManual()),
+          _generateListTileStreamBuilder(
+              value: ConnectionSettings.AutoConnect,
+              title: 'Auto connect',
+              onChanged: (_) => _settingsBloc
+                  .setAutoconnect(_deviceRepository.pickedDevice.value.id)),
+          _generateListTileStreamBuilder(
+              value: ConnectionSettings.AutoPassword,
+              title: 'Remember my password',
+              onChanged: (_) => _settingsBloc
+                  .setAutoPassword(_deviceRepository.pickedDevice.value.id)),
+        ],
       ),
     );
   }
 
-  // for future use
   Widget _generateListTileStreamBuilder(
           {@required ConnectionSettings value,
           @required String title,
           @required Function onChanged,
           Widget secondary}) =>
       StreamBuilder(
-        stream: settingsBloc.connectionSettingsChanged,
+        stream: _settingsBloc.connectionSettingsChanged,
         builder: (_, __) => RadioListTile<ConnectionSettings>(
           activeColor: Colors.lightBlueAccent,
           secondary: secondary ?? null,
@@ -142,9 +116,9 @@ class Settings extends StatelessWidget {
             FlatButton(
               child: Text("Confirm"),
               onPressed: () {
-                locator<BluetoothAuthBloc>()
-                    .changePassword(_writeController.value.text);
-                settingsBloc.setPassword(_writeController.value.text);
+                _deviceRepository
+                    .writeToCharacteristic(_writeController.value.text);
+                _settingsBloc.setPassword(_writeController.value.text);
                 Navigator.of(context).pop(false);
               },
             ),

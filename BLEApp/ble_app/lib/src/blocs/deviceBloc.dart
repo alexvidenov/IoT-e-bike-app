@@ -37,43 +37,29 @@ class DeviceBloc {
     _isDeviceReadyController = BehaviorSubject<bool>.seeded(false);
   }
 
-  void init() {
-    _bleManager.stopPeripheralScan();
-  }
+  void init() => _bleManager.stopPeripheralScan();
 
-  Future<void> disconnect() async =>
+  Future<void> disconnect() =>
       _disconnectManual().then((_) => _deviceRepository.pickDevice(null));
 
   Future<void> _disconnectManual() async {
-    if (await device.value.peripheral.isConnected()) {
+    if (await device.value.peripheral.isConnected())
       await _deviceController.stream.value.peripheral
           .disconnectOrCancelConnection();
-    }
   }
 
-  void _observeConnectionState() {
-    device.listen((bleDevice) {
-      var peripheral = bleDevice.peripheral;
-      peripheral
+  void _observeConnectionState() =>
+      device.listen((bleDevice) => bleDevice.peripheral
           .observeConnectionState(
               emitCurrentValue: true, completeOnDisconnect: true)
-          .listen((connectionState) {
-        _connectionEvent.add(connectionState);
-      });
-    });
-  }
+          .listen((connectionState) => _connectionEvent.add(connectionState)));
 
-  Future<void> connect() async {
-    device.listen((bleDevice) async {
-      var peripheral = bleDevice.peripheral;
-      await peripheral
+  Future<void> connect() async =>
+      device.listen((bleDevice) async => await bleDevice.peripheral
           .connect()
-          .then((value) => _observeConnectionState())
-          .then((_) async =>
-              await _deviceRepository.discoverServicesAndStartMonitoring())
-          .then((_) => _setDeviceReady.add(true));
-    });
-  }
+          .then((_) => _observeConnectionState())
+          .then((_) => _deviceRepository.discoverServicesAndStartMonitoring())
+          .then((_) => _setDeviceReady.add(true)));
 
   void dispose() async {
     await _deviceController.drain();
