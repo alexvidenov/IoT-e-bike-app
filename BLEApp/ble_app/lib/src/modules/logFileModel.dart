@@ -15,25 +15,25 @@ class _BatteryStatusModel {
           currentDischarge: json['currentDischarge']);
 }
 
-class _LogModel {
+class LogModel {
   final String timeStamp;
   final _BatteryStatusModel model;
 
-  const _LogModel({this.timeStamp, this.model});
+  const LogModel({this.timeStamp, this.model});
 
-  factory _LogModel.fromJson(Map<String, dynamic> json) => _LogModel(
+  factory LogModel.fromJson(Map<String, dynamic> json) => LogModel(
       timeStamp: json['timeStamp'],
       model: _BatteryStatusModel.fromJson(json['stats']));
 }
 
 class LogFileModel {
-  final List<_LogModel> logs;
+  final List<LogModel> logs;
 
   const LogFileModel({this.logs});
 
   factory LogFileModel.fromJson(List<dynamic> json) {
-    List<_LogModel> logs = <_LogModel>[];
-    logs = json.map((log) => _LogModel.fromJson(log)).toList();
+    List<LogModel> logs = <LogModel>[];
+    logs = json.map((log) => LogModel.fromJson(log)).toList();
     return LogFileModel(logs: logs);
   }
 }

@@ -11,6 +11,7 @@ class Storage {
   final StorageReference _root = FirebaseStorage.instance.ref();
 
   void upload(List<dynamic> data) {
+    // this will be the AppData class
     if (data != null) {
       JsonEncoder encoder = JsonEncoder.withIndent('  ');
       String jsonString = encoder.convert(data);
@@ -27,7 +28,7 @@ class Storage {
       String fileName = year + month + day + '.json';
 
       String deviceId = DeviceRepository()
-          .deviceId; // actually keep the device Id in SharedPrefs // am i retarded, this is a new instance of a repository, should register it with getIt
+          .deviceId; // actually keep the device Id in SharedPrefs // am i retarded, this is a new instance of a repository (in the isolate).
 
       StorageReference fireRef = _root.child(
           '/users/$uid/$deviceId/$fileName'); // later on use the list API to list every file under /users/$uid. And also add additional folder, which will be hte device serial number.

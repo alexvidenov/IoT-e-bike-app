@@ -4,6 +4,7 @@ import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/modules/sharedPrefsUsersDataModel.dart';
 
 import 'package:ble_app/src/modules/shortStatusModel.dart';
 
@@ -34,6 +35,7 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       ShortStatusModel _model = _generateShortStatus(event);
       addEvent(_model);
+      List<UserData> user = _data as List<UserData>; // try that
       _uploadTimer++;
       if (_uploadTimer == 10) {
         _data.add({
@@ -53,7 +55,7 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
 
   _initData() {
     String data = locator<SettingsBloc>().getUserData();
-    data != 'empty' ? _data = jsonDecode(data) : _data = List();
+    data != 'empty' ? _data = jsonDecode(data) : _data = [];
   }
 
   ShortStatusModel _generateShortStatus(String rawData) {
