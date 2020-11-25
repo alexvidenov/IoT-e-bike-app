@@ -6,15 +6,13 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 
 import 'package:ble_app/src/modules/shortStatusModel.dart';
-import 'package:ble_app/src/services/Auth.dart';
-import 'package:ble_app/src/services/Storage.dart';
 
 class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
   final DeviceRepository _repository;
 
   int _uploadTimer = 0;
 
-  Map<String, Map<String, double>> _data;
+  List<dynamic> _data;
 
   ShortStatusBloc(this._repository) : super();
 
@@ -22,7 +20,6 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
   pause() {
     _repository.cancel();
     pauseSubscription();
-    Storage(uid: locator<Auth>().getCurrentUserId()).upload(_data); // initial test implementation
   }
 
   @override
@@ -33,38 +30,30 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
 
   @override
   void create() {
-    //_initData();
+    _initData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       ShortStatusModel _model = _generateShortStatus(event);
       addEvent(_model);
       _uploadTimer++;
-      //var json = { // an example json form 
-      //'date_time': {
-      //  'voltage': _model.getTotalVoltage,
-      // 'temp': _model.getTemperature,
-      //  },
-      // };
       if (_uploadTimer == 10) {
-        _data[DateTime.now().toString()] = {
-          'voltage': _model.getTotalVoltage,
-          'currentCharge': _model.getCurrentCharge,
-          'currentDisCharge': _model.getCurrentDischarge,
-          'temperature': _model.getTemperature,
-        };
+        _data.add({
+          'timeStamp': DateTime.now().toString(),
+          'stats': {
+            'voltage': _model.getTotalVoltage,
+            'temp': _model.getTemperature,
+            'currentCharge': _model.getCurrentCharge,
+            'currentDischarge': _model.getCurrentDischarge,
+          }
+        });
         _uploadTimer = 0;
-        // locator<SettingsBloc>().setUserData(jsonEncode(_data));
+        locator<SettingsBloc>().setUserData(jsonEncode(_data));
       }
     });
   }
 
-   // for future use
   _initData() {
     String data = locator<SettingsBloc>().getUserData();
-    if (data != 'empty') {
-      _data = jsonDecode(data);
-    } else {
-      _data = Map();
-    }
+    data != 'empty' ? _data = jsonDecode(data) : _data = List();
   }
 
   ShortStatusModel _generateShortStatus(String rawData) {

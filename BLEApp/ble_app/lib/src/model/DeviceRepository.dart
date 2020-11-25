@@ -14,6 +14,8 @@ class DeviceRepository {
   static final DeviceRepository _deviceRepository =
       DeviceRepository._internal();
 
+  String _deviceSerialNumber; // will be updated on every call to connect()
+
   Characteristic _characteristic;
   StreamSubscription _characteristicSubscription;
 
@@ -113,6 +115,10 @@ class DeviceRepository {
 
     return c;
   }
+
+  String get deviceId => _deviceSerialNumber;
+
+  set deviceSerialNumber(String id) => _deviceSerialNumber = id;
 
   void dispose() {
     _characteristicSubscription.cancel();

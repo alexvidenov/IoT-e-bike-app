@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class Storage {
@@ -9,16 +10,27 @@ class Storage {
 
   final StorageReference _root = FirebaseStorage.instance.ref();
 
-  void upload(Map<String, Map<String, double>> data) {
+  void upload(List<dynamic> data) {
     if (data != null) {
       JsonEncoder encoder = JsonEncoder.withIndent('  ');
       String jsonString = encoder.convert(data);
-      //String jsonString = jsonEncode(data);
       List<int> bytes = utf8.encode(jsonString);
       String base64str = base64.encode(bytes);
-      Uint8List uploadData = base64.decode(base64str); 
+      Uint8List uploadData = base64.decode(base64str);
 
-      StorageReference fireRef = _root.child('/users/$uid/data.json');
+      DateTime dateTime = DateTime.now();
+
+      String day = dateTime.day.toString();
+      String month = dateTime.month.toString();
+      String year = dateTime.year.toString();
+
+      String fileName = year + month + day + '.json';
+
+      String deviceId = DeviceRepository()
+          .deviceId; // actually keep the device Id in SharedPrefs // am i retarded, this is a new instance of a repository, should register it with getIt
+
+      StorageReference fireRef = _root.child(
+          '/users/$uid/$deviceId/$fileName'); // later on use the list API to list every file under /users/$uid. And also add additional folder, which will be hte device serial number.
 
       fireRef.putData(uploadData);
     }

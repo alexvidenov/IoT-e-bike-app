@@ -29,6 +29,7 @@ class NavigationDrawer extends StatelessWidget {
               onTap: () async => await locator<Auth>().signOut().then((_) =>
                   _prefsBloc
                       .clearAllPrefs()
+                      .then((_) => _prefsBloc.deleteUserData())
                       .then((_) => _deviceBloc.disconnect())),
             ),
             ListTile(

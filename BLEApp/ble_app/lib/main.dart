@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
@@ -8,15 +10,89 @@ import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/screens/Entrypoints/AuthEntrypoint.dart';
 import 'package:ble_app/src/screens/Entrypoints/DevicesEntrypoint.dart';
 import 'package:ble_app/src/screens/Entrypoints/Root.dart';
+import 'package:ble_app/src/services/Auth.dart';
+import 'package:ble_app/src/services/Storage.dart';
+import 'package:ble_app/src/utils/PrefsKeys.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+/*
+void callBackDispatcher() => Workmanager.executeTask((taskName, __) {
+      switch (taskName) {
+        case 'writeToStorage':
+          print('interesting');
+          return Future.value(true);
+        case 'task':
+          final settings = locator<SettingsBloc>();
+          String data = settings.getUserData();
+          if (data != 'empty') {
+            Storage(uid: locator<Auth>().getCurrentUserId())
+                .upload(jsonDecode(data));
+            settings.deleteUserData();
+          }
+        //return Future.value(true);
+        // SHOULD DELETE THE DATA EVERY TIME IT IS UPLOADED TO STORAGE. WRITE FOR 24 HOURS - UPLOAD, THEN DELETE, THEN WAIT 24 HOURS AGAIN.
+      }
+      return Future.value(true);
+    });
+    */
+
+//const writeToStorageTaskKey = 'writeToStorage';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await setUpDependencies();
+  await AndroidAlarmManager.initialize();
+  await AndroidAlarmManager.periodic(Duration(minutes: 1), 0, uploadCallback,
+      rescheduleOnReboot: true);
+  //await Workmanager.initialize(callBackDispatcher, isInDebugMode: true);
   runApp(RootPage());
+}
+
+void uploadCallback() async {
+  await Firebase.initializeApp();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String jsonString = prefs.get(PrefsKeys.USER_DATA);
+  if (jsonString != null) {
+    Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
+    prefs.remove(PrefsKeys.USER_DATA);
+  }
+  /*
+  StorageReference root = FirebaseStorage.instance.ref();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  String uid = auth.currentUser?.uid;
+
+  String data = prefs.get('user_data');
+
+  if (data != null) {
+    Map<String, dynamic> json = jsonDecode(data);
+    JsonEncoder encoder = JsonEncoder.withIndent('  ');
+    String jsonString = encoder.convert(json);
+    List<int> bytes = utf8.encode(jsonString);
+    String base64str = base64.encode(bytes);
+    Uint8List uploadData = base64.decode(base64str);
+
+    DateTime dateTime = DateTime.now();
+
+    String day = dateTime.day.toString();
+    String month = dateTime.month.toString();
+    String year = dateTime.year.toString();
+
+    String fileName = year + month + day + '.json';
+
+    StorageReference fireRef = root.child(
+        '/users/$uid/$fileName'); // later on use the list API to list every file under /users/$uid
+
+    fireRef.putData(uploadData);
+
+    prefs.remove('user_data');
+  }
+  */
 }
 
 class BleApp extends StatefulWidget {
@@ -43,6 +119,12 @@ class _BleAppState extends State<BleApp> {
   @override
   void initState() {
     super.initState();
+    /*
+    Workmanager.registerOneOffTask('2', 'writeToStorage',
+        initialDelay: Duration(seconds: 10));
+    Workmanager.registerOneOffTask('1', 'task',
+        initialDelay: Duration(seconds: 15)); // works BOOOOOY
+        */
     String _deviceId = locator<SettingsBloc>().getOptionalDeviceId();
     if (_deviceId != 'empty') {
       BleDevice device =

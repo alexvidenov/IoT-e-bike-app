@@ -70,17 +70,20 @@ class Settings extends StatelessWidget {
           _generateListTileStreamBuilder(
               value: ConnectionSettings.Manual,
               title: 'Manual',
-              onChanged: (_) => _settingsBloc.setManual()),
+              onChanged: (_) => _settingsBloc.setManual(),
+              secondary: Icon(Icons.security)),
           _generateListTileStreamBuilder(
               value: ConnectionSettings.AutoConnect,
               title: 'Auto connect',
               onChanged: (_) => _settingsBloc
-                  .setAutoconnect(_deviceRepository.pickedDevice.value.id)),
+                  .setAutoconnect(_deviceRepository.pickedDevice.value.id),
+              secondary: Icon(Icons.bluetooth_connected)),
           _generateListTileStreamBuilder(
-              value: ConnectionSettings.AutoPassword,
-              title: 'Remember my password',
-              onChanged: (_) => _settingsBloc
-                  .setAutoPassword(_deviceRepository.pickedDevice.value.id)),
+            value: ConnectionSettings.AutoPassword,
+            title: 'Remember my password',
+            onChanged: (_) => _settingsBloc
+                .setAutoPassword(_deviceRepository.pickedDevice.value.id),
+          ),
         ],
       ),
     );

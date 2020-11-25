@@ -80,25 +80,23 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   Future<void> _presentDialog(BuildContext widgetContext) async {
     await showDialog(
       context: widgetContext,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Enter your password"),
-          content: TextField(
-            controller: _writeController,
-            onChanged: widget._settingsBloc.setPassword,
+      builder: (context) => AlertDialog(
+        title: Text("Enter your password"),
+        content: TextField(
+          controller: _writeController,
+          onChanged: widget._settingsBloc.setPassword,
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text("Send"),
+            onPressed: () {
+              widget._authBloc.authenticate(_writeController.value.text);
+              _retry();
+              Navigator.of(context).pop(false);
+            },
           ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("Send"),
-              onPressed: () {
-                widget._authBloc.authenticate(_writeController.value.text);
-                _retry();
-                Navigator.of(context).pop(false);
-              },
-            ),
-          ],
-        );
-      },
+        ],
+      ),
     );
   }
 

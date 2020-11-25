@@ -16,6 +16,8 @@ class SettingsBloc {
 
   void setUserData(String json) => _preferencesService.setUserData(json);
 
+  void deleteUserData() => _preferencesService.deleteUserData();
+
   bool isDeviceRemembered() => _preferencesService.getDeviceExists();
 
   bool isPasswordRemembered() => _preferencesService.isPasswordRemembered();
