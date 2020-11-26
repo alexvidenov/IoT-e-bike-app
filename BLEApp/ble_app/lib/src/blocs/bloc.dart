@@ -7,7 +7,7 @@ abstract class Bloc<T, S> {
   // state and event
   // T, S
 
-  PublishSubject<T> _publishSubject$;
+  BehaviorSubject<T> _publishSubject$;
 
   Stream<T> get stream => _publishSubject$.stream;
 
@@ -16,7 +16,7 @@ abstract class Bloc<T, S> {
   StreamSubscription<S> streamSubscription;
 
   Bloc() {
-    this._publishSubject$ = PublishSubject<T>();
+    this._publishSubject$ = BehaviorSubject<T>();
   }
 
   void create();

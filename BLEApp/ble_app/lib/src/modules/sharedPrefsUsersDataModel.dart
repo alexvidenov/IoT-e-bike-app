@@ -1,15 +1,52 @@
 import 'package:ble_app/src/modules/logFileModel.dart';
 
 class AppData {
-  final List<UserData> usersData;
+  List<UserData> usersData;
 
-  const AppData({this.usersData});
+  DeviceLog _currentDeviceLog;
+
+  AppData(
+      {List<UserData> usersData, String userId, String deviceSerialNumber}) {
+    if (usersData == null) {
+      _instantiateCurrentUserWithDevice(userId, deviceSerialNumber);
+    } else {
+      this.usersData = usersData;
+    }
+  }
+
+  _instantiateCurrentUserWithDevice(String userId, String deviceSerialNumber) {
+    usersData = <UserData>[];
+    bool exists = false;
+    UserData _currentUser;
+    for (var user in usersData) {
+      if (user.userId == userId) {
+        exists = true;
+        _currentUser = user;
+      }
+    }
+    if (exists == false) {
+      _currentUser = UserData.fromJson({
+        'user': userId,
+        'devices': [
+          {'id': deviceSerialNumber, 'data': []}
+        ]
+      });
+      usersData.add(_currentUser);
+    }
+
+    _currentDeviceLog = _currentUser.userLog.firstWhere((device) =>
+        device.deviceId == deviceSerialNumber); // this won't throw null
+  }
 
   factory AppData.fromJson(List<dynamic> json) {
-    List<UserData> data = new List<UserData>();
+    List<UserData> data = <UserData>[];
     data = json.map((user) => UserData.fromJson(user)).toList();
     return AppData(usersData: data);
   }
+
+  List<dynamic> toJson() => usersData.map((user) => user.toJson()).toList();
+
+  addCurrentRecord(Map<String, dynamic> data) => _currentDeviceLog.addLog(data);
 }
 
 class UserData {
@@ -18,7 +55,10 @@ class UserData {
 
   UserData({this.userId, this.userLog});
 
-  addLog(DeviceLog log) => userLog.add(log);
+  addLog(Map<String, dynamic> data) => userLog.add(DeviceLog.fromJson(data));
+
+  Map<String, dynamic> toJson() =>
+      {'user': userId, 'devices': userLog.map((log) => log.toJson()).toList()};
 
   factory UserData.fromJson(Map<String, dynamic> json) {
     List<dynamic> devices = json['devices'];
@@ -34,12 +74,15 @@ class DeviceLog {
 
   DeviceLog({this.deviceId, this.deviceLog});
 
-  addLog(LogModel log) => deviceLog.add(log);
+  addLog(Map<String, dynamic> data) => deviceLog.add(LogModel.fromJson(data));
 
   factory DeviceLog.fromJson(Map<String, dynamic> json) {
     List<dynamic> data = json['data'];
-    List<LogModel> devicesLog = List();
+    List<LogModel> devicesLog = [];
     devicesLog = data.map((log) => LogModel.fromJson(log)).toList();
     return DeviceLog(deviceId: json['id'], deviceLog: devicesLog);
   }
+
+  Map<String, dynamic> toJson() =>
+      {'id': deviceId, 'data': deviceLog.map((log) => log.toJson()).toList()};
 }

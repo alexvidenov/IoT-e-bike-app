@@ -48,8 +48,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   }
 
   _listenToConnectBloc() => _streamSubscriptionState =
-          widget._deviceBloc.connectionState.listen((event) {
-        if (event == PeripheralConnectionState.connected) {
+          widget._deviceBloc.connectionState.listen((state) {
+        if (state == PeripheralConnectionState.connected) {
           if (widget._settingsBloc.isPasswordRemembered() == true) {
             widget._deviceBloc.deviceReady.listen((event) {
               if (event == true) {
@@ -158,6 +158,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                 }
               } else
                 return Center(child: CircularProgressIndicator());
+              return Container();
             },
           ),
         ),

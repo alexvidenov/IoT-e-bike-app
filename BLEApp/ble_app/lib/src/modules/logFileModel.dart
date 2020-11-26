@@ -13,6 +13,13 @@ class _BatteryStatusModel {
           temp: json['temp'],
           currentCharge: json['currentCharge'],
           currentDischarge: json['currentDischarge']);
+
+  Map<String, dynamic> toJson() => {
+    'voltage' : voltage,
+    'temp' : temp,
+    'currentCharge' : currentCharge,
+    'currentDischarge' : currentDischarge
+  };
 }
 
 class LogModel {
@@ -24,6 +31,12 @@ class LogModel {
   factory LogModel.fromJson(Map<String, dynamic> json) => LogModel(
       timeStamp: json['timeStamp'],
       model: _BatteryStatusModel.fromJson(json['stats']));
+
+  Map<String, dynamic> toJson() => {
+    'timeStamp' : timeStamp,
+    'stats' : model.toJson()
+  };
+
 }
 
 class LogFileModel {

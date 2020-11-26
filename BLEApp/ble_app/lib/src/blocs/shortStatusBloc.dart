@@ -7,13 +7,14 @@ import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/modules/sharedPrefsUsersDataModel.dart';
 
 import 'package:ble_app/src/modules/shortStatusModel.dart';
+import 'package:ble_app/src/services/Auth.dart';
 
 class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
   final DeviceRepository _repository;
 
   int _uploadTimer = 0;
 
-  List<dynamic> _data;
+  AppData _appData;
 
   ShortStatusBloc(this._repository) : super();
 
@@ -35,10 +36,9 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       ShortStatusModel _model = _generateShortStatus(event);
       addEvent(_model);
-      List<UserData> user = _data as List<UserData>; // try that
       _uploadTimer++;
       if (_uploadTimer == 10) {
-        _data.add({
+        _appData.addCurrentRecord({
           'timeStamp': DateTime.now().toString(),
           'stats': {
             'voltage': _model.getTotalVoltage,
@@ -48,14 +48,20 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
           }
         });
         _uploadTimer = 0;
-        locator<SettingsBloc>().setUserData(jsonEncode(_data));
+        locator<SettingsBloc>()
+            .setUserData(jsonEncode(_appData.toJson())); // list of userData
       }
     });
   }
 
   _initData() {
     String data = locator<SettingsBloc>().getUserData();
-    data != 'empty' ? _data = jsonDecode(data) : _data = [];
+    data != 'empty'
+        ? _appData = AppData.fromJson(jsonDecode(data))
+        : _appData = AppData(
+            userId: locator<Auth>().getCurrentUserId(),
+            deviceSerialNumber:
+                DeviceRepository().deviceId); // jsonDecode returns dynamic[]
   }
 
   ShortStatusModel _generateShortStatus(String rawData) {
