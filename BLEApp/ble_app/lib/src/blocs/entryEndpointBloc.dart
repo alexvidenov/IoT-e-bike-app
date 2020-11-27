@@ -22,10 +22,11 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
     });
   }
 
-  void _determineEndpoint(){
+  void _determineEndpoint() {
     String _deviceId = locator<SettingsBloc>().getOptionalDeviceId();
     if (_deviceId != 'empty') {
-      BleDevice device = BleDevice(peripheral: BleManager().createUnsafePeripheral(_deviceId));
+      BleDevice device =
+          BleDevice(peripheral: BleManager().createUnsafePeripheral(_deviceId));
       _listen();
       devicesBloc.init();
       devicesBloc.create();
@@ -40,7 +41,4 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
 
   @override
   void pause() => _devicePickedSubscription.cancel();
-
-  @override
-  void resume() {}
 }

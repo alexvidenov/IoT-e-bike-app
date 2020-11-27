@@ -1,7 +1,7 @@
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/screens/LoginPage.dart';
+import 'package:ble_app/src/screens/loginPage.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:flutter/material.dart';
 

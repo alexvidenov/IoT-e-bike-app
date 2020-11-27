@@ -19,11 +19,11 @@ abstract class Bloc<T, S> {
     this._publishSubject$ = BehaviorSubject<T>();
   }
 
-  void create();
+  void create() {}
 
-  void pause();
+  void pause() {}
 
-  void resume();
+  void resume() {}
 
   Function(T) get addEvent => _sink.add;
 

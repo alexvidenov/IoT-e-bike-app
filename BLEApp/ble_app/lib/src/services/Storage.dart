@@ -12,8 +12,8 @@ class Storage {
 
   void upload(List<dynamic> data) {
     AppData appData = AppData.fromJson(data);
-    for (var user in appData.usersData) {
-      for (var log in user.userLog) {
+    for (final user in appData.usersData) {
+      for (final log in user.userLog) {
         _convertToUInt8ListAndUpload(log.deviceLog, log.deviceId);
       }
     }

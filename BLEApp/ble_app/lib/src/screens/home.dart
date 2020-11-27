@@ -25,7 +25,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: StreamBuilder<CurrentPage>(
-            stream: _navigationBloc.page,
+            stream: _navigationBloc.stream,
             initialData: CurrentPage.Short,
             builder: (_, snapshot) {
               String _title;
@@ -71,7 +71,7 @@ class HomeScreen extends StatelessWidget {
                 color: Colors.black,
                 child: Text('Disconnect',
                     style: TextStyle(
-                        fontSize: 23, color: Colors.white, letterSpacing: 1.5)),
+                        fontSize: 12, color: Colors.white, letterSpacing: 1.5)),
                 onPressed: () => _prefsBloc
                     .clearAllPrefs()
                     .then((_) => _deviceBloc.disconnect())

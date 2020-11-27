@@ -22,6 +22,8 @@ class SettingsBloc {
 
   bool isPasswordRemembered() => _preferencesService.isPasswordRemembered();
 
+  void clearPrefs() => setManual();
+
   Future clearAllPrefs() async =>
       await _preferencesService.clearAllPrefs().then((_) => setManual());
 

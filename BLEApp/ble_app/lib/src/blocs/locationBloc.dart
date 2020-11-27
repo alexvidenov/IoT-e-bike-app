@@ -73,10 +73,4 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
 
   @override
   void create() => startTrackingLocation();
-
-  @override
-  void pause() {}
-
-  @override
-  void resume() {}
 }

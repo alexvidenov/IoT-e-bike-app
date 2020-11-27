@@ -25,13 +25,12 @@ class NavigationDrawer extends StatelessWidget {
                 icon: Icons.assessment, text: 'Statistics', onTap: () => {}),
             Divider(),
             ListTile(
-              title: Text('Logout'),
-              onTap: () async => await locator<Auth>().signOut().then((_) =>
-                  _prefsBloc
-                      .clearAllPrefs()
-                      .then((_) => _prefsBloc.deleteUserData())
-                      .then((_) => _deviceBloc.disconnect())),
-            ),
+                title: Text('Logout'),
+                onTap: () async =>
+                    await locator<Auth>().signOut().then((_) async {
+                      _prefsBloc.clearPrefs();
+                      await _deviceBloc.disconnect();
+                    })),
             ListTile(
               title: Text('Vertion 0.0.1. All rights reserved. '),
               onTap: () {},
@@ -46,8 +45,8 @@ class NavigationDrawer extends StatelessWidget {
       decoration: BoxDecoration(
           image: DecorationImage(
               fit: BoxFit.fill,
-              image: AssetImage(
-                  'path/to/header_background.png'))), // think of a real picture later on
+              image: AssetImage('path/to/header_background.png'))),
+      // think of a real picture later on
       child: Stack(children: <Widget>[
         Positioned(
             bottom: 12.0,

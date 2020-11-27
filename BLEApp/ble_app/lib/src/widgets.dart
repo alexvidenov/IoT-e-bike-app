@@ -10,7 +10,7 @@ import 'package:location/location.dart';
 import 'di/serviceLocator.dart';
 import 'modules/shortStatusModel.dart';
 
-class ProgressRows extends StatelessWidget {
+class ProgressRows extends StatelessWidget { // fix..all of this, and make it responsive
   final ShortStatusBloc shortStatusBloc;
 
   const ProgressRows({@required this.shortStatusBloc});
@@ -22,164 +22,7 @@ class ProgressRows extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    TemperatureProgressBar(bloc: this.shortStatusBloc),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            "20", // StreamBuilder
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 28,
-                                color: Colors.white),
-                          ),
-                          Text(
-                            "C",
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 25,
-                                color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  "Temp.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                      fontFamily: 'Europe_Ext'),
-                ),
-                Text(
-                  "Cell",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                      fontFamily: 'Europe_Ext'),
-                ),
-              ],
-            ),
-            Padding(
-                padding: EdgeInsets.only(
-                    top: 100), // find a way to replace that fixed padding
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Stack(
-                      alignment: Alignment.center,
-                      children: <Widget>[
-                        Speedometer(locationBloc: locationBloc),
-                        Padding(
-                            padding: EdgeInsets.only(
-                              top: 110,
-                            ), // find a way for these to not be hardcoded
-                            child: Column(
-                              children: <Widget>[
-                                StreamBuilder<LocationData>(
-                                    stream: locationBloc.stream,
-                                    builder: (context, snapshot) {
-                                      String _speedInKMH = '0.0';
-                                      if (snapshot.data != null) {
-                                        _speedInKMH =
-                                            (snapshot.data.speed * 3.6)
-                                                .toStringAsPrecision(1);
-                                      }
-                                      String text = snapshot.connectionState ==
-                                              ConnectionState.active
-                                          ? _speedInKMH
-                                          : '0';
-                                      return Text(text,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 56));
-                                    }),
-                                Text('km/h',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w300,
-                                        fontSize: 25)),
-                              ],
-                            ) // will inject the speed BLoc (the gps thinfg) here
-                            )
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    CurrentRow(bloc: this.shortStatusBloc),
-                  ],
-                )),
-            Column(
-              children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            "56.7",
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 28,
-                                color: Colors.white),
-                          ),
-                          Text(
-                            "V",
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 25,
-                                color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                    VoltageProgressBar(bloc: this.shortStatusBloc),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  "Batt",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                      fontFamily: 'Europe_Ext'),
-                ),
-                Text(
-                  "65 %",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25.0,
-                      fontFamily: 'Europe_Ext'),
-                ),
-              ],
-            )
-          ],
-        ),
+        NewWidget(shortStatusBloc: shortStatusBloc, locationBloc: locationBloc),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
@@ -198,6 +41,192 @@ class ProgressRows extends StatelessWidget {
   }
 }
 
+class NewWidget extends StatelessWidget {
+  const NewWidget({
+    Key key,
+    @required this.shortStatusBloc,
+    @required this.locationBloc,
+  }) : super(key: key);
+
+  final ShortStatusBloc shortStatusBloc;
+  final LocationBloc locationBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Column(
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TemperatureProgressBar(bloc: this.shortStatusBloc),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        "20", // StreamBuilder
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 28,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        "C",
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 25,
+                            color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Text(
+              "Temp.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                  fontFamily: 'Europe_Ext'),
+            ),
+            Text(
+              "Cell",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                  fontFamily: 'Europe_Ext'),
+            ),
+          ],
+        ),
+        SpeedometerWithCurrent(locationBloc: locationBloc, shortStatusBloc: shortStatusBloc),
+        Column(
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        "56.7",
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 28,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        "V",
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 25,
+                            color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+                VoltageProgressBar(bloc: this.shortStatusBloc),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Text(
+              "Batt",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                  fontFamily: 'Europe_Ext'),
+            ),
+            Text(
+              "65 %",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25.0,
+                  fontFamily: 'Europe_Ext'),
+            ),
+          ],
+        )
+      ],
+    );
+  }
+}
+
+class SpeedometerWithCurrent extends StatelessWidget {
+  const SpeedometerWithCurrent({
+    Key key,
+    @required this.locationBloc,
+    @required this.shortStatusBloc,
+  }) : super(key: key);
+
+  final LocationBloc locationBloc;
+  final ShortStatusBloc shortStatusBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Speedometer(locationBloc: locationBloc),
+                Padding(
+                    padding: EdgeInsets.only(
+                      top: 110,
+                    ), // find a way for these to not be hardcoded
+                    child: Column(
+                      children: <Widget>[
+                        StreamBuilder<LocationData>(
+                            stream: locationBloc.stream,
+                            builder: (context, snapshot) {
+                              String _speedInKMH = '0.0';
+                              if (snapshot.data != null) {
+                                _speedInKMH =
+                                    (snapshot.data.speed * 3.6)
+                                        .toStringAsPrecision(1);
+                              }
+                              String text = snapshot.connectionState ==
+                                      ConnectionState.active
+                                  ? _speedInKMH
+                                  : '0';
+                              return Text(text,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 56));
+                            }),
+                        Text('km/h',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w300,
+                                fontSize: 25)),
+                      ],
+                    ) // will inject the speed BLoc (the gps thinfg) here
+                    )
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            CurrentRow(bloc: this.shortStatusBloc),
+          ],
+        );
+  }
+}
+
 class CurrentRow extends StatelessWidget {
   final ShortStatusBloc bloc;
 
@@ -213,30 +242,69 @@ class CurrentRow extends StatelessWidget {
             var currentCharge = shortStatus.data.getCurrentCharge;
             var currentDischarge = shortStatus.data.getCurrentDischarge;
             return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      width: 100,
-                      height: 30,
-                      decoration: BoxDecoration(
-                          color: Colors.black26,
-                          shape: BoxShape.rectangle,
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.white,
-                                blurRadius: 5.0,
-                                spreadRadius: 5.0),
-                          ]),
-                      child: RotatedBox(
-                        quarterTurns: 2,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.2,
+                        height: 30,
+                        decoration: BoxDecoration(
+                            color: Colors.black26,
+                            shape: BoxShape.rectangle,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.white,
+                                  blurRadius: 5.0,
+                                  spreadRadius: 5.0),
+                            ]),
+                        child: RotatedBox(
+                          quarterTurns: 2,
+                          child: FAProgressBar(
+                            currentValue: currentCharge //currentCharge
+                                .toInt(), // fix that afterwards cuz its baaaad
+                            size: 50,
+                            maxValue: 27,
+                            changeColorValue: 20,
+                            changeProgressColor: Colors.redAccent,
+                            backgroundColor: Colors.black,
+                            progressColor: Colors.lightBlueAccent,
+                            animatedDuration: const Duration(milliseconds: 700),
+                            direction: Axis.horizontal,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      Text("Ch",
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                              letterSpacing: 1.5)),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.4, // experimental values
+                        height: 30,
+                        decoration: BoxDecoration(
+                            color: Colors.black26,
+                            shape: BoxShape.rectangle,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.white,
+                                  blurRadius: 5.0,
+                                  spreadRadius: 5.0),
+                            ]),
                         child: FAProgressBar(
-                          currentValue: currentCharge //currentCharge
-                              .toInt(), // fix that afterwards cuz its baaaad
-                          size: 50,
-                          maxValue: 27,
+                          currentValue: currentDischarge //currentDischarge
+                              .toInt(), // fix that as well currentDischarge.toInt()
+                          maxValue: 25,
                           changeColorValue: 20,
                           changeProgressColor: Colors.redAccent,
                           backgroundColor: Colors.black,
@@ -245,76 +313,36 @@ class CurrentRow extends StatelessWidget {
                           direction: Axis.horizontal,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 15),
-                    Text("Ch",
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
-                            letterSpacing: 1.5)),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      width: 200, // experimental values
-                      height: 30,
-                      decoration: BoxDecoration(
-                          color: Colors.black26,
-                          shape: BoxShape.rectangle,
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.white,
-                                blurRadius: 5.0,
-                                spreadRadius: 5.0),
-                          ]),
-                      child: FAProgressBar(
-                        currentValue: currentDischarge //currentDischarge
-                            .toInt(), // fix that as well currentDischarge.toInt()
-                        size: 50,
-                        maxValue: 25,
-                        changeColorValue: 20,
-                        changeProgressColor: Colors.redAccent,
-                        backgroundColor: Colors.black,
-                        progressColor: Colors.lightBlueAccent,
-                        animatedDuration: const Duration(milliseconds: 700),
-                        direction: Axis.horizontal,
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      children: <Widget>[
-                        Text("1130w",
+                      const SizedBox(height: 15),
+                      Row(
+                        children: <Widget>[
+                          Text("1130w",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25.0,
+                                  letterSpacing: 1.5,
+                                  fontFamily: 'Europe_Ext')),
+                          const SizedBox(
+                            width: 30,
+                          ),
+                          Text(
+                            "Dh",
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 25.0,
+                                fontSize: 20.0,
                                 letterSpacing: 1.5,
-                                fontFamily: 'Europe_Ext')),
-                        const SizedBox(
-                          width: 30,
-                        ),
-                        Text(
-                          "Dh",
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
-                              letterSpacing: 1.5,
-                              fontFamily: 'Europe_Ext'),
-                        )
-                      ],
-                    )
-                  ],
-                )
-              ],
-            );
+                                fontFamily: 'Europe_Ext'),
+                          )
+                        ],
+                      )
+                    ],
+                  )
+                ],
+              );
           } else
             return Container();
         });

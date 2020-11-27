@@ -26,11 +26,10 @@ Future<void> setUpDependencies() async {
   locator.registerFactory(() => FullStatusBloc(_deviceRepository));
   locator.registerFactory(() => BluetoothAuthBloc(_deviceRepository));
   locator.registerFactory(() => LocationBloc());
-  locator.registerLazySingleton(() => SettingsBloc());
   locator.registerFactory(() => DevicesBloc(_bleManager, _deviceRepository));
+  locator.registerLazySingleton(() => SettingsBloc());
   locator
       .registerLazySingleton(() => DeviceBloc(_bleManager, _deviceRepository));
-  locator.registerLazySingleton(() => NavigationService());
   locator.registerLazySingleton(() => NavigationBloc(_navigationService));
   await SharedPrefsService.getInstance()
       .then((settingsBloc) => locator.registerSingleton(settingsBloc))

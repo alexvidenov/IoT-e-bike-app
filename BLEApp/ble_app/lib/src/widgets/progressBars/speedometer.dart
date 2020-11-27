@@ -19,6 +19,8 @@ class Speedometer extends StatelessWidget {
             _speed = snapshot.data.speed * 3.6;
           }
           return Container(
+            height: MediaQuery.of(context).size.height * 0.4,
+            width: MediaQuery.of(context).size.width * 0.5,
             decoration: BoxDecoration(
                 color: Colors.black,
                 shape: BoxShape.circle,
@@ -27,65 +29,65 @@ class Speedometer extends StatelessWidget {
                       color: Colors.white, blurRadius: 2.0, spreadRadius: 2.0),
                 ]),
             child: SfRadialGauge(
-              enableLoadingAnimation: true,
-              animationDuration: 500,
-              axes: <RadialAxis>[
-                _CustomAxis(
-                    labelOffset: 15,
-                    axisLineStyle: AxisLineStyle(
-                        thicknessUnit: GaugeSizeUnit.factor, thickness: 0.15),
-                    radiusFactor: 0.9,
-                    minimum: 0,
-                    showTicks: false,
-                    maximum: 150,
-                    axisLabelStyle: GaugeTextStyle(fontSize: 12),
-                    pointers: <GaugePointer>[
-                      NeedlePointer(
-                          enableAnimation: true,
-                          gradient: const LinearGradient(
-                              colors: <Color>[
-                                Color.fromARGB(70, 255, 251, 0),
-                                Color.fromARGB(100, 255, 251, 0),
-                              ],
-                              stops: <double>[
-                                0.25,
-                                0.75
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter),
-                          animationType: AnimationType.easeOutBack,
-                          value:
-                              snapshot.connectionState == ConnectionState.active
-                                  ? _speed
-                                  : 0,
-                          lengthUnit: GaugeSizeUnit.factor,
-                          animationDuration: 500,
-                          needleStartWidth: 10,
-                          needleEndWidth: 15,
-                          needleLength: 0.8,
-                          knobStyle: KnobStyle(
-                            knobRadius: 0,
-                          )),
-                      RangePointer(
-                          value:
-                              snapshot.connectionState == ConnectionState.active
-                                  ? _speed
-                                  : 0,
-                          width: 0.15,
-                          sizeUnit: GaugeSizeUnit.factor,
-                          animationDuration: 1300,
-                          animationType: AnimationType.easeOutBack,
-                          gradient: const SweepGradient(colors: <Color>[
-                            Colors.amber,
-                            Colors.lightGreenAccent,
-                          ], stops: <double>[
-                            0.25,
-                            0.75
-                          ]),
-                          enableAnimation: true)
-                    ])
-              ],
-            ),
+                enableLoadingAnimation: true,
+                animationDuration: 500,
+                axes: <RadialAxis>[
+                  _CustomAxis(
+                      labelOffset: 15,
+                      axisLineStyle: AxisLineStyle(
+                          thicknessUnit: GaugeSizeUnit.factor, thickness: 0.15),
+                      radiusFactor: 0.9,
+                      minimum: 0,
+                      showTicks: false,
+                      maximum: 150,
+                      axisLabelStyle: GaugeTextStyle(fontSize: 12),
+                      pointers: <GaugePointer>[
+                        NeedlePointer(
+                            enableAnimation: true,
+                            gradient: const LinearGradient(
+                                colors: <Color>[
+                                  Color.fromARGB(70, 255, 251, 0),
+                                  Color.fromARGB(100, 255, 251, 0),
+                                ],
+                                stops: <double>[
+                                  0.25,
+                                  0.75
+                                ],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter),
+                            animationType: AnimationType.easeOutBack,
+                            value:
+                            snapshot.connectionState == ConnectionState.active
+                                ? _speed
+                                : 0,
+                            lengthUnit: GaugeSizeUnit.factor,
+                            animationDuration: 500,
+                            needleStartWidth: 10,
+                            needleEndWidth: 15,
+                            needleLength: 0.8,
+                            knobStyle: KnobStyle(
+                              knobRadius: 0,
+                            )),
+                        RangePointer(
+                            value:
+                            snapshot.connectionState == ConnectionState.active
+                                ? _speed
+                                : 0,
+                            width: 0.15,
+                            sizeUnit: GaugeSizeUnit.factor,
+                            animationDuration: 1300,
+                            animationType: AnimationType.easeOutBack,
+                            gradient: const SweepGradient(colors: <Color>[
+                              Colors.amber,
+                              Colors.lightGreenAccent,
+                            ], stops: <double>[
+                              0.25,
+                              0.75
+                            ]),
+                            enableAnimation: true)
+                      ])
+                ],
+              ),
           );
         });
   }

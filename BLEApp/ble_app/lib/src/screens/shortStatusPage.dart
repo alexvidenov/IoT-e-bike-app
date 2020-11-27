@@ -7,22 +7,23 @@ import 'package:ble_app/src/widgets.dart';
 import 'package:flutter/material.dart';
 
 class DeviceScreen extends RouteAwareWidget {
-  const DeviceScreen(ShortStatusBloc shortStatusBloc)
-      : super(bloc: shortStatusBloc);
+  final _navigationBloc;
+
+  DeviceScreen(ShortStatusBloc shortStatusBloc)
+      : this._navigationBloc = locator<NavigationBloc>(),
+        super(bloc: shortStatusBloc);
 
   @override
-  Widget buildWidget(BuildContext context) {
-    return InkWell(
-      onTap: () => locator<NavigationService>().innerNavigateTo('/full'),
-      child: Container(
-        child: ProgressRows(shortStatusBloc: super.bloc),
-      ),
-    );
-  }
+  Widget buildWidget(BuildContext context) => InkWell(
+        onTap: () => _navigationBloc.navigateTo('/full'),
+        child: Container(
+          child: ProgressRows(shortStatusBloc: super.bloc),
+        ),
+      );
 
   @override
   void onResume() {
     super.onResume();
-    locator<NavigationBloc>().setCurrentPage(CurrentPage.Short);
+    _navigationBloc.addEvent(CurrentPage.Short);
   }
 }

@@ -10,38 +10,49 @@ class AppData {
     if (usersData == null) {
       _instantiateCurrentUserWithDevice(userId, deviceSerialNumber);
     } else {
-      this.usersData = usersData;
+      this.usersData =
+          usersData; // in that case we don't even instantiate the currentLog object
+      UserData currentUser;
+      try {
+        currentUser = usersData.firstWhere((user) =>
+            user.userId == userId); // make a check for the device as well
+      } catch (IterableElementError) {
+        currentUser = UserData.fromJson({
+          'user': userId,
+          'devices': [
+            {'id': deviceSerialNumber, 'data': []}
+          ]
+        });
+        usersData.add(currentUser);
+      }
+      _currentDeviceLog = currentUser.userLog
+          .firstWhere((device) => device.deviceId == deviceSerialNumber); // this may throw if the deviceis different
     }
   }
 
   _instantiateCurrentUserWithDevice(String userId, String deviceSerialNumber) {
     usersData = <UserData>[];
-    bool exists = false;
     UserData _currentUser;
-    for (var user in usersData) {
-      if (user.userId == userId) {
-        exists = true;
-        _currentUser = user;
-      }
-    }
-    if (exists == false) {
-      _currentUser = UserData.fromJson({
-        'user': userId,
-        'devices': [
-          {'id': deviceSerialNumber, 'data': []}
-        ]
-      });
-      usersData.add(_currentUser);
-    }
+    _currentUser = UserData.fromJson({
+      'user': userId,
+      'devices': [
+        {'id': deviceSerialNumber, 'data': []}
+      ]
+    });
+    usersData.add(_currentUser);
 
-    _currentDeviceLog = _currentUser.userLog.firstWhere((device) =>
-        device.deviceId == deviceSerialNumber); // this won't throw null
+    _currentDeviceLog = _currentUser.userLog
+        .firstWhere((device) => device.deviceId == deviceSerialNumber);
   }
 
-  factory AppData.fromJson(List<dynamic> json) {
+  factory AppData.fromJson(List<dynamic> json,
+      {String userId, String deviceSerialNumber}) {
     List<UserData> data = <UserData>[];
     data = json.map((user) => UserData.fromJson(user)).toList();
-    return AppData(usersData: data);
+    return AppData(
+        usersData: data,
+        userId: userId,
+        deviceSerialNumber: deviceSerialNumber);
   }
 
   List<dynamic> toJson() => usersData.map((user) => user.toJson()).toList();

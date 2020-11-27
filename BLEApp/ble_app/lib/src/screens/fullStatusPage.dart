@@ -1,6 +1,5 @@
 import 'package:ble_app/src/blocs/fullStatusBloc.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
-import 'package:ble_app/src/blocs/navigationService.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/fullStatusBarGraphModel.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
@@ -11,7 +10,11 @@ import '../widgets.dart';
 
 // ignore: must_be_immutable
 class FullStatusPage extends RouteAwareWidget {
-  FullStatusPage(FullStatusBloc fullStatusBloc) : super(bloc: fullStatusBloc);
+  final NavigationBloc _navigationBloc;
+
+  FullStatusPage(FullStatusBloc fullStatusBloc)
+      : this._navigationBloc = locator<NavigationBloc>(),
+        super(bloc: fullStatusBloc);
 
   List<FullStatusDataModel> _chartData;
 
@@ -29,7 +32,8 @@ class FullStatusPage extends RouteAwareWidget {
             isVisible: false,
             title: AxisTitle(text: ''),
             minimum: 0,
-            maximum: 60, // inject the max voltage here
+            maximum: 60,
+            // inject the max voltage here
             majorTickLines: MajorTickLines(size: 0)),
         series: getBarSeries(),
       );
@@ -60,7 +64,7 @@ class FullStatusPage extends RouteAwareWidget {
   @override
   Widget buildWidget(BuildContext context) {
     return InkWell(
-      onTap: () => locator<NavigationService>().innerNavigateTo('/map'),
+      onTap: () => _navigationBloc.navigateTo('/map'),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -110,6 +114,6 @@ class FullStatusPage extends RouteAwareWidget {
   @override
   void onResume() {
     super.onResume();
-    locator<NavigationBloc>().setCurrentPage(CurrentPage.Full);
+    _navigationBloc.addEvent(CurrentPage.Full);
   }
 }

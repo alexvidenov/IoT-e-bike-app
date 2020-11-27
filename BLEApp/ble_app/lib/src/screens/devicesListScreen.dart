@@ -4,6 +4,7 @@ import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
+import 'package:location_permissions/location_permissions.dart' as locationPerm;
 
 typedef _DeviceTapListener = void Function();
 
@@ -22,6 +23,15 @@ class DevicesListScreen extends RouteAwareWidget {
         Navigator.of(context)
             .pushNamed('/auth'); // this route does not exist lmao
       });
+
+  @override
+  void onCreate() async {
+    super.onCreate();
+    locationPerm.PermissionStatus permissionStatus = await locationPerm.LocationPermissions().checkPermissionStatus();
+    if(permissionStatus != locationPerm.PermissionStatus.granted){
+      await locationPerm.LocationPermissions().requestPermissions();
+    }
+  }
 
   @override
   Widget buildWidget(BuildContext context) {

@@ -15,7 +15,7 @@ class TemperatureProgressBar extends StatelessWidget {
         initialData: ShortStatusModel(),
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
-            var temperature = shortStatus.data.getTemperature;
+            final temperature = shortStatus.data.getTemperature;
             return Container(
               height: 180,
               width: 20,
