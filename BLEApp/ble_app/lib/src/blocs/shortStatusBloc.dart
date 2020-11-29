@@ -56,12 +56,14 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
 
   _initData() {
     String data = locator<SettingsBloc>().getUserData();
+    String userId = locator<Auth>().getCurrentUserId();
+    String deviceId = DeviceRepository().deviceId;
     data != 'empty'
-        ? _appData = AppData.fromJson(jsonDecode(data))
+        ? _appData = AppData.fromJson(jsonDecode(data),
+            userId: userId, deviceSerialNumber: deviceId)
         : _appData = AppData(
             userId: locator<Auth>().getCurrentUserId(),
-            deviceSerialNumber:
-                DeviceRepository().deviceId); // jsonDecode returns dynamic[]
+            deviceSerialNumber: DeviceRepository().deviceId);
   }
 
   ShortStatusModel _generateShortStatus(String rawData) {

@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
                   break;
                 case CurrentPage.Full:
                   _onPressed = () => _navigationBloc.navigateTo('/map');
-                  _title = 'Battery status';
+                  _title = 'Bat. status';
                   break;
                 case CurrentPage.Map:
                   _onPressed = () => _navigationBloc.returnToFirstRoute();
@@ -72,11 +72,11 @@ class HomeScreen extends StatelessWidget {
                 child: Text('Disconnect',
                     style: TextStyle(
                         fontSize: 12, color: Colors.white, letterSpacing: 1.5)),
-                onPressed: () => _prefsBloc
-                    .clearAllPrefs()
-                    .then((_) => _deviceBloc.disconnect())
-                    .then((_) => Navigator.of(context)
-                        .pushNamedAndRemoveUntil('/devices', (_) => false))),
+                onPressed: () {
+                  _prefsBloc.clearPrefs();
+                  _deviceBloc.disconnect().then((_) => Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/devices', (_) => false));
+                }),
             decoration: BoxDecoration(
                 color: Colors.black26,
                 shape: BoxShape.rectangle,

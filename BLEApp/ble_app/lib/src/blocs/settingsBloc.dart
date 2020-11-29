@@ -24,9 +24,6 @@ class SettingsBloc {
 
   void clearPrefs() => setManual();
 
-  Future clearAllPrefs() async =>
-      await _preferencesService.clearAllPrefs().then((_) => setManual());
-
   void setAutoPassword(String deviceId) {
     _saveDevice(deviceId);
     _savePassword(

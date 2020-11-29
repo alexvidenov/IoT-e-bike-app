@@ -14,7 +14,9 @@ class Storage {
     AppData appData = AppData.fromJson(data);
     for (final user in appData.usersData) {
       for (final log in user.userLog) {
-        _convertToUInt8ListAndUpload(log.deviceLog, log.deviceId);
+        if (log.deviceId != null) {
+          _convertToUInt8ListAndUpload(log.deviceLog, log.deviceId);
+        }
       }
     }
   }

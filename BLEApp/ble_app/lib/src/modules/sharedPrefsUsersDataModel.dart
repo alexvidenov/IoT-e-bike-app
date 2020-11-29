@@ -15,18 +15,29 @@ class AppData {
       UserData currentUser;
       try {
         currentUser = usersData.firstWhere((user) =>
-            user.userId == userId); // make a check for the device as well
+            user.userId ==
+            userId); // make a check for the device as well. THIS FAILS WHEN USER SIGNS AGAIN, EVEN HE IS ALREADY REGISTERED
       } catch (IterableElementError) {
         currentUser = UserData.fromJson({
+          // AND IT WILL EVENTUALLY GET HERE AND INSTANTIATE USER WITH NULL..THAT'S WHY
           'user': userId,
           'devices': [
             {'id': deviceSerialNumber, 'data': []}
+            // NULL FOLDER COMES FROM HERE
           ]
         });
         usersData.add(currentUser);
       }
-      _currentDeviceLog = currentUser.userLog
-          .firstWhere((device) => device.deviceId == deviceSerialNumber); // this may throw if the deviceis different
+      DeviceLog deviceLog;
+      try {
+        // case if the same user logs in with different device
+        deviceLog = currentUser.userLog
+            .firstWhere((device) => device.deviceId == deviceSerialNumber);
+      } catch (IterableElementError) {
+        deviceLog = DeviceLog.fromJson({'id': deviceSerialNumber, 'data': []});
+        currentUser.addLog(deviceLog);
+      }
+      _currentDeviceLog = deviceLog;
     }
   }
 
@@ -46,7 +57,9 @@ class AppData {
   }
 
   factory AppData.fromJson(List<dynamic> json,
-      {String userId, String deviceSerialNumber}) {
+      // here, we pass only the json, and if the user does not exist, user is not even created
+      {String userId,
+      String deviceSerialNumber}) {
     List<UserData> data = <UserData>[];
     data = json.map((user) => UserData.fromJson(user)).toList();
     return AppData(
@@ -66,7 +79,7 @@ class UserData {
 
   UserData({this.userId, this.userLog});
 
-  addLog(Map<String, dynamic> data) => userLog.add(DeviceLog.fromJson(data));
+  addLog(DeviceLog deviceLog) => userLog.add(deviceLog);
 
   Map<String, dynamic> toJson() =>
       {'user': userId, 'devices': userLog.map((log) => log.toJson()).toList()};
