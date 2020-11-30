@@ -41,7 +41,6 @@ class CurrentRow extends StatelessWidget {
                         child: FAProgressBar(
                           currentValue: currentCharge //currentCharge
                               .toInt(),
-                          // fix that afterwards cuz its baaaad
                           size: 50,
                           maxValue: 27,
                           changeColorValue: 20,

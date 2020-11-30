@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/widgets/progressBars/speedometer.dart';
-import 'package:ble_app/src/widgets/ShortStatusUI/CurrentRow.dart';
+import 'package:ble_app/src/widgets/ShortStatusUI/_CurrentRow.dart';
 import 'package:location/location.dart';
 
 class SpeedometerWithCurrent extends StatelessWidget {

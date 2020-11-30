@@ -13,9 +13,9 @@ class DisconnectedPage extends StatefulWidget {
 }
 
 class _DisconnectedPageState extends State<DisconnectedPage> {
-  final DeviceBloc _deviceBloc = locator<DeviceBloc>();
+  final DeviceBloc _deviceBloc = sl<DeviceBloc>();
 
-  final SettingsBloc _settingsBloc = locator<SettingsBloc>();
+  final SettingsBloc _settingsBloc = sl<SettingsBloc>();
 
   StreamSubscription<bool> _stateSubscription;
 

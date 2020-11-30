@@ -14,25 +14,21 @@ import 'package:ble_app/src/services/Auth.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:get_it/get_it.dart';
 
-final locator = GetIt.instance;
+final sl = GetIt.instance;
 
 Future<void> setUpDependencies() async {
-  final _deviceRepository = DeviceRepository();
-  final _bleManager = BleManager();
-  final _navigationService = NavigationService();
-  locator.registerLazySingleton(() => Auth());
-  locator.registerLazySingleton(() => EntryEndpointBloc());
-  locator.registerFactory(() => ShortStatusBloc(_deviceRepository));
-  locator.registerFactory(() => FullStatusBloc(_deviceRepository));
-  locator.registerFactory(() => BluetoothAuthBloc(_deviceRepository));
-  locator.registerFactory(() => LocationBloc());
-  locator.registerFactory(() => DevicesBloc(_bleManager, _deviceRepository));
-  locator.registerLazySingleton(() => SettingsBloc());
-  locator
-      .registerLazySingleton(() => DeviceBloc(_bleManager, _deviceRepository));
-  locator.registerLazySingleton(() => NavigationBloc(_navigationService));
-  await SharedPrefsService.getInstance()
-      .then((settingsBloc) => locator.registerSingleton(settingsBloc))
-      .then((_) => BleManager()
-          .createClient(restoreStateIdentifier: "com.example.ble_app"));
+  sl.registerSingleton(DeviceRepository());
+  sl.registerSingleton(BleManager());
+  sl.registerSingleton(NavigationService());
+  sl.registerLazySingleton(() => Auth());
+  sl.registerLazySingleton(() => EntryEndpointBloc());
+  sl.registerFactory(() => ShortStatusBloc(sl()));
+  sl.registerFactory(() => FullStatusBloc(sl()));
+  sl.registerFactory(() => BluetoothAuthBloc(sl()));
+  sl.registerFactory(() => LocationBloc());
+  sl.registerFactory(() => DevicesBloc(sl(), sl()));
+  sl.registerLazySingleton(() => SettingsBloc(sl()));
+  sl.registerLazySingleton(() => DeviceBloc(sl(), sl()));
+  sl.registerLazySingleton(() => NavigationBloc(sl()));
+  sl.registerSingletonAsync(() => SharedPrefsService.getInstance());
 }

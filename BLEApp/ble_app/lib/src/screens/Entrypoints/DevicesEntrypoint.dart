@@ -1,11 +1,11 @@
 import 'package:ble_app/src/screens/Entrypoints/Entrypoint.dart';
-import 'package:ble_app/src/utils/Router.dart';
+import 'package:ble_app/src/utils/Router.dart' as R;
 import 'package:flutter/material.dart';
 
 class DevicesEntrypoint extends EntryPoint {
-  const DevicesEntrypoint({Key key})
+  DevicesEntrypoint({Key key})
       : super(
             key: key,
             onGenerateRoute:
-                Router.generateRouteMainNavigatorStartsWithDevices);
+                R.Router.generateRouteMainNavigatorStartsWithDevices);
 }

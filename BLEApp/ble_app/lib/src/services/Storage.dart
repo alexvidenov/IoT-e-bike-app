@@ -10,18 +10,20 @@ class Storage {
 
   final StorageReference _root = FirebaseStorage.instance.ref();
 
-  void upload(List<dynamic> data) {
+  Future<void> upload(List<dynamic> data) async {
     AppData appData = AppData.fromJson(data);
     for (final user in appData.usersData) {
       for (final log in user.userLog) {
+        print(log.deviceLog.toString());
         if (log.deviceId != null) {
-          _convertToUInt8ListAndUpload(log.deviceLog, log.deviceId);
+          await _convertToUInt8ListAndUpload(log.deviceLog, log.deviceId);
         }
       }
     }
   }
 
-  _convertToUInt8ListAndUpload(List<dynamic> data, String deviceSerialNumber) {
+  _convertToUInt8ListAndUpload(
+      List<dynamic> data, String deviceSerialNumber) async {
     JsonEncoder encoder = JsonEncoder.withIndent('  ');
     String jsonString = encoder.convert(data);
     List<int> bytes = utf8.encode(jsonString);
@@ -36,9 +38,11 @@ class Storage {
 
     String fileName = year + month + day + '.json';
 
-    StorageReference fireRef =
-        _root.child('/users/$uid/$deviceSerialNumber/$fileName');
+    StorageReference fireRef = _root.child(
+        '/users/$uid/$deviceSerialNumber/$fileName'); // TODO: await the storageUploadTask here
 
-    fireRef.putData(uploadData);
+    StorageUploadTask _uploadTask = fireRef.putData(uploadData);
+
+    await _uploadTask.onComplete;
   }
 }

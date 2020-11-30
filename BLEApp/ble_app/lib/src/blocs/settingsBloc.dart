@@ -10,7 +10,7 @@ class SettingsBloc {
 
   final SharedPrefsService _preferencesService;
 
-  SettingsBloc() : this._preferencesService = locator<SharedPrefsService>();
+  SettingsBloc(this._preferencesService);
 
   String getUserData() => _preferencesService.userData() ?? 'empty';
 

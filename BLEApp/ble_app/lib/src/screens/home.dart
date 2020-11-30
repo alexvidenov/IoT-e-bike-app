@@ -2,8 +2,8 @@ import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
-import 'package:ble_app/src/utils/Router.dart';
-import 'package:ble_app/src/widgets/navigationDrawer.dart';
+import 'package:ble_app/src/utils/Router.dart' as R;
+import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
   final DeviceBloc _deviceBloc;
   final NavigationBloc _navigationBloc;
 
-  HomeScreen(this._prefsBloc, this._deviceBloc, this._navigationBloc);
+  const HomeScreen(this._prefsBloc, this._deviceBloc, this._navigationBloc);
 
   _instantiateObserver() => routeObserver = RouteObserver<PageRoute>();
 
@@ -91,7 +91,7 @@ class HomeScreen extends StatelessWidget {
       body: Navigator(
         initialRoute: '/',
         key: _navigationBloc.navigatorKey,
-        onGenerateRoute: Router.generateRouteSecondNavigator,
+        onGenerateRoute: R.Router.generateRouteSecondNavigator,
         observers: [routeObserver],
       ),
     );

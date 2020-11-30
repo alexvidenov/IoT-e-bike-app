@@ -10,7 +10,9 @@ import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 enum Endpoint { Unknown, DevicesScreen, AuthScreen }
 
 class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
-  final devicesBloc = locator<DevicesBloc>();
+  final devicesBloc = sl<DevicesBloc>();
+
+  EntryEndpointBloc();
 
   StreamSubscription _devicePickedSubscription;
 
@@ -23,7 +25,7 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
   }
 
   void _determineEndpoint() {
-    String _deviceId = locator<SettingsBloc>().getOptionalDeviceId();
+    String _deviceId = sl<SettingsBloc>().getOptionalDeviceId();
     if (_deviceId != 'empty') {
       BleDevice device =
           BleDevice(peripheral: BleManager().createUnsafePeripheral(_deviceId));

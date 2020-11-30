@@ -12,7 +12,7 @@ class MapPage extends RouteAwareWidget {
 
   MapPage(LocationBloc locationBloc)
       : this._locationBloc = locationBloc,
-        this._navigationBloc = locator<NavigationBloc>(),
+        this._navigationBloc = sl<NavigationBloc>(),
         super(bloc: locationBloc);
 
   @override

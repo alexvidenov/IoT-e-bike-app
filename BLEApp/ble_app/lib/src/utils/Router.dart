@@ -1,11 +1,3 @@
-import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
-import 'package:ble_app/src/blocs/deviceBloc.dart';
-import 'package:ble_app/src/blocs/devicesBloc.dart';
-import 'package:ble_app/src/blocs/fullStatusBloc.dart';
-import 'package:ble_app/src/blocs/locationBloc.dart';
-import 'package:ble_app/src/blocs/navigationBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/authenticationPage.dart';
 import 'package:ble_app/src/screens/devicesListScreen.dart';
@@ -21,13 +13,13 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => DeviceScreen(locator<ShortStatusBloc>()));
+            builder: (_) => DeviceScreen(sl()));
       case '/full':
         return MaterialPageRoute(
-            builder: (_) => FullStatusPage(locator<FullStatusBloc>()));
+            builder: (_) => FullStatusPage(sl()));
       case '/map':
         return MaterialPageRoute(
-            builder: (_) => MapPage(locator<LocationBloc>()));
+            builder: (_) => MapPage(sl()));
     }
   }
 
@@ -36,21 +28,21 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
-                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
+            builder: (_) => AuthenticationScreen(sl(),
+                sl(), sl()));
       case '/home':
         return MaterialPageRoute(
-            builder: (_) => HomeScreen(locator<SettingsBloc>(),
-                locator<DeviceBloc>(), locator<NavigationBloc>()));
+            builder: (_) => HomeScreen(sl(),
+                sl(), sl()));
       case '/settings':
-        return MaterialPageRoute(builder: (_) => Settings());
+        return MaterialPageRoute(builder: (_) => Settings(sl(), sl()));
       case '/devices':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(locator<DevicesBloc>()));
+            builder: (_) => DevicesListScreen(sl()));
       case '/auth':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
-                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
+            builder: (_) => AuthenticationScreen(sl(),
+                sl(), sl()));
     }
   }
 
@@ -59,20 +51,20 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(locator<DevicesBloc>()));
+            builder: (_) => DevicesListScreen(sl()));
       case '/auth':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
-                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
+            builder: (_) => AuthenticationScreen(sl(),
+                sl(), sl()));
       case '/home':
         return MaterialPageRoute(
-            builder: (_) => HomeScreen(locator<SettingsBloc>(),
-                locator<DeviceBloc>(), locator<NavigationBloc>()));
+            builder: (_) => HomeScreen(sl(),
+                sl(), sl()));
       case '/settings':
-        return MaterialPageRoute(builder: (_) => Settings());
+        return MaterialPageRoute(builder: (_) => Settings(sl(), sl()));
       case '/devices':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(locator<DevicesBloc>()));
+            builder: (_) => DevicesListScreen(sl()));
     }
   }
 }

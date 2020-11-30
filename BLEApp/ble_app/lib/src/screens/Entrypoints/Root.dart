@@ -6,7 +6,9 @@ import 'package:ble_app/src/services/Auth.dart';
 import 'package:flutter/material.dart';
 
 class RootPage extends StatelessWidget {
-  final Auth _auth = locator<Auth>();
+  final Auth _auth;
+
+  const RootPage(this._auth);
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +18,8 @@ class RootPage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           final bool isLoggedIn = snapshot.hasData;
           return isLoggedIn
-              ? BleApp(locator<EntryEndpointBloc>())
-              : LoginPage(_auth);
+              ? BleApp(sl())
+              : LoginScreen(_auth);
         }
         return _buildWaitingScreen();
       },

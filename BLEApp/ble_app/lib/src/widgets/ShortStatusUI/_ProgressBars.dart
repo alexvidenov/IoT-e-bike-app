@@ -4,7 +4,7 @@ import 'package:ble_app/src/widgets/progressBars/temperatureProgressBar.dart';
 import 'package:ble_app/src/widgets/progressBars/voltageProgressBar.dart';
 import 'package:flutter/material.dart';
 
-import 'Speedometer+Current.dart';
+import '_Speedometer+Current.dart';
 
 class ProgressColumns extends StatelessWidget {
   const ProgressColumns({

@@ -48,21 +48,21 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
           }
         });
         _uploadTimer = 0;
-        locator<SettingsBloc>()
+        sl<SettingsBloc>()
             .setUserData(jsonEncode(_appData.toJson())); // list of userData
       }
     });
   }
 
   _initData() {
-    String data = locator<SettingsBloc>().getUserData();
-    String userId = locator<Auth>().getCurrentUserId();
+    String data = sl<SettingsBloc>().getUserData();
+    String userId = sl<Auth>().getCurrentUserId();
     String deviceId = DeviceRepository().deviceId;
     data != 'empty'
         ? _appData = AppData.fromJson(jsonDecode(data),
             userId: userId, deviceSerialNumber: deviceId)
         : _appData = AppData(
-            userId: locator<Auth>().getCurrentUserId(),
+            userId: sl<Auth>().getCurrentUserId(),
             deviceSerialNumber: DeviceRepository().deviceId);
   }
 
