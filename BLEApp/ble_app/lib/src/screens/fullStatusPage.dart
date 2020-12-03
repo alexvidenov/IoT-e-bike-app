@@ -10,7 +10,7 @@ class FullStatusPage extends RouteAwareWidget {
   final NavigationBloc _navigationBloc;
 
   FullStatusPage(FullStatusBloc fullStatusBloc)
-      : this._navigationBloc = locator<NavigationBloc>(),
+      : this._navigationBloc = $<NavigationBloc>(),
         super(bloc: fullStatusBloc);
 
   @override

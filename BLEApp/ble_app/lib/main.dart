@@ -27,7 +27,7 @@ void main() async {
   } else if (Platform.isIOS) {
     // TODO: configure the iOS part as well
   }
-  runApp(RootPage(locator<Auth>()));
+  runApp(RootPage($<Auth>()));
 }
 
 void uploadCallback() async {

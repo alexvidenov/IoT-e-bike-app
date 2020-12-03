@@ -11,7 +11,7 @@ class DeviceScreen extends RouteAwareWidget {
   final _navigationBloc;
 
   DeviceScreen(ShortStatusBloc shortStatusBloc)
-      : this._navigationBloc = locator<NavigationBloc>(),
+      : this._navigationBloc = $<NavigationBloc>(),
         super(bloc: shortStatusBloc);
 
   @override

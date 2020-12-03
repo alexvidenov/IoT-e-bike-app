@@ -8,7 +8,7 @@ import 'package:ble_app/src/modules/shortStatusModel.dart';
 class TestWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var shortStatusBloc = locator<ShortStatusBloc>();
+    var shortStatusBloc = $<ShortStatusBloc>();
     return Container(
         child: StreamBuilder<ShortStatusModel>(
             stream: shortStatusBloc.stream,

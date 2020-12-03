@@ -12,27 +12,28 @@ enum Endpoint { Unknown, DevicesScreen, AuthScreen }
 
 @lazySingleton
 class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
-  final DevicesBloc devicesBloc;
+  final DevicesBloc _devicesBloc;
+  final SettingsBloc _settingsBloc;
 
   StreamSubscription _devicePickedSubscription;
 
-  EntryEndpointBloc(this.devicesBloc);
+  EntryEndpointBloc(this._devicesBloc, this._settingsBloc);
 
-  _listen() => _devicePickedSubscription = devicesBloc.pickedDevice.listen((_) {
+  _listen() => _devicePickedSubscription = _devicesBloc.pickedDevice.listen((_) {
       this.pause();
-      devicesBloc.pause();
+      _devicesBloc.pause();
       addEvent(Endpoint.AuthScreen);
     });
 
   void _determineEndpoint() {
-    String _deviceId = locator<SettingsBloc>().getOptionalDeviceId();
+    String _deviceId = _settingsBloc.getOptionalDeviceId();
     if (_deviceId != 'empty') {
       BleDevice device =
           BleDevice(peripheral: BleManager().createUnsafePeripheral(_deviceId));
       _listen();
-      devicesBloc.init();
-      devicesBloc.create();
-      devicesBloc.addEvent(device);
+      _devicesBloc.init();
+      _devicesBloc.create();
+      _devicesBloc.addEvent(device);
     } else {
       addEvent(Endpoint.DevicesScreen);
     }

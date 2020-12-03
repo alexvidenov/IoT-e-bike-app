@@ -33,8 +33,6 @@ GetIt $initGetIt(
   gh.lazySingleton<Auth>(() => Auth());
   gh.lazySingleton<DeviceRepository>(() => DeviceRepository());
   gh.factory<DevicesBloc>(() => DevicesBloc(get<DeviceRepository>()));
-  gh.lazySingleton<EntryEndpointBloc>(
-      () => EntryEndpointBloc(get<DevicesBloc>()));
   gh.factory<FullStatusBloc>(() => FullStatusBloc(get<DeviceRepository>()));
   gh.factory<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
@@ -44,8 +42,11 @@ GetIt $initGetIt(
   gh.lazySingleton<DeviceBloc>(() => DeviceBloc(get<DeviceRepository>()));
   gh.lazySingleton<NavigationBloc>(
       () => NavigationBloc(get<NavigationService>()));
-  gh.singletonAsync<SharedPrefsService>(() => SharedPrefsService.getInstance());
   gh.lazySingleton<SettingsBloc>(() => SettingsBloc(get<SharedPrefsService>()));
+  gh.lazySingleton<EntryEndpointBloc>(
+      () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));
 
+  // Eager singletons must be registered in the right order
+  gh.singletonAsync<SharedPrefsService>(() => SharedPrefsService.getInstance());
   return get;
 }

@@ -21,13 +21,13 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => DeviceScreen(locator<ShortStatusBloc>()));
+            builder: (_) => DeviceScreen($()));
       case '/full':
         return MaterialPageRoute(
-            builder: (_) => FullStatusPage(locator<FullStatusBloc>()));
+            builder: (_) => FullStatusPage($()));
       case '/map':
         return MaterialPageRoute(
-            builder: (_) => MapPage(locator<LocationBloc>()));
+            builder: (_) => MapPage($(), $()));
     }
   }
 
@@ -36,21 +36,21 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
-                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
+            builder: (_) => AuthenticationScreen($(),
+                $(), $()));
       case '/home':
         return MaterialPageRoute(
-            builder: (_) => HomeScreen(locator<SettingsBloc>(),
-                locator<DeviceBloc>(), locator<NavigationBloc>()));
+            builder: (_) => HomeScreen($(),
+                $(), $()));
       case '/settings':
         return MaterialPageRoute(builder: (_) => Settings());
       case '/devices':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(locator<DevicesBloc>()));
+            builder: (_) => DevicesListScreen($()));
       case '/auth':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
-                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
+            builder: (_) => AuthenticationScreen($(),
+                $(), $()));
     }
   }
 
@@ -59,20 +59,20 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(locator<DevicesBloc>()));
+            builder: (_) => DevicesListScreen($()));
       case '/auth':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
-                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
+            builder: (_) => AuthenticationScreen($(),
+                $(), $()));
       case '/home':
         return MaterialPageRoute(
-            builder: (_) => HomeScreen(locator<SettingsBloc>(),
-                locator<DeviceBloc>(), locator<NavigationBloc>()));
+            builder: (_) => HomeScreen($(),
+                $(), $()));
       case '/settings':
         return MaterialPageRoute(builder: (_) => Settings());
       case '/devices':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(locator<DevicesBloc>()));
+            builder: (_) => DevicesListScreen($()));
     }
   }
 }

@@ -13,7 +13,7 @@ class ShortStatusUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locationBloc = locator<LocationBloc>();
+    final locationBloc = $<LocationBloc>();
     locationBloc.startTrackingLocation();
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

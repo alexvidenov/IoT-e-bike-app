@@ -1,5 +1,4 @@
 import 'package:ble_app/main.dart';
-import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/loginPage.dart';
 import 'package:ble_app/src/services/Auth.dart';
@@ -18,7 +17,7 @@ class RootPage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           final bool isLoggedIn = snapshot.hasData;
           return isLoggedIn
-              ? BleApp(locator<EntryEndpointBloc>())
+              ? BleApp($())
               : LoginScreen(_auth);
         }
         return _buildWaitingScreen();
