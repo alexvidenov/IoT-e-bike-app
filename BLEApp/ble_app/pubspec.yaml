@@ -20,15 +20,27 @@ dependencies:
   flutter:
     sdk: flutter
   rxdart: ^0.24.1
+  injectable: ^1.0.4
   get_it: ^4.0.4
-  flutter_blue: ^0.7.1+1
-  visibility_detector: ^0.1.5
+  shared_preferences: ^0.5.8
+  flutter_ble_lib:
+    git:
+      url: git://github.com/Polidea/FlutterBleLib.git
+      ref: develop
+  flutter_animation_progress_bar: ^1.0.0
+  syncfusion_flutter_core: ^18.2.46+1
   syncfusion_flutter_gauges: ^18.2.44
   syncfusion_flutter_charts: ^18.2.47
   google_maps_flutter: ^0.5.28+1
   location: ^3.0.0
-  flutter_animation_progress_bar: ^1.0.0
-  syncfusion_flutter_core: ^18.2.46+1
+  firebase_core: ^0.5.0
+  firebase_auth: ^0.18.0+1
+  cloud_firestore: ^0.14.0+2
+  firebase_storage: ^4.0.0
+  workmanager: ^0.2.0
+  android_alarm_manager: ^0.4.5+11
+  location_permissions: ^3.0.0
+  responsive_framework: ^0.0.8
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -37,7 +49,11 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  injectable_generator: ^1.0.4
+  build_runner: ^1.10.3
 
+dependency_overrides:
+  analyzer: 0.40.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

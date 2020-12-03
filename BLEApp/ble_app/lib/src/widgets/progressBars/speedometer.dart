@@ -1,77 +1,100 @@
+import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:location/location.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-class RadialNonLinearLabel extends StatefulWidget {
-  const RadialNonLinearLabel({Key key}) : super(key: key);
+class Speedometer extends StatelessWidget {
+  final LocationBloc locationBloc;
 
-  @override
-  _RadialNonLinearLabelState createState() => _RadialNonLinearLabelState();
-}
-
-class _RadialNonLinearLabelState extends State<RadialNonLinearLabel> {
-  _RadialNonLinearLabelState();
+  Speedometer({Key key, @required this.locationBloc}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return getRadialNonLinearLabel();
+    return StreamBuilder<LocationData>(
+        stream: locationBloc.stream,
+        builder: (_, snapshot) {
+          double _speed = 0.0;
+          if (snapshot.data != null) {
+            _speed = snapshot.data.speed * 3.6;
+          }
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.4,
+            width: MediaQuery.of(context).size.width * 0.5,
+            decoration: BoxDecoration(
+                color: Colors.black,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.white, blurRadius: 2.0, spreadRadius: 2.0),
+                ]),
+            child: SfRadialGauge(
+                enableLoadingAnimation: true,
+                animationDuration: 500,
+                axes: <RadialAxis>[
+                  _CustomAxis(
+                      labelOffset: 15,
+                      axisLineStyle: AxisLineStyle(
+                          thicknessUnit: GaugeSizeUnit.factor, thickness: 0.15),
+                      radiusFactor: 0.9,
+                      minimum: 0,
+                      showTicks: false,
+                      maximum: 150,
+                      axisLabelStyle: GaugeTextStyle(fontSize: 12),
+                      pointers: <GaugePointer>[
+                        NeedlePointer(
+                            enableAnimation: true,
+                            gradient: const LinearGradient(
+                                colors: <Color>[
+                                  Color.fromARGB(70, 255, 251, 0),
+                                  Color.fromARGB(100, 255, 251, 0),
+                                ],
+                                stops: <double>[
+                                  0.25,
+                                  0.75
+                                ],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter),
+                            animationType: AnimationType.easeOutBack,
+                            value:
+                            snapshot.connectionState == ConnectionState.active
+                                ? _speed
+                                : 0,
+                            lengthUnit: GaugeSizeUnit.factor,
+                            animationDuration: 500,
+                            needleStartWidth: 10,
+                            needleEndWidth: 15,
+                            needleLength: 0.8,
+                            knobStyle: KnobStyle(
+                              knobRadius: 0,
+                            )),
+                        RangePointer(
+                            value:
+                            snapshot.connectionState == ConnectionState.active
+                                ? _speed
+                                : 0,
+                            width: 0.15,
+                            sizeUnit: GaugeSizeUnit.factor,
+                            animationDuration: 1300,
+                            animationType: AnimationType.easeOutBack,
+                            gradient: const SweepGradient(colors: <Color>[
+                              Colors.amber,
+                              Colors.lightGreenAccent,
+                            ], stops: <double>[
+                              0.25,
+                              0.75
+                            ]),
+                            enableAnimation: true)
+                      ])
+                ],
+              ),
+          );
+        });
   }
 }
 
-SfRadialGauge getRadialNonLinearLabel() {
-  return SfRadialGauge(
-    enableLoadingAnimation: true,
-    animationDuration: 500,
-    axes: <RadialAxis>[
-      CustomAxis(
-          labelOffset: 15,
-          axisLineStyle: AxisLineStyle(
-              thicknessUnit: GaugeSizeUnit.factor, thickness: 0.15),
-          radiusFactor: 0.9,
-          minimum: 0,
-          showTicks: false,
-          maximum: 150,
-          axisLabelStyle: GaugeTextStyle(fontSize: 12),
-          pointers: <GaugePointer>[
-            NeedlePointer(
-                enableAnimation: true,
-                gradient: const LinearGradient(colors: <Color>[
-                  Color.fromRGBO(203, 126, 223, 0.1),
-                  Color(0xFFCB7EDF)
-                ], stops: <double>[
-                  0.25,
-                  0.75
-                ], begin: Alignment.bottomCenter, end: Alignment.topCenter),
-                animationType: AnimationType.easeOutBack,
-                value: 60,
-                lengthUnit: GaugeSizeUnit.factor,
-                animationDuration: 500,
-                needleStartWidth: 10,
-                needleEndWidth: 15,
-                needleLength: 0.8,
-                knobStyle: KnobStyle(
-                  knobRadius: 0,
-                )),
-            RangePointer(
-                value: 60,
-                width: 0.15,
-                sizeUnit: GaugeSizeUnit.factor,
-                color: _pointerColor,
-                animationDuration: 1300,
-                animationType: AnimationType.easeOutBack,
-                gradient: const SweepGradient(
-                    colors: <Color>[Color(0xFF9E40DC), Color(0xFFE63B86)],
-                    stops: <double>[0.25, 0.75]),
-                enableAnimation: true)
-          ])
-    ],
-  );
-}
-
-Color _pointerColor = const Color(0xFF494CA2);
-
-class CustomAxis extends RadialAxis {
-  CustomAxis({
+class _CustomAxis extends RadialAxis {
+  _CustomAxis({
     double radiusFactor = 1,
     List<GaugePointer> pointers,
     GaugeTextStyle axisLabelStyle,
@@ -88,14 +111,12 @@ class CustomAxis extends RadialAxis {
           labelOffset: labelOffset ?? 20,
           axisLabelStyle: axisLabelStyle ??
               GaugeTextStyle(
-                  color: Colors.black,
                   fontSize: 25.0,
                   fontFamily: 'Segoe UI',
                   fontStyle: FontStyle.normal,
                   fontWeight: FontWeight.normal),
           axisLineStyle: axisLineStyle ??
               AxisLineStyle(
-                color: Colors.grey,
                 thickness: 10,
               ),
           radiusFactor: radiusFactor,
@@ -107,7 +128,10 @@ class CustomAxis extends RadialAxis {
     for (num i = 0; i < 9; i++) {
       final double _value = _calculateLabelValue(i);
       final CircularAxisLabel label = CircularAxisLabel(
-          axisLabelStyle, _value.toInt().toString(), i, false);
+          GaugeTextStyle(color: Colors.white, fontSize: 15),
+          _value.toInt().toString(),
+          i,
+          false);
       label.value = _value;
       _visibleLabels.add(label);
     }

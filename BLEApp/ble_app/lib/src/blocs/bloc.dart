@@ -1,21 +1,39 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/BluetoothRepository.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 
-abstract class Bloc<T> {
-  // T, S, R
-  // data, stream subscription, and repository
-  final behaviourSubject$ = BehaviorSubject<T>();
+abstract class Bloc<T, S> {
+  // state and event
+  // T, S
 
-  Stream<T> get stream => behaviourSubject$.stream; // should expose only that!!
+  BehaviorSubject<T> _publishSubject$;
 
-  // eventually implement constructor calling generic Stream getter. Type of repo is R
+  Stream<T> get stream => _publishSubject$.stream;
 
+  Sink<T> get _sink => _publishSubject$.sink;
+
+  StreamSubscription<S> streamSubscription;
+
+  Bloc() {
+    this._publishSubject$ = BehaviorSubject<T>();
+  }
+
+  void create() {}
+
+  void pause() {}
+
+  void resume() {}
+
+  Function(T) get addEvent => _sink.add;
+
+  pauseSubscription() => streamSubscription?.pause();
+
+  resumeSubscription() => streamSubscription.resume();
+
+  @mustCallSuper
   void dispose() {
-    behaviourSubject$.close();
-    GetIt.I<BluetoothRepository>()
-        .dispose(); // the Bluetooth repository class will be the R generic
+    streamSubscription?.cancel();
+    _publishSubject$?.close();
   }
 }

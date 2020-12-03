@@ -1,32 +1,82 @@
-import 'dart:async';
+import 'dart:convert';
+
 import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:ble_app/src/blocs/navigationService.dart';
+import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/modules/sharedPrefsUsersDataModel.dart';
 
 import 'package:ble_app/src/modules/shortStatusModel.dart';
-import 'package:ble_app/src/blocs/BluetoothRepository.dart';
-import 'package:ble_app/src/utils.dart';
+import 'package:ble_app/src/services/Auth.dart';
+import 'package:injectable/injectable.dart';
 
-class ShortStatusBloc extends Bloc<ShortStatusModel> {
-  StreamSubscription<String> _characteristicSubscription;
+@injectable
+class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
+  final DeviceRepository _repository;
+  int _uploadTimer = 0;
 
-  ShortStatusBloc() {
-    // convert to factory
-    _characteristicSubscription = GetIt.I<BluetoothRepository>()
-        .characteristicValueStream
-        .listen((event) {
-      var model = Converter.generateShortStatus(event);
-      behaviourSubject$.sink.add(model);
+  AppData _appData;
+
+  ShortStatusBloc(this._repository) : super();
+
+  @override
+  pause() {
+    _repository.cancel();
+    pauseSubscription();
+  }
+
+  @override
+  resume() {
+    _repository.resumeTimer(true);
+    resumeSubscription();
+  }
+
+  @override
+  void create() {
+    _initData();
+    streamSubscription = _repository.characteristicValueStream.listen((event) {
+      ShortStatusModel _model = _generateShortStatus(event);
+      addEvent(_model);
+      _uploadTimer++;
+      if (_uploadTimer == 10) {
+        _appData.addCurrentRecord({
+          'timeStamp': DateTime.now().toString(),
+          'stats': {
+            'voltage': _model.getTotalVoltage,
+            'temp': _model.getTemperature,
+            'currentCharge': _model.getCurrentCharge,
+            'currentDischarge': _model.getCurrentDischarge,
+          }
+        });
+        _uploadTimer = 0;
+        locator<SettingsBloc>()
+            .setUserData(jsonEncode(_appData.toJson())); // list of userData
+      }
     });
   }
 
-  cancel() {
-    GetIt.I<BluetoothRepository>()
-        .cancelTimer(); // later on have different timers, depending on short / full status
-    _characteristicSubscription.pause();
+  _initData() {
+    String data = locator<SettingsBloc>().getUserData();
+    String userId = locator<Auth>().getCurrentUserId();
+    String deviceId = DeviceRepository().deviceId;
+    data != 'empty'
+        ? _appData = AppData.fromJson(jsonDecode(data),
+            userId: userId, deviceSerialNumber: deviceId)
+        : _appData = AppData(
+            userId: locator<Auth>().getCurrentUserId(),
+            deviceSerialNumber: DeviceRepository().deviceId);
   }
 
-  resume() {
-    _characteristicSubscription.resume();
-    GetIt.I<BluetoothRepository>().resumeTimer();
+  ShortStatusModel _generateShortStatus(String rawData) {
+    List<String> splittedObject = rawData.split(' ');
+    var voltage = double.parse(splittedObject.elementAt(0));
+    var currentCharge = double.parse(splittedObject.elementAt(1));
+    var currentDischarge = double.parse(splittedObject.elementAt(2));
+    var temperature = double.parse(splittedObject.elementAt(3));
+    ShortStatusModel shortStatusViewModel = ShortStatusModel();
+    shortStatusViewModel.setParameters(
+        voltage, currentCharge, currentDischarge, temperature);
+    return shortStatusViewModel;
   }
 }

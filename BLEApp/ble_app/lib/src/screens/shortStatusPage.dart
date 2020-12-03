@@ -1,132 +1,30 @@
-import 'dart:async';
-import 'package:ble_app/src/blocs/btConnectionBloc.dart';
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
-import 'package:ble_app/src/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
-import 'package:get_it/get_it.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
-class DeviceScreen extends StatefulWidget {
-  @override
-  _DeviceScreenState createState() => _DeviceScreenState();
-}
+import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/screens/routeAware.dart';
+import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
-class _DeviceScreenState extends State<DeviceScreen>
-    with AutomaticKeepAliveClientMixin {
-  bool _isDisposed = false;
 
-  @override
-  bool get wantKeepAlive => true;
+class DeviceScreen extends RouteAwareWidget {
+  final _navigationBloc;
 
-  _cancel() {
-    if (_isDisposed == false) {
-      GetIt.I<ShortStatusBloc>().cancel();
-    }
-  }
-
-  _resume() {
-    if (_isDisposed == true) {
-      GetIt.I<ShortStatusBloc>().resume();
-    }
-  }
+  DeviceScreen(ShortStatusBloc shortStatusBloc)
+      : this._navigationBloc = locator<NavigationBloc>(),
+        super(bloc: shortStatusBloc);
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    GetIt.I<ConnectionBloc>().connect();
-  }
-
-  _pop() {
-    Navigator.of(context).pop(true);
-  }
-
-  _onVisibilityHandler(VisibilityInfo info) {
-    var visiblePercentage = info.visibleFraction * 100;
-    if (visiblePercentage < 1) {
-      // widget is disposed
-      _cancel();
-      _isDisposed = true;
-    } else if (visiblePercentage > 1 && _isDisposed == true) {
-      _resume();
-      _isDisposed = false;
-    }
-  }
-
-  Future<bool> _onWillPop() {
-    final bloc = GetIt.I<ConnectionBloc>();
-    return showDialog(
-        context: context,
-        builder: (context) =>
-            AlertDialog(
-              title: Text('Are you sure?',
-                  style: TextStyle(fontFamily: 'Europe_Ext')),
-              content: Text('Do you want to disconnect device and go back?',
-                  style: TextStyle(fontFamily: 'Europe_Ext')),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: Text('No')),
-                FlatButton(
-                    onPressed: () {
-                      bloc.disconnect();
-                      Navigator.of(context).pop(true);
-                    },
-                    child: Text('Yes')),
-              ],
-            ) ??
-            false);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    GetIt.I<ConnectionBloc>().dispose();
-    GetIt.I<ShortStatusBloc>().dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    var connectionBloc = GetIt.I<ConnectionBloc>();
-    return WillPopScope(
-      onWillPop: _onWillPop,
-      child: VisibilityDetector(
-        key: Key("ShortStatusPage"),
-        onVisibilityChanged: (VisibilityInfo info) =>
-            _onVisibilityHandler(info),
-        child: Scaffold(
-          body: Container(
-            child: StreamBuilder<BluetoothDeviceState>(
-              stream: connectionBloc
-                  .behaviourSubject$.stream, // the connection stream
-              initialData: BluetoothDeviceState.disconnected,
-              builder: (_, snapshot) {
-                if (snapshot.connectionState == ConnectionState.active) {
-                  switch (snapshot.data) {
-                    case BluetoothDeviceState.connected:
-                      //return TestWidget();
-                      return Column(
-                        children: <Widget>[
-                          ProgressRows(),
-                        ],
-                      );
-                    case BluetoothDeviceState.connecting:
-                      return Center(child: CircularProgressIndicator());
-                    case BluetoothDeviceState.disconnected:
-                      return Center(
-                        child: Text("Disconnected"),
-                      );
-                    case BluetoothDeviceState.disconnecting:
-                      _pop();
-                  }
-                } else
-                  return Container();
-              },
-            ),
-          ),
+  Widget buildWidget(BuildContext context) => InkWell(
+        onTap: () => _navigationBloc.navigateTo('/full'),
+        child: Container(
+          child: ShortStatusUI(shortStatusBloc: super.bloc),
         ),
-      ),
-    );
+      );
+
+  @override
+  void onResume() {
+    super.onResume();
+    _navigationBloc.addEvent(CurrentPage.Short);
   }
 }
