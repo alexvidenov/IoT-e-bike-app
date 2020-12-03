@@ -1,4 +1,5 @@
 import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
@@ -87,7 +88,7 @@ class HomeScreen extends StatelessWidget {
           )
         ],
       ),
-      drawer: NavigationDrawer(),
+      drawer: NavigationDrawer(Injector.$(), Injector.$()),
       body: Navigator(
         initialRoute: '/',
         key: _navigationBloc.navigatorKey,

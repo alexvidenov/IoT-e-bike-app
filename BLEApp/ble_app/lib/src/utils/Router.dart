@@ -13,13 +13,13 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => DeviceScreen(sl()));
+            builder: (_) => DeviceScreen(Injector.$()));
       case '/full':
         return MaterialPageRoute(
-            builder: (_) => FullStatusPage(sl()));
+            builder: (_) => FullStatusPage(Injector.$()));
       case '/map':
         return MaterialPageRoute(
-            builder: (_) => MapPage(sl()));
+            builder: (_) => MapPage(Injector.$(), Injector.$()));
     }
   }
 
@@ -28,21 +28,21 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(sl(),
-                sl(), sl()));
+            builder: (_) => AuthenticationScreen(Injector.$(),
+                Injector.$(), Injector.$()));
       case '/home':
         return MaterialPageRoute(
-            builder: (_) => HomeScreen(sl(),
-                sl(), sl()));
+            builder: (_) => HomeScreen(Injector.$(),
+                Injector.$(), Injector.$()));
       case '/settings':
-        return MaterialPageRoute(builder: (_) => Settings(sl(), sl()));
+        return MaterialPageRoute(builder: (_) => Settings(Injector.$(), Injector.$()));
       case '/devices':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(sl()));
+            builder: (_) => DevicesListScreen(Injector.$()));
       case '/auth':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(sl(),
-                sl(), sl()));
+            builder: (_) => AuthenticationScreen(Injector.$(),
+                Injector.$(), Injector.$()));
     }
   }
 
@@ -51,20 +51,20 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(sl()));
+            builder: (_) => DevicesListScreen(Injector.$()));
       case '/auth':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(sl(),
-                sl(), sl()));
+            builder: (_) => AuthenticationScreen(Injector.$(),
+                Injector.$(), Injector.$()));
       case '/home':
         return MaterialPageRoute(
-            builder: (_) => HomeScreen(sl(),
-                sl(), sl()));
+            builder: (_) => HomeScreen(Injector.$(),
+                Injector.$(), Injector.$()));
       case '/settings':
-        return MaterialPageRoute(builder: (_) => Settings(sl(), sl()));
+        return MaterialPageRoute(builder: (_) => Settings(Injector.$(), Injector.$()));
       case '/devices':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(sl()));
+            builder: (_) => DevicesListScreen(Injector.$()));
     }
   }
 }

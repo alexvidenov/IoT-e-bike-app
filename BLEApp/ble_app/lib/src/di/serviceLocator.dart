@@ -12,23 +12,45 @@ import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-import 'package:get_it/get_it.dart';
+import 'package:kiwi/kiwi.dart';
 
-final sl = GetIt.instance;
+part 'serviceLocator.g.dart';
 
-Future<void> setUpDependencies() async {
-  sl.registerSingleton(DeviceRepository());
-  sl.registerSingleton(BleManager());
-  sl.registerSingleton(NavigationService());
-  sl.registerLazySingleton(() => Auth());
-  sl.registerLazySingleton(() => EntryEndpointBloc());
-  sl.registerFactory(() => ShortStatusBloc(sl()));
-  sl.registerFactory(() => FullStatusBloc(sl()));
-  sl.registerFactory(() => BluetoothAuthBloc(sl()));
-  sl.registerFactory(() => LocationBloc());
-  sl.registerFactory(() => DevicesBloc(sl(), sl()));
-  sl.registerLazySingleton(() => SettingsBloc(sl()));
-  sl.registerLazySingleton(() => DeviceBloc(sl(), sl()));
-  sl.registerLazySingleton(() => NavigationBloc(sl()));
-  sl.registerSingletonAsync(() => SharedPrefsService.getInstance());
+abstract class Injector {
+  static KiwiContainer container;
+
+  static Future<void> setup() async {
+    container = KiwiContainer();
+    await SharedPrefsService.getInstance()
+        .then((prefs) => container.registerInstance(prefs));
+    _$Injector()._configure();
+  }
+
+  static final $ = container.resolve;
+
+  void _configure(){
+    _configureBlocFactories();
+    _configureBlocSingletons();
+    _configureServices();
+  }
+
+  @Register.singleton(DeviceRepository)
+  @Register.singleton(BleManager)
+  @Register.singleton(NavigationService)
+  @Register.singleton(Auth)
+  void _configureServices();
+
+  @Register.factory(ShortStatusBloc)
+  @Register.factory(FullStatusBloc)
+  @Register.factory(BluetoothAuthBloc)
+  @Register.factory(LocationBloc)
+  @Register.factory(DevicesBloc)
+  void _configureBlocFactories();
+
+  @Register.singleton(EntryEndpointBloc)
+  @Register.singleton(SettingsBloc)
+  @Register.singleton(DeviceBloc)
+  @Register.singleton(NavigationBloc)
+  void _configureBlocSingletons();
+
 }

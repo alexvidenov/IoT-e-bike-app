@@ -18,7 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await setUpDependencies();
+  await Injector.setup();
   BleManager().createClient(restoreStateIdentifier: "com.example.ble_app");
   if (Platform.isAndroid) {
     await AndroidAlarmManager.initialize();
@@ -27,7 +27,7 @@ void main() async {
   } else if (Platform.isIOS) {
     // TODO: configure the iOS part as well
   }
-  runApp(RootPage(sl()));
+  runApp(RootPage(Injector.$()));
 }
 
 void uploadCallback() async {

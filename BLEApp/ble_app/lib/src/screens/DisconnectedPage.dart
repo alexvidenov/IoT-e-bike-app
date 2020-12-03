@@ -6,7 +6,7 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-
+/*
 class DisconnectedPage extends StatefulWidget {
   @override
   _DisconnectedPageState createState() => _DisconnectedPageState();
@@ -67,3 +67,4 @@ class _DisconnectedPageState extends State<DisconnectedPage> {
                             letterSpacing: 2))))));
   }
 }
+ */

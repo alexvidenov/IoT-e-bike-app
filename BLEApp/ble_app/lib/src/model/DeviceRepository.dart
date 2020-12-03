@@ -11,9 +11,6 @@ class DeviceRepository {
   static BleDevice _bleDevice;
   BehaviorSubject<BleDevice> _deviceController;
 
-  static final DeviceRepository _deviceRepository =
-      DeviceRepository._internal();
-
   String _deviceSerialNumber; // will be updated on every call to connect()
 
   Characteristic _characteristic;
@@ -37,9 +34,7 @@ class DeviceRepository {
 
   bool get hasPickedDevice => _bleDevice != null;
 
-  factory DeviceRepository() => _deviceRepository;
-
-  DeviceRepository._internal() {
+  DeviceRepository() {
     _deviceController = BehaviorSubject<BleDevice>.seeded(_bleDevice);
   }
 

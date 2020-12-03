@@ -17,7 +17,7 @@ class BluetoothAuthBloc extends Bloc<bool, String> {
           //String deviceId = objects.elementAt(1);
           // later on change to what the actual parameter name will be
           _repository.deviceSerialNumber = 1234457.toString();
-          Database(uid: sl<Auth>().getCurrentUserId())
+          Database(uid: Injector.$<Auth>().getCurrentUserId())
               .updateDeviceData(deviceId: '1234457'); // just for simpler tests
           addEvent(true);
         }

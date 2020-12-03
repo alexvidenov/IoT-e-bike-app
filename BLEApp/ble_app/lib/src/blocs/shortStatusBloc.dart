@@ -48,22 +48,21 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
           }
         });
         _uploadTimer = 0;
-        sl<SettingsBloc>()
+        Injector.$<SettingsBloc>()
             .setUserData(jsonEncode(_appData.toJson())); // list of userData
       }
     });
   }
 
   _initData() {
-    String data = sl<SettingsBloc>().getUserData();
-    String userId = sl<Auth>().getCurrentUserId();
-    String deviceId = DeviceRepository().deviceId;
+    String data = Injector.$<SettingsBloc>().getUserData();
+    String userId = Injector.$<Auth>().getCurrentUserId();
+    String deviceId = Injector.$<DeviceRepository>()
+        .deviceId; // FIXME:  THE  DAMN PROBLEM  WAS  THAT HERE I  Was  instantiating a new device repository LIKE THAT -<DEVICErepositroy()
     data != 'empty'
         ? _appData = AppData.fromJson(jsonDecode(data),
             userId: userId, deviceSerialNumber: deviceId)
-        : _appData = AppData(
-            userId: sl<Auth>().getCurrentUserId(),
-            deviceSerialNumber: DeviceRepository().deviceId);
+        : _appData = AppData(userId: userId, deviceSerialNumber: deviceId);
   }
 
   ShortStatusModel _generateShortStatus(String rawData) {

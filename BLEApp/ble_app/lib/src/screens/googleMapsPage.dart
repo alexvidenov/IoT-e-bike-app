@@ -10,9 +10,8 @@ class MapPage extends RouteAwareWidget {
   final LocationBloc _locationBloc;
   final NavigationBloc _navigationBloc;
 
-  MapPage(LocationBloc locationBloc)
+  MapPage(LocationBloc locationBloc, this._navigationBloc)
       : this._locationBloc = locationBloc,
-        this._navigationBloc = sl<NavigationBloc>(),
         super(bloc: locationBloc);
 
   @override
