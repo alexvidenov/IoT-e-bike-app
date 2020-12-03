@@ -7,16 +7,16 @@ abstract class Bloc<T, S> {
   // state and event
   // T, S
 
-  BehaviorSubject<T> _behaviorSubject;
+  BehaviorSubject<T> _publishSubject$;
 
-  Stream<T> get stream => _behaviorSubject.stream;
+  Stream<T> get stream => _publishSubject$.stream;
 
-  Sink<T> get _sink => _behaviorSubject.sink;
+  Sink<T> get _sink => _publishSubject$.sink;
 
   StreamSubscription<S> streamSubscription;
 
   Bloc() {
-    this._behaviorSubject = BehaviorSubject<T>();
+    this._publishSubject$ = BehaviorSubject<T>();
   }
 
   void create() {}
@@ -34,6 +34,6 @@ abstract class Bloc<T, S> {
   @mustCallSuper
   void dispose() {
     streamSubscription?.cancel();
-    _behaviorSubject?.close();
+    _publishSubject$?.close();
   }
 }

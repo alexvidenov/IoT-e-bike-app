@@ -2,8 +2,10 @@ import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:injectable/injectable.dart';
 import 'package:location/location.dart';
 
+@injectable
 class LocationBloc extends Bloc<LocationData, LocationData> {
   final Location _location = Location();
 
@@ -15,8 +17,6 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
         -122.085749655962), // probably don't have initial location, but dynami
     zoom: 14.4746,
   );
-
-  LocationBloc();
 
   get initialLocation => _initialLocation;
 

@@ -1,8 +1,10 @@
 import 'package:ble_app/src/blocs/sharedPrefsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/settingsPage.dart';
+import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
+@lazySingleton
 class SettingsBloc {
   final _passwordController = BehaviorSubject<String>();
 

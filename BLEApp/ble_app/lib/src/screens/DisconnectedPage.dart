@@ -6,16 +6,16 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-/*
+
 class DisconnectedPage extends StatefulWidget {
   @override
   _DisconnectedPageState createState() => _DisconnectedPageState();
 }
 
 class _DisconnectedPageState extends State<DisconnectedPage> {
-  final DeviceBloc _deviceBloc = sl<DeviceBloc>();
+  final DeviceBloc _deviceBloc = locator<DeviceBloc>();
 
-  final SettingsBloc _settingsBloc = sl<SettingsBloc>();
+  final SettingsBloc _settingsBloc = locator<SettingsBloc>();
 
   StreamSubscription<bool> _stateSubscription;
 
@@ -67,4 +67,3 @@ class _DisconnectedPageState extends State<DisconnectedPage> {
                             letterSpacing: 2))))));
   }
 }
- */

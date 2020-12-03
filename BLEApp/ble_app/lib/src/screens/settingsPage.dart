@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter/material.dart';
 
@@ -8,14 +9,14 @@ enum ConnectionSettings { Manual, AutoConnect, AutoPassword }
 
 // ignore: must_be_immutable
 class Settings extends StatelessWidget {
-  final DeviceRepository _deviceRepository;
-  final SettingsBloc _settingsBloc;
+  final DeviceRepository _deviceRepository = DeviceRepository();
+  final SettingsBloc _settingsBloc = locator<SettingsBloc>();
 
   final _writeController = TextEditingController();
 
   ConnectionSettings _connectionSettings;
 
-  Settings(this._deviceRepository, this._settingsBloc) {
+  Settings() {
     _listenToConnectionSettingsChanges();
     if (_settingsBloc.isPasswordRemembered())
       _connectionSettings = ConnectionSettings.AutoPassword;

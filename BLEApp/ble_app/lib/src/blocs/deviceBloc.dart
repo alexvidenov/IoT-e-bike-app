@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
+@lazySingleton
 class DeviceBloc {
   final BleManager _bleManager;
   final DeviceRepository _deviceRepository;
@@ -29,7 +31,7 @@ class DeviceBloc {
   Stream<BleDevice> get disconnectedDevice => _deviceRepository.pickedDevice
       .skipWhile((bleDevice) => bleDevice != null);
 
-  DeviceBloc(this._bleManager, this._deviceRepository) {
+  DeviceBloc(this._deviceRepository) : this._bleManager = BleManager() {
     var device = _deviceRepository.pickedDevice.value;
     _deviceController = BehaviorSubject<BleDevice>.seeded(device);
 

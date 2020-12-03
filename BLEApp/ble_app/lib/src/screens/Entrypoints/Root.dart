@@ -18,7 +18,7 @@ class RootPage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           final bool isLoggedIn = snapshot.hasData;
           return isLoggedIn
-              ? BleApp(Injector.$())
+              ? BleApp(locator<EntryEndpointBloc>())
               : LoginScreen(_auth);
         }
         return _buildWaitingScreen();
@@ -26,7 +26,8 @@ class RootPage extends StatelessWidget {
     );
   }
 
-  Widget _buildWaitingScreen() => MaterialApp(
+  Widget _buildWaitingScreen() {
+    return MaterialApp(
       home: Scaffold(
         body: Container(
           alignment: Alignment.center,
@@ -34,4 +35,5 @@ class RootPage extends StatelessWidget {
         ),
       ),
     );
+  }
 }

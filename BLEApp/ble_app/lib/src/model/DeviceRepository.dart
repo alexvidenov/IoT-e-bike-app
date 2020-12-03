@@ -5,8 +5,10 @@ import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/utils/DataParser.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
+@lazySingleton
 class DeviceRepository {
   static BleDevice _bleDevice;
   BehaviorSubject<BleDevice> _deviceController;

@@ -4,8 +4,10 @@ import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
+@injectable
 class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   final DeviceRepository _deviceRepository;
   final BleManager _bleManager;
@@ -23,7 +25,7 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   Stream<BleDevice> get pickedDevice => _deviceRepository.pickedDevice
       .skipWhile((bleDevice) => bleDevice == null);
 
-  DevicesBloc(this._bleManager, this._deviceRepository);
+  DevicesBloc(this._deviceRepository) : this._bleManager = BleManager();
 
   void _handlePickedDevice(BleDevice bleDevice) =>
       _deviceRepository.pickDevice(bleDevice);
@@ -45,7 +47,7 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   void _startScan() {
     _scanSubscription =
         _bleManager.startPeripheralScan().listen((ScanResult scanResult) {
-      // add uuids later on
+      // add uuid-specific search later on
       var bleDevice = BleDevice(peripheral: scanResult.peripheral);
       if (scanResult.advertisementData.localName != null &&
           !bleDevices.contains(bleDevice)) {

@@ -2,7 +2,9 @@ import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/modules/fullStatusBarGraphModel.dart';
 import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
   final DeviceRepository _repository;
 

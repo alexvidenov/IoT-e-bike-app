@@ -1,6 +1,8 @@
 import 'package:ble_app/src/services/Database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:injectable/injectable.dart';
 
+@lazySingleton
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 

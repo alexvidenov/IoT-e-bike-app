@@ -3,7 +3,9 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/services/Database.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class BluetoothAuthBloc extends Bloc<bool, String> {
   final DeviceRepository _repository;
 
@@ -17,7 +19,7 @@ class BluetoothAuthBloc extends Bloc<bool, String> {
           //String deviceId = objects.elementAt(1);
           // later on change to what the actual parameter name will be
           _repository.deviceSerialNumber = 1234457.toString();
-          Database(uid: Injector.$<Auth>().getCurrentUserId())
+          Database(uid: locator<Auth>().getCurrentUserId())
               .updateDeviceData(deviceId: '1234457'); // just for simpler tests
           addEvent(true);
         }

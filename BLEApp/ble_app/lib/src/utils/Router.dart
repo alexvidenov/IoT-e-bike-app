@@ -1,3 +1,11 @@
+import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
+import 'package:ble_app/src/blocs/deviceBloc.dart';
+import 'package:ble_app/src/blocs/devicesBloc.dart';
+import 'package:ble_app/src/blocs/fullStatusBloc.dart';
+import 'package:ble_app/src/blocs/locationBloc.dart';
+import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/authenticationPage.dart';
 import 'package:ble_app/src/screens/devicesListScreen.dart';
@@ -13,13 +21,13 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => DeviceScreen(Injector.$()));
+            builder: (_) => DeviceScreen(locator<ShortStatusBloc>()));
       case '/full':
         return MaterialPageRoute(
-            builder: (_) => FullStatusPage(Injector.$()));
+            builder: (_) => FullStatusPage(locator<FullStatusBloc>()));
       case '/map':
         return MaterialPageRoute(
-            builder: (_) => MapPage(Injector.$(), Injector.$()));
+            builder: (_) => MapPage(locator<LocationBloc>()));
     }
   }
 
@@ -28,21 +36,21 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(Injector.$(),
-                Injector.$(), Injector.$()));
+            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
+                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
       case '/home':
         return MaterialPageRoute(
-            builder: (_) => HomeScreen(Injector.$(),
-                Injector.$(), Injector.$()));
+            builder: (_) => HomeScreen(locator<SettingsBloc>(),
+                locator<DeviceBloc>(), locator<NavigationBloc>()));
       case '/settings':
-        return MaterialPageRoute(builder: (_) => Settings(Injector.$(), Injector.$()));
+        return MaterialPageRoute(builder: (_) => Settings());
       case '/devices':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(Injector.$()));
+            builder: (_) => DevicesListScreen(locator<DevicesBloc>()));
       case '/auth':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(Injector.$(),
-                Injector.$(), Injector.$()));
+            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
+                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
     }
   }
 
@@ -51,20 +59,20 @@ class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(Injector.$()));
+            builder: (_) => DevicesListScreen(locator<DevicesBloc>()));
       case '/auth':
         return MaterialPageRoute(
-            builder: (_) => AuthenticationScreen(Injector.$(),
-                Injector.$(), Injector.$()));
+            builder: (_) => AuthenticationScreen(locator<DeviceBloc>(),
+                locator<BluetoothAuthBloc>(), locator<SettingsBloc>()));
       case '/home':
         return MaterialPageRoute(
-            builder: (_) => HomeScreen(Injector.$(),
-                Injector.$(), Injector.$()));
+            builder: (_) => HomeScreen(locator<SettingsBloc>(),
+                locator<DeviceBloc>(), locator<NavigationBloc>()));
       case '/settings':
-        return MaterialPageRoute(builder: (_) => Settings(Injector.$(), Injector.$()));
+        return MaterialPageRoute(builder: (_) => Settings());
       case '/devices':
         return MaterialPageRoute(
-            builder: (_) => DevicesListScreen(Injector.$()));
+            builder: (_) => DevicesListScreen(locator<DevicesBloc>()));
     }
   }
 }

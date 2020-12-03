@@ -1,9 +1,11 @@
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/navigationService.dart';
 import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
 
 enum CurrentPage { Short, Full, Map }
 
+@lazySingleton
 class NavigationBloc extends Bloc<CurrentPage, CurrentPage> {
   final NavigationService _navigationService;
 

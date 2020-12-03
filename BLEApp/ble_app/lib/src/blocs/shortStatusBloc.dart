@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/navigationService.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
@@ -8,10 +9,11 @@ import 'package:ble_app/src/modules/sharedPrefsUsersDataModel.dart';
 
 import 'package:ble_app/src/modules/shortStatusModel.dart';
 import 'package:ble_app/src/services/Auth.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
   final DeviceRepository _repository;
-
   int _uploadTimer = 0;
 
   AppData _appData;
@@ -48,21 +50,22 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
           }
         });
         _uploadTimer = 0;
-        Injector.$<SettingsBloc>()
+        locator<SettingsBloc>()
             .setUserData(jsonEncode(_appData.toJson())); // list of userData
       }
     });
   }
 
   _initData() {
-    String data = Injector.$<SettingsBloc>().getUserData();
-    String userId = Injector.$<Auth>().getCurrentUserId();
-    String deviceId = Injector.$<DeviceRepository>()
-        .deviceId; // FIXME:  THE  DAMN PROBLEM  WAS  THAT HERE I  Was  instantiating a new device repository LIKE THAT -<DEVICErepositroy()
+    String data = locator<SettingsBloc>().getUserData();
+    String userId = locator<Auth>().getCurrentUserId();
+    String deviceId = DeviceRepository().deviceId;
     data != 'empty'
         ? _appData = AppData.fromJson(jsonDecode(data),
             userId: userId, deviceSerialNumber: deviceId)
-        : _appData = AppData(userId: userId, deviceSerialNumber: deviceId);
+        : _appData = AppData(
+            userId: locator<Auth>().getCurrentUserId(),
+            deviceSerialNumber: DeviceRepository().deviceId);
   }
 
   ShortStatusModel _generateShortStatus(String rawData) {

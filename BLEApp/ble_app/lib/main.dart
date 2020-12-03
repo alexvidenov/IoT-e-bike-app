@@ -18,8 +18,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await Injector.setup();
-  BleManager().createClient(restoreStateIdentifier: "com.example.ble_app");
+  configureDependencies();
+  BleManager().createClient(restoreStateIdentifier: "com.parakatowski.ble_app");
   if (Platform.isAndroid) {
     await AndroidAlarmManager.initialize();
     await AndroidAlarmManager.periodic(Duration(minutes: 1), 0, uploadCallback,
@@ -27,16 +27,17 @@ void main() async {
   } else if (Platform.isIOS) {
     // TODO: configure the iOS part as well
   }
-  runApp(RootPage(Injector.$()));
+  runApp(RootPage(locator<Auth>()));
 }
 
 void uploadCallback() async {
   await Firebase.initializeApp();
+  print('I AM IN THE ISOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATE');
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String jsonString = prefs.get(PrefsKeys.USER_DATA);
   if (jsonString != null) {
-    await Storage(uid: Auth().getCurrentUserId())
-        .upload(jsonDecode(jsonString));
+    print('BRAH MOMENT');
+    Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
     prefs.remove(PrefsKeys.USER_DATA);
   }
 }

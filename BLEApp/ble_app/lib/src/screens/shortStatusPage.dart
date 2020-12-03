@@ -6,11 +6,12 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
+
 class DeviceScreen extends RouteAwareWidget {
   final _navigationBloc;
 
   DeviceScreen(ShortStatusBloc shortStatusBloc)
-      : this._navigationBloc = Injector.$<NavigationBloc>(),
+      : this._navigationBloc = locator<NavigationBloc>(),
         super(bloc: shortStatusBloc);
 
   @override

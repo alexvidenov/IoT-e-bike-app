@@ -6,26 +6,26 @@ import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:injectable/injectable.dart';
 
 enum Endpoint { Unknown, DevicesScreen, AuthScreen }
 
+@lazySingleton
 class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
-  final devicesBloc = Injector.$<DevicesBloc>();
-
-  EntryEndpointBloc();
+  final DevicesBloc devicesBloc;
 
   StreamSubscription _devicePickedSubscription;
 
-  _listen() {
-    _devicePickedSubscription = devicesBloc.pickedDevice.listen((_) {
+  EntryEndpointBloc(this.devicesBloc);
+
+  _listen() => _devicePickedSubscription = devicesBloc.pickedDevice.listen((_) {
       this.pause();
       devicesBloc.pause();
       addEvent(Endpoint.AuthScreen);
     });
-  }
 
   void _determineEndpoint() {
-    String _deviceId = Injector.$<SettingsBloc>().getOptionalDeviceId();
+    String _deviceId = locator<SettingsBloc>().getOptionalDeviceId();
     if (_deviceId != 'empty') {
       BleDevice device =
           BleDevice(peripheral: BleManager().createUnsafePeripheral(_deviceId));

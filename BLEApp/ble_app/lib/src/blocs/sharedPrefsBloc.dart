@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'package:ble_app/src/utils/PrefsKeys.dart';
+import 'package:injectable/injectable.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+@singleton
 class SharedPrefsService {
   static SharedPrefsService _instance;
 
   static SharedPreferences _preferences;
 
+  @factoryMethod
   static Future<SharedPrefsService> getInstance() async {
     if (_instance == null) {
       _instance = SharedPrefsService();
