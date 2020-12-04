@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class Database {
   final String uid; // user id
 
-  Database({this.uid});
+  Database({this.uid}) ;
 
   final CollectionReference _users =
       FirebaseFirestore.instance.collection('users');

@@ -8,7 +8,7 @@ import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
 
 class DeviceScreen extends RouteAwareWidget {
-  final _navigationBloc;
+  final NavigationBloc _navigationBloc;
 
   DeviceScreen(ShortStatusBloc shortStatusBloc)
       : this._navigationBloc = $<NavigationBloc>(),

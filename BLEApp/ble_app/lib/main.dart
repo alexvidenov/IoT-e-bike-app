@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/modules/shortStatusModel.dart';
 import 'package:ble_app/src/screens/Entrypoints/AuthEntrypoint.dart';
 import 'package:ble_app/src/screens/Entrypoints/DevicesEntrypoint.dart';
 import 'package:ble_app/src/screens/Entrypoints/Root.dart';
@@ -32,11 +33,9 @@ void main() async {
 
 void uploadCallback() async {
   await Firebase.initializeApp();
-  print('I AM IN THE ISOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATE');
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String jsonString = prefs.get(PrefsKeys.USER_DATA);
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String jsonString = prefs.get(PrefsKeys.USER_DATA);
   if (jsonString != null) {
-    print('BRAH MOMENT');
     Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
     prefs.remove(PrefsKeys.USER_DATA);
   }
@@ -59,8 +58,7 @@ class _BleAppState extends State<BleApp> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
+  Widget build(BuildContext context) => StreamBuilder(
       stream: widget._endpointBloc.stream,
       initialData: Endpoint.Unknown,
       builder: (_, snapshot) {
@@ -75,5 +73,4 @@ class _BleAppState extends State<BleApp> {
         return Container();
       },
     );
-  }
 }

@@ -28,7 +28,7 @@ class ShortStatusUI extends StatelessWidget {
             Divider(),
             ProgressText(
               title: "Rem Dist",
-              content: "20 km",
+              content: "20 km", // listen to this value from some bloc later on
             ) // this
           ],
         )

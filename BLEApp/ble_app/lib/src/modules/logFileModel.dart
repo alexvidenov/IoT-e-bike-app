@@ -36,7 +36,6 @@ class LogModel {
     'timeStamp' : timeStamp,
     'stats' : model.toJson()
   };
-
 }
 
 class LogFileModel {

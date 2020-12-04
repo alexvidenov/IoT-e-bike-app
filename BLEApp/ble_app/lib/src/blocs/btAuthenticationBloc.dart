@@ -30,9 +30,12 @@ class BluetoothAuthBloc extends Bloc<bool, String> {
 
   @override
   void resume() => resumeSubscription();
+}
 
-  authenticate(String password) => _repository.writeToCharacteristic(password);
+extension BTAuthMethods on BluetoothAuthBloc {
+  void authenticate(String password) =>
+      _repository.writeToCharacteristic(password);
 
-  changePassword(String newPassword) =>
+  void changePassword(String newPassword) =>
       _repository.writeToCharacteristic(newPassword);
 }

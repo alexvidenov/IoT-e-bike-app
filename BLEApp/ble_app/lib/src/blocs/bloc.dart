@@ -3,17 +3,25 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 
-abstract class Bloc<T, S> {
-  // state and event
-  // T, S
+mixin Disposable<T, S> {
+  StreamSubscription<S> streamSubscription;
 
   BehaviorSubject<T> _publishSubject$;
+
+  @mustCallSuper
+  void dispose() {
+    streamSubscription?.cancel();
+    _publishSubject$?.close();
+  }
+}
+
+abstract class Bloc<T, S> with Disposable<T, S> {
+  // state and event
+  // T, S
 
   Stream<T> get stream => _publishSubject$.stream;
 
   Sink<T> get _sink => _publishSubject$.sink;
-
-  StreamSubscription<S> streamSubscription;
 
   Bloc() {
     this._publishSubject$ = BehaviorSubject<T>();
@@ -30,10 +38,4 @@ abstract class Bloc<T, S> {
   pauseSubscription() => streamSubscription?.pause();
 
   resumeSubscription() => streamSubscription.resume();
-
-  @mustCallSuper
-  void dispose() {
-    streamSubscription?.cancel();
-    _publishSubject$?.close();
-  }
 }

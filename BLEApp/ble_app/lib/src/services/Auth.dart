@@ -6,9 +6,6 @@ import 'package:injectable/injectable.dart';
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Stream<String> get onAuthStateChanged =>
-      _auth.authStateChanges().map((User user) => user?.uid);
-
   Future<String> signInWithEmailAndPassword(
       String email, String password) async {
     final UserCredential credential = await _auth.signInWithEmailAndPassword(
@@ -26,6 +23,11 @@ class Auth {
   }
 
   Future<void> signOut() async => await _auth.signOut();
+}
+
+extension UserStatus on Auth {
+  Stream<String> get onAuthStateChanged =>
+      _auth.authStateChanges().map((User user) => user?.uid);
 
   String getCurrentUserId() => _auth.currentUser?.uid;
 }
