@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/modules/shortStatusModel.dart';
+import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/Entrypoints/AuthEntrypoint.dart';
 import 'package:ble_app/src/screens/Entrypoints/DevicesEntrypoint.dart';
 import 'package:ble_app/src/screens/Entrypoints/Root.dart';
@@ -28,7 +28,7 @@ void main() async {
   } else if (Platform.isIOS) {
     // TODO: configure the iOS part as well
   }
-  runApp(RootPage($<Auth>()));
+  $.isReady<LocalDatabase>().then((_) => runApp(RootPage($<Auth>())));
 }
 
 void uploadCallback() async {
@@ -36,7 +36,7 @@ void uploadCallback() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String jsonString = prefs.get(PrefsKeys.USER_DATA);
   if (jsonString != null) {
-    Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
+    Storage(uid: Auth($()).getCurrentUserId()).upload(jsonDecode(jsonString));
     prefs.remove(PrefsKeys.USER_DATA);
   }
 }
@@ -59,18 +59,18 @@ class _BleAppState extends State<BleApp> {
 
   @override
   Widget build(BuildContext context) => StreamBuilder(
-      stream: widget._endpointBloc.stream,
-      initialData: Endpoint.Unknown,
-      builder: (_, snapshot) {
-        switch (snapshot.data) {
-          case Endpoint.Unknown:
-            return Center(child: CircularProgressIndicator());
-          case Endpoint.AuthScreen:
-            return AuthEntrypoint();
-          case Endpoint.DevicesScreen:
-            return DevicesEntrypoint();
-        }
-        return Container();
-      },
-    );
+        stream: widget._endpointBloc.stream,
+        initialData: Endpoint.Unknown,
+        builder: (_, snapshot) {
+          switch (snapshot.data) {
+            case Endpoint.Unknown:
+              return Center(child: CircularProgressIndicator());
+            case Endpoint.AuthScreen:
+              return AuthEntrypoint();
+            case Endpoint.DevicesScreen:
+              return DevicesEntrypoint();
+          }
+          return Container();
+        },
+      );
 }

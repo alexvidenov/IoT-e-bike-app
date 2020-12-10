@@ -1,32 +1,20 @@
-import 'package:flutter/foundation.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:auto_data/auto_data.dart';
 
-class ShortStatusModel {
-  double _totalVoltage;
-  double _currentCharge;
-  double _currentDischarge;
-  double _temperature;
+import 'package:flutter/material.dart';
+import 'dart:convert';
 
-  ShortStatusModel() {
-    this._totalVoltage = 0;
-    this._currentCharge = 0;
-    this._currentDischarge = 0;
-    this._temperature = 0;
-  }
+part 'shortStatusModel.g.dart';
 
-  setParameters(double batteryVoltage, double currentCharge,
-      double currentDischarge, double temperature) {
-    this._totalVoltage = batteryVoltage;
-    this._currentCharge = currentCharge;
-    this._currentDischarge = currentDischarge;
-    this._temperature = temperature;
-  }
+@data
+class $ShortStatusModel {
+  double totalVoltage;
+  double currentCharge;
+  double currentDischarge;
+  double temperature;
 
-  double get getTotalVoltage => this._totalVoltage;
-
-  double get getCurrentCharge => this._currentCharge;
-
-  double get getCurrentDischarge => this._currentDischarge;
-
-  double get getTemperature => this._temperature;
+  $ShortStatusModel.empty()
+      : totalVoltage = 0,
+        currentCharge = 0,
+        currentDischarge = 0,
+        temperature = 0;
 }

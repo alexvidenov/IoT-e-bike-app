@@ -12,17 +12,21 @@ class RootPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: _auth.onAuthStateChanged,
-      builder: (_, snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
-          final bool isLoggedIn = snapshot.hasData;
-          return isLoggedIn
-              ? BleApp($())
-              : LoginScreen(_auth);
-        }
-        return _buildWaitingScreen();
-      },
-    );
+        stream: _auth.onAuthStateChanged,
+        builder: (_, snapshot) {
+          return StreamBuilder(
+            stream: _auth.onLocalAuthStateChanged,
+            builder: (_, localSnapshot) {
+              if (localSnapshot.connectionState == ConnectionState.active ||
+                  snapshot.connectionState == ConnectionState.active) {
+                return snapshot.hasData || localSnapshot.hasData
+                    ? BleApp($())
+                    : LoginScreen(_auth);
+              }
+              return _buildWaitingScreen();
+            },
+          );
+        });
   }
 
   Widget _buildWaitingScreen() {

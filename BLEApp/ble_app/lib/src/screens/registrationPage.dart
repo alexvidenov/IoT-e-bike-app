@@ -1,20 +1,18 @@
-import 'package:ble_app/src/screens/registrationPage.dart';
 import 'package:ble_app/src/services/Auth.dart';
-import 'package:ble_app/src/utils/ConnectivityManager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ble_app/src/utils/constants.dart';
 
-class LoginScreen extends StatefulWidget {
+class RegistrationScreen extends StatefulWidget {
   final Auth _auth;
 
-  const LoginScreen(this._auth);
+  const RegistrationScreen(this._auth);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _rememberMe = false;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -34,9 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> validateAndSubmit() async {
     if (validateAndSave()) {
       try {
-        bool isConnected = await ConnectivityManager.isOnline();
-        await widget._auth
-            .signInWithEmailAndPassword(_email, _password, isConnected);
+        await widget._auth.signUpWithEmailAndPassword(_email, _password);
       } catch (e) {
         print('Error: $e');
       }
@@ -169,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         color: Colors.white,
         child: Text(
-          'LOGIN',
+          'REGISTER',
           style: TextStyle(
             color: Color(0xFF527DAA),
             letterSpacing: 1.5,
@@ -232,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildSocialBtn(
-            () => print('Login with Google'),
+                () => print('Login with Google'),
             AssetImage(
               'assets/googleImage.jpg',
             ),
@@ -244,8 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSignupBtn() {
     return GestureDetector(
-      onTap: () => Navigator.push(context,
-          MaterialPageRoute(builder: (_) => RegistrationScreen(widget._auth))),
+      onTap: () => print('Sign Up Button Pressed'),
       child: RichText(
         text: TextSpan(
           children: [

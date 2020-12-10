@@ -27,10 +27,12 @@ class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
 
   _listenToFullStatus() {
     streamSubscription = _repository.characteristicValueStream
-        .listen((event) => // if(event.lenght > someArbitrary shit)
+        .listen((event) => // if(event.length > someArbitrary shit)
             addEvent(_generateFullStatusDataModel(_generateFullStatus(event))));
   }
+}
 
+extension FullStatusParse on FullStatusBloc {
   List<FullStatusDataModel> _generateFullStatusDataModel(
       List<double> voltages) {
     List<FullStatusDataModel> fullStatus = <FullStatusDataModel>[];
@@ -39,7 +41,8 @@ class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
       var color = voltages.elementAt(i) > 40
           ? Colors.redAccent
           : Colors.lightBlueAccent;
-      fullStatus.add(FullStatusDataModel(i + 1, voltages.elementAt(i), color));
+      fullStatus.add(FullStatusDataModel(
+          x: i + 1, y: voltages.elementAt(i), color: color));
     }
     return fullStatus;
   }

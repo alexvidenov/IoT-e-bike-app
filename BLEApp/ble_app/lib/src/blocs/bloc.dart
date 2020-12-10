@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 
 mixin Disposable<T, S> {

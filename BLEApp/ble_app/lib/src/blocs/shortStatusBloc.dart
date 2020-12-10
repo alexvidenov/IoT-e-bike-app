@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:ble_app/src/blocs/navigationService.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
@@ -43,10 +42,10 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
         _appData.addCurrentRecord({
           'timeStamp': DateTime.now().toString(),
           'stats': {
-            'voltage': _model.getTotalVoltage,
-            'temp': _model.getTemperature,
-            'currentCharge': _model.getCurrentCharge,
-            'currentDischarge': _model.getCurrentDischarge,
+            'voltage': _model.totalVoltage,
+            'temp': _model.temperature,
+            'currentCharge': _model.currentCharge,
+            'currentDischarge': _model.currentDischarge,
           }
         });
         _uploadTimer = 0;
@@ -63,20 +62,21 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
     data != 'empty'
         ? _appData = AppData.fromJson(jsonDecode(data),
             userId: userId, deviceSerialNumber: deviceId)
-        : _appData = AppData(
-            userId: userId,
-            deviceSerialNumber: deviceId);
+        : _appData = AppData(userId: userId, deviceSerialNumber: deviceId);
   }
+}
 
+extension ParseShortStatus on ShortStatusBloc {
   ShortStatusModel _generateShortStatus(String rawData) {
     List<String> splittedObject = rawData.split(' ');
-    var voltage = double.parse(splittedObject.elementAt(0));
-    var currentCharge = double.parse(splittedObject.elementAt(1));
-    var currentDischarge = double.parse(splittedObject.elementAt(2));
-    var temperature = double.parse(splittedObject.elementAt(3));
-    ShortStatusModel shortStatusViewModel = ShortStatusModel();
-    shortStatusViewModel.setParameters(
-        voltage, currentCharge, currentDischarge, temperature);
-    return shortStatusViewModel;
+    final voltage = double.parse(splittedObject.elementAt(0));
+    final currentCharge = double.parse(splittedObject.elementAt(1));
+    final currentDischarge = double.parse(splittedObject.elementAt(2));
+    final temperature = double.parse(splittedObject.elementAt(3));
+    return ShortStatusModel(
+        totalVoltage: voltage,
+        currentCharge: currentCharge,
+        currentDischarge: currentDischarge,
+        temperature: temperature);
   }
 }

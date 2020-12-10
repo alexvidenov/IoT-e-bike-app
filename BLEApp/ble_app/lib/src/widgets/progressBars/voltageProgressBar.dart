@@ -13,10 +13,10 @@ class VoltageProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<ShortStatusModel>(
         stream: bloc.stream,
-        initialData: ShortStatusModel(),
+        initialData: ShortStatusModel.empty(),
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
-            var voltage = shortStatus.data.getTotalVoltage;
+            var voltage = shortStatus.data.totalVoltage;
             return Container(
               height: 180,
               width: 20,

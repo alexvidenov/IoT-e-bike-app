@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
@@ -19,12 +18,21 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
 
   EntryEndpointBloc(this._devicesBloc, this._settingsBloc);
 
-  _listen() => _devicePickedSubscription = _devicesBloc.pickedDevice.listen((_) {
-      this.pause();
-      _devicesBloc.pause();
-      addEvent(Endpoint.AuthScreen);
-    });
+  _listen() =>
+      _devicePickedSubscription = _devicesBloc.pickedDevice.listen((_) {
+        this.pause();
+        _devicesBloc.pause();
+        addEvent(Endpoint.AuthScreen);
+      });
 
+  @override
+  void create() => _determineEndpoint();
+
+  @override
+  void pause() => _devicePickedSubscription.cancel();
+}
+
+extension DetermineEndpoint on EntryEndpointBloc {
   void _determineEndpoint() {
     String _deviceId = _settingsBloc.getOptionalDeviceId();
     if (_deviceId != 'empty') {
@@ -38,10 +46,4 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
       addEvent(Endpoint.DevicesScreen);
     }
   }
-
-  @override
-  void create() => _determineEndpoint();
-
-  @override
-  void pause() => _devicePickedSubscription.cancel();
 }

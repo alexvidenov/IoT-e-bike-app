@@ -1,6 +1,5 @@
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -20,8 +19,8 @@ class MapPage extends RouteAwareWidget {
         stream: _locationBloc.stream,
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
-            var marker = _locationBloc.generateNewMarker(snapshot.data);
-            var circle = _locationBloc.generateNewCircle(snapshot.data);
+            final marker = _locationBloc.generateNewMarker(snapshot.data);
+            final circle = _locationBloc.generateNewCircle(snapshot.data);
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
               onLongPress: () => _navigationBloc.returnToFirstRoute(),

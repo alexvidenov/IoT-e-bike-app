@@ -13,11 +13,11 @@ class CurrentRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<ShortStatusModel>(
         stream: bloc.stream,
-        initialData: ShortStatusModel(),
+        initialData: ShortStatusModel.empty(),
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
-            var currentCharge = shortStatus.data.getCurrentCharge;
-            var currentDischarge = shortStatus.data.getCurrentDischarge;
+            var currentCharge = shortStatus.data.currentCharge;
+            var currentDischarge = shortStatus.data.currentDischarge;
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

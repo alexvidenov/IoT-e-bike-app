@@ -23,7 +23,31 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
   set controller(GoogleMapController controller) =>
       this._controller = controller;
 
-  startTrackingLocation() async {
+  generateNewCircle(LocationData locationData) => Circle(
+      circleId: CircleId("car"),
+      radius: locationData.accuracy,
+      zIndex: 1,
+      strokeColor: Colors.blue,
+      center: LatLng(locationData.latitude, locationData.longitude),
+      fillColor: Colors.blue.withAlpha(70));
+
+  generateNewMarker(LocationData locationData) => Marker(
+        markerId: MarkerId("home"),
+        position: LatLng(locationData.latitude, locationData.longitude),
+        rotation: locationData.heading,
+        draggable: false,
+        zIndex: 2,
+        flat: true,
+        anchor: Offset(0.5, 0.5),
+        //icon: BitmapDescriptor.fromBytes(imageData) add icon later on, you know
+      );
+
+  @override
+  void create() => startTrackingLocation();
+}
+
+extension Track on LocationBloc {
+  void startTrackingLocation() async {
     try {
       var location = await _location.getLocation();
 
@@ -51,26 +75,4 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
       }
     }
   }
-
-  generateNewCircle(LocationData locationData) => Circle(
-      circleId: CircleId("car"),
-      radius: locationData.accuracy,
-      zIndex: 1,
-      strokeColor: Colors.blue,
-      center: LatLng(locationData.latitude, locationData.longitude),
-      fillColor: Colors.blue.withAlpha(70));
-
-  generateNewMarker(LocationData locationData) => Marker(
-        markerId: MarkerId("home"),
-        position: LatLng(locationData.latitude, locationData.longitude),
-        rotation: locationData.heading,
-        draggable: false,
-        zIndex: 2,
-        flat: true,
-        anchor: Offset(0.5, 0.5),
-        //icon: BitmapDescriptor.fromBytes(imageData) add icon later on, you know
-      );
-
-  @override
-  void create() => startTrackingLocation();
 }

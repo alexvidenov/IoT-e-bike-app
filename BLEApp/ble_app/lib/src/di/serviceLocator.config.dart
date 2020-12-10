@@ -14,6 +14,7 @@ import '../model/DeviceRepository.dart';
 import '../blocs/devicesBloc.dart';
 import '../blocs/entryEndpointBloc.dart';
 import '../blocs/fullStatusBloc.dart';
+import '../persistence/localDatabase.dart';
 import '../blocs/locationBloc.dart';
 import '../blocs/navigationBloc.dart';
 import '../blocs/navigationService.dart';
@@ -30,13 +31,13 @@ GetIt $initGetIt(
   EnvironmentFilter environmentFilter,
 }) {
   final gh = GetItHelper(get, environment, environmentFilter);
-  gh.lazySingleton<Auth>(() => Auth());
   gh.lazySingleton<DeviceRepository>(() => DeviceRepository());
   gh.factory<DevicesBloc>(() => DevicesBloc(get<DeviceRepository>()));
   gh.factory<FullStatusBloc>(() => FullStatusBloc(get<DeviceRepository>()));
   gh.factory<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
   gh.factory<ShortStatusBloc>(() => ShortStatusBloc(get<DeviceRepository>()));
+  gh.lazySingleton<Auth>(() => Auth(get<LocalDatabase>()));
   gh.factory<BluetoothAuthBloc>(
       () => BluetoothAuthBloc(get<DeviceRepository>()));
   gh.lazySingleton<DeviceBloc>(() => DeviceBloc(get<DeviceRepository>()));
@@ -47,6 +48,7 @@ GetIt $initGetIt(
       () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));
 
   // Eager singletons must be registered in the right order
+  gh.singletonAsync<LocalDatabase>(() => LocalDatabase.getInstance());
   gh.singletonAsync<SharedPrefsService>(() => SharedPrefsService.getInstance());
   return get;
 }

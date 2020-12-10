@@ -14,11 +14,11 @@ class TestWidget extends StatelessWidget {
             stream: shortStatusBloc.stream,
             builder: (_, shortStatus) {
               if (shortStatus.connectionState == ConnectionState.active) {
-                var model = shortStatus.data;
-                var charge = model.getCurrentCharge;
-                var discharge = model.getCurrentDischarge;
-                var voltage = model.getTotalVoltage;
-                var temperature = model.getTemperature;
+                final model = shortStatus.data;
+                final charge = model.currentCharge;
+                final discharge = model.currentDischarge;
+                final voltage = model.totalVoltage;
+                final temperature = model.temperature;
                 return Column(
                   children: <Widget>[
                     Text('Voltage - $voltage',

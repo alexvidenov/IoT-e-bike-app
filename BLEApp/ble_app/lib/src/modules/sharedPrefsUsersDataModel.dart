@@ -1,4 +1,7 @@
 import 'package:ble_app/src/modules/logFileModel.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'sharedPrefsUsersDataModel.g.dart';
 
 class AppData {
   List<UserData> usersData;
@@ -50,6 +53,7 @@ class AppData {
         {'id': deviceSerialNumber, 'data': []}
       ]
     });
+
     usersData.add(_currentUser);
 
     _currentDeviceLog = _currentUser.userLog
@@ -73,40 +77,40 @@ class AppData {
   addCurrentRecord(Map<String, dynamic> data) => _currentDeviceLog.addLog(data);
 }
 
+@JsonSerializable(nullable: false)
 class UserData {
+  // TODO: abstract in other class
+  @JsonKey(name: 'user')
   final String userId;
+
+  @JsonKey(name: 'devices')
   List<DeviceLog> userLog;
 
   UserData({this.userId, this.userLog});
 
   addLog(DeviceLog deviceLog) => userLog.add(deviceLog);
 
-  Map<String, dynamic> toJson() =>
-      {'user': userId, 'devices': userLog.map((log) => log.toJson()).toList()};
+  Map<String, dynamic> toJson() => _$UserDataToJson(this);
 
-  factory UserData.fromJson(Map<String, dynamic> json) {
-    List<dynamic> devices = json['devices'];
-    List<DeviceLog> list = List();
-    list = devices.map((log) => DeviceLog.fromJson(log)).toList();
-    return UserData(userId: json['user'], userLog: list);
-  }
+  factory UserData.fromJson(Map<String, dynamic> json) =>
+      _$UserDataFromJson(json);
 }
 
+@JsonSerializable(nullable: false)
 class DeviceLog {
+  @JsonKey(name: 'id')
   String deviceId;
+
+  @JsonKey(name: 'data')
   List<LogModel> deviceLog;
 
   DeviceLog({this.deviceId, this.deviceLog});
 
-  addLog(Map<String, dynamic> data) => deviceLog.add(LogModel.fromJson(data));
+  void addLog(Map<String, dynamic> data) =>
+      deviceLog.add(LogModel.fromJson(data));
 
-  factory DeviceLog.fromJson(Map<String, dynamic> json) {
-    List<dynamic> data = json['data'];
-    List<LogModel> devicesLog = [];
-    devicesLog = data.map((log) => LogModel.fromJson(log)).toList();
-    return DeviceLog(deviceId: json['id'], deviceLog: devicesLog);
-  }
+  factory DeviceLog.fromJson(Map<String, dynamic> json) =>
+      _$DeviceLogFromJson(json);
 
-  Map<String, dynamic> toJson() =>
-      {'id': deviceId, 'data': deviceLog.map((log) => log.toJson()).toList()};
+  Map<String, dynamic> toJson() => _$DeviceLogToJson(this);
 }

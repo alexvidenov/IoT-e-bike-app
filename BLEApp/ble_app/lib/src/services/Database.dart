@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class Database {
+class FirestoreDatabase {
   final String uid; // user id
 
-  Database({this.uid}) ;
+  FirestoreDatabase({this.uid});
 
   final CollectionReference _users =
       FirebaseFirestore.instance.collection('users');

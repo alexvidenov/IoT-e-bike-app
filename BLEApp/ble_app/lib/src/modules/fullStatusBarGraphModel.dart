@@ -1,9 +1,15 @@
 import 'dart:ui';
 
-class FullStatusDataModel {
-  final int x;
-  final double y;
-  final Color color;
+import 'package:auto_data/auto_data.dart';
 
-  const FullStatusDataModel(this.x, this.y, this.color);
+import 'package:flutter/material.dart';
+import 'dart:convert';
+
+part 'fullStatusBarGraphModel.g.dart';
+
+@data
+class $FullStatusDataModel {
+  int x;
+  double y;
+  Color color;
 }
