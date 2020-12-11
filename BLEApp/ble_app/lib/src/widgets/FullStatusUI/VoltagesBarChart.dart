@@ -1,6 +1,6 @@
+import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
 import 'package:flutter/material.dart';
 
-import 'package:ble_app/src/modules/fullStatusBarGraphModel.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/_BottomProgressText.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 

@@ -1,8 +1,7 @@
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
-
-import 'package:ble_app/src/modules/shortStatusModel.dart';
 
 class VoltageProgressBar extends StatelessWidget {
   final ShortStatusBloc bloc;

@@ -1,12 +1,4 @@
-import 'dart:async';
-
-import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:ble_app/src/model/BleDevice.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
-import 'package:ble_app/src/utils/bluetoothUtils.dart';
-import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-import 'package:injectable/injectable.dart';
-import 'package:rxdart/rxdart.dart';
+part of bloc;
 
 @injectable
 class DevicesBloc extends Bloc<BleDevice, BleDevice> {
@@ -28,10 +20,10 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
 
   DevicesBloc(this._deviceRepository) : this._bleManager = BleManager();
 
-  void _handlePickedDevice(BleDevice bleDevice) =>
+  _handlePickedDevice(BleDevice bleDevice) =>
       _deviceRepository.pickDevice(bleDevice);
 
-  void init() {
+  init() {
     bleDevices.clear();
     _checkBluetooth().then((_) => _startScan());
 
@@ -45,20 +37,20 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
       await _bleManager.enableRadio();
   }
 
-  void _startScan() {
+  _startScan() {
     _scanSubscription = _bleManager.startPeripheralScan(
         uuids: [BluetoothUtils.SERVICE_UUID]).listen((ScanResult scanResult) {
-      // add uuid-specific search later on
-      var bleDevice = BleDevice(peripheral: scanResult.peripheral);
+      final bleDevice = BleDevice(peripheral: scanResult.peripheral);
       if (scanResult.advertisementData.localName != null &&
           !bleDevices.contains(bleDevice)) {
         bleDevices.add(bleDevice);
+        // TODO: FIX THE PART THAT CRASHES THAT LINE
         _visibleDevicesController.add(bleDevices.sublist(0));
       }
     });
   }
 
-  void _stopScan() => _bleManager.stopPeripheralScan();
+  _stopScan() => _bleManager.stopPeripheralScan();
 
   Future<void> refresh() async {
     _scanSubscription?.cancel();
@@ -69,7 +61,7 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   }
 
   @override
-  void dispose() {
+  dispose() {
     super.dispose();
     _visibleDevicesController.close();
     _scanSubscription?.cancel();
@@ -77,11 +69,11 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   }
 
   @override
-  void create() => streamSubscription = stream.listen(_handlePickedDevice);
+  _create() => streamSubscription = stream.listen(_handlePickedDevice);
 
   @override
-  void pause() => _stopScan();
+  _pause() => _stopScan();
 
   @override
-  void resume() => init();
+  _resume() => init();
 }

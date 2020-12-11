@@ -1,40 +1,42 @@
-import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
-import 'package:ble_app/src/services/Auth.dart';
-import 'package:ble_app/src/services/Database.dart';
-import 'package:injectable/injectable.dart';
+part of bloc;
 
 @injectable
-class BluetoothAuthBloc extends Bloc<bool, String> {
+class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
   final DeviceRepository _repository;
 
-  BluetoothAuthBloc(this._repository) : super();
+  final LocalDatabase _localDatabase;
+
+  final Auth _auth;
+
+  BluetoothAuthBloc(this._repository, this._auth, this._localDatabase)
+      : super();
 
   @override
-  void create() => streamSubscription =
-          _repository.characteristicValueStream.listen((event) {
+  _create() => streamSubscription =
+          _repository.characteristicValueStream.listen((event) async {
         if (event.startsWith('pass')) {
-          //List<String> objects = event.split(' ');
-          //String deviceId = objects.elementAt(1);
+          final currentUser = _auth.getCurrentUserId();
+          //ist<String> objects = event.split(' ');
+          //String deviceId = objects.elementAt(1);q
           // later on change to what the actual parameter name will be
-          _repository.deviceSerialNumber = 1234457.toString();
-          FirestoreDatabase(uid: $<Auth>().getCurrentUserId())
-              .updateDeviceData(deviceId: '1234457'); // just for simpler tests
-          addEvent(true);
+          final deviceId = '1234457';
+          //if (await checkUserExistsWithDevice(deviceId, currentUser)) {
+          _repository.deviceSerialNumber = deviceId.toString();
+          FirestoreDatabase(uid: currentUser)
+              .updateDeviceData(deviceId: deviceId); // just for simpler tests
+          addEvent(BTAuthenticated());
+          //} else {
+          //addEvent(BTNotAuthenticated(
+          // NotBTAuthenticatedError.DeviceIsNotRegistered));
+          //}
+        } else {
+          addEvent(BTNotAuthenticated(NotBTAuthenticatedError.WrongPassword));
         }
       });
 
   @override
-  void pause() => pauseSubscription();
+  _pause() => _pauseSubscription();
 
   @override
-  void resume() => resumeSubscription();
-}
-
-extension BTAuthMethods on BluetoothAuthBloc {
-  authenticate(String password) => _repository.writeToCharacteristic(password);
-
-  changePassword(String newPassword) =>
-      _repository.writeToCharacteristic(newPassword);
+  _resume() => _resumeSubscription();
 }

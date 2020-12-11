@@ -1,5 +1,4 @@
-import 'package:ble_app/src/blocs/locationBloc.dart';
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +17,8 @@ class ShortStatusUI extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        ProgressColumns(shortStatusBloc: shortStatusBloc, locationBloc: locationBloc),
+        ProgressColumns(
+            shortStatusBloc: shortStatusBloc, locationBloc: locationBloc),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[

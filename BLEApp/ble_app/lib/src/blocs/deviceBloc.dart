@@ -1,9 +1,4 @@
-import 'dart:async';
-import 'package:ble_app/src/model/BleDevice.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
-import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-import 'package:injectable/injectable.dart';
-import 'package:rxdart/rxdart.dart';
+part of bloc;
 
 @lazySingleton
 class DeviceBloc {
@@ -32,14 +27,14 @@ class DeviceBloc {
       .skipWhile((bleDevice) => bleDevice != null);
 
   DeviceBloc(this._deviceRepository) : this._bleManager = BleManager() {
-    var device = _deviceRepository.pickedDevice.value;
+    final device = _deviceRepository.pickedDevice.value;
     _deviceController = BehaviorSubject<BleDevice>.seeded(device);
 
     _connectionStateController = BehaviorSubject<PeripheralConnectionState>();
     _isDeviceReadyController = BehaviorSubject<bool>.seeded(false);
   }
 
-  void init() => _bleManager.stopPeripheralScan();
+  init() => _bleManager.stopPeripheralScan();
 
   Future<void> disconnect() =>
       _disconnectManual().then((_) => _deviceRepository.pickDevice(null));
@@ -50,7 +45,7 @@ class DeviceBloc {
           .disconnectOrCancelConnection();
   }
 
-  void _observeConnectionState() =>
+  _observeConnectionState() =>
       device.listen((bleDevice) => bleDevice.peripheral
           .observeConnectionState(
               emitCurrentValue: true, completeOnDisconnect: true)
@@ -63,7 +58,7 @@ class DeviceBloc {
           .then((_) => _deviceRepository.discoverServicesAndStartMonitoring())
           .then((_) => _setDeviceReady.add(true)));
 
-  void dispose() async {
+  dispose() async {
     await _deviceController.drain();
     _deviceController.close();
 

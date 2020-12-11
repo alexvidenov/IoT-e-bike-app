@@ -1,4 +1,5 @@
-import 'package:ble_app/src/blocs/locationBloc.dart';
+
+import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:location/location.dart';

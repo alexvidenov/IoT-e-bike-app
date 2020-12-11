@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:android_alarm_manager/android_alarm_manager.dart';
-import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
+import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/Entrypoints/AuthEntrypoint.dart';
@@ -10,13 +10,14 @@ import 'package:ble_app/src/screens/Entrypoints/DevicesEntrypoint.dart';
 import 'package:ble_app/src/screens/Entrypoints/Root.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/services/Storage.dart';
+import 'package:ble_app/src/utils/ConnectivityManager.dart';
 import 'package:ble_app/src/utils/PrefsKeys.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async {
+main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   configureDependencies();
@@ -31,17 +32,46 @@ void main() async {
   $.isReady<LocalDatabase>().then((_) => runApp(RootPage($<Auth>())));
 }
 
-void uploadCallback() async {
-  // TODO: instantiate the local database here since this is isolate..
+uploadCallback() async {
   await Firebase.initializeApp();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String jsonString = prefs.get(PrefsKeys.USER_DATA);
-  if (jsonString != null) {
-    Storage(uid: Auth($()).getCurrentUserId()).upload(jsonDecode(jsonString));
+  if (jsonString != null && await ConnectivityManager.isOnline() != false) {
+    Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
     prefs.remove(PrefsKeys.USER_DATA);
   }
 }
 
+// ignore: must_be_immutable
+class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
+  BleApp(EntryEndpointBloc endpointBloc) : super(bloc: endpointBloc);
+
+  @override
+  Widget buildWidget(BuildContext context) => StreamBuilder(
+        stream: super.bloc.stream,
+        initialData: Endpoint.Unknown,
+        builder: (_, snapshot) {
+          switch (snapshot.data) {
+            case Endpoint.Unknown:
+              return MaterialApp(
+                home: Scaffold(
+                  body: Container(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              );
+            case Endpoint.AuthScreen:
+              return AuthEntrypoint();
+            case Endpoint.DevicesScreen:
+              return DevicesEntrypoint();
+          }
+          return Container();
+        },
+      );
+}
+
+/*
 class BleApp extends StatefulWidget {
   final EntryEndpointBloc _endpointBloc;
 
@@ -75,3 +105,4 @@ class _BleAppState extends State<BleApp> {
         },
       );
 }
+ */

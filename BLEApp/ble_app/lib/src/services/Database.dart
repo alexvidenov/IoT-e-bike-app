@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 class FirestoreDatabase {
   final String uid; // user id
 
-  FirestoreDatabase({this.uid});
-
   final CollectionReference _users =
       FirebaseFirestore.instance.collection('users');
+
+  FirestoreDatabase({this.uid});
 
   Future<void> updateUserData() async =>
       await _users.doc(uid).set({'id': this.uid});

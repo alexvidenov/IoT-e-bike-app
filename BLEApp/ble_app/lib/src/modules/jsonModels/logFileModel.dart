@@ -21,7 +21,7 @@ class _BatteryStatusModel {
 @JsonSerializable(nullable: false)
 class LogModel {
   final String timeStamp;
-  
+
   @JsonKey(name: 'stats')
   final _BatteryStatusModel model;
 

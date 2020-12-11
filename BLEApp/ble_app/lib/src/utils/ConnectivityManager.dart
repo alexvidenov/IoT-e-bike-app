@@ -2,8 +2,7 @@ import 'package:connectivity/connectivity.dart';
 
 abstract class ConnectivityManager {
   static Future<bool> isOnline() async {
-    final connectivity = await (Connectivity().checkConnectivity());
-    switch (connectivity) {
+    switch (await (Connectivity().checkConnectivity())) {
       case ConnectivityResult.wifi:
         return true;
       case ConnectivityResult.mobile:

@@ -1,6 +1,4 @@
-import 'package:ble_app/src/blocs/locationBloc.dart';
-import 'package:ble_app/src/blocs/navigationBloc.dart';
-import 'package:ble_app/src/screens/routeAware.dart';
+import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';

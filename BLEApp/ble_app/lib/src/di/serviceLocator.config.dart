@@ -8,19 +8,9 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
 import '../services/Auth.dart';
-import '../blocs/btAuthenticationBloc.dart';
-import '../blocs/deviceBloc.dart';
+import '../blocs/bloc.dart';
 import '../model/DeviceRepository.dart';
-import '../blocs/devicesBloc.dart';
-import '../blocs/entryEndpointBloc.dart';
-import '../blocs/fullStatusBloc.dart';
 import '../persistence/localDatabase.dart';
-import '../blocs/locationBloc.dart';
-import '../blocs/navigationBloc.dart';
-import '../blocs/navigationService.dart';
-import '../blocs/settingsBloc.dart';
-import '../blocs/sharedPrefsBloc.dart';
-import '../blocs/shortStatusBloc.dart';
 
 /// adds generated dependencies
 /// to the provided [GetIt] instance
@@ -36,14 +26,21 @@ GetIt $initGetIt(
   gh.factory<FullStatusBloc>(() => FullStatusBloc(get<DeviceRepository>()));
   gh.factory<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
-  gh.factory<ShortStatusBloc>(() => ShortStatusBloc(get<DeviceRepository>()));
-  gh.lazySingleton<Auth>(() => Auth(get<LocalDatabase>()));
-  gh.factory<BluetoothAuthBloc>(
-      () => BluetoothAuthBloc(get<DeviceRepository>()));
+  gh.lazySingleton<Auth>(() => Auth(localDatabase: get<LocalDatabase>()));
+  gh.factory<BluetoothAuthBloc>(() => BluetoothAuthBloc(
+        get<DeviceRepository>(),
+        get<Auth>(),
+        get<LocalDatabase>(),
+      ));
   gh.lazySingleton<DeviceBloc>(() => DeviceBloc(get<DeviceRepository>()));
   gh.lazySingleton<NavigationBloc>(
       () => NavigationBloc(get<NavigationService>()));
   gh.lazySingleton<SettingsBloc>(() => SettingsBloc(get<SharedPrefsService>()));
+  gh.factory<ShortStatusBloc>(() => ShortStatusBloc(
+        get<DeviceRepository>(),
+        get<SettingsBloc>(),
+        get<Auth>(),
+      ));
   gh.lazySingleton<EntryEndpointBloc>(
       () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));
 

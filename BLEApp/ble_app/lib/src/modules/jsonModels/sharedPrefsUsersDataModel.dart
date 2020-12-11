@@ -1,4 +1,4 @@
-import 'package:ble_app/src/modules/logFileModel.dart';
+import 'package:ble_app/src/modules/jsonModels/logFileModel.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'sharedPrefsUsersDataModel.g.dart';
@@ -79,7 +79,7 @@ class AppData {
 
 @JsonSerializable(nullable: false)
 class UserData {
-  // TODO: abstract in other class
+  // TODO: abstract names in other class
   @JsonKey(name: 'user')
   final String userId;
 
