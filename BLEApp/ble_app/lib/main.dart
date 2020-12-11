@@ -32,6 +32,7 @@ void main() async {
 }
 
 void uploadCallback() async {
+  // TODO: instantiate the local database here since this is isolate..
   await Firebase.initializeApp();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String jsonString = prefs.get(PrefsKeys.USER_DATA);

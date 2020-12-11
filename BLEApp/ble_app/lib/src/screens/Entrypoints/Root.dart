@@ -4,6 +4,18 @@ import 'package:ble_app/src/screens/loginPage.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:flutter/material.dart';
 
+class _WaitingScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+      home: Scaffold(
+        body: Container(
+          alignment: Alignment.center,
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+}
+
 class RootPage extends StatelessWidget {
   final Auth _auth;
 
@@ -12,31 +24,12 @@ class RootPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: _auth.onAuthStateChanged,
+        stream: _auth.combinedStream,
         builder: (_, snapshot) {
-          return StreamBuilder(
-            stream: _auth.onLocalAuthStateChanged,
-            builder: (_, localSnapshot) {
-              if (localSnapshot.connectionState == ConnectionState.active ||
-                  snapshot.connectionState == ConnectionState.active) {
-                return snapshot.hasData || localSnapshot.hasData
-                    ? BleApp($())
-                    : LoginScreen(_auth);
-              }
-              return _buildWaitingScreen();
-            },
-          );
+          if (snapshot.connectionState == ConnectionState.active) {
+            return snapshot.hasData ? BleApp($()) : LoginScreen(_auth);
+          } else
+            return _WaitingScreen();
         });
-  }
-
-  Widget _buildWaitingScreen() {
-    return MaterialApp(
-      home: Scaffold(
-        body: Container(
-          alignment: Alignment.center,
-          child: CircularProgressIndicator(),
-        ),
-      ),
-    );
   }
 }

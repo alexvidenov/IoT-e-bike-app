@@ -61,10 +61,13 @@ class Auth {
 }
 
 extension UserStatus on Auth {
-  Stream<String> get onAuthStateChanged =>
+  Stream<String> get _onAuthStateChanged =>
       _auth.authStateChanges().map((User user) => user?.uid);
 
-  ValueStream<String> get onLocalAuthStateChanged => _behaviorSubject.stream;
+  ValueStream<String> get _onLocalAuthStateChanged => _behaviorSubject.stream;
+
+  Stream<String> get combinedStream =>
+      Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]);
 
   String getCurrentUserId() => _auth.currentUser?.uid;
 }
