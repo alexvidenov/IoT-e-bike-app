@@ -2,6 +2,8 @@ part of bloc;
 
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
+// TODO: actually have the lifecycle methods extended with lifecycle delegate here
+
 // ignore: must_be_immutable
 abstract class RouteAwareWidget<T extends Bloc> extends StatefulWidget {
   Widget buildWidget(BuildContext context);
@@ -26,28 +28,28 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   @override
   initState() {
     super.initState();
-    widget.bloc._create();
+    widget.bloc.create();
   }
 
   @override
   didChangeDependencies() {
     super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context));
-    // SEE ABOUT THAT
+    final route = ModalRoute.of(context);
+    if (route != null) routeObserver.subscribe(this, route);
     widget.onCreate();
   }
 
   @override
   didPush() {
     super.didPush();
-    widget.bloc._resume();
+    widget.bloc.resume();
     widget.onResume();
   }
 
   @override
   didPushNext() {
     super.didPushNext();
-    widget.bloc._pause();
+    widget.bloc.pause();
     widget.onPause();
   }
 
@@ -60,7 +62,7 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   @override
   didPopNext() {
     super.didPopNext();
-    widget.bloc._resume();
+    widget.bloc.resume();
     widget.onResume();
   }
 

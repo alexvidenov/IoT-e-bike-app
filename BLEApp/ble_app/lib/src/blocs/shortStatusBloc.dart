@@ -14,19 +14,22 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
 
   // TODO: actually fix the disposing of the damn writeMethod here
   @override
-  _pause() {
+  pause() {
+    super.pause();
     _repository.cancel();
     _pauseSubscription();
   }
 
   @override
-  _resume() {
+  resume() {
+    super.resume();
     _repository.resumeTimer(true);
     _resumeSubscription();
   }
 
   @override
-  _create() {
+  create() {
+    super.create();
     _initData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       ShortStatusModel _model = _generateShortStatus(event);

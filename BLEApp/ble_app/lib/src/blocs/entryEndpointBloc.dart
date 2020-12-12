@@ -10,11 +10,14 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
   EntryEndpointBloc(this._devicesBloc, this._settingsBloc);
 
   _listen() => _devicesBloc.pickedDevice.listen((_) {
-        this._pause();
-        _devicesBloc._pause();
+        this.pause();
+        _devicesBloc.pause();
         addEvent(Endpoint.AuthScreen);
       });
 
   @override
-  _create() => _determineEndpoint();
+  create() {
+    super.create();
+    _determineEndpoint();
+  }
 }

@@ -69,11 +69,27 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   }
 
   @override
-  _create() => streamSubscription = stream.listen(_handlePickedDevice);
+  create() => streamSubscription = stream.listen(_handlePickedDevice);
 
   @override
-  _pause() => _stopScan();
+  pause() => _stopScan();
 
   @override
-  _resume() => init();
+  resume() => init();
+
+  @override
+  onCreate() => create();
+
+
+  @override
+  onPause() {
+    // TODO: implement onPause
+    throw UnimplementedError();
+  }
+
+  @override
+  onResume() {
+    // TODO: implement onResume
+    throw UnimplementedError();
+  }
 }

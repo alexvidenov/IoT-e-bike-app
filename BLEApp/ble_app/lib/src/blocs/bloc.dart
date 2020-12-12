@@ -60,9 +60,20 @@ part 'extensions/TrackLocation.dart';
 
 part 'disposable.dart';
 
+/*
+mixin LifecycleDelegate {
+  onCreate() {}
+
+  onPause() {}
+
+  onResume() {}
+}
+ */
+
+// state and event
+// T, S
 abstract class Bloc<T, S> with _Disposable<T, S> {
-  // state and event
-  // T, S
+  //LifecycleDelegate lifecycleDelegate;
 
   Stream<T> get stream => _publishSubject$.stream;
 
@@ -72,11 +83,28 @@ abstract class Bloc<T, S> with _Disposable<T, S> {
     this._publishSubject$ = BehaviorSubject<T>();
   }
 
-  _create() {}
+  /*
+  create() {
+    if(lifecycleDelegate != null) _create();
+  }
 
-  _pause() {}
+  pause() {
+    if(lifecycleDelegate != null) _pause();
+  }
 
-  _resume() {}
+  resume() {
+    if(lifecycleDelegate != null) _resume();
+  }
+   */
+
+  //@mustCallSuper
+  //_create() => lifecycleDelegate?.onCreate();
+
+  create() {}
+
+  pause() {}
+
+  resume() {}
 
   Function(T) get addEvent => _sink.add;
 

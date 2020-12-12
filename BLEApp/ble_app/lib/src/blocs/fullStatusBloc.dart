@@ -7,16 +7,16 @@ class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
   FullStatusBloc(this._repository) : super();
 
   @override
-  _create() => _listenToFullStatus();
+  create() => _listenToFullStatus();
 
   @override
-  _pause() {
+  pause() {
     _repository.cancel();
     _pauseSubscription();
   }
 
   @override
-  _resume() {
+  resume() {
     _repository.resumeTimer(false); // change this boolean to  enum please
     _resumeSubscription();
   }

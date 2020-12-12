@@ -3,17 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-class MapPage extends RouteAwareWidget {
+class MapPage extends RouteAwareWidget<LocationBloc> {
   final LocationBloc _locationBloc;
   final NavigationBloc _navigationBloc;
 
-  MapPage(LocationBloc locationBloc, this._navigationBloc)
+  const MapPage(LocationBloc locationBloc, this._navigationBloc)
       : this._locationBloc = locationBloc,
         super(bloc: locationBloc);
 
   @override
-  Widget buildWidget(BuildContext context) {
-    return StreamBuilder<LocationData>(
+  Widget buildWidget(BuildContext context) => StreamBuilder<LocationData>(
         stream: _locationBloc.stream,
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
@@ -35,10 +34,9 @@ class MapPage extends RouteAwareWidget {
           } else
             return Container();
         });
-  }
 
   @override
-  void onResume() {
+  onResume() {
     super.onResume();
     _navigationBloc.addEvent(CurrentPage.Map);
   }

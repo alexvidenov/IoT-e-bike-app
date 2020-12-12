@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class FullStatusPage extends RouteAwareWidget<FullStatusBloc> {
   final NavigationBloc _navigationBloc;
 
-  FullStatusPage(FullStatusBloc fullStatusBloc, this._navigationBloc)
+  const FullStatusPage(FullStatusBloc fullStatusBloc, this._navigationBloc)
       : super(bloc: fullStatusBloc);
 
   @override

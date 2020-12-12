@@ -42,10 +42,10 @@ dependencies:
   android_alarm_manager: ^0.4.5+11
   location_permissions: ^3.0.0
   responsive_framework: ^0.0.8
-  auto_data: ^0.0.3
   json_serializable: ^3.5.0
   json_annotation: ^3.1.0
   connectivity: ^2.0.0
+  auto_data: ^0.0.3
   sealed_class: 3.0.0
 
   # The following adds the Cupertino Icons font to your application.

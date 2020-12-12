@@ -8,7 +8,7 @@ extension DetermineEndpoint on EntryEndpointBloc {
           BleDevice(peripheral: BleManager().createUnsafePeripheral(_deviceId));
       _listen();
       _devicesBloc.init();
-      _devicesBloc._create();
+      _devicesBloc.create();
       _devicesBloc.addEvent(device);
     } else
       addEvent(Endpoint.DevicesScreen);

@@ -38,6 +38,6 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
       );
 
   @override
-  void create() => startTrackingLocation();
+  create() => startTrackingLocation();
 }
 
