@@ -1,13 +1,18 @@
-import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:flutter/material.dart';
 
+import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
-class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> {
+
+class DeviceScreen extends RouteAwareWidget {
   final NavigationBloc _navigationBloc;
 
-  DeviceScreen(ShortStatusBloc shortStatusBloc, this._navigationBloc)
-      : super(bloc: shortStatusBloc);
+  DeviceScreen(ShortStatusBloc shortStatusBloc)
+      : this._navigationBloc = $<NavigationBloc>(),
+        super(bloc: shortStatusBloc);
 
   @override
   Widget buildWidget(BuildContext context) => InkWell(
@@ -18,7 +23,7 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> {
       );
 
   @override
-  onResume() {
+  void onResume() {
     super.onResume();
     _navigationBloc.addEvent(CurrentPage.Short);
   }

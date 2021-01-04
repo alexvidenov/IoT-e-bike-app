@@ -3,9 +3,7 @@ import 'package:floor/floor.dart';
 @Entity(tableName: 'devices')
 class Device {
   @PrimaryKey()
-  final String serialNumber; // serial
+  final String id;
 
-  final String userId; // the device user
-
-  const Device(this.serialNumber, this.userId);
+  const Device(this.id);
 }

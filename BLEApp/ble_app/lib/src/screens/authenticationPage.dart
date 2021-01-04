@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:ble_app/src/modules/sealedAuthStates/BTAuthState.dart';
+import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
+import 'package:ble_app/src/blocs/deviceBloc.dart';
+import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
@@ -17,19 +18,17 @@ class AuthenticationScreen extends StatefulWidget {
   _AuthenticationScreenState createState() => _AuthenticationScreenState();
 }
 
-// with lifeCycle delegate
 class _AuthenticationScreenState extends State<AuthenticationScreen> {
   final _writeController = TextEditingController();
 
   StreamSubscription<PeripheralConnectionState> _streamSubscriptionState;
-  StreamSubscription<BTAuthState> _streamSubscriptionAuth;
+  StreamSubscription<bool> _streamSubscriptionAuth;
 
   bool _isAuthenticated = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    //widget._authBloc.lifecycleDelegate = this;
     widget._deviceBloc.init();
     widget._authBloc.create();
     widget._deviceBloc.connect().then((_) => _init());
@@ -66,11 +65,10 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   _listenToAuthBloc() =>
       _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
-        event.continued((authenticated) {
+        if (event == true) {
           _isAuthenticated = true;
           Navigator.of(context).pushNamed('/home');
-          // TODO: present Dialog in this case with the specific message
-        }, (notAuthenticated) => null);
+        }
       });
 
   _retry() => Future.delayed(Duration(seconds: 4), () {

@@ -1,5 +1,7 @@
 import 'dart:async';
-import 'package:ble_app/src/blocs/bloc.dart';
+
+import 'package:ble_app/src/blocs/deviceBloc.dart';
+import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter/material.dart';

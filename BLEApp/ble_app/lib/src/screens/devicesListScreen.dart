@@ -1,14 +1,15 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
+import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
 import 'package:location_permissions/location_permissions.dart' as locationPerm;
 
 typedef _DeviceTapListener = void Function();
 
 // ignore: must_be_immutable
-class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
+class DevicesListScreen extends RouteAwareWidget {
   final DevicesBloc _devicesBloc;
   StreamSubscription _pickedDevicesSubscription;
 
@@ -20,15 +21,14 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
       _pickedDevicesSubscription = _devicesBloc.pickedDevice.listen((_) {
         this.onPause();
         Navigator.of(context)
-            .pushNamed('/auth');
+            .pushNamed('/auth'); // this route does not exist lmao
       });
 
   @override
-  onCreate() async {
+  void onCreate() async {
     super.onCreate();
-    locationPerm.PermissionStatus permissionStatus =
-        await locationPerm.LocationPermissions().checkPermissionStatus();
-    if (permissionStatus != locationPerm.PermissionStatus.granted) {
+    locationPerm.PermissionStatus permissionStatus = await locationPerm.LocationPermissions().checkPermissionStatus();
+    if(permissionStatus != locationPerm.PermissionStatus.granted){
       await locationPerm.LocationPermissions().requestPermissions();
     }
   }
@@ -52,7 +52,7 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
   }
 
   @override
-  onPause() {
+  void onPause() {
     super.onPause();
     _pickedDevicesSubscription.cancel();
   }

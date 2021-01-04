@@ -1,5 +1,6 @@
-import 'package:ble_app/src/modules/sealedAuthStates/AuthState.dart';
+import 'package:ble_app/src/screens/registrationPage.dart';
 import 'package:ble_app/src/services/Auth.dart';
+import 'package:ble_app/src/utils/ConnectivityManager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ble_app/src/utils/constants.dart';
@@ -30,29 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
     return false;
   }
 
-  Future<void> _presentDialog(BuildContext widgetContext, String reason) async {
-    await showDialog(
-      context: widgetContext,
-      builder: (context) => AlertDialog(
-        title: Text("Login failed"),
-        content: Text(reason),
-        actions: <Widget>[
-          FlatButton(child: Text("OK"), onPressed: () => print('lmao')),
-        ],
-      ),
-    );
-  }
-
   Future<void> validateAndSubmit() async {
     if (validateAndSave()) {
       try {
-        AuthState authState =
-            await widget._auth.signInWithEmailAndPassword(_email, _password);
-        authState.continued(
-            (authenticated) => authenticated.uid,
-            (notAuthenticated) =>
-                _presentDialog(context, notAuthenticated.reason.toString()),
-            (networkError) => _presentDialog(context, 'Network error'));
+        bool isConnected = await ConnectivityManager.isOnline();
+        await widget._auth
+            .signInWithEmailAndPassword(_email, _password, isConnected);
       } catch (e) {
         print('Error: $e');
       }
@@ -260,7 +244,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSignupBtn() {
     return GestureDetector(
-      onTap: () => print('bruh'),
+      onTap: () => Navigator.push(context,
+          MaterialPageRoute(builder: (_) => RegistrationScreen(widget._auth))),
       child: RichText(
         text: TextSpan(
           children: [

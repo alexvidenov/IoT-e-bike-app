@@ -1,4 +1,9 @@
-part of bloc;
+import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:injectable/injectable.dart';
+import 'package:location/location.dart';
 
 @injectable
 class LocationBloc extends Bloc<LocationData, LocationData> {
@@ -38,6 +43,36 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
       );
 
   @override
-  create() => startTrackingLocation();
+  void create() => startTrackingLocation();
 }
 
+extension Track on LocationBloc {
+  void startTrackingLocation() async {
+    try {
+      var location = await _location.getLocation();
+
+      addEvent(location);
+
+      if (streamSubscription != null) {
+        streamSubscription.cancel();
+      }
+
+      streamSubscription = _location.onLocationChanged.listen((newLocalData) {
+        if (_controller != null) {
+          _controller.animateCamera(CameraUpdate.newCameraPosition(
+              CameraPosition(
+                  bearing: 192.8334901395799,
+                  target: LatLng(newLocalData.latitude, newLocalData.longitude),
+                  tilt: 0,
+                  zoom: 18.00)));
+        }
+        addEvent(newLocalData);
+      });
+    } on PlatformException catch (e) {
+      if (e.code == 'PERMISSION_DENIED') {
+        // add event that says that the permission is denied
+        debugPrint("Permission Denied");
+      }
+    }
+  }
+}

@@ -1,4 +1,8 @@
-part of bloc;
+import 'dart:async';
+import 'package:ble_app/src/utils/PrefsKeys.dart';
+import 'package:injectable/injectable.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 @singleton
 class SharedPrefsService {
@@ -40,15 +44,15 @@ class SharedPrefsService {
 
   String userData() => _getPrefs(PrefsKeys.USER_DATA);
 
-  setUserData(String json) => _savePrefs(PrefsKeys.USER_DATA, json);
+  void setUserData(String json) => _savePrefs(PrefsKeys.USER_DATA, json);
 
   Future<void> deleteUserData() async =>
       await _preferences.remove(PrefsKeys.USER_DATA);
 
-  _setDeviceExists(bool deviceExists) =>
+  void _setDeviceExists(bool deviceExists) =>
       _savePrefs(PrefsKeys.DEVICE_EXISTS, deviceExists);
 
-  _setPasswordRemembered(bool passwordRemembered) =>
+  void _setPasswordRemembered(bool passwordRemembered) =>
       _savePrefs(PrefsKeys.REMEMBER_PASSWORD, passwordRemembered);
 
   bool getDeviceExists() => _getPrefs(PrefsKeys.DEVICE_EXISTS) ?? false;
@@ -63,12 +67,12 @@ class SharedPrefsService {
       _savePrefs(PrefsKeys.PASSWORD, password)
           .then((value) => _setPasswordRemembered(true));
 
-  removeDeviceId() {
+  void removeDeviceId() {
     _removePrefs(PrefsKeys.DEVICE_ID).then((value) => _setDeviceExists(false));
     removePasswordRemembrance();
   }
 
-  removePasswordRemembrance() => _removePrefs(PrefsKeys.PASSWORD)
+  void removePasswordRemembrance() => _removePrefs(PrefsKeys.PASSWORD)
       .then((value) => _setPasswordRemembered(false));
 
   String getOptionalDevice() => _getPrefs(PrefsKeys.DEVICE_ID) ?? 'empty';

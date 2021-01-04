@@ -1,6 +1,7 @@
-import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:flutter/material.dart';
+
+import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/modules/shortStatusModel.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 
 class CurrentRow extends StatelessWidget {
@@ -15,8 +16,8 @@ class CurrentRow extends StatelessWidget {
         initialData: ShortStatusModel.empty(),
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
-            final currentCharge = shortStatus.data.currentCharge;
-            final currentDischarge = shortStatus.data.currentDischarge;
+            var currentCharge = shortStatus.data.currentCharge;
+            var currentDischarge = shortStatus.data.currentDischarge;
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

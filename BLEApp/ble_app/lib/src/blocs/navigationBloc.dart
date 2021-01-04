@@ -1,4 +1,7 @@
-part of bloc;
+import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/navigationService.dart';
+import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
 
 enum CurrentPage { Short, Full, Map }
 
@@ -10,13 +13,10 @@ class NavigationBloc extends Bloc<CurrentPage, CurrentPage> {
 
   GlobalKey<NavigatorState> get navigatorKey =>
       _navigationService.innerNavigatorKey;
-}
 
-extension NavigationMethods on NavigationBloc {
   navigateTo(String routeName) => _navigationService.innerNavigateTo(routeName);
 
   returnToFirstRoute() => _navigationService.returnToFirstInner();
 
   generateGlobalKey() => _navigationService.generateGlobalKey();
-
 }

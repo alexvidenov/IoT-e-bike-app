@@ -1,18 +1,21 @@
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/locationBloc.dart';
+import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-class MapPage extends RouteAwareWidget<LocationBloc> {
+class MapPage extends RouteAwareWidget {
   final LocationBloc _locationBloc;
   final NavigationBloc _navigationBloc;
 
-  const MapPage(LocationBloc locationBloc, this._navigationBloc)
+  MapPage(LocationBloc locationBloc, this._navigationBloc)
       : this._locationBloc = locationBloc,
         super(bloc: locationBloc);
 
   @override
-  Widget buildWidget(BuildContext context) => StreamBuilder<LocationData>(
+  Widget buildWidget(BuildContext context) {
+    return StreamBuilder<LocationData>(
         stream: _locationBloc.stream,
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
@@ -34,9 +37,10 @@ class MapPage extends RouteAwareWidget<LocationBloc> {
           } else
             return Container();
         });
+  }
 
   @override
-  onResume() {
+  void onResume() {
     super.onResume();
     _navigationBloc.addEvent(CurrentPage.Map);
   }

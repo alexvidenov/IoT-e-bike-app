@@ -7,13 +7,13 @@ import 'package:flutter/material.dart';
 class _WaitingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
-        home: Scaffold(
-          body: Container(
-            alignment: Alignment.center,
-            child: CircularProgressIndicator(),
-          ),
+      home: Scaffold(
+        body: Container(
+          alignment: Alignment.center,
+          child: CircularProgressIndicator(),
         ),
-      );
+      ),
+    );
 }
 
 class RootPage extends StatelessWidget {
@@ -24,7 +24,7 @@ class RootPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: _auth.authState,
+        stream: _auth.combinedStream,
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
             return snapshot.hasData ? BleApp($()) : LoginScreen(_auth);

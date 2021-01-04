@@ -1,4 +1,5 @@
-part of bloc;
+import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
 
 @lazySingleton
 class NavigationService {
@@ -11,5 +12,4 @@ class NavigationService {
 
   Future<dynamic> returnToFirstInner() =>
       innerNavigatorKey.currentState.pushNamedAndRemoveUntil('/', (_) => false);
-
 }

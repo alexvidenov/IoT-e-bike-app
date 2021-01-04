@@ -17,15 +17,13 @@ class BleDevice {
   @override
   bool operator ==(other) =>
       other is BleDevice &&
-          this.name != null &&
-          other.name != null &&
-          compareAsciiLowerCase(this.name, other.name) == 0 &&
-          this.id == other.id;
+      this.name != null &&
+      other.name != null &&
+      compareAsciiLowerCase(this.name, other.name) == 0 &&
+      this.id == other.id;
 
   @override
   String toString() {
     return 'BleDevice{name: $name}';
   }
 }
-
-

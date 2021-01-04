@@ -23,13 +23,13 @@ class _PathError extends StatelessWidget {
   }
 }
 
-abstract class Router {
+class Router {
   static Route<dynamic> generateRouteSecondNavigator(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => DeviceScreen($(), $()));
+        return MaterialPageRoute(builder: (_) => DeviceScreen($()));
       case '/full':
-        return MaterialPageRoute(builder: (_) => FullStatusPage($(), $()));
+        return MaterialPageRoute(builder: (_) => FullStatusPage($()));
       case '/map':
         return MaterialPageRoute(builder: (_) => MapPage($(), $()));
     }
@@ -45,7 +45,7 @@ abstract class Router {
       case '/home':
         return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $()));
       case '/settings':
-        return MaterialPageRoute(builder: (_) => Settings($(), $()));
+        return MaterialPageRoute(builder: (_) => Settings());
       case '/devices':
         return MaterialPageRoute(builder: (_) => DevicesListScreen($()));
       case '/auth':
@@ -66,7 +66,7 @@ abstract class Router {
       case '/home':
         return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $()));
       case '/settings':
-        return MaterialPageRoute(builder: (_) => Settings($(), $()));
+        return MaterialPageRoute(builder: (_) => Settings());
       case '/devices':
         return MaterialPageRoute(builder: (_) => DevicesListScreen($()));
     }

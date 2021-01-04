@@ -1,9 +1,7 @@
-import 'package:ble_app/src/modules/sealedAuthStates/AuthState.dart';
 import 'package:ble_app/src/persistence/dao/userDao.dart';
 import 'package:ble_app/src/persistence/entities/user.dart' as localUser;
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/services/Database.dart';
-import 'package:ble_app/src/utils/ConnectivityManager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
@@ -11,53 +9,48 @@ import 'package:rxdart/rxdart.dart';
 @lazySingleton
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  LocalDatabase _localDatabase;
-
-  UserDao get _userDao => _localDatabase.userDao;
+  final LocalDatabase _localDatabase;
 
   BehaviorSubject<String> _behaviorSubject;
 
   Sink<String> get _sink => _behaviorSubject.sink;
 
-  Function(String) get addEvent => _sink.add;
+  UserDao get _userDao => _localDatabase.userDao;
 
-  Auth({LocalDatabase localDatabase}) {
-    this._localDatabase = localDatabase;
-    this._behaviorSubject = BehaviorSubject<String>();
+  Auth(this._localDatabase) {
+    _behaviorSubject = BehaviorSubject<String>();
   }
 
-  // TODO: prolly make this generic somehow. Too much repetition.
-  Future<AuthState> signInWithEmailAndPassword(
-      String email, String password) async {
-    if (await ConnectivityManager.isOnline() != false) {
+  Function(String) get addEvent => _sink.add;
+
+  // TODO: please make the return type here sealed class somehow for the love of god
+  Future<String> signInWithEmailAndPassword(
+      String email, String password, bool isOnline) async {
+    if (isOnline) {
       final UserCredential credential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       final userId = credential?.user?.uid;
-      return Authenticated(userId);
+      return userId;
     } else {
       localUser.User user;
       user = await _userDao.fetchUser(email);
       if (user != null) {
+        print('WE GOT USER BOOOOOOOYS');
         addEvent(user.id);
       }
-      return NotAuthenticated(NotAuthenticatedError.EmailDoesNotExist);
     }
+
+    return 'empty'; // FIXME lol
   }
 
-  Future<AuthState> signUpWithEmailAndPassword(
+  Future<String> signUpWithEmailAndPassword(
       String email, String password) async {
-    if (await ConnectivityManager.isOnline() != false) {
-      // TODO: catch exception here and return appropriate AuthState
-      final UserCredential credential = await _auth
-          .createUserWithEmailAndPassword(email: email, password: password);
-      final _id = credential?.user?.uid;
-      await FirestoreDatabase(uid: _id)
-          .updateUserData(); // add stuff here later
-      await _userDao.insertEntity(localUser.User(_id, email, password));
-      return Authenticated(_id);
-    } else
-      return NoNetwork();
+    final UserCredential credential = await _auth
+        .createUserWithEmailAndPassword(email: email, password: password);
+    final _id = credential?.user?.uid;
+    await FirestoreDatabase(uid: _id).updateUserData(); // add stuff here later
+    await _userDao.insertEntity(localUser.User(_id, email, password));
+    return _id;
   }
 
   Future<void> signOut() async => await _auth.signOut();
@@ -69,11 +62,11 @@ class Auth {
 
 extension UserStatus on Auth {
   Stream<String> get _onAuthStateChanged =>
-      _auth.authStateChanges().map((user) => user?.uid);
+      _auth.authStateChanges().map((User user) => user?.uid);
 
   ValueStream<String> get _onLocalAuthStateChanged => _behaviorSubject.stream;
 
-  Stream<String> get authState =>
+  Stream<String> get combinedStream =>
       Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]);
 
   String getCurrentUserId() => _auth.currentUser?.uid;
