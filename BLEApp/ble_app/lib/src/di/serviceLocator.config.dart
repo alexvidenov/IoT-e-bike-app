@@ -36,7 +36,6 @@ GetIt $initGetIt(
   gh.factory<FullStatusBloc>(() => FullStatusBloc(get<DeviceRepository>()));
   gh.factory<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
-  gh.factory<ShortStatusBloc>(() => ShortStatusBloc(get<DeviceRepository>()));
   gh.lazySingleton<Auth>(() => Auth(localDatabase: get<LocalDatabase>()));
   gh.factory<BluetoothAuthBloc>(
       () => BluetoothAuthBloc(get<DeviceRepository>()));
@@ -44,6 +43,11 @@ GetIt $initGetIt(
   gh.lazySingleton<NavigationBloc>(
       () => NavigationBloc(get<NavigationService>()));
   gh.lazySingleton<SettingsBloc>(() => SettingsBloc(get<SharedPrefsService>()));
+  gh.factory<ShortStatusBloc>(() => ShortStatusBloc(
+        get<DeviceRepository>(),
+        get<SettingsBloc>(),
+        get<Auth>(),
+      ));
   gh.lazySingleton<EntryEndpointBloc>(
       () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));
 

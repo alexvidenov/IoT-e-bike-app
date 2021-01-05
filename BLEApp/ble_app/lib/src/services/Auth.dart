@@ -37,7 +37,6 @@ class Auth {
     } else {
       localUser.User user;
       user = await _userDao.fetchUser(email);
-      print('WE GOT USER DUDE');
       if (user != null) {
         addEvent(AuthState.authenticated(userId: user.id));
       }

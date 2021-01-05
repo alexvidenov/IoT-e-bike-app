@@ -13,11 +13,14 @@ import 'package:injectable/injectable.dart';
 @injectable
 class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
   final DeviceRepository _repository;
+  final SettingsBloc _settingsBloc;
+  final Auth _auth;
+
   int _uploadTimer = 0;
 
   AppData _appData;
 
-  ShortStatusBloc(this._repository) : super();
+  ShortStatusBloc(this._repository, this._settingsBloc, this._auth) : super();
 
   @override
   pause() {
@@ -49,16 +52,16 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
           }
         });
         _uploadTimer = 0;
-        $<SettingsBloc>()
+        _settingsBloc
             .setUserData(jsonEncode(_appData.toJson())); // list of userData
       }
     });
   }
 
   _initData() {
-    String data = $<SettingsBloc>().getUserData();
-    String userId = $<Auth>().getCurrentUserId();
-    String deviceId = $<DeviceRepository>().deviceId;
+    String data = _settingsBloc.getUserData();
+    String userId = _auth.getCurrentUserId();
+    String deviceId = _repository.deviceId;
     data != 'empty'
         ? _appData = AppData.fromJson(jsonDecode(data),
             userId: userId, deviceSerialNumber: deviceId)

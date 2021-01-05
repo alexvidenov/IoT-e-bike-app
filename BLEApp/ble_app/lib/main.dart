@@ -32,7 +32,7 @@ void main() async {
   $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
 }
 
-void uploadCallback() async {
+uploadCallback() async {
   // TODO: instantiate the local database here since this is isolate..
   await Firebase.initializeApp();
   final SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -88,7 +88,7 @@ class HomeScreen extends StatelessWidget {
           )
         ],
       ),
-      drawer: NavigationDrawer($(), $()),
+      drawer: NavigationDrawer($(), $(), $()),
       body: Navigator(
         initialRoute: '/',
         key: _navigationBloc.navigatorKey,
