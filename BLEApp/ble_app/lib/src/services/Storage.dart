@@ -10,7 +10,7 @@ class Storage {
 
   final StorageReference _root = FirebaseStorage.instance.ref();
 
-  void upload(List<dynamic> data) {
+  upload(List<dynamic> data) {
     AppData appData = AppData.fromJson(data);
     for (final user in appData.usersData) {
       for (final log in user.userLog) {

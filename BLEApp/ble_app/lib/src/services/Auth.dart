@@ -1,6 +1,7 @@
 import 'package:ble_app/src/persistence/dao/userDao.dart';
 import 'package:ble_app/src/persistence/entities/user.dart' as localUser;
 import 'package:ble_app/src/persistence/localDatabase.dart';
+import 'package:ble_app/src/sealedStates/AuthState.dart';
 import 'package:ble_app/src/services/Database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
@@ -9,19 +10,21 @@ import 'package:rxdart/rxdart.dart';
 @lazySingleton
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final LocalDatabase _localDatabase;
+  LocalDatabase _localDatabase;
 
-  BehaviorSubject<String> _behaviorSubject;
+  BehaviorSubject<AuthState> _behaviorSubject;
 
-  Sink<String> get _sink => _behaviorSubject.sink;
+  Sink<AuthState> get _sink => _behaviorSubject.sink;
 
   UserDao get _userDao => _localDatabase.userDao;
 
-  Auth(this._localDatabase) {
-    _behaviorSubject = BehaviorSubject<String>();
+  Auth({LocalDatabase localDatabase}) {
+    // spot the billion dollar mistake here
+    this._localDatabase = localDatabase;
+    _behaviorSubject = BehaviorSubject<AuthState>();
   }
 
-  Function(String) get addEvent => _sink.add;
+  Function(AuthState) get addEvent => _sink.add;
 
   // TODO: please make the return type here sealed class somehow for the love of god
   Future<String> signInWithEmailAndPassword(
@@ -34,12 +37,11 @@ class Auth {
     } else {
       localUser.User user;
       user = await _userDao.fetchUser(email);
+      print('WE GOT USER DUDE');
       if (user != null) {
-        print('WE GOT USER BOOOOOOOYS');
-        addEvent(user.id);
+        addEvent(AuthState.authenticated(userId: user.id));
       }
     }
-
     return 'empty'; // FIXME lol
   }
 
@@ -53,20 +55,23 @@ class Auth {
     return _id;
   }
 
-  Future<void> signOut() async => await _auth.signOut();
-
-  dispose() {
-    this._behaviorSubject.close();
-  }
+  Future<void> signOut() async =>
+      await _auth.signOut().then((_) => addEvent(AuthState.notAuthenticated()));
 }
 
 extension UserStatus on Auth {
-  Stream<String> get _onAuthStateChanged =>
-      _auth.authStateChanges().map((User user) => user?.uid);
+  Stream<AuthState> get _onAuthStateChanged =>
+      _auth.authStateChanges().map((User user) {
+        if (user != null)
+          return AuthState.authenticated(userId: user.uid);
+        else
+          return AuthState.notAuthenticated();
+      });
 
-  ValueStream<String> get _onLocalAuthStateChanged => _behaviorSubject.stream;
+  ValueStream<AuthState> get _onLocalAuthStateChanged =>
+      _behaviorSubject.stream;
 
-  Stream<String> get combinedStream =>
+  Stream<AuthState> get combinedStream =>
       Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]);
 
   String getCurrentUserId() => _auth.currentUser?.uid;

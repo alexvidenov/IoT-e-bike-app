@@ -25,11 +25,11 @@ void main() async {
   if (Platform.isAndroid) {
     await AndroidAlarmManager.initialize();
     await AndroidAlarmManager.periodic(Duration(minutes: 1), 0, uploadCallback,
-        rescheduleOnReboot: true);
+        exact: true, rescheduleOnReboot: true);
   } else if (Platform.isIOS) {
     // TODO: configure the iOS part as well
   }
-  $.isReady<LocalDatabase>().then((_) => runApp(RootPage($<Auth>())));
+  $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
 }
 
 void uploadCallback() async {
@@ -38,8 +38,8 @@ void uploadCallback() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String jsonString = prefs.get(PrefsKeys.USER_DATA);
   if (jsonString != null) {
-    Storage(uid: Auth($()).getCurrentUserId()).upload(jsonDecode(jsonString));
-    prefs.remove(PrefsKeys.USER_DATA);
+    await prefs.remove(PrefsKeys.USER_DATA).then((_) =>
+        Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString)));
   }
 }
 

@@ -9,7 +9,7 @@ class BleDevice {
 
   String get name => peripheral.name ?? peripheral.identifier ?? "Unknown";
 
-  BleDevice({@required this.peripheral});
+  const BleDevice({@required this.peripheral});
 
   @override
   int get hashCode => id.hashCode;
