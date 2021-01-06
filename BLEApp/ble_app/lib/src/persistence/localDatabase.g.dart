@@ -84,7 +84,7 @@ class _$LocalDatabase extends LocalDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `users` (`id` TEXT, `email` TEXT, `password` TEXT, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `devices` (`id` TEXT, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `devices` (`deviceId` TEXT, `userId` TEXT, PRIMARY KEY (`deviceId`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -147,8 +147,13 @@ class _$UserDao extends UserDao {
 class _$DeviceDao extends DeviceDao {
   _$DeviceDao(this.database, this.changeListener)
       : _queryAdapter = QueryAdapter(database),
-        _deviceInsertionAdapter = InsertionAdapter(database, 'devices',
-            (Device item) => <String, dynamic>{'id': item.id});
+        _deviceInsertionAdapter = InsertionAdapter(
+            database,
+            'devices',
+            (Device item) => <String, dynamic>{
+                  'deviceId': item.deviceId,
+                  'userId': item.userId
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -161,7 +166,17 @@ class _$DeviceDao extends DeviceDao {
   @override
   Future<List<Device>> fetchDevices() async {
     return _queryAdapter.queryList('SELECT * FROM devices',
-        mapper: (Map<String, dynamic> row) => Device(row['id'] as String));
+        mapper: (Map<String, dynamic> row) =>
+            Device(row['deviceId'] as String, row['userId'] as String));
+  }
+
+  @override
+  Future<Device> fetchDevice(String deviceId, String userId) async {
+    return _queryAdapter.query(
+        'SELECT * FROM devices WHERE deviceId = ? AND userId = ?',
+        arguments: <dynamic>[deviceId, userId],
+        mapper: (Map<String, dynamic> row) =>
+            Device(row['deviceId'] as String, row['userId'] as String));
   }
 
   @override

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/sealedStates/BTAuthState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
@@ -22,7 +23,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   final _writeController = TextEditingController();
 
   StreamSubscription<PeripheralConnectionState> _streamSubscriptionState;
-  StreamSubscription<bool> _streamSubscriptionAuth;
+  StreamSubscription<BTAuthState> _streamSubscriptionAuth;
 
   bool _isAuthenticated = false;
 
@@ -57,38 +58,42 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                     .authenticate(widget._settingsBloc.getPassword());
               }
             });
-          } else {
-            _presentDialog(context);
-          }
+          } else
+            _presentDialog(context,
+                message: 'Enter your password', action: 'Send');
         }
       });
 
   _listenToAuthBloc() =>
       _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
-        if (event == true) {
-          _isAuthenticated = true;
-          Navigator.of(context).pushNamed('/home');
-        }
+        event.when(
+            bTAuthenticated: () {
+              _isAuthenticated = true;
+              Navigator.of(context).pushNamed('/home');
+            },
+            bTNotAuthenticated: (reason) => _presentDialog(context,
+                message: reason.reason.toString(), action: 'TRY AGAIN'));
       });
 
   _retry() => Future.delayed(Duration(seconds: 4), () {
-        if (_isAuthenticated == false) {
-          _presentDialog(context);
-        }
+        if (_isAuthenticated == false)
+          _presentDialog(context,
+              message: 'Wrong password', action: 'Try again');
       });
 
-  Future<void> _presentDialog(BuildContext widgetContext) async {
+  Future<void> _presentDialog(BuildContext widgetContext,
+      {String message, String action}) async {
     await showDialog(
       context: widgetContext,
       builder: (context) => AlertDialog(
-        title: Text("Enter your password"),
+        title: Text(message),
         content: TextField(
           controller: _writeController,
           onChanged: widget._settingsBloc.setPassword,
         ),
         actions: <Widget>[
           FlatButton(
-            child: Text("Send"),
+            child: Text(action),
             onPressed: () {
               widget._authBloc.authenticate(_writeController.value.text);
               _retry();
@@ -98,32 +103,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
         ],
       ),
     );
-  }
-
-  Future<bool> _onWillPop() {
-    // move this to home widget prolly
-    return showDialog(
-        context: context,
-        builder: (context) =>
-            AlertDialog(
-              title: Text('Are you sure?',
-                  style: TextStyle(fontFamily: 'Europe_Ext')),
-              content: Text(
-                  'Do you want to disconnect from the device and go back?',
-                  style: TextStyle(fontFamily: 'Europe_Ext')),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: Text('No')),
-                FlatButton(
-                    onPressed: () {
-                      widget._deviceBloc.disconnect();
-                      Navigator.of(context).pop(true);
-                    },
-                    child: Text('Yes')),
-              ],
-            ) ??
-            false);
   }
 
   Widget _generateMessageWidget(String message) => Center(
@@ -136,31 +115,28 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
-      child: Scaffold(
-        body: Container(
-          color: Colors.black,
-          child: StreamBuilder<PeripheralConnectionState>(
-            stream: widget._deviceBloc.connectionState,
-            initialData: PeripheralConnectionState.disconnected,
-            builder: (_, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                switch (snapshot.data) {
-                  case PeripheralConnectionState.connected:
-                    return _generateMessageWidget('Connected');
-                  case PeripheralConnectionState.connecting:
-                    return Center(child: CircularProgressIndicator());
-                  case PeripheralConnectionState.disconnected:
-                    return _generateMessageWidget('disconnected');
-                  case PeripheralConnectionState.disconnecting:
-                    return _generateMessageWidget('disconnecting');
-                }
-              } else
-                return Center(child: CircularProgressIndicator());
-              return Container();
-            },
-          ),
+    return Scaffold(
+      body: Container(
+        color: Colors.black,
+        child: StreamBuilder<PeripheralConnectionState>(
+          stream: widget._deviceBloc.connectionState,
+          initialData: PeripheralConnectionState.disconnected,
+          builder: (_, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              switch (snapshot.data) {
+                case PeripheralConnectionState.connected:
+                  return _generateMessageWidget('Connected');
+                case PeripheralConnectionState.connecting:
+                  return Center(child: CircularProgressIndicator());
+                case PeripheralConnectionState.disconnected:
+                  return _generateMessageWidget('disconnected');
+                case PeripheralConnectionState.disconnecting:
+                  return _generateMessageWidget('disconnecting');
+              }
+            } else
+              return Center(child: CircularProgressIndicator());
+            return Container();
+          },
         ),
       ),
     );

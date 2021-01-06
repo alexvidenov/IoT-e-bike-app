@@ -14,7 +14,8 @@ abstract class AuthState extends Equatable {
   factory AuthState.authenticated({@required String userId}) =
       Authenticated.create;
 
-  factory AuthState.notAuthenticated() = NotAuthenticated.create;
+  factory AuthState.notAuthenticated(
+      {@required NotAuthenticatedReason reason}) = NotAuthenticated.create;
 
   final _AuthState _type;
 
@@ -22,7 +23,7 @@ abstract class AuthState extends Equatable {
   /// Its prototype depends on the _AuthState [_type]s defined.
   R when<R extends Object>(
       {@required R Function(Authenticated) authenticated,
-      @required R Function() notAuthenticated}) {
+      @required R Function(NotAuthenticated) notAuthenticated}) {
     assert(() {
       if (authenticated == null || notAuthenticated == null) {
         throw 'check for all possible cases';
@@ -33,7 +34,7 @@ abstract class AuthState extends Equatable {
       case _AuthState.Authenticated:
         return authenticated(this as Authenticated);
       case _AuthState.NotAuthenticated:
-        return notAuthenticated();
+        return notAuthenticated(this as NotAuthenticated);
     }
   }
 
@@ -44,7 +45,7 @@ abstract class AuthState extends Equatable {
   /// for fallback behavior.
   R whenOrElse<R extends Object>(
       {R Function(Authenticated) authenticated,
-      R Function() notAuthenticated,
+      R Function(NotAuthenticated) notAuthenticated,
       @required R Function(AuthState) orElse}) {
     assert(() {
       if (orElse == null) {
@@ -58,7 +59,7 @@ abstract class AuthState extends Equatable {
         return authenticated(this as Authenticated);
       case _AuthState.NotAuthenticated:
         if (notAuthenticated == null) break;
-        return notAuthenticated();
+        return notAuthenticated(this as NotAuthenticated);
     }
     return orElse(this);
   }
@@ -67,7 +68,7 @@ abstract class AuthState extends Equatable {
   /// but non-exhaustive.
   void whenPartial(
       {void Function(Authenticated) authenticated,
-      void Function() notAuthenticated}) {
+      void Function(NotAuthenticated) notAuthenticated}) {
     assert(() {
       if (authenticated == null && notAuthenticated == null) {
         throw 'provide at least one branch';
@@ -80,7 +81,7 @@ abstract class AuthState extends Equatable {
         return authenticated(this as Authenticated);
       case _AuthState.NotAuthenticated:
         if (notAuthenticated == null) break;
-        return notAuthenticated();
+        return notAuthenticated(this as NotAuthenticated);
     }
   }
 
@@ -122,15 +123,35 @@ class _AuthenticatedImpl extends Authenticated {
 
 @immutable
 abstract class NotAuthenticated extends AuthState {
-  const NotAuthenticated() : super(_AuthState.NotAuthenticated);
+  const NotAuthenticated({@required this.reason})
+      : super(_AuthState.NotAuthenticated);
 
-  factory NotAuthenticated.create() = _NotAuthenticatedImpl;
+  factory NotAuthenticated.create({@required NotAuthenticatedReason reason}) =
+      _NotAuthenticatedImpl;
+
+  final NotAuthenticatedReason reason;
+
+  /// Creates a copy of this NotAuthenticated but with the given fields
+  /// replaced with the new values.
+  NotAuthenticated copyWith({NotAuthenticatedReason reason});
 }
 
 @immutable
 class _NotAuthenticatedImpl extends NotAuthenticated {
-  const _NotAuthenticatedImpl() : super();
+  const _NotAuthenticatedImpl({@required this.reason}) : super(reason: reason);
 
   @override
-  String toString() => 'NotAuthenticated()';
+  final NotAuthenticatedReason reason;
+
+  @override
+  _NotAuthenticatedImpl copyWith({Object reason = superEnum}) =>
+      _NotAuthenticatedImpl(
+        reason: reason == superEnum
+            ? this.reason
+            : reason as NotAuthenticatedReason,
+      );
+  @override
+  String toString() => 'NotAuthenticated(reason: ${this.reason})';
+  @override
+  List<Object> get props => [reason];
 }

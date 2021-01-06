@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:ble_app/src/modules/sharedPrefsUsersDataModel.dart';
+import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class Storage {
@@ -11,7 +11,7 @@ class Storage {
   final StorageReference _root = FirebaseStorage.instance.ref();
 
   upload(List<dynamic> data) {
-    AppData appData = AppData.fromJson(data);
+    final appData = AppData.fromJson(data);
     for (final user in appData.usersData) {
       for (final log in user.userLog) {
         if (log.deviceId != null) {

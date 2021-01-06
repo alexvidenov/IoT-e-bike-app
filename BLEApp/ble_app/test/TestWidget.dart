@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/modules/shortStatusModel.dart';
+import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 
 // Use that for communication tests
 class TestWidget extends StatelessWidget {

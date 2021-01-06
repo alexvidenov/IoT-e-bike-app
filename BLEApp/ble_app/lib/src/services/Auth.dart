@@ -3,6 +3,7 @@ import 'package:ble_app/src/persistence/entities/user.dart' as localUser;
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/sealedStates/AuthState.dart';
 import 'package:ble_app/src/services/Database.dart';
+import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
@@ -10,6 +11,7 @@ import 'package:rxdart/rxdart.dart';
 @lazySingleton
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   LocalDatabase _localDatabase;
 
   BehaviorSubject<AuthState> _behaviorSubject;
@@ -19,43 +21,49 @@ class Auth {
   UserDao get _userDao => _localDatabase.userDao;
 
   Auth({LocalDatabase localDatabase}) {
-    // spot the billion dollar mistake here
     this._localDatabase = localDatabase;
     _behaviorSubject = BehaviorSubject<AuthState>();
   }
 
   Function(AuthState) get addEvent => _sink.add;
 
-  // TODO: please make the return type here sealed class somehow for the love of god
-  Future<String> signInWithEmailAndPassword(
-      String email, String password, bool isOnline) async {
-    if (isOnline) {
+  Future<AuthState> signInWithEmailAndPassword(
+      String email, String password) async {
+    if (await ConnectivityManager.isOnline()) {
       final UserCredential credential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       final userId = credential?.user?.uid;
-      return userId;
+      return userId != null
+          ? AuthState.authenticated(userId: userId)
+          : AuthState.notAuthenticated();
     } else {
       localUser.User user;
       user = await _userDao.fetchUser(email);
-      if (user != null) {
-        addEvent(AuthState.authenticated(userId: user.id));
-      }
+      return user != null
+          ? AuthState.authenticated(userId: user.id)
+          : AuthState.notAuthenticated();
     }
-    return 'empty'; // FIXME lol
   }
 
-  Future<String> signUpWithEmailAndPassword(
+  Future<AuthState> signUpWithEmailAndPassword(
       String email, String password) async {
     final UserCredential credential = await _auth
         .createUserWithEmailAndPassword(email: email, password: password);
     final _id = credential?.user?.uid;
-    await FirestoreDatabase(uid: _id).updateUserData(); // add stuff here later
-    await _userDao.insertEntity(localUser.User(_id, email, password));
-    return _id;
+    if (_id != null) {
+      await FirestoreDatabase(uid: _id)
+          .updateUserData(); // add stuff here later
+      await _userDao.insertEntity(localUser.User(_id, email, password));
+      return AuthState.authenticated(userId: _id);
+    } else {
+      return AuthState.notAuthenticated();
+    }
   }
 
   Future<void> signOut() async =>
       await _auth.signOut().then((_) => addEvent(AuthState.notAuthenticated()));
+
+  dispose() => _behaviorSubject.close();
 }
 
 extension UserStatus on Auth {

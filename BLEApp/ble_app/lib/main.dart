@@ -33,7 +33,6 @@ void main() async {
 }
 
 uploadCallback() async {
-  // TODO: instantiate the local database here since this is isolate..
   await Firebase.initializeApp();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String jsonString = prefs.get(PrefsKeys.USER_DATA);
@@ -47,8 +46,7 @@ class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
   const BleApp(EntryEndpointBloc endpointBloc) : super(bloc: endpointBloc);
 
   @override
-  Widget buildWidget(BuildContext context) {
-    return StreamBuilder(
+  Widget buildWidget(BuildContext context) => StreamBuilder(
       stream: super.bloc.stream,
       initialData: Endpoint.Unknown,
       builder: (_, snapshot) {
@@ -63,5 +61,4 @@ class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
         return Container();
       },
     );
-  }
 }

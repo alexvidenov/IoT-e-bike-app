@@ -1,6 +1,6 @@
 import 'package:ble_app/src/screens/registrationPage.dart';
 import 'package:ble_app/src/services/Auth.dart';
-import 'package:ble_app/src/utils/ConnectivityManager.dart';
+import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ble_app/src/utils/constants.dart';
@@ -34,9 +34,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> validateAndSubmit() async {
     if (validateAndSave()) {
       try {
-        bool isConnected = await ConnectivityManager.isOnline();
         await widget._auth
-            .signInWithEmailAndPassword(_email, _password, isConnected);
+            .signInWithEmailAndPassword(_email, _password);
       } catch (e) {
         print('Error: $e');
       }

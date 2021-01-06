@@ -17,8 +17,7 @@ class ProgressColumns extends StatelessWidget {
   final LocationBloc locationBloc;
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
+  Widget build(BuildContext context) => Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -126,5 +125,4 @@ class ProgressColumns extends StatelessWidget {
         )
       ],
     );
-  }
 }

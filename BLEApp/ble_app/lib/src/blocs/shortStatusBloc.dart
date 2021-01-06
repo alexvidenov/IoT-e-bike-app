@@ -2,11 +2,10 @@ import 'dart:convert';
 
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
-import 'package:ble_app/src/modules/sharedPrefsUsersDataModel.dart';
 
-import 'package:ble_app/src/modules/shortStatusModel.dart';
+import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
+import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:injectable/injectable.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
-import 'package:ble_app/src/modules/shortStatusModel.dart';
+import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 
 class CurrentRow extends StatelessWidget {

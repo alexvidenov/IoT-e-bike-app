@@ -6,4 +6,8 @@ import 'package:floor/floor.dart';
 abstract class DeviceDao extends Dao<Device> {
   @Query("SELECT * FROM devices")
   Future<List<Device>> fetchDevices();
+
+  @Query(
+      'SELECT * FROM devices WHERE deviceId = :deviceId AND userId = :userId')
+  Future<Device> fetchDevice(String deviceId, String userId);
 }

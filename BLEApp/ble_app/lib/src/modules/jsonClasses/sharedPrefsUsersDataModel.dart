@@ -1,4 +1,4 @@
-import 'package:ble_app/src/modules/logFileModel.dart';
+import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'sharedPrefsUsersDataModel.g.dart';

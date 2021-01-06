@@ -21,7 +21,7 @@ abstract class RouteAwareWidget<T extends Bloc> extends StatefulWidget {
   _RouteAwareWidgetState createState() => _RouteAwareWidgetState();
 }
 
-class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
+class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware{
   @override
   void initState() {
     super.initState();

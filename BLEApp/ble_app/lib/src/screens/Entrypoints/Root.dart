@@ -31,7 +31,7 @@ class RootPage extends StatelessWidget {
               Widget widget;
               snapshot.data.when(
                   authenticated: (auth) => widget = BleApp($()),
-                  notAuthenticated: () => widget = LoginScreen(_auth));
+                  notAuthenticated: (reason) => widget = LoginScreen(_auth));
               return widget;
             }
             return _WaitingScreen();
