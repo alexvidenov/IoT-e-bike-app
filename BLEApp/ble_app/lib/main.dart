@@ -47,18 +47,18 @@ class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
 
   @override
   Widget buildWidget(BuildContext context) => StreamBuilder(
-      stream: super.bloc.stream,
-      initialData: Endpoint.Unknown,
-      builder: (_, snapshot) {
-        switch (snapshot.data) {
-          case Endpoint.Unknown:
-            return Center(child: CircularProgressIndicator());
-          case Endpoint.AuthScreen:
-            return AuthEntrypoint();
-          case Endpoint.DevicesScreen:
-            return DevicesEntrypoint();
-        }
-        return Container();
-      },
-    );
+        stream: super.bloc.stream,
+        initialData: Endpoint.Unknown,
+        builder: (_, snapshot) {
+          switch (snapshot.data) {
+            case Endpoint.Unknown:
+              return Center(child: CircularProgressIndicator());
+            case Endpoint.AuthScreen:
+              return AuthEntrypoint();
+            case Endpoint.DevicesScreen:
+              return DevicesEntrypoint();
+          }
+          return Container();
+        },
+      );
 }

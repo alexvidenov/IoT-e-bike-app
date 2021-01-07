@@ -28,7 +28,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   bool _isAuthenticated = false;
 
   @override
-  void didChangeDependencies() {
+  didChangeDependencies() {
     super.didChangeDependencies();
     widget._deviceBloc.init();
     widget._authBloc.create();

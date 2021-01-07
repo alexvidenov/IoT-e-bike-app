@@ -1,343 +1,274 @@
-import 'package:ble_app/src/services/Auth.dart';
+import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ble_app/src/utils/constants.dart';
 
-class RegistrationScreen extends StatefulWidget {
-  final Auth _auth;
-
-  const RegistrationScreen(this._auth);
-
-  @override
-  _RegistrationScreenState createState() => _RegistrationScreenState();
+class _Credentials {
+  String userName = '';
+  String email = '';
+  String password = '';
+  String deviceSerialNumber = '';
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
-  bool _rememberMe = false;
+class RegisterScreen extends StatelessWidget {
+  final AuthBloc _auth;
+  final Function toggleView;
 
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-  String _email;
-  String _password;
-
-  bool validateAndSave() {
-    final FormState form = formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      return true;
-    }
-    return false;
-  }
-
-  Future<void> validateAndSubmit() async {
-    if (validateAndSave()) {
-      try {
-        await widget._auth.signUpWithEmailAndPassword(_email, _password);
-      } catch (e) {
-        print('Error: $e');
-      }
-    }
-  }
-
-  Widget _buildEmailTF() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Email',
-          style: kLabelStyle,
-        ),
-        SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 60.0,
-          child: TextField(
-            key: Key('Email'),
-            onChanged: (value) => _email = value,
-            keyboardType: TextInputType.emailAddress,
-            style: TextStyle(
-              color: Colors.white,
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.email,
-                color: Colors.white,
-              ),
-              hintText: 'Enter your Email',
-              hintStyle: kHintTextStyle,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPasswordTF() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Password',
-          style: kLabelStyle,
-        ),
-        SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 60.0,
-          child: TextField(
-            key: Key('password'),
-            onChanged: (password) => _password = password,
-            obscureText: true,
-            style: TextStyle(
-              color: Colors.white,
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.lock,
-                color: Colors.white,
-              ),
-              hintText: 'Enter your Password',
-              hintStyle: kHintTextStyle,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildForgotPasswordBtn() {
-    return Container(
-      alignment: Alignment.centerRight,
-      child: FlatButton(
-        onPressed: () => print('Forgot Password Button Pressed'),
-        padding: EdgeInsets.only(right: 0.0),
-        child: Text(
-          'Forgot Password?',
-          style: kLabelStyle,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRememberMeCheckbox() {
-    return Container(
-      height: 20.0,
-      child: Row(
-        children: <Widget>[
-          Theme(
-            data: ThemeData(unselectedWidgetColor: Colors.white),
-            child: Checkbox(
-              value: _rememberMe,
-              checkColor: Colors.green,
-              activeColor: Colors.white,
-              onChanged: (value) {
-                setState(() {
-                  _rememberMe = value;
-                });
-              },
-            ),
-          ),
-          Text(
-            'Remember me',
-            style: kLabelStyle,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLoginBtn() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: RaisedButton(
-        elevation: 5.0,
-        onPressed: validateAndSubmit,
-        padding: EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: Colors.white,
-        child: Text(
-          'REGISTER',
-          style: TextStyle(
-            color: Color(0xFF527DAA),
-            letterSpacing: 1.5,
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'OpenSans',
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSignInWithText() {
-    return Column(
-      children: <Widget>[
-        Text(
-          '- OR -',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        SizedBox(height: 20.0),
-        Text(
-          'Sign in with',
-          style: kLabelStyle,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSocialBtn(Function onTap, AssetImage logo) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 60.0,
-        width: 60.0,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0, 2),
-              blurRadius: 6.0,
-            ),
-          ],
-          image: DecorationImage(
-            image: logo,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSocialBtnRow() {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 30.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          _buildSocialBtn(
-                () => print('Login with Google'),
-            AssetImage(
-              'assets/googleImage.jpg',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSignupBtn() {
-    return GestureDetector(
-      onTap: () => print('Sign Up Button Pressed'),
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: 'Don\'t have an Account? ',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18.0,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            TextSpan(
-              text: 'Sign Up',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  const RegisterScreen(this._auth, {this.toggleView});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context) => MaterialApp(
       color: Colors.lightBlue,
       theme: ThemeData(fontFamily: 'Europe_Ext'),
       home: Scaffold(
-        body: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.light,
-          child: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  height: double.infinity,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFF73AEF5),
-                        Color(0xFF61A4F1),
-                        Color(0xFF478DE0),
-                        Color(0xFF398AE5),
-                      ],
-                      stops: [0.1, 0.4, 0.7, 0.9],
-                    ),
+          appBar: AppBar(
+            backgroundColor: Colors.lightBlue,
+            title: Container(
+              child: Row(
+                children: <Widget>[
+                  Icon(
+                    Icons.account_circle,
+                    size: 25.0,
+                    color: Colors.white,
                   ),
-                ),
-                Container(
-                  height: double.infinity,
-                  child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 40.0,
-                        vertical: 120.0,
-                      ),
-                      child: Form(
-                        key: formKey,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              'Sign In',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'OpenSans',
-                                fontSize: 30.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 30.0),
-                            _buildEmailTF(),
-                            SizedBox(
-                              height: 30.0,
-                            ),
-                            _buildPasswordTF(),
-                            _buildForgotPasswordBtn(),
-                            _buildRememberMeCheckbox(),
-                            _buildLoginBtn(),
-                            _buildSignInWithText(),
-                            _buildSocialBtnRow(),
-                            _buildSignupBtn(),
-                          ],
-                        ),
-                      )),
-                )
-              ],
+                  Text('   Create account'),
+                ],
+              ),
             ),
+            actions: [
+              RaisedButton(
+                  color: Colors.lightBlue,
+                  onPressed: toggleView,
+                  child: Text('LOGIN',
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                          letterSpacing: 2,
+                          fontFamily: 'Europe_Ext')))
+            ],
           ),
+          body: Container(
+            color: Colors.lightBlue,
+            child: StepperBody(_auth),
+          )));
+}
+
+class StepperBody extends StatefulWidget {
+  final AuthBloc _authBloc;
+
+  const StepperBody(this._authBloc);
+
+  @override
+  _StepperBodyState createState() => _StepperBodyState();
+}
+
+class _StepperBodyState extends State<StepperBody> {
+  int currStep = 0;
+
+  get _focusNode => FocusNode();
+
+  get _focusNodeLastName => FocusNode();
+  final data = _Credentials();
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() => setState(() {}));
+    _focusNodeLastName.addListener(() => setState(() {}));
+  }
+
+  @override
+  dispose() {
+    _focusNode.dispose();
+    _focusNodeLastName.dispose();
+    super.dispose();
+  }
+
+  List<Step> _steps() => [
+        Step(
+          title: const Text('Username',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 19.0)),
+          isActive: currStep >= 1,
+          state: StepState.indexed,
+          content: TextFormField(
+              focusNode: _focusNode,
+              keyboardType: TextInputType.text,
+              autocorrect: false,
+              onSaved: (String value) {
+                data.userName = value;
+              },
+              maxLines: 1,
+              // ignore: missing_return
+              validator: (value) {
+                if (value.isEmpty || value.length < 1) {
+                  return 'Please enter valid username';
+                }
+              },
+              decoration: InputDecoration(
+                  labelText: 'Enter your username',
+                  icon: const Icon(Icons.person, color: Colors.white),
+                  labelStyle: TextStyle(
+                      decorationStyle: TextDecorationStyle.solid,
+                      color: Colors.white,
+                      fontSize: 16.0))),
+        ),
+        Step(
+            title: const Text('Email',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 19.0)),
+            isActive: currStep >= 2,
+            state: StepState.indexed,
+            content: TextFormField(
+              focusNode: _focusNodeLastName,
+              keyboardType: TextInputType.text,
+              autocorrect: false,
+              onSaved: (String value) {
+                data.email = value;
+              },
+              maxLines: 1,
+              // ignore: missing_return
+              validator: (value) {
+                if (value.isEmpty || !value.contains('@')) {
+                  return 'Invalid email';
+                }
+              },
+              decoration: InputDecoration(
+                  labelText: 'Enter your email',
+                  icon: const Icon(Icons.person, color: Colors.white),
+                  labelStyle:
+                      TextStyle(decorationStyle: TextDecorationStyle.solid)),
+            )),
+        Step(
+            title: const Text('Password',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 19.0)),
+            isActive: currStep >= 3,
+            state: StepState.indexed,
+            content: new TextFormField(
+              keyboardType: TextInputType.visiblePassword,
+              autocorrect: false,
+              // ignore: missing_return
+              validator: (value) {
+                if (value.isEmpty || value.length < 10) {
+                  return 'Password must be 10 or more characters';
+                }
+              },
+              onSaved: (String value) {
+                data.password = value;
+              },
+              maxLines: 1,
+              decoration: new InputDecoration(
+                  labelText: 'Enter your password',
+                  icon: const Icon(Icons.phone, color: Colors.white),
+                  labelStyle: new TextStyle(
+                      decorationStyle: TextDecorationStyle.solid,
+                      color: Colors.white,
+                      fontSize: 16.0)),
+            )),
+        Step(
+          title: const Text('Device number',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 19.0)),
+          isActive: currStep >= 4,
+          state: StepState.indexed,
+          content: TextFormField(
+              keyboardType: TextInputType.number,
+              style: TextStyle(color: Colors.white),
+              autocorrect: false,
+              validator: (value) {
+                if (value.isEmpty || value.length < 3) {
+                  return 'Please enter valid serial number';
+                }
+                return null;
+              },
+              onSaved: (String value) {
+                data.deviceSerialNumber = value;
+              },
+              maxLines: 1,
+              decoration: new InputDecoration(
+                  labelText: 'Enter device number',
+                  icon: const Icon(Icons.confirmation_number,
+                      color: Colors.white),
+                  labelStyle: new TextStyle(
+                      decorationStyle: TextDecorationStyle.solid,
+                      color: Colors.white,
+                      fontSize: 16.0))),
+        )
+      ];
+
+  showSnackBarMessage(String message, [MaterialColor color = Colors.red]) {
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  _submitDetails() {
+    final FormState formState = _formKey.currentState;
+    if (!formState.validate()) {
+      showSnackBarMessage('Please enter correct data');
+    } else {
+      formState.save();
+      widget._authBloc.signUpWithEmailAndPassword(
+          email: data.email, password: data.password);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFF73AEF5),
+            Color(0xFF61A4F1),
+            Color(0xFF478DE0),
+            Color(0xFF398AE5),
+          ],
+          stops: [0.1, 0.4, 0.7, 0.9],
         ),
       ),
-    );
-  }
+      child: Form(
+        key: _formKey,
+        child: ListView(children: <Widget>[
+          Stepper(
+            steps: _steps(),
+            type: StepperType.vertical,
+            currentStep: this.currStep,
+            onStepContinue: () => setState(() {
+              if (currStep < _steps().length - 1) {
+                currStep = currStep + 1;
+              } else {
+                _submitDetails();
+              }
+            }),
+            onStepCancel: () => setState(() {
+              if (currStep > 0) {
+                currStep = currStep - 1;
+              } else {
+                currStep = 0;
+              }
+            }),
+            onStepTapped: (step) => setState(() => currStep = step),
+          ),
+          Container(
+              margin: EdgeInsets.all(10.0),
+              child: OutlineButton(
+                child: Text('Register'),
+                textColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0)),
+                onPressed: _submitDetails,
+              )
+              //  Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new ProfileStep1()));
+              ),
+        ]),
+      ));
 }

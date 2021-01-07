@@ -1,0 +1,5 @@
+mixin AuthStateListener {
+  onSuccess();
+
+  onFailure();
+}

@@ -114,7 +114,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           .pushNamedAndRemoveUntil('/devices', (_) => false));
                 }),
           ],
-          // Actually try with top bar here
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48.0),
             child: Row(

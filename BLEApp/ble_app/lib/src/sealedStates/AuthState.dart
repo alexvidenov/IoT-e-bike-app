@@ -3,7 +3,16 @@ import 'package:super_enum/super_enum.dart';
 
 part 'AuthState.super.dart';
 
-enum NotAuthenticatedReason { WrongPassword, EmailDoesNotExist }
+enum NotAuthenticatedReason {
+  emailAlreadyExists,
+  wrongPassword,
+  invalidEmail,
+  userNotFound,
+  userDisabled,
+  operationNotAllowed,
+  tooManyRequests,
+  undefined,
+}
 
 @superEnum
 enum _AuthState {

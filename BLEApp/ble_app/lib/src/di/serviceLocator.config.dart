@@ -8,6 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
 import '../services/Auth.dart';
+import '../blocs/authBloc.dart';
 import '../blocs/btAuthenticationBloc.dart';
 import '../blocs/deviceBloc.dart';
 import '../model/DeviceRepository.dart';
@@ -37,6 +38,7 @@ GetIt $initGetIt(
   gh.factory<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
   gh.lazySingleton<Auth>(() => Auth(localDatabase: get<LocalDatabase>()));
+  gh.lazySingleton<AuthBloc>(() => AuthBloc(get<Auth>()));
   gh.factory<BluetoothAuthBloc>(() => BluetoothAuthBloc(
         get<DeviceRepository>(),
         get<LocalDatabase>(),

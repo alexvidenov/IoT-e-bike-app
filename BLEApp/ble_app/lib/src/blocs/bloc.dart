@@ -36,5 +36,5 @@ abstract class Bloc<T, S> with _Disposable<T, S> {
 
   pauseSubscription() => streamSubscription?.pause();
 
-  resumeSubscription() => streamSubscription.resume();
+  resumeSubscription() => streamSubscription?.resume();
 }

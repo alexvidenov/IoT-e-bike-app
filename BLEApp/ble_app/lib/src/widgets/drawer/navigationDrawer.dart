@@ -34,7 +34,7 @@ class NavigationDrawer extends StatelessWidget {
                       await _deviceBloc.disconnect();
                     })),
             ListTile(
-              title: Text('Vertion 0.0.1. All rights reserved. '),
+              title: Text('Version 0.0.1. All rights reserved. '),
               onTap: () {},
             ),
           ],

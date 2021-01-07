@@ -16,6 +16,7 @@ abstract class LocalDatabase extends FloorDatabase {
   UserDao get userDao;
   DeviceDao get deviceDao;
 
+  @preResolve
   @factoryMethod
   static Future<LocalDatabase> getInstance() async {
     return await $FloorLocalDatabase
