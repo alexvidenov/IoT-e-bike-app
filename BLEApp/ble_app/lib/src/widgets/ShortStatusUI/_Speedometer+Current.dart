@@ -7,14 +7,14 @@ import 'package:ble_app/src/widgets/ShortStatusUI/_CurrentRow.dart';
 import 'package:location/location.dart';
 
 class SpeedometerWithCurrent extends StatelessWidget {
+  final LocationBloc locationBloc;
+  final ShortStatusBloc shortStatusBloc;
+
   const SpeedometerWithCurrent({
     Key key,
     @required this.locationBloc,
     @required this.shortStatusBloc,
   }) : super(key: key);
-
-  final LocationBloc locationBloc;
-  final ShortStatusBloc shortStatusBloc;
 
   @override
   Widget build(BuildContext context) {

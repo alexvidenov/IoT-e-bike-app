@@ -8,6 +8,8 @@ import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
+part '../extensions/BLEScanMethods.dart';
+
 @injectable
 class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   final DeviceRepository _deviceRepository;
@@ -31,7 +33,7 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   void _handlePickedDevice(BleDevice bleDevice) =>
       _deviceRepository.pickDevice(bleDevice);
 
-  void init() {
+   init() {
     bleDevices.clear();
     _checkBluetooth().then((_) => _startScan());
 
@@ -45,31 +47,8 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
       await _bleManager.enableRadio();
   }
 
-  void _startScan() {
-    _scanSubscription = _bleManager.startPeripheralScan(
-        uuids: [BluetoothUtils.SERVICE_UUID]).listen((ScanResult scanResult) {
-      // add uuid-specific search later on
-      var bleDevice = BleDevice(peripheral: scanResult.peripheral);
-      if (scanResult.advertisementData.localName != null &&
-          !bleDevices.contains(bleDevice)) {
-        bleDevices.add(bleDevice);
-        _visibleDevicesController.add(bleDevices.sublist(0));
-      }
-    });
-  }
-
-  void _stopScan() => _bleManager.stopPeripheralScan();
-
-  Future<void> refresh() async {
-    _scanSubscription?.cancel();
-    await _bleManager.stopPeripheralScan();
-    bleDevices.clear();
-    _visibleDevicesController.add(bleDevices.sublist(0));
-    _startScan();
-  }
-
   @override
-  void dispose() {
+  dispose() {
     super.dispose();
     _visibleDevicesController.close();
     _scanSubscription?.cancel();
@@ -77,11 +56,11 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   }
 
   @override
-  void create() => streamSubscription = stream.listen(_handlePickedDevice);
+  create() => streamSubscription = stream.listen(_handlePickedDevice);
 
   @override
-  void pause() => _stopScan();
+  pause() => _stopScan();
 
   @override
-  void resume() => init();
+  resume() => init();
 }

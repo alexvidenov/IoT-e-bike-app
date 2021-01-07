@@ -1,15 +1,15 @@
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-class MapPage extends RouteAwareWidget {
+class MapPage extends RouteAwareWidget with NavigationAware{
   final LocationBloc _locationBloc;
-  final NavigationBloc _navigationBloc;
 
-  MapPage(LocationBloc locationBloc, this._navigationBloc)
+  MapPage(LocationBloc locationBloc)
       : this._locationBloc = locationBloc,
         super(bloc: locationBloc);
 
@@ -23,7 +23,7 @@ class MapPage extends RouteAwareWidget {
             final circle = _locationBloc.generateNewCircle(snapshot.data);
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onLongPress: () => _navigationBloc.returnToFirstRoute(),
+              onLongPress: () => navigationBloc.returnToFirstRoute(),
               child: GoogleMap(
                 mapType: MapType.normal,
                 initialCameraPosition: _locationBloc.initialLocation,
@@ -40,8 +40,8 @@ class MapPage extends RouteAwareWidget {
   }
 
   @override
-  void onResume() {
+  onResume() {
     super.onResume();
-    _navigationBloc.addEvent(CurrentPage.Map);
+    navigationBloc.addEvent(CurrentPage.Map);
   }
 }

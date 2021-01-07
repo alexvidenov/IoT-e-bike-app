@@ -7,6 +7,8 @@ import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 
+part '../extensions/DetermineEndpoint.dart';
+
 enum Endpoint { Unknown, DevicesScreen, AuthScreen }
 
 @lazySingleton
@@ -32,18 +34,3 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
   pause() => _devicePickedSubscription.cancel();
 }
 
-extension DetermineEndpoint on EntryEndpointBloc {
-  _determineEndpoint() {
-    String _deviceId = _settingsBloc.getOptionalDeviceId();
-    if (_deviceId != 'empty') {
-      BleDevice device =
-          BleDevice(peripheral: BleManager().createUnsafePeripheral(_deviceId));
-      _listen();
-      _devicesBloc.init();
-      _devicesBloc.create();
-      _devicesBloc.addEvent(device);
-    } else {
-      addEvent(Endpoint.DevicesScreen);
-    }
-  }
-}

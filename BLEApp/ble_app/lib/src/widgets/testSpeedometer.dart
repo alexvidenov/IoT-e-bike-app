@@ -45,7 +45,7 @@ class SpeedometerPainter extends CustomPainter {
     _drawSpeed();
   }
 
-  void _drawSpeedIndicators(Size size) {
+  _drawSpeedIndicators(Size size) {
     for (double percentage = 0.15; percentage <= 0.85; percentage += 4 / (size.width)) {
       _drawSpeedIndicator(percentage);
     }
@@ -219,7 +219,7 @@ class SpeedometerPainter extends CustomPainter {
   void _drawInnerCircle() {
     paintObject
       ..color = Colors.red.withOpacity(0.4)
-      ..strokeWidth = 1.0
+      ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
 
     canvas.drawCircle(
@@ -243,7 +243,5 @@ class SpeedometerPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }

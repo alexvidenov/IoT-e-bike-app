@@ -1,6 +1,5 @@
 import 'package:ble_app/src/screens/registrationPage.dart';
 import 'package:ble_app/src/services/Auth.dart';
-import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ble_app/src/utils/constants.dart';

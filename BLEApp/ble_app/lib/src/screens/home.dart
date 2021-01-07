@@ -1,4 +1,6 @@
 import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/screens/navigationAware.dart';
+import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
@@ -6,14 +8,11 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/utils/Router.dart' as router;
 import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 
-RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
-
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatefulWidget with NavigationAware{
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
-  final NavigationBloc _navigationBloc;
 
-  const HomeScreen(this._prefsBloc, this._deviceBloc, this._navigationBloc);
+  HomeScreen(this._prefsBloc, this._deviceBloc);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -50,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     _instantiateObserver();
-    widget._navigationBloc.generateGlobalKey();
+    widget.navigationBloc.generateGlobalKey();
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -58,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           backgroundColor: Colors.black,
           title: StreamBuilder<CurrentPage>(
-              stream: widget._navigationBloc.stream,
+              stream: widget.navigationBloc.stream,
               initialData: CurrentPage.Short,
               builder: (_, snapshot) {
                 String _title;
@@ -66,17 +65,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 switch (snapshot.data) {
                   case CurrentPage.Short:
                     _onPressed =
-                        () => widget._navigationBloc.navigateTo('/full');
+                        () => widget.navigationBloc.navigateTo('/full');
                     _title = 'Main status';
                     break;
                   case CurrentPage.Full:
                     _onPressed =
-                        () => widget._navigationBloc.navigateTo('/map');
+                        () => widget.navigationBloc.navigateTo('/map');
                     _title = 'Bat. status';
                     break;
                   case CurrentPage.Map:
                     _onPressed =
-                        () => widget._navigationBloc.returnToFirstRoute();
+                        () => widget.navigationBloc.returnToFirstRoute();
                     _title = 'Location';
                     break;
                 }
@@ -115,6 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           .pushNamedAndRemoveUntil('/devices', (_) => false));
                 }),
           ],
+          // Actually try with top bar here
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48.0),
             child: Row(
@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
         drawer: NavigationDrawer($(), $(), $()),
         body: Navigator(
           initialRoute: '/',
-          key: widget._navigationBloc.navigatorKey,
+          key: widget.navigationBloc.navigatorKey,
           onGenerateRoute: router.Router.generateRouteSecondNavigator,
           observers: [routeObserver],
         ),

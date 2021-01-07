@@ -1,19 +1,20 @@
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:ble_app/src/screens/home.dart';
+
+RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 abstract class RouteAwareWidget<T extends Bloc> extends StatefulWidget {
   Widget buildWidget(BuildContext context);
 
   final T bloc;
 
-  void onCreate() {}
+  onCreate() {}
 
-  void onPause() {}
+  onPause() {}
 
-  void onResume() {}
+  onResume() {}
 
-  void onDestroy() {}
+  onDestroy() {}
 
   const RouteAwareWidget({@required this.bloc});
 
@@ -23,13 +24,13 @@ abstract class RouteAwareWidget<T extends Bloc> extends StatefulWidget {
 
 class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware{
   @override
-  void initState() {
+  initState() {
     super.initState();
     widget.bloc.create();
   }
 
   @override
-  void didChangeDependencies() {
+  didChangeDependencies() {
     super.didChangeDependencies();
     final route = ModalRoute.of(context);
     // null check needed for the entry screen when we don't have context.
@@ -38,34 +39,34 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware{
   }
 
   @override
-  void didPush() {
+  didPush() {
     super.didPush();
     widget.bloc.resume();
     widget.onResume();
   }
 
   @override
-  void didPushNext() {
+  didPushNext() {
     super.didPushNext();
     widget.bloc.pause();
     widget.onPause();
   }
 
   @override
-  void didPop() {
+  didPop() {
     super.didPop();
     widget.bloc.dispose();
   }
 
   @override
-  void didPopNext() {
+  didPopNext() {
     super.didPopNext();
     widget.bloc.resume();
     widget.onResume();
   }
 
   @override
-  void dispose() {
+  dispose() {
     super.dispose();
     routeObserver.unsubscribe(this);
     widget.bloc.dispose();

@@ -31,7 +31,7 @@ class Router {
       case '/full':
         return MaterialPageRoute(builder: (_) => FullStatusPage($()));
       case '/map':
-        return MaterialPageRoute(builder: (_) => MapPage($(), $()));
+        return MaterialPageRoute(builder: (_) => MapPage($()));
     }
     return MaterialPageRoute(builder: (_) => _PathError());
   }
@@ -43,9 +43,9 @@ class Router {
         return MaterialPageRoute(
             builder: (_) => AuthenticationScreen($(), $(), $()));
       case '/home':
-        return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $()));
+        return MaterialPageRoute(builder: (_) => HomeScreen($(), $()));
       case '/settings':
-        return MaterialPageRoute(builder: (_) => Settings());
+        return MaterialPageRoute(builder: (_) => Settings($(), $()));
       case '/devices':
         return MaterialPageRoute(builder: (_) => DevicesListScreen($()));
       case '/auth':
@@ -64,9 +64,9 @@ class Router {
         return MaterialPageRoute(
             builder: (_) => AuthenticationScreen($(), $(), $()));
       case '/home':
-        return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $()));
+        return MaterialPageRoute(builder: (_) => HomeScreen($(), $()));
       case '/settings':
-        return MaterialPageRoute(builder: (_) => Settings());
+        return MaterialPageRoute(builder: (_) => Settings($(), $()));
       case '/devices':
         return MaterialPageRoute(builder: (_) => DevicesListScreen($()));
     }

@@ -9,6 +9,8 @@ import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:injectable/injectable.dart';
 
+part '../extensions/ShortStatusParse.dart';
+
 @injectable
 class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
   final DeviceRepository _repository;
@@ -68,17 +70,3 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
   }
 }
 
-extension ParseShortStatus on ShortStatusBloc {
-  ShortStatusModel _generateShortStatus(String rawData) {
-    List<String> splittedObject = rawData.split(' ');
-    final voltage = double.parse(splittedObject.elementAt(0));
-    final currentCharge = double.parse(splittedObject.elementAt(1));
-    final currentDischarge = double.parse(splittedObject.elementAt(2));
-    final temperature = double.parse(splittedObject.elementAt(3));
-    return ShortStatusModel(
-        totalVoltage: voltage,
-        currentCharge: currentCharge,
-        currentDischarge: currentDischarge,
-        temperature: temperature);
-  }
-}

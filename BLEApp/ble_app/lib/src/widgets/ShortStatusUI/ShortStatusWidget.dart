@@ -8,13 +8,14 @@ import '_ProgressBars.dart';
 
 class ShortStatusUI extends StatelessWidget {
   final ShortStatusBloc shortStatusBloc;
+  final LocationBloc locationBloc;
 
-  const ShortStatusUI({@required this.shortStatusBloc});
+  const ShortStatusUI(this.shortStatusBloc, this.locationBloc);
 
   @override
   Widget build(BuildContext context) {
     final locationBloc = $<LocationBloc>();
-    locationBloc.startTrackingLocation();
+    locationBloc.create();
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[

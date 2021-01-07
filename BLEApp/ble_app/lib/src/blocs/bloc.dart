@@ -1,21 +1,20 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-
+import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 
-mixin Disposable<T, S> {
+mixin _Disposable<T, S> {
   StreamSubscription<S> streamSubscription;
 
   BehaviorSubject<T> _publishSubject$;
 
   @mustCallSuper
-  void dispose() {
+  dispose() {
     streamSubscription?.cancel();
     _publishSubject$?.close();
   }
 }
 
-abstract class Bloc<T, S> with Disposable<T, S> {
+abstract class Bloc<T, S> with _Disposable<T, S> {
   // state and event
   // T, S
 

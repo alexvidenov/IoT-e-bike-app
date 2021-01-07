@@ -20,15 +20,15 @@ class DevicesListScreen extends RouteAwareWidget {
   _listenForPickedDevice(BuildContext context) =>
       _pickedDevicesSubscription = _devicesBloc.pickedDevice.listen((_) {
         this.onPause();
-        Navigator.of(context)
-            .pushNamed('/auth'); // this route does not exist lmao
+        Navigator.of(context).pushNamed('/auth');
       });
 
   @override
-  void onCreate() async {
+  onCreate() async {
     super.onCreate();
-    locationPerm.PermissionStatus permissionStatus = await locationPerm.LocationPermissions().checkPermissionStatus();
-    if(permissionStatus != locationPerm.PermissionStatus.granted){
+    locationPerm.PermissionStatus permissionStatus =
+        await locationPerm.LocationPermissions().checkPermissionStatus();
+    if (permissionStatus != locationPerm.PermissionStatus.granted) {
       await locationPerm.LocationPermissions().requestPermissions();
     }
   }

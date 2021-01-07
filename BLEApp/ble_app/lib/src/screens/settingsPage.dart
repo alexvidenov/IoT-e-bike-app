@@ -9,14 +9,14 @@ enum ConnectionSettings { Manual, AutoConnect, AutoPassword }
 
 // ignore: must_be_immutable
 class Settings extends StatelessWidget {
-  final DeviceRepository _deviceRepository = DeviceRepository();
-  final SettingsBloc _settingsBloc = $<SettingsBloc>();
+  final DeviceRepository _deviceRepository;
+  final SettingsBloc _settingsBloc;
 
   final _writeController = TextEditingController();
 
   ConnectionSettings _connectionSettings;
 
-  Settings() {
+  Settings(this._deviceRepository, this._settingsBloc) {
     _listenToConnectionSettingsChanges();
     if (_settingsBloc.isPasswordRemembered())
       _connectionSettings = ConnectionSettings.AutoPassword;
