@@ -1,8 +1,6 @@
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:flutter/material.dart';
 
-import 'Entrypoints/AuthStateListener.dart';
-
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 abstract class RouteAwareWidget<T extends Bloc> extends StatefulWidget {

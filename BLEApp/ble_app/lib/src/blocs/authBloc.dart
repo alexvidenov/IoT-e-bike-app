@@ -19,8 +19,9 @@ class AuthBloc extends Bloc<AuthPage, AuthPage> {
       _auth.signInWithEmailAndPassword(email, password);
 
   Future<AuthState> signUpWithEmailAndPassword(
-          {String email, String password}) =>
-      _auth.signUpWithEmailAndPassword(email, password);
+          {String email, String password, String deviceId}) =>
+      _auth.signUpWithEmailAndPassword(email, password,
+          deviceSerialNumber: deviceId);
 
   Stream get authStream => _auth.combinedStream;
 

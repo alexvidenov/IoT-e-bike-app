@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 class FirestoreDatabase {
   final String uid; // user id
 
-  FirestoreDatabase({this.uid});
-
-  final CollectionReference _users =
+  static CollectionReference get _users =>
       FirebaseFirestore.instance.collection('users');
+
+  const FirestoreDatabase({this.uid});
 
   Future<void> updateUserData() async =>
       await _users.doc(uid).set({'id': this.uid});
@@ -16,4 +16,5 @@ class FirestoreDatabase {
       await _users.doc(uid).collection('devices').doc(deviceId).set({
         'id': deviceId
       }); // later on populate with the real device parameters
+
 }

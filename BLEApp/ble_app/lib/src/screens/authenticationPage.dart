@@ -75,6 +75,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                 message: reason.reason.toString(), action: 'TRY AGAIN'));
       });
 
+  // this retry will be in the bloc
   _retry() => Future.delayed(Duration(seconds: 4), () {
         if (_isAuthenticated == false)
           _presentDialog(context,

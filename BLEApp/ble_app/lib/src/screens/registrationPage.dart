@@ -205,18 +205,19 @@ class _StepperBodyState extends State<StepperBody> {
         )
       ];
 
-  showSnackBarMessage(String message, [MaterialColor color = Colors.red]) {
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
-  }
+  showSnackBarMessage(String message) =>
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
 
   _submitDetails() {
     final FormState formState = _formKey.currentState;
     if (!formState.validate()) {
-      showSnackBarMessage('Please enter correct data');
+      showSnackBarMessage('Invalid credentials');
     } else {
       formState.save();
       widget._authBloc.signUpWithEmailAndPassword(
-          email: data.email, password: data.password);
+          email: data.email,
+          password: data.password,
+          deviceId: data.deviceSerialNumber);
     }
   }
 
@@ -249,13 +250,8 @@ class _StepperBodyState extends State<StepperBody> {
                 _submitDetails();
               }
             }),
-            onStepCancel: () => setState(() {
-              if (currStep > 0) {
-                currStep = currStep - 1;
-              } else {
-                currStep = 0;
-              }
-            }),
+            onStepCancel: () => setState(
+                () => currStep > 0 ? currStep = currStep - 1 : currStep = 0),
             onStepTapped: (step) => setState(() => currStep = step),
           ),
           Container(

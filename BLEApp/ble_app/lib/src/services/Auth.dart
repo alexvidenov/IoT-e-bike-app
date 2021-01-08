@@ -1,4 +1,6 @@
+import 'package:ble_app/src/persistence/dao/deviceDao.dart';
 import 'package:ble_app/src/persistence/dao/userDao.dart';
+import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/persistence/entities/user.dart' as localUser;
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/Entrypoints/AuthStateListener.dart';
@@ -22,6 +24,8 @@ class Auth {
   Sink<AuthState> get _sink => _behaviorSubject.sink;
 
   UserDao get _userDao => _localDatabase.userDao;
+
+  DeviceDao get _deviceDao => _localDatabase.deviceDao;
 
   Auth({LocalDatabase localDatabase}) {
     this._localDatabase = localDatabase;
@@ -58,8 +62,8 @@ class Auth {
     return AuthState.notAuthenticated(reason: NotAuthenticatedReason.undefined);
   }
 
-  Future<AuthState> signUpWithEmailAndPassword(
-      String email, String password) async {
+  Future<AuthState> signUpWithEmailAndPassword(String email, String password,
+      {String deviceSerialNumber}) async {
     User user;
     try {
       final UserCredential credential = await _auth
@@ -67,9 +71,11 @@ class Auth {
       user = credential?.user;
       if (user != null) {
         final _id = user.uid;
-        await FirestoreDatabase(uid: _id)
-            .updateUserData(); // add stuff here later
+        final _db = FirestoreDatabase(uid: _id);
+        await _db.updateUserData();
+        await _db.updateDeviceData(deviceId: deviceSerialNumber);
         await _userDao.insertEntity(localUser.User(_id, email, password));
+        await _deviceDao.insertEntity(Device(deviceSerialNumber, _id));
         authStateListener.onSuccess();
         return AuthState.authenticated(userId: user.uid);
       }
