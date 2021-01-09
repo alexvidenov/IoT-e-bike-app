@@ -1,0 +1,5 @@
+mixin DisconnectedListener {
+  onDisconnected();
+
+  onReconnected();
+}

@@ -2,9 +2,9 @@ import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:flutter/material.dart';
 
-import '../../../main.dart';
-import '../authenticationWrapper.dart';
-import 'AuthStateListener.dart';
+import '../authentication/main.dart';
+import '../authentication/authenticationWrapper.dart';
+import '../../listeners/AuthStateListener.dart';
 
 class RootPage extends StatefulWidget {
   final AuthBloc _auth;

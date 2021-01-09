@@ -70,7 +70,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
         event.when(
             bTAuthenticated: () {
               _isAuthenticated = true;
-              Navigator.of(context).pushNamed('/home');
+              Navigator.of(context).pushReplacementNamed('/home');
             },
             bTNotAuthenticated: (reason) => _presentDialog(context,
                 message: reason.reason.toString(), action: 'TRY AGAIN'));

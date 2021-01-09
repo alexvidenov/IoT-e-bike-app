@@ -30,20 +30,25 @@ class RegisterScreen extends StatelessWidget {
                     size: 25.0,
                     color: Colors.white,
                   ),
-                  Text('   Create account'),
+                  Text('   Account'),
                 ],
               ),
             ),
             actions: [
-              RaisedButton(
-                  color: Colors.lightBlue,
-                  onPressed: toggleView,
-                  child: Text('LOGIN',
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          letterSpacing: 2,
-                          fontFamily: 'Europe_Ext')))
+              Row(
+                children: [
+                  RaisedButton(
+                      color: Colors.lightBlue,
+                      onPressed: toggleView,
+                      child: Text('LOGIN',
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              letterSpacing: 2,
+                              fontFamily: 'Europe_Ext'))),
+                  Icon(Icons.arrow_forward)
+                ],
+              )
             ],
           ),
           body: Container(
@@ -67,6 +72,7 @@ class _StepperBodyState extends State<StepperBody> {
   get _focusNode => FocusNode();
 
   get _focusNodeLastName => FocusNode();
+
   final data = _Credentials();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
@@ -194,11 +200,11 @@ class _StepperBodyState extends State<StepperBody> {
                 data.deviceSerialNumber = value;
               },
               maxLines: 1,
-              decoration: new InputDecoration(
+              decoration: InputDecoration(
                   labelText: 'Enter device number',
                   icon: const Icon(Icons.confirmation_number,
                       color: Colors.white),
-                  labelStyle: new TextStyle(
+                  labelStyle: TextStyle(
                       decorationStyle: TextDecorationStyle.solid,
                       color: Colors.white,
                       fontSize: 16.0))),

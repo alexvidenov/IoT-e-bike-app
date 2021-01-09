@@ -1,7 +1,28 @@
 import 'package:ble_app/src/blocs/authBloc.dart';
+import 'package:ble_app/src/sealedStates/AuthState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ble_app/src/utils/constants.dart';
+
+final _kHintTextStyle = TextStyle(
+  color: Colors.white54,
+);
+
+final _kLabelStyle = TextStyle(
+  color: Colors.white,
+  fontWeight: FontWeight.bold,
+);
+
+final _kBoxDecorationStyle = BoxDecoration(
+  color: Color(0xFF6CA8F1),
+  borderRadius: BorderRadius.circular(10.0),
+  boxShadow: [
+    BoxShadow(
+      color: Colors.black12,
+      blurRadius: 6.0,
+      offset: Offset(0, 2),
+    ),
+  ],
+);
 
 class LoginScreen extends StatefulWidget {
   final AuthBloc _auth;
@@ -14,10 +35,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _rememberMe = false;
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+  bool _rememberMe = false;
   String _email;
   String _password;
 
@@ -33,13 +53,34 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> validateAndSubmit() async {
     if (validateAndSave()) {
-      try {
-        await widget._auth
-            .signInWithEmailAndPassword(email: _email, password: _password);
-      } catch (e) {
-        print('Error: $e');
-      }
+      await widget._auth
+          .signInWithEmailAndPassword(email: _email, password: _password)
+          .then((AuthState state) {
+        state.whenPartial(
+            notAuthenticated: (notAuthenticated) => _presentDialog(context,
+                message: 'Auth failed',
+                additionalInformation: notAuthenticated.reason.toString()));
+      });
     }
+  }
+
+  Future<void> _presentDialog(BuildContext widgetContext,
+      {String message, String additionalInformation}) async {
+    await showDialog(
+      context: widgetContext,
+      builder: (context) => AlertDialog(
+        title: Text(message),
+        content: Text(additionalInformation),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildEmailTF() {
@@ -48,12 +89,12 @@ class _LoginScreenState extends State<LoginScreen> {
       children: <Widget>[
         Text(
           'Email',
-          style: kLabelStyle,
+          style: _kLabelStyle,
         ),
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
+          decoration: _kBoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
             key: Key('Email'),
@@ -70,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.white,
               ),
               hintText: 'Enter your Email',
-              hintStyle: kHintTextStyle,
+              hintStyle: _kHintTextStyle,
             ),
           ),
         ),
@@ -84,12 +125,12 @@ class _LoginScreenState extends State<LoginScreen> {
       children: <Widget>[
         Text(
           'Password',
-          style: kLabelStyle,
+          style: _kLabelStyle,
         ),
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
+          decoration: _kBoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
             key: Key('password'),
@@ -106,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.white,
               ),
               hintText: 'Enter your Password',
-              hintStyle: kHintTextStyle,
+              hintStyle: _kHintTextStyle,
             ),
           ),
         ),
@@ -122,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: EdgeInsets.only(right: 0.0),
         child: Text(
           'Forgot Password?',
-          style: kLabelStyle,
+          style: _kLabelStyle,
         ),
       ),
     );
@@ -148,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           Text(
             'Remember me',
-            style: kLabelStyle,
+            style: _kLabelStyle,
           ),
         ],
       ),
@@ -194,7 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
         SizedBox(height: 20.0),
         Text(
           'Sign in with',
-          style: kLabelStyle,
+          style: _kLabelStyle,
         ),
       ],
     );
@@ -288,15 +329,20 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             leading: Icon(Icons.account_circle),
             actions: [
-              RaisedButton(
-                  color: Colors.lightBlue,
-                  onPressed: widget.toggleView,
-                  child: Text('REGISTER',
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          letterSpacing: 2,
-                          fontFamily: 'Europe_Ext')))
+              Row(
+                children: [
+                  RaisedButton(
+                      color: Colors.lightBlue,
+                      onPressed: widget.toggleView,
+                      child: Text('REGISTER',
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              letterSpacing: 2,
+                              fontFamily: 'Europe_Ext'))),
+                  Icon(Icons.arrow_forward)
+                ],
+              )
             ],
           ),
           body: AnnotatedRegion<SystemUiOverlayStyle>(

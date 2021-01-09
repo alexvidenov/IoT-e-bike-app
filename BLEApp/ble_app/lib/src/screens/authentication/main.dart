@@ -54,9 +54,9 @@ class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
             case Endpoint.Unknown:
               return Center(child: CircularProgressIndicator());
             case Endpoint.AuthScreen:
-              return AuthEntrypoint();
+              return AuthEntryPoint();
             case Endpoint.DevicesScreen:
-              return DevicesEntrypoint();
+              return DevicesEntryPoint();
           }
           return Container();
         },

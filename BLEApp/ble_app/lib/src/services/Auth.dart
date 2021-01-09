@@ -3,7 +3,7 @@ import 'package:ble_app/src/persistence/dao/userDao.dart';
 import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/persistence/entities/user.dart' as localUser;
 import 'package:ble_app/src/persistence/localDatabase.dart';
-import 'package:ble_app/src/screens/Entrypoints/AuthStateListener.dart';
+import 'package:ble_app/src/listeners/AuthStateListener.dart';
 import 'package:ble_app/src/sealedStates/AuthState.dart';
 import 'package:ble_app/src/services/Database.dart';
 import 'package:ble_app/src/utils/connectivityManager.dart';

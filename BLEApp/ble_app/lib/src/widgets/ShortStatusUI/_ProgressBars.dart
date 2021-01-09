@@ -52,7 +52,7 @@ class ProgressColumns extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            Text(
+            const Text(
               "Temp.",
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -61,7 +61,7 @@ class ProgressColumns extends StatelessWidget {
                   fontSize: 20.0,
                   fontFamily: 'Europe_Ext'),
             ),
-            Text(
+            const Text(
               "Cell",
               textAlign: TextAlign.center,
               style: TextStyle(

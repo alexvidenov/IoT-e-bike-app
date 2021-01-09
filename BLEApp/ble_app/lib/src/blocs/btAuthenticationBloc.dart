@@ -22,16 +22,16 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
           //List<String> objects = event.split(' ');
           //String deviceId = objects.elementAt(1);
           // later on change to what the actual parameter name will be
-          final userId = _auth.getCurrentUserId();
+          //final userId = _auth.getCurrentUserId();
+          /*
           if (!await checkUserExistsWithDevice('1234457', userId)) {
             // just for simpler tests
             addEvent(BTAuthState.bTNotAuthenticated(
                 reason: BTNotAuthenticatedReason.DeviceDoesNotExist));
           }
-          else{
-            _repository.deviceSerialNumber = 1234457.toString();
-            addEvent(BTAuthState.bTAuthenticated());
-          }
+           */
+          _repository.deviceSerialNumber = 1234457.toString();
+          addEvent(BTAuthState.bTAuthenticated());
         }
       });
 

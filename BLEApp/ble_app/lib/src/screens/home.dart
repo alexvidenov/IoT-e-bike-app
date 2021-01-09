@@ -1,4 +1,5 @@
 import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/listeners/DisconnectedListener.dart';
 import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/utils/Router.dart' as router;
 import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 
-class HomeScreen extends StatefulWidget with NavigationAware{
+class HomeScreen extends StatefulWidget with NavigationAware {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
 
@@ -18,7 +19,9 @@ class HomeScreen extends StatefulWidget with NavigationAware{
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
+  bool _hasDisconnected = false;
+
   _instantiateObserver() => routeObserver = RouteObserver<PageRoute>();
 
   Future<bool> _onWillPop() {
@@ -47,6 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  initState() {
+    super.initState();
+    widget._deviceBloc.setDisconnectedListener(this);
+  }
+
+  @override
   Widget build(BuildContext context) {
     _instantiateObserver();
     widget.navigationBloc.generateGlobalKey();
@@ -69,8 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _title = 'Main status';
                     break;
                   case CurrentPage.Full:
-                    _onPressed =
-                        () => widget.navigationBloc.navigateTo('/map');
+                    _onPressed = () => widget.navigationBloc.navigateTo('/map');
                     _title = 'Bat. status';
                     break;
                   case CurrentPage.Map:
@@ -162,5 +170,36 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  onDisconnected() {
+    if (mounted) {
+      _hasDisconnected = true;
+      // replace with modalSheet
+      showDialog(
+          context: context,
+          builder: (context) =>
+              AlertDialog(
+                title: Text('Disconnected',
+                    style: TextStyle(fontFamily: 'Europe_Ext')),
+                content: Text('Do you want to reconnect?',
+                    style: TextStyle(fontFamily: 'Europe_Ext')),
+                actions: <Widget>[
+                  FlatButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text('No')),
+                  FlatButton(
+                      onPressed: () async => await widget._deviceBloc.connect(),
+                      child: Text('Yes')),
+                ],
+              ) ??
+              false);
+    }
+  }
+
+  @override
+  onReconnected() {
+    if (_hasDisconnected && mounted) Navigator.of(context).pop();
   }
 }

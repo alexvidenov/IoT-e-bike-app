@@ -1,4 +1,4 @@
-import 'package:ble_app/src/screens/Entrypoints/AuthStateListener.dart';
+import 'package:ble_app/src/listeners/AuthStateListener.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/sealedStates/AuthState.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,8 +15,8 @@ class AuthBloc extends Bloc<AuthPage, AuthPage> {
   AuthBloc(this._auth) : super();
 
   Future<AuthState> signInWithEmailAndPassword(
-          {String email, String password}) =>
-      _auth.signInWithEmailAndPassword(email, password);
+          {String email, String password}) async =>
+      await _auth.signInWithEmailAndPassword(email, password);
 
   Future<AuthState> signUpWithEmailAndPassword(
           {String email, String password, String deviceId}) =>

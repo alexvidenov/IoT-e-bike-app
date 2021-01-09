@@ -1,6 +1,6 @@
 import 'package:ble_app/src/blocs/authBloc.dart';
-import 'package:ble_app/src/screens/loginPage.dart';
-import 'package:ble_app/src/screens/registrationPage.dart';
+import 'package:ble_app/src/screens/authentication/loginPage.dart';
+import 'package:ble_app/src/screens/authentication/registrationPage.dart';
 import 'package:flutter/material.dart';
 
 class AuthenticationWrapper extends StatefulWidget {
