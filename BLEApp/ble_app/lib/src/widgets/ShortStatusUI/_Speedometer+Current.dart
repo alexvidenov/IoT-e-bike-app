@@ -24,7 +24,7 @@ class SpeedometerWithCurrent extends StatelessWidget {
         Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            Speedometer(locationBloc: locationBloc),
+            SpeedometerWidget(locationBloc: locationBloc),
             Padding(
                 padding: EdgeInsets.only(
                   top: 110,

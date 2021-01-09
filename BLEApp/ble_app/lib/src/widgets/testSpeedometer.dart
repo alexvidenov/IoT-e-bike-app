@@ -2,13 +2,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class TestSpeedometer extends StatelessWidget {
-  TestSpeedometer({
+class Speedometer extends StatelessWidget {
+  Speedometer({
     @required this.speed,
+    @required this.speedRecord,
     this.size = 300
   });
 
   final double speed;
+  final double speedRecord;
   final double size;
 
   @override
@@ -16,6 +18,7 @@ class TestSpeedometer extends StatelessWidget {
     return CustomPaint(
         painter: SpeedometerPainter(
             speed: speed,
+            speedRecord: speedRecord
         ),
         size: Size(size, size)
     );
@@ -25,9 +28,11 @@ class TestSpeedometer extends StatelessWidget {
 class SpeedometerPainter extends CustomPainter {
   SpeedometerPainter({
     this.speed,
+    this.speedRecord
   });
 
   final double speed;
+  final double speedRecord;
 
   Size size;
   Canvas canvas;
@@ -42,10 +47,9 @@ class SpeedometerPainter extends CustomPainter {
     _drawInnerCircle();
     _drawMarkers();
     _drawSpeedIndicators(size);
-    _drawSpeed();
   }
 
-  _drawSpeedIndicators(Size size) {
+  void _drawSpeedIndicators(Size size) {
     for (double percentage = 0.15; percentage <= 0.85; percentage += 4 / (size.width)) {
       _drawSpeedIndicator(percentage);
     }
@@ -120,7 +124,6 @@ class SpeedometerPainter extends CustomPainter {
     canvas.restore();
   }
 
-
   void _drawMarker(bool isBigMarker) {
     paintObject
       ..color = Colors.red
@@ -185,41 +188,10 @@ class SpeedometerPainter extends CustomPainter {
     canvas.restore();
   }
 
-  void _drawSpeed() {
-    TextSpan span = new TextSpan(
-        style: new TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.red,
-            fontSize: size.width / 12
-        ),
-        text: '${speed.toStringAsFixed(0)}'
-    );
-
-    TextPainter textPainter = TextPainter(
-        text: span,
-        textDirection: TextDirection.ltr,
-        textAlign: TextAlign.center
-    );
-
-    textPainter.layout();
-
-    final textCenter = Offset(
-        center.dx,
-        center.dy + (size.width / 10) + (textPainter.width / 2)
-    );
-
-    final textTopLeft = Offset(
-        textCenter.dx - (textPainter.width / 2),
-        textCenter.dy - (textPainter.width / 2)
-    );
-
-    textPainter.paint(canvas, textTopLeft);
-  }
-
   void _drawInnerCircle() {
     paintObject
       ..color = Colors.red.withOpacity(0.4)
-      ..strokeWidth = 2.0
+      ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
     canvas.drawCircle(
@@ -243,5 +215,7 @@ class SpeedometerPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
+  }
 }

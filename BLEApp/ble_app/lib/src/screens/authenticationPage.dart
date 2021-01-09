@@ -4,6 +4,7 @@ import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/sealedStates/BTAuthState.dart';
+import 'package:ble_app/src/utils/WaitingScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
@@ -135,7 +136,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                   return _generateMessageWidget('disconnecting');
               }
             } else
-              return Center(child: CircularProgressIndicator());
+              return WaitingScreen();
             return Container();
           },
         ),

@@ -3,12 +3,11 @@ import 'package:ble_app/src/widgets/testSpeedometer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:location/location.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-class Speedometer extends StatelessWidget {
+class SpeedometerWidget extends StatelessWidget {
   final LocationBloc locationBloc;
 
-  Speedometer({Key key, @required this.locationBloc}) : super(key: key);
+  SpeedometerWidget({Key key, @required this.locationBloc}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +19,7 @@ class Speedometer extends StatelessWidget {
             _speed = snapshot.data.speed * 3.6;
           }
           return Container(
-              height: MediaQuery.of(context).size.height * 0.4,
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: TestSpeedometer(speed: _speed));
+              child: Speedometer(speed: _speed, speedRecord: 70));
         });
   }
 }
