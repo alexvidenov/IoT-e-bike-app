@@ -47,16 +47,19 @@ class DeviceBloc {
   setDisconnectedListener(DisconnectedListener listener) =>
       _disconnectedListener = listener;
 
+  removeListener() => _disconnectedListener = null;
+
   init() => _bleManager.stopPeripheralScan();
 
   _observeConnectionState() => device.listen((bleDevice) => bleDevice.peripheral
           .observeConnectionState(
               emitCurrentValue: true, completeOnDisconnect: false)
           .listen((connectionState) {
-        if (connectionState == PeripheralConnectionState.connected)
+        if (connectionState == PeripheralConnectionState.connected) {
           _disconnectedListener?.onReconnected();
-        else if (connectionState == PeripheralConnectionState.disconnected)
+        } else if (connectionState == PeripheralConnectionState.disconnected) {
           _disconnectedListener?.onDisconnected();
+        }
         _connectionEvent.add(connectionState);
       }));
 

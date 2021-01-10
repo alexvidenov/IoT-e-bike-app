@@ -269,7 +269,6 @@ class _StepperBodyState extends State<StepperBody> {
                     borderRadius: BorderRadius.circular(30.0)),
                 onPressed: _submitDetails,
               )
-              //  Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new ProfileStep1()));
               ),
         ]),
       ));

@@ -24,30 +24,28 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
 
   _instantiateObserver() => routeObserver = RouteObserver<PageRoute>();
 
-  Future<bool> _onWillPop() {
-    return showDialog(
-        context: context,
-        builder: (context) =>
-            AlertDialog(
-              title: Text('Are you sure?',
-                  style: TextStyle(fontFamily: 'Europe_Ext')),
-              content: Text(
-                  'Do you want to disconnect from the device and go back?',
-                  style: TextStyle(fontFamily: 'Europe_Ext')),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: Text('No')),
-                FlatButton(
-                    onPressed: () {
-                      widget._deviceBloc.disconnect();
-                      Navigator.of(context).pop(true);
-                    },
-                    child: Text('Yes')),
-              ],
-            ) ??
-            false);
-  }
+  Future<bool> _onWillPop() => showDialog(
+      context: context,
+      builder: (context) =>
+          AlertDialog(
+            title: Text('Are you sure?',
+                style: TextStyle(fontFamily: 'Europe_Ext')),
+            content: Text(
+                'Do you want to disconnect from the device and go back?',
+                style: TextStyle(fontFamily: 'Europe_Ext')),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text('No')),
+              FlatButton(
+                  onPressed: () {
+                    widget._deviceBloc.disconnect();
+                    Navigator.of(context).pop(true);
+                  },
+                  child: Text('Yes')),
+            ],
+          ) ??
+          false);
 
   @override
   initState() {
@@ -117,6 +115,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                 ),
                 onPressed: () {
                   widget._prefsBloc.clearPrefs();
+                  widget._deviceBloc.removeListener();
                   widget._deviceBloc.disconnect().then((_) =>
                       Navigator.of(context)
                           .pushNamedAndRemoveUntil('/devices', (_) => false));
@@ -197,6 +196,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
               false);
     }
   }
+
 
   @override
   onReconnected() {
