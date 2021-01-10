@@ -10,20 +10,18 @@ abstract class EntryPoint extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) =>
-      MaterialApp(
-        builder: (context, widget) =>
-            MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                child: ResponsiveWrapper.builder(widget,
-                    maxWidth: 1200,
-                    minWidth: 480,
-                    defaultScale: true,
-                    breakpoints: [
-                      ResponsiveBreakpoint.resize(480, name: MOBILE),
-                      ResponsiveBreakpoint.autoScale(800, name: TABLET),
-                    ]),
-            ),
+  Widget build(BuildContext context) => MaterialApp(
+        builder: (context, widget) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: ResponsiveWrapper.builder(widget,
+              maxWidth: 1200,
+              minWidth: 480,
+              defaultScale: true,
+              breakpoints: [
+                ResponsiveBreakpoint.resize(480, name: MOBILE),
+                ResponsiveBreakpoint.autoScale(800, name: TABLET),
+              ]),
+        ),
         color: Colors.lightBlue,
         theme: ThemeData(fontFamily: 'Europe_Ext'),
         initialRoute: '/',

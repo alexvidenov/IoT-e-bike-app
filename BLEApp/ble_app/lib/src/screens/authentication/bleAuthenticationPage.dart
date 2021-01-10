@@ -7,19 +7,19 @@ import 'package:ble_app/src/sealedStates/BTAuthState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
-class AuthenticationScreen extends StatefulWidget {
+class BLEAuthenticationScreen extends StatefulWidget {
   final DeviceBloc _deviceBloc;
   final BluetoothAuthBloc _authBloc;
   final SettingsBloc _settingsBloc;
 
-  const AuthenticationScreen(
+  const BLEAuthenticationScreen(
       this._deviceBloc, this._authBloc, this._settingsBloc);
 
   @override
-  _AuthenticationScreenState createState() => _AuthenticationScreenState();
+  _BLEAuthenticationScreenState createState() => _BLEAuthenticationScreenState();
 }
 
-class _AuthenticationScreenState extends State<AuthenticationScreen> {
+class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   final _writeController = TextEditingController();
 
   StreamSubscription<PeripheralConnectionState> _streamSubscriptionState;
@@ -69,9 +69,10 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
         event.when(
             bTAuthenticated: () {
               _isAuthenticated = true;
-              Navigator.of(context).pushNamed('/home');
+              Navigator.of(context).pushReplacementNamed('/home');
             },
-            bTNotAuthenticated: (reason) => null);
+            bTNotAuthenticated: (reason) => _presentDialog(context,
+                message: reason.reason.toString(), action: 'TRY AGAIN'));
       });
 
   // this retry will be in the bloc
@@ -114,29 +115,31 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           )));
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: Container(
-          color: Colors.black,
-          child: StreamBuilder<PeripheralConnectionState>(
-            stream: widget._deviceBloc.connectionState,
-            initialData: PeripheralConnectionState.disconnected,
-            builder: (_, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                switch (snapshot.data) {
-                  case PeripheralConnectionState.connected:
-                    return _generateMessageWidget('Connected');
-                  case PeripheralConnectionState.connecting:
-                    return Center(child: CircularProgressIndicator());
-                  case PeripheralConnectionState.disconnected:
-                    return _generateMessageWidget('disconnected');
-                  case PeripheralConnectionState.disconnecting:
-                    return _generateMessageWidget('disconnecting');
-                }
-              } else
-                return Center(child: CircularProgressIndicator());
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        color: Colors.black,
+        child: StreamBuilder<PeripheralConnectionState>(
+          stream: widget._deviceBloc.connectionState,
+          initialData: PeripheralConnectionState.disconnected,
+          builder: (_, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              switch (snapshot.data) {
+                case PeripheralConnectionState.connected:
+                  return _generateMessageWidget('Connected');
+                case PeripheralConnectionState.connecting:
+                  return Center(child: CircularProgressIndicator());
+                case PeripheralConnectionState.disconnected:
+                  return _generateMessageWidget('disconnected');
+                case PeripheralConnectionState.disconnecting:
+                  return _generateMessageWidget('disconnecting');
+              }
+            } else
               return Center(child: CircularProgressIndicator());
-            },
-          ),
+            return Container();
+          },
         ),
-      );
+      ),
+    );
+  }
 }

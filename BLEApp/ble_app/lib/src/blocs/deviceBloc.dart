@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:ble_app/src/listeners/DisconnectedListener.dart';
+import 'package:ble_app/src/listeners/disconnectedListener.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
@@ -13,9 +13,9 @@ class DeviceBloc {
   final BleManager _bleManager;
   final DeviceRepository _deviceRepository;
 
-  DisconnectedListener _disconnectedListener;
-
   BehaviorSubject<bool> _isDeviceReadyController;
+
+  DisconnectedListener _disconnectedListener;
 
   Stream<bool> get deviceReady => _isDeviceReadyController.stream;
 
@@ -53,14 +53,14 @@ class DeviceBloc {
 
   _observeConnectionState() => device.listen((bleDevice) => bleDevice.peripheral
           .observeConnectionState(
-              emitCurrentValue: true, completeOnDisconnect: false)
+              emitCurrentValue: true, completeOnDisconnect: true)
           .listen((connectionState) {
+        _connectionEvent.add(connectionState);
         if (connectionState == PeripheralConnectionState.connected) {
           _disconnectedListener?.onReconnected();
         } else if (connectionState == PeripheralConnectionState.disconnected) {
           _disconnectedListener?.onDisconnected();
         }
-        _connectionEvent.add(connectionState);
       }));
 
   dispose() async {

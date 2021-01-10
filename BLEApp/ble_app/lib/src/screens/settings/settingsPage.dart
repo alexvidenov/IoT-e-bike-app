@@ -30,8 +30,7 @@ class Settings extends StatelessWidget {
           .listen((event) => _connectionSettings = event);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         brightness: Brightness.light,
@@ -75,7 +74,7 @@ class Settings extends StatelessWidget {
               value: ConnectionSettings.AutoConnect,
               title: 'Auto connect',
               onChanged: (_) => _settingsBloc
-                  .setAutoConnect(_deviceRepository.pickedDevice.value.id),
+                  .setAutoconnect(_deviceRepository.pickedDevice.value.id),
               secondary: Icon(Icons.bluetooth_connected)),
           _generateListTileStreamBuilder(
             value: ConnectionSettings.AutoPassword,
@@ -86,7 +85,6 @@ class Settings extends StatelessWidget {
         ],
       ),
     );
-  }
 
   Widget _generateListTileStreamBuilder(
           {@required ConnectionSettings value,

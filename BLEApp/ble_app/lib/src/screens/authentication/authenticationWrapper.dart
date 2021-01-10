@@ -19,6 +19,6 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
 
   @override
   Widget build(BuildContext context) => isLogin
-      ? LoginScreen(widget._authBloc, toggleView: _toggleView)
-      : RegisterScreen(widget._authBloc, toggleView: _toggleView);
+      ? Login(widget._authBloc, toggleView: _toggleView)
+      : Register(widget._authBloc, toggleView: _toggleView);
 }

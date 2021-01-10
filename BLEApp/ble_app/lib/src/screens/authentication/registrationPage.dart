@@ -9,6 +9,19 @@ class _Credentials {
   String deviceSerialNumber = '';
 }
 
+class Register extends StatelessWidget {
+  final AuthBloc _auth;
+  final Function toggleView;
+
+  const Register(this._auth, {this.toggleView});
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+      color: Colors.lightBlue,
+      theme: ThemeData(fontFamily: 'Europe_Ext'),
+      home: RegisterScreen(_auth, toggleView: toggleView));
+}
+
 class RegisterScreen extends StatelessWidget {
   final AuthBloc _auth;
   final Function toggleView;
@@ -16,45 +29,42 @@ class RegisterScreen extends StatelessWidget {
   const RegisterScreen(this._auth, {this.toggleView});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-      color: Colors.lightBlue,
-      theme: ThemeData(fontFamily: 'Europe_Ext'),
-      home: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.lightBlue,
-            title: Container(
-              child: Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.account_circle,
-                    size: 25.0,
-                    color: Colors.white,
-                  ),
-                  Text('   Account'),
-                ],
+  Widget build(BuildContext context) => Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.lightBlue,
+        title: Container(
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Icons.account_circle,
+                size: 25.0,
+                color: Colors.white,
               ),
-            ),
-            actions: [
-              Row(
-                children: [
-                  RaisedButton(
-                      color: Colors.lightBlue,
-                      onPressed: toggleView,
-                      child: Text('LOGIN',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              letterSpacing: 2,
-                              fontFamily: 'Europe_Ext'))),
-                  Icon(Icons.arrow_forward)
-                ],
-              )
+              Text('   Account'),
             ],
           ),
-          body: Container(
-            color: Colors.lightBlue,
-            child: StepperBody(_auth),
-          )));
+        ),
+        actions: [
+          Row(
+            children: [
+              RaisedButton(
+                  color: Colors.lightBlue,
+                  onPressed: toggleView,
+                  child: Text('LOGIN',
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                          letterSpacing: 2,
+                          fontFamily: 'Europe_Ext'))),
+              Icon(Icons.arrow_forward)
+            ],
+          )
+        ],
+      ),
+      body: Container(
+        color: Colors.lightBlue,
+        child: StepperBody(_auth),
+      ));
 }
 
 class StepperBody extends StatefulWidget {
@@ -72,7 +82,6 @@ class _StepperBodyState extends State<StepperBody> {
   get _focusNode => FocusNode();
 
   get _focusNodeLastName => FocusNode();
-
   final data = _Credentials();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
@@ -157,7 +166,7 @@ class _StepperBodyState extends State<StepperBody> {
                     fontSize: 19.0)),
             isActive: currStep >= 3,
             state: StepState.indexed,
-            content: new TextFormField(
+            content: TextFormField(
               keyboardType: TextInputType.visiblePassword,
               autocorrect: false,
               // ignore: missing_return
@@ -170,10 +179,10 @@ class _StepperBodyState extends State<StepperBody> {
                 data.password = value;
               },
               maxLines: 1,
-              decoration: new InputDecoration(
+              decoration: InputDecoration(
                   labelText: 'Enter your password',
                   icon: const Icon(Icons.phone, color: Colors.white),
-                  labelStyle: new TextStyle(
+                  labelStyle: TextStyle(
                       decorationStyle: TextDecorationStyle.solid,
                       color: Colors.white,
                       fontSize: 16.0)),
@@ -200,11 +209,11 @@ class _StepperBodyState extends State<StepperBody> {
                 data.deviceSerialNumber = value;
               },
               maxLines: 1,
-              decoration: InputDecoration(
+              decoration: new InputDecoration(
                   labelText: 'Enter device number',
                   icon: const Icon(Icons.confirmation_number,
                       color: Colors.white),
-                  labelStyle: TextStyle(
+                  labelStyle: new TextStyle(
                       decorationStyle: TextDecorationStyle.solid,
                       color: Colors.white,
                       fontSize: 16.0))),
@@ -269,6 +278,7 @@ class _StepperBodyState extends State<StepperBody> {
                     borderRadius: BorderRadius.circular(30.0)),
                 onPressed: _submitDetails,
               )
+              //  Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new ProfileStep1()));
               ),
         ]),
       ));

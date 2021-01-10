@@ -16,8 +16,8 @@ class CurrentRow extends StatelessWidget {
         initialData: ShortStatusModel.empty(),
         builder: (_, shortStatus) {
           if (shortStatus.connectionState == ConnectionState.active) {
-            var currentCharge = shortStatus.data.currentCharge;
-            var currentDischarge = shortStatus.data.currentDischarge;
+            final currentCharge = shortStatus.data.currentCharge;
+            final currentDischarge = shortStatus.data.currentDischarge;
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

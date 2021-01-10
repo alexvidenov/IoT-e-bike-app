@@ -117,8 +117,8 @@ class DeviceRepository {
 
   set deviceSerialNumber(String id) => _deviceSerialNumber = id;
 
-  void dispose() {
-    _characteristicSubscription.cancel();
+  dispose() {
+    _characteristicSubscription?.cancel();
     _characteristicController.close();
   }
 }

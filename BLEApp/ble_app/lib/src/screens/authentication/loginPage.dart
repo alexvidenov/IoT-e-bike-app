@@ -2,27 +2,22 @@ import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:ble_app/src/sealedStates/AuthState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ble_app/src/utils/constants.dart';
 
-final _kHintTextStyle = TextStyle(
-  color: Colors.white54,
-);
+class Login extends StatelessWidget {
+  final AuthBloc _auth;
+  final Function toggleView;
 
-final _kLabelStyle = TextStyle(
-  color: Colors.white,
-  fontWeight: FontWeight.bold,
-);
+  const Login(this._auth, {this.toggleView});
 
-final _kBoxDecorationStyle = BoxDecoration(
-  color: Color(0xFF6CA8F1),
-  borderRadius: BorderRadius.circular(10.0),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.black12,
-      blurRadius: 6.0,
-      offset: Offset(0, 2),
-    ),
-  ],
-);
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        color: Colors.lightBlue,
+        theme: ThemeData(fontFamily: 'Europe_Ext'),
+        home: LoginScreen(_auth, toggleView: toggleView));
+  }
+}
 
 class LoginScreen extends StatefulWidget {
   final AuthBloc _auth;
@@ -35,9 +30,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool _rememberMe = false;
+
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  bool _rememberMe = false;
   String _email;
   String _password;
 
@@ -47,7 +43,6 @@ class _LoginScreenState extends State<LoginScreen> {
       form.save();
       return true;
     }
-    // else handle the thing..
     return false;
   }
 
@@ -89,12 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
       children: <Widget>[
         Text(
           'Email',
-          style: _kLabelStyle,
+          style: kLabelStyle,
         ),
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: _kBoxDecorationStyle,
+          decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
             key: Key('Email'),
@@ -111,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.white,
               ),
               hintText: 'Enter your Email',
-              hintStyle: _kHintTextStyle,
+              hintStyle: kHintTextStyle,
             ),
           ),
         ),
@@ -125,12 +120,12 @@ class _LoginScreenState extends State<LoginScreen> {
       children: <Widget>[
         Text(
           'Password',
-          style: _kLabelStyle,
+          style: kLabelStyle,
         ),
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: _kBoxDecorationStyle,
+          decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextFormField(
             key: Key('password'),
@@ -147,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.white,
               ),
               hintText: 'Enter your Password',
-              hintStyle: _kHintTextStyle,
+              hintStyle: kHintTextStyle,
             ),
           ),
         ),
@@ -163,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: EdgeInsets.only(right: 0.0),
         child: Text(
           'Forgot Password?',
-          style: _kLabelStyle,
+          style: kLabelStyle,
         ),
       ),
     );
@@ -189,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           Text(
             'Remember me',
-            style: _kLabelStyle,
+            style: kLabelStyle,
           ),
         ],
       ),
@@ -235,7 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
         SizedBox(height: 20.0),
         Text(
           'Sign in with',
-          style: _kLabelStyle,
+          style: kLabelStyle,
         ),
       ],
     );
@@ -317,98 +312,94 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-        color: Colors.lightBlue,
-        theme: ThemeData(fontFamily: 'Europe_Ext'),
-        home: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.lightBlue,
-            title: Text(
-              'Login',
-              style: TextStyle(fontSize: 23),
-            ),
-            leading: Icon(Icons.account_circle),
-            actions: [
-              Row(
-                children: [
-                  RaisedButton(
-                      color: Colors.lightBlue,
-                      onPressed: widget.toggleView,
-                      child: Text('REGISTER',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              letterSpacing: 2,
-                              fontFamily: 'Europe_Ext'))),
-                  Icon(Icons.arrow_forward)
-                ],
-              )
-            ],
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.lightBlue,
+          title: Text(
+            'Login',
+            style: TextStyle(fontSize: 23),
           ),
-          body: AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle.light,
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0xFF73AEF5),
-                          Color(0xFF61A4F1),
-                          Color(0xFF478DE0),
-                          Color(0xFF398AE5),
-                        ],
-                        stops: [0.1, 0.4, 0.7, 0.9],
-                      ),
+          leading: Icon(Icons.account_circle),
+          actions: [
+            Row(
+              children: [
+                RaisedButton(
+                    color: Colors.lightBlue,
+                    onPressed: widget.toggleView,
+                    child: Text('REGISTER',
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            letterSpacing: 2,
+                            fontFamily: 'Europe_Ext'))),
+                Icon(Icons.arrow_forward)
+              ],
+            )
+          ],
+        ),
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light,
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFF73AEF5),
+                        Color(0xFF61A4F1),
+                        Color(0xFF478DE0),
+                        Color(0xFF398AE5),
+                      ],
+                      stops: [0.1, 0.4, 0.7, 0.9],
                     ),
                   ),
-                  Container(
-                    height: double.infinity,
-                    child: SingleChildScrollView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 40.0,
-                          vertical: 50.0,
+                ),
+                Container(
+                  height: double.infinity,
+                  child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40.0,
+                        vertical: 50.0,
+                      ),
+                      child: Form(
+                        key: formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              'Sign in',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Europe_Ext',
+                                fontSize: 27.0,
+                                letterSpacing: 2,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 30.0),
+                            _buildEmailTF(),
+                            const SizedBox(
+                              height: 30.0,
+                            ),
+                            _buildPasswordTF(),
+                            _buildForgotPasswordBtn(),
+                            _buildRememberMeCheckbox(),
+                            _buildLoginBtn(),
+                            _buildSignInWithText(),
+                            _buildSocialBtnRow(),
+                            _buildSignUpBtn(),
+                          ],
                         ),
-                        child: Form(
-                          key: formKey,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                'Sign in',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Europe_Ext',
-                                  fontSize: 27.0,
-                                  letterSpacing: 2,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 30.0),
-                              _buildEmailTF(),
-                              const SizedBox(
-                                height: 30.0,
-                              ),
-                              _buildPasswordTF(),
-                              _buildForgotPasswordBtn(),
-                              _buildRememberMeCheckbox(),
-                              _buildLoginBtn(),
-                              _buildSignInWithText(),
-                              _buildSocialBtnRow(),
-                              _buildSignUpBtn(),
-                            ],
-                          ),
-                        )),
-                  )
-                ],
-              ),
+                      )),
+                )
+              ],
             ),
           ),
         ),

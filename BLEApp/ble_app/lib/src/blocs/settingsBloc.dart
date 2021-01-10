@@ -1,5 +1,5 @@
 import 'package:ble_app/src/blocs/sharedPrefsBloc.dart';
-import 'package:ble_app/src/screens/settingsPage.dart';
+import 'package:ble_app/src/screens/settings/settingsPage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -15,30 +15,30 @@ class SettingsBloc {
 
   String getUserData() => _preferencesService.userData() ?? 'empty';
 
-  setUserData(String json) => _preferencesService.setUserData(json);
+  void setUserData(String json) => _preferencesService.setUserData(json);
 
-  deleteUserData() => _preferencesService.deleteUserData();
+  void deleteUserData() => _preferencesService.deleteUserData();
 
   bool isDeviceRemembered() => _preferencesService.getDeviceExists();
 
   bool isPasswordRemembered() => _preferencesService.isPasswordRemembered();
 
-  clearPrefs() => setManual();
+  void clearPrefs() => setManual();
 
-  setAutoPassword(String deviceId) {
+  void setAutoPassword(String deviceId) {
     _saveDevice(deviceId);
     _savePassword(
         password.value); // actually call the internal valuestream here
     setConnectionSetting(ConnectionSettings.AutoPassword);
   }
 
-  setAutoConnect(String deviceId) {
+  void setAutoconnect(String deviceId) {
     _saveDevice(deviceId);
     removePassword();
     setConnectionSetting(ConnectionSettings.AutoConnect);
   }
 
-  setManual() {
+  void setManual() {
     _removeDeviceId();
     setConnectionSetting(ConnectionSettings.Manual);
   }
@@ -47,9 +47,9 @@ class SettingsBloc {
 
   _savePassword(String password) => _preferencesService.savePassword(password);
 
-  removePassword() => _preferencesService.removePasswordRemembrance();
+  void removePassword() => _preferencesService.removePasswordRemembrance();
 
-  _removeDeviceId() => _preferencesService.removeDeviceId();
+  void _removeDeviceId() => _preferencesService.removeDeviceId();
 
   String getOptionalDeviceId() => _preferencesService.getOptionalDevice();
 
