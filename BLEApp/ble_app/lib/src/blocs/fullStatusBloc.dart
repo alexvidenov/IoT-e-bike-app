@@ -1,4 +1,5 @@
 import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
 import 'package:flutter/material.dart';
@@ -31,5 +32,11 @@ class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
     streamSubscription = _repository.characteristicValueStream
         .listen((event) => // if(event.length > someArbitrary shit)
             addEvent(_generateFullStatusDataModel(_generateFullStatus(event))));
+  }
+
+  @override
+  dispose() {
+    logger.wtf('Closing stream in Full Status Bloc');
+    super.dispose();
   }
 }

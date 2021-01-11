@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/main.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
@@ -30,7 +31,7 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
 
   DevicesBloc(this._deviceRepository) : this._bleManager = BleManager();
 
-  void _handlePickedDevice(BleDevice bleDevice) =>
+  _handlePickedDevice(BleDevice bleDevice) =>
       _deviceRepository.pickDevice(bleDevice);
 
    init() {
@@ -49,7 +50,8 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
 
   @override
   dispose() {
-    super.dispose();
+     super.dispose();
+     logger.wtf('Closing stream in DevicesBloc');
     _visibleDevicesController.close();
     _scanSubscription?.cancel();
     _stopScan();

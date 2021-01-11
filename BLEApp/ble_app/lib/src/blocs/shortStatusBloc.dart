@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
@@ -67,6 +68,12 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
         ? _appData = AppData.fromJson(jsonDecode(data),
             userId: userId, deviceSerialNumber: deviceId)
         : _appData = AppData(userId: userId, deviceSerialNumber: deviceId);
+  }
+
+  @override
+  dispose() {
+    logger.wtf('Closing stream in Short Status Bloc');
+    super.dispose();
   }
 }
 

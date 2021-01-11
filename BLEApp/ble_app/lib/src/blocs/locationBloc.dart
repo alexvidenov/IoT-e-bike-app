@@ -1,4 +1,5 @@
 import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -46,5 +47,11 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
 
   @override
   create() => _startTrackingLocation();
+
+  @override
+  dispose() {
+    logger.wtf('Closing stream in Location Bloc');
+    super.dispose();
+  }
 }
 

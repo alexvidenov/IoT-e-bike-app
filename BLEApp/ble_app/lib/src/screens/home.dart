@@ -9,7 +9,7 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/utils/Router.dart' as router;
 import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 
-class HomeScreen extends StatefulWidget with NavigationAware {
+class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
 
@@ -189,7 +189,8 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
       _hasDisconnected = true;
       _scaffoldKey.currentState.showBottomSheet((context) => InkWell(
             child: Center(
-              child: Text('Reconnect', style: TextStyle(fontSize: 28, letterSpacing: 1.5)),
+              child: Text('Reconnect',
+                  style: TextStyle(fontSize: 28, letterSpacing: 1.5)),
             ),
             onTap: () async => await widget._deviceBloc.connect(),
           ));
@@ -198,6 +199,9 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
 
   @override
   onReconnected() {
-    if (_hasDisconnected && mounted) Navigator.of(context).pop();
+    if (_hasDisconnected && mounted) {
+      // widget._reposiory.writeToCharacteristci(password);
+      Navigator.of(context).pop();
+    }
   }
 }

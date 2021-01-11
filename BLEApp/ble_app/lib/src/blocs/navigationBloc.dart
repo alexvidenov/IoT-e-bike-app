@@ -1,5 +1,6 @@
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/navigationService.dart';
+import 'package:ble_app/src/main.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
@@ -19,4 +20,10 @@ class NavigationBloc extends Bloc<CurrentPage, CurrentPage> {
   returnToFirstRoute() => _navigationService.returnToFirstInner();
 
   generateGlobalKey() => _navigationService.generateGlobalKey();
+
+  @override
+  dispose() {
+    super.dispose();
+    logger.wtf('Closing stream in NavigationBloc');
+  }
 }

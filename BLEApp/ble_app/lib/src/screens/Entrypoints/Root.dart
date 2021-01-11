@@ -19,7 +19,7 @@ class _RootPageState extends State<RootPage> with AuthStateListener {
   bool get isLoggedIn => widget._auth.user != null ? true : false;
 
   @override
-  void initState() {
+  initState() {
     super.initState();
     widget._auth.setListener(this);
   }

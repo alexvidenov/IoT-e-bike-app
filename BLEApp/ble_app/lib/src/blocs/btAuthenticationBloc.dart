@@ -1,4 +1,5 @@
 import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/sealedStates/BTAuthState.dart';
@@ -40,4 +41,10 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
 
   @override
   resume() => resumeSubscription();
+
+  @override
+  dispose() {
+    logger.wtf('Closing stream in BTAuthenticationBloc');
+    super.dispose();
+  }
 }

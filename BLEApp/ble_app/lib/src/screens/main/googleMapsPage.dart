@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-class MapPage extends RouteAwareWidget with NavigationAware{
+class MapPage extends RouteAwareWidget with Navigation{
   final LocationBloc _locationBloc;
 
   MapPage(LocationBloc locationBloc)

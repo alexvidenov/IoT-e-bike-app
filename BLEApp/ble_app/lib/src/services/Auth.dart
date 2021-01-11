@@ -92,8 +92,6 @@ class Auth {
             reason: NotAuthenticatedReason.undefined));
         authStateListener.onFailure();
       });
-
-  dispose() => _behaviorSubject.close();
 }
 
 extension UserStatus on Auth {
@@ -117,7 +115,7 @@ extension UserStatus on Auth {
 extension AuthExceptionHandler on Auth {
   static NotAuthenticatedReason handleException(FirebaseAuthException e) {
     var status;
-    switch (e.code) {
+    switch (e.message) {
       case "ERROR_INVALID_EMAIL":
         status = NotAuthenticatedReason.invalidEmail;
         break;

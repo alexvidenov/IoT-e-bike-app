@@ -44,15 +44,15 @@ class SharedPrefsService {
 
   String userData() => _getPrefs(PrefsKeys.USER_DATA);
 
-  void setUserData(String json) => _savePrefs(PrefsKeys.USER_DATA, json);
+  setUserData(String json) => _savePrefs(PrefsKeys.USER_DATA, json);
 
   Future<void> deleteUserData() async =>
       await _preferences.remove(PrefsKeys.USER_DATA);
 
-  void _setDeviceExists(bool deviceExists) =>
+  _setDeviceExists(bool deviceExists) =>
       _savePrefs(PrefsKeys.DEVICE_EXISTS, deviceExists);
 
-  void _setPasswordRemembered(bool passwordRemembered) =>
+  _setPasswordRemembered(bool passwordRemembered) =>
       _savePrefs(PrefsKeys.REMEMBER_PASSWORD, passwordRemembered);
 
   bool getDeviceExists() => _getPrefs(PrefsKeys.DEVICE_EXISTS) ?? false;
@@ -67,12 +67,12 @@ class SharedPrefsService {
       _savePrefs(PrefsKeys.PASSWORD, password)
           .then((value) => _setPasswordRemembered(true));
 
-  void removeDeviceId() {
+  removeDeviceId() {
     _removePrefs(PrefsKeys.DEVICE_ID).then((value) => _setDeviceExists(false));
     removePasswordRemembrance();
   }
 
-  void removePasswordRemembrance() => _removePrefs(PrefsKeys.PASSWORD)
+  removePasswordRemembrance() => _removePrefs(PrefsKeys.PASSWORD)
       .then((value) => _setPasswordRemembered(false));
 
   String getOptionalDevice() => _getPrefs(PrefsKeys.DEVICE_ID) ?? 'empty';

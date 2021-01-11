@@ -1,18 +1,19 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 
+import 'bloc.dart';
+
 part '../extensions/DetermineEndpoint.dart';
 
 enum Endpoint { Unknown, DevicesScreen, AuthScreen }
 
-@lazySingleton
-class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
+@injectable
+class EntryEndpointBloc extends Bloc<Endpoint, Endpoint>{
   final DevicesBloc _devicesBloc;
   final SettingsBloc _settingsBloc;
 
@@ -33,4 +34,3 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
   @override
   pause() => _devicePickedSubscription.cancel();
 }
-

@@ -15,7 +15,10 @@ import 'package:ble_app/src/utils/PrefsKeys.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+final logger = Logger();
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,18 +50,18 @@ class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
 
   @override
   Widget buildWidget(BuildContext context) => StreamBuilder(
-        stream: super.bloc.stream,
-        initialData: Endpoint.Unknown,
-        builder: (_, snapshot) {
-          switch (snapshot.data) {
-            case Endpoint.Unknown:
-              return Center(child: CircularProgressIndicator());
-            case Endpoint.AuthScreen:
-              return AuthEntryPoint();
-            case Endpoint.DevicesScreen:
-              return DevicesEntryPoint();
-          }
-          return Container();
-        },
-      );
+    stream: super.bloc.stream,
+    initialData: Endpoint.Unknown,
+    builder: (_, snapshot) {
+      switch (snapshot.data) {
+        case Endpoint.Unknown:
+          return Center(child: CircularProgressIndicator());
+        case Endpoint.AuthScreen:
+          return AuthEntryPoint();
+        case Endpoint.DevicesScreen:
+          return DevicesEntryPoint();
+      }
+      return Container();
+    },
+  );
 }

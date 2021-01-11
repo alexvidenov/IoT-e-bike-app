@@ -5,7 +5,7 @@ import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/widgets/FullStatusUI/VoltagesBarChart.dart';
 import 'package:flutter/material.dart';
 
-class FullStatusPage extends RouteAwareWidget<FullStatusBloc> with NavigationAware {
+class FullStatusPage extends RouteAwareWidget<FullStatusBloc> with Navigation {
   FullStatusPage(FullStatusBloc fullStatusBloc)
       : super(bloc: fullStatusBloc);
 

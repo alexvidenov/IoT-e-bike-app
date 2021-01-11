@@ -53,7 +53,7 @@ GetIt $initGetIt(
         get<SettingsBloc>(),
         get<Auth>(),
       ));
-  gh.lazySingleton<EntryEndpointBloc>(
+  gh.factory<EntryEndpointBloc>(
       () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));
 
   // Eager singletons must be registered in the right order

@@ -23,7 +23,5 @@ class BleDevice {
       this.id == other.id;
 
   @override
-  String toString() {
-    return 'BleDevice{name: $name}';
-  }
+  String toString() => 'BleDevice{name: $name}';
 }

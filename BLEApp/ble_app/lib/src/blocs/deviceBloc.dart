@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:ble_app/src/listeners/disconnectedListener.dart';
+import 'package:ble_app/src/main.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
@@ -64,6 +65,7 @@ class DeviceBloc {
       }));
 
   dispose() async {
+    logger.wtf('Closing stream in DeviceBloc');
     await _deviceController.drain();
     _deviceController.close();
 

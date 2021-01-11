@@ -25,8 +25,8 @@ class VoltagesBarChart extends StatelessWidget {
             majorGridLines: MajorGridLines(width: 0),
             isVisible: false,
             title: AxisTitle(text: ''),
-            minimum: 0,
-            maximum: 60,
+            minimum: 0, // VMIN_CONST
+            maximum: 60, // VMAX_CONST
             // inject the max voltage here
             majorTickLines: MajorTickLines(size: 0)),
         series: getBarSeries(),

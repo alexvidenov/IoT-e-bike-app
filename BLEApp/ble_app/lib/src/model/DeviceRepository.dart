@@ -119,6 +119,6 @@ class DeviceRepository {
 
   dispose() {
     _characteristicSubscription?.cancel();
-    _characteristicController.close();
+    //_characteristicController.close();
   }
 }

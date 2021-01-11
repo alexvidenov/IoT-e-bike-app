@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
@@ -9,11 +10,12 @@ import 'package:location_permissions/location_permissions.dart' as locationPerm;
 typedef _DeviceTapListener = void Function();
 
 // ignore: must_be_immutable
-class DevicesListScreen extends RouteAwareWidget {
+class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
   final DevicesBloc _devicesBloc;
+  final AuthBloc _authBloc;
   StreamSubscription _pickedDevicesSubscription;
 
-  DevicesListScreen(DevicesBloc devicesBloc)
+  DevicesListScreen(DevicesBloc devicesBloc, this._authBloc)
       : this._devicesBloc = devicesBloc,
         super(bloc: devicesBloc);
 
@@ -39,6 +41,21 @@ class DevicesListScreen extends RouteAwareWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Bluetooth devices'),
+        actions: [
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                  child: ListTile(
+                      leading: Icon(Icons.logout),
+                      title: Text('Logout'),
+                      onTap: () => _authBloc.logout())),
+              PopupMenuItem(
+                  child: ListTile(
+                      leading: Icon(Icons.create), title: Text('Add device')))
+              // This will open modal bottom sheet
+            ],
+          )
+        ],
       ),
       body: StreamBuilder<List<BleDevice>>(
         initialData: _devicesBloc.visibleDevices.value,
@@ -48,11 +65,15 @@ class DevicesListScreen extends RouteAwareWidget {
           child: _DevicesList(_devicesBloc, snapshot.data),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.search),
+        onPressed: () => {},
+      ),
     );
   }
 
   @override
-  void onPause() {
+  onPause() {
     super.onPause();
     _pickedDevicesSubscription.cancel();
   }

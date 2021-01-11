@@ -47,7 +47,7 @@ class Router {
       case '/settings':
         return MaterialPageRoute(builder: (_) => Settings($(), $()));
       case '/devices':
-        return MaterialPageRoute(builder: (_) => DevicesListScreen($()));
+        return MaterialPageRoute(builder: (_) => DevicesListScreen($(), $()));
       case '/auth':
         return MaterialPageRoute(
             builder: (_) => BLEAuthenticationScreen($(), $(), $()));
@@ -59,7 +59,7 @@ class Router {
       RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => DevicesListScreen($()));
+        return MaterialPageRoute(builder: (_) => DevicesListScreen($(), $()));
       case '/auth':
         return MaterialPageRoute(
             builder: (_) => BLEAuthenticationScreen($(), $(), $()));
@@ -68,7 +68,7 @@ class Router {
       case '/settings':
         return MaterialPageRoute(builder: (_) => Settings($(), $()));
       case '/devices':
-        return MaterialPageRoute(builder: (_) => DevicesListScreen($()));
+        return MaterialPageRoute(builder: (_) => DevicesListScreen($(), $()));
     }
     return MaterialPageRoute(builder: (_) => _PathError());
   }
