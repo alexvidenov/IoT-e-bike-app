@@ -50,6 +50,8 @@ class DeviceBloc {
 
   removeListener() => _disconnectedListener = null;
 
+  writeToBLE(String data) => _deviceRepository.writeToCharacteristic(data);
+
   init() => _bleManager.stopPeripheralScan();
 
   _observeConnectionState() => device.listen((bleDevice) => bleDevice.peripheral

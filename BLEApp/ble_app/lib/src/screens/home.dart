@@ -200,7 +200,8 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   @override
   onReconnected() {
     if (_hasDisconnected && mounted) {
-      // widget._reposiory.writeToCharacteristci(password);
+      widget._deviceBloc.writeToBLE(
+          widget._prefsBloc.getPassword() ?? widget._prefsBloc.password.value); // initiates another session.
       Navigator.of(context).pop();
     }
   }

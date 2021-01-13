@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 enum ConnectionSettings { Manual, AutoConnect, AutoPassword }
 
 // ignore: must_be_immutable
-class Settings extends StatelessWidget {
+class ConnectionSettingsScreen extends StatelessWidget {
   final DeviceRepository _deviceRepository;
   final SettingsBloc _settingsBloc;
 
@@ -15,7 +15,7 @@ class Settings extends StatelessWidget {
 
   ConnectionSettings _connectionSettings;
 
-  Settings(this._deviceRepository, this._settingsBloc) {
+  ConnectionSettingsScreen(this._deviceRepository, this._settingsBloc) {
     _listenToConnectionSettingsChanges();
     if (_settingsBloc.isPasswordRemembered())
       _connectionSettings = ConnectionSettings.AutoPassword;
@@ -33,7 +33,7 @@ class Settings extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.transparent,
         title: Text(

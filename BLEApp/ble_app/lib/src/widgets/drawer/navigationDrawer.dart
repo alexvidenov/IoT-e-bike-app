@@ -1,7 +1,6 @@
 import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/Entrypoints/Root.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +23,10 @@ class NavigationDrawer extends StatelessWidget {
                 text: 'Connection Settings',
                 onTap: () => Navigator.of(context).pushNamed('/settings')),
             _createDrawerItem(
-                icon: Icons.devices, text: 'Device Settings', onTap: () => {}),
+                icon: Icons.devices,
+                text: 'Device Settings',
+                onTap: () =>
+                    Navigator.of(context).pushNamed('/batterySettings')),
             _createDrawerItem(
                 icon: Icons.assessment, text: 'Statistics', onTap: () => {}),
             Divider(),
