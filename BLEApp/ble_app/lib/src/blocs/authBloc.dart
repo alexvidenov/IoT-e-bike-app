@@ -1,4 +1,4 @@
-import 'package:ble_app/src/listeners/AuthStateListener.dart';
+import 'package:ble_app/src/listeners/authStateListener.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/sealedStates/AuthState.dart';
 import 'package:injectable/injectable.dart';

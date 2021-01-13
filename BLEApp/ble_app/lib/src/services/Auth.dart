@@ -3,7 +3,7 @@ import 'package:ble_app/src/persistence/dao/userDao.dart';
 import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/persistence/entities/user.dart' as localUser;
 import 'package:ble_app/src/persistence/localDatabase.dart';
-import 'package:ble_app/src/listeners/AuthStateListener.dart';
+import 'package:ble_app/src/listeners/authStateListener.dart';
 import 'package:ble_app/src/sealedStates/AuthState.dart';
 import 'package:ble_app/src/services/Database.dart';
 import 'package:ble_app/src/utils/connectivityManager.dart';
@@ -43,11 +43,11 @@ class Auth {
             .signInWithEmailAndPassword(email: email, password: password);
         user = credential?.user;
         if (user != null) {
-          authStateListener.onSuccess();
+          authStateListener.onAuthSuccessful();
           return AuthState.authenticated(userId: user.uid);
         }
       } catch (e) {
-        authStateListener.onFailure();
+        authStateListener.onLoggedOut();
         return AuthState.notAuthenticated(
             reason: AuthExceptionHandler.handleException(e));
       }
@@ -76,11 +76,11 @@ class Auth {
         await _db.updateDeviceData(deviceId: deviceSerialNumber);
         await _userDao.insertEntity(localUser.User(_id, email, password));
         await _deviceDao.insertEntity(Device(deviceSerialNumber, _id));
-        authStateListener.onSuccess();
+        authStateListener.onAuthSuccessful();
         return AuthState.authenticated(userId: user.uid);
       }
     } catch (e) {
-      authStateListener.onFailure();
+      authStateListener.onLoggedOut();
       return AuthState.notAuthenticated(
           reason: AuthExceptionHandler.handleException(e));
     }
@@ -90,7 +90,7 @@ class Auth {
   Future<void> signOut() async => await _auth.signOut().then((_) {
         addEvent(AuthState.notAuthenticated(
             reason: NotAuthenticatedReason.undefined));
-        authStateListener.onFailure();
+        authStateListener.onLoggedOut();
       });
 }
 

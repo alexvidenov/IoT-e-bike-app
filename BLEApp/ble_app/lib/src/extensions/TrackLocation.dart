@@ -7,9 +7,7 @@ extension TrackLocation on LocationBloc {
 
       addEvent(location);
 
-      if (streamSubscription != null) {
-        streamSubscription.cancel();
-      }
+      if (streamSubscription != null) streamSubscription.cancel();
 
       streamSubscription = _location.onLocationChanged.listen((newLocalData) {
         if (_controller != null) {

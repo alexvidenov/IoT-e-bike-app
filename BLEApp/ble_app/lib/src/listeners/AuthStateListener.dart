@@ -1,5 +1,5 @@
 mixin AuthStateListener {
-  onSuccess();
+  onAuthSuccessful();
 
-  onFailure();
+  onLoggedOut();
 }

@@ -2,7 +2,7 @@ import 'package:super_enum/super_enum.dart';
 
 part 'BTAuthState.super.dart';
 
-enum BTNotAuthenticatedReason { WrongPassword, DeviceDoesNotExist }
+enum BTNotAuthenticatedReason { WrongPassword, DeviceIsNotRegistered }
 
 @superEnum
 enum _BTAuthState {

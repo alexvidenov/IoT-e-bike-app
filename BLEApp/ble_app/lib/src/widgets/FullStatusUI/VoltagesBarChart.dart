@@ -25,8 +25,10 @@ class VoltagesBarChart extends StatelessWidget {
             majorGridLines: MajorGridLines(width: 0),
             isVisible: false,
             title: AxisTitle(text: ''),
-            minimum: 0, // VMIN_CONST
-            maximum: 60, // VMAX_CONST
+            minimum: 0,
+            // VMIN_CONST
+            maximum: 60,
+            // VMAX_CONST
             // inject the max voltage here
             majorTickLines: MajorTickLines(size: 0)),
         series: getBarSeries(),
@@ -56,49 +58,47 @@ class VoltagesBarChart extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            ProgressText(title: 'Umin.', content: '10V'),
-            ProgressText(
-              title: 'Ubal.',
-              content: '56V', // these values will be get from SharedPrefs
-            ),
-            ProgressText(
-              title: 'Umax.',
-              content: '60V',
-            )
-          ],
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 10, bottom: 5),
-          child: Row(
+  Widget build(BuildContext context) => Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              ProgressText(title: 'Charge', content: '5A'),
+              ProgressText(title: 'Umin.', content: '10V'),
               ProgressText(
-                title: 'Discharge',
-                content: '10A',
+                title: 'Ubal.',
+                content: '56V', // these values will be get from SharedPrefs
               ),
               ProgressText(
-                title: 'Total voltage',
+                title: 'Umax.',
                 content: '60V',
               )
             ],
           ),
-        ),
-        Expanded(
-            child: StreamBuilder<List<FullStatusDataModel>>(
-                stream: this.fullStatusStream,
-                builder: (_, snapshot) {
-                  _chartData = snapshot.data;
-                  return getBarChart();
-                })),
-      ],
-    );
-  }
+          Padding(
+            padding: EdgeInsets.only(top: 10, bottom: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                ProgressText(title: 'Charge', content: '5A'),
+                ProgressText(
+                  title: 'Discharge',
+                  content: '10A',
+                ),
+                ProgressText(
+                  title: 'Total voltage',
+                  content: '60V',
+                )
+              ],
+            ),
+          ),
+          Expanded(
+              child: StreamBuilder<List<FullStatusDataModel>>(
+                  stream: this.fullStatusStream,
+                  builder: (_, snapshot) {
+                    _chartData = snapshot.data;
+                    return getBarChart();
+                  })),
+        ],
+      );
 }

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:ble_app/src/main.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/utils/dataParser.dart';
@@ -40,7 +42,7 @@ class DeviceRepository {
     _deviceController = BehaviorSubject<BleDevice>.seeded(_bleDevice);
   }
 
-  void pickDevice(BleDevice bleDevice) async {
+  pickDevice(BleDevice bleDevice) async {
     _bleDevice = bleDevice;
     _deviceController.add(_bleDevice);
   }
@@ -49,6 +51,7 @@ class DeviceRepository {
 
   _listenToCharacteristic() {
     _characteristicSubscription = _characteristic?.monitor()?.listen((event) {
+      print('DATA EVENT: ' + event.toString());
       if (event.length != 0) {
         if (event.contains(10)) {
           for (int i = 0; i < event.length; i++) {
@@ -78,13 +81,13 @@ class DeviceRepository {
   periodicShortStatus() {
     _timer?.cancel();
     _timer =
-        Timer.periodic(Duration(milliseconds: 500), (_) => _writeData("S"));
+        Timer.periodic(Duration(milliseconds: 500), (_) => _writeData("N\r"));
   }
 
   periodicFullStatus() {
     _timer?.cancel();
     _timer =
-        Timer.periodic(Duration(milliseconds: 500), (_) => _writeData("F"));
+        Timer.periodic(Duration(milliseconds: 500), (_) => _writeData("F\r"));
   }
 
   cancel() => _timer?.cancel();

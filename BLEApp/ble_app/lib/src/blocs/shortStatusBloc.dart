@@ -37,9 +37,10 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
   }
 
   @override
-  void create() {
+  create() {
     _initData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
+      logger.wtf('SHORT STATUS EVENT');
       ShortStatusModel _model = _generateShortStatus(event);
       addEvent(_model);
       _uploadTimer++;

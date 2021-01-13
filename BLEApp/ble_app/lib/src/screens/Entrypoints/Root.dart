@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../main.dart';
 import '../authentication/authenticationWrapper.dart';
-import '../../listeners/AuthStateListener.dart';
+import '../../listeners/authStateListener.dart';
 
 class RootPage extends StatefulWidget {
   final AuthBloc _auth;
@@ -29,10 +29,10 @@ class _RootPageState extends State<RootPage> with AuthStateListener {
       isLoggedIn ? BleApp($()) : AuthenticationWrapper(widget._auth);
 
   @override
-  onFailure() => setState(() {});
+  onLoggedOut() => setState(() {});
 
   @override
-  onSuccess() => setState(() {});
+  onAuthSuccessful() => setState(() {});
 }
 
 /*
