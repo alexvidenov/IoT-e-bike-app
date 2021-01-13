@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/screens/ParameterFetchScreen.dart';
 import 'package:ble_app/src/sealedStates/BTAuthState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
@@ -16,7 +18,8 @@ class BLEAuthenticationScreen extends StatefulWidget {
       this._deviceBloc, this._authBloc, this._settingsBloc);
 
   @override
-  _BLEAuthenticationScreenState createState() => _BLEAuthenticationScreenState();
+  _BLEAuthenticationScreenState createState() =>
+      _BLEAuthenticationScreenState();
 }
 
 class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
@@ -70,6 +73,9 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
             bTAuthenticated: () {
               _isAuthenticated = true;
               Navigator.of(context).pushReplacementNamed('/home');
+              //Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  //builder: (_) =>
+                    //  ParameterFetchScreen($(), $()))); // TODO add to router
             },
             bTNotAuthenticated: (reason) => _presentDialog(context,
                 message: reason.reason.toString(), action: 'TRY AGAIN'));

@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
-import 'package:ble_app/src/main.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/utils/dataParser.dart';
@@ -80,14 +78,14 @@ class DeviceRepository {
 
   periodicShortStatus() {
     _timer?.cancel();
-    _timer =
-        Timer.periodic(Duration(milliseconds: 500), (_) => _writeData("N\r"));
+    _timer = Timer.periodic(Duration(milliseconds: 300),
+        (_) => _writeData("N\r")); // CARRIAGE RETURN NEEDED
   }
 
   periodicFullStatus() {
     _timer?.cancel();
     _timer =
-        Timer.periodic(Duration(milliseconds: 500), (_) => _writeData("F\r"));
+        Timer.periodic(Duration(milliseconds: 400), (_) => _writeData("F\r"));
   }
 
   cancel() => _timer?.cancel();
@@ -122,6 +120,6 @@ class DeviceRepository {
 
   dispose() {
     _characteristicSubscription?.cancel();
-    //_characteristicController.close();
+    _characteristicController.close();
   }
 }

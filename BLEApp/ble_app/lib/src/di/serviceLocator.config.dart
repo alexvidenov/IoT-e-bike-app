@@ -11,6 +11,7 @@ import '../services/Auth.dart';
 import '../blocs/authBloc.dart';
 import '../blocs/btAuthenticationBloc.dart';
 import '../blocs/deviceBloc.dart';
+import '../blocs/deviceParametersBloc.dart';
 import '../model/DeviceRepository.dart';
 import '../blocs/devicesBloc.dart';
 import '../blocs/entryEndpointBloc.dart';
@@ -53,6 +54,8 @@ GetIt $initGetIt(
         get<SettingsBloc>(),
         get<Auth>(),
       ));
+  gh.factory<DeviceParametersBloc>(
+      () => DeviceParametersBloc(get<DeviceRepository>(), get<SettingsBloc>()));
   gh.factory<EntryEndpointBloc>(
       () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));
 

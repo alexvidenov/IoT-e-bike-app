@@ -34,7 +34,7 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   _handlePickedDevice(BleDevice bleDevice) =>
       _deviceRepository.pickDevice(bleDevice);
 
-   init() {
+  init() {
     bleDevices.clear();
     _checkBluetooth().then((_) => _startScan());
 
@@ -50,8 +50,8 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
 
   @override
   dispose() {
-     super.dispose();
-     logger.wtf('Closing stream in DevicesBloc');
+    super.dispose();
+    logger.wtf('Closing stream in DevicesBloc');
     _visibleDevicesController.close();
     _scanSubscription?.cancel();
     _stopScan();

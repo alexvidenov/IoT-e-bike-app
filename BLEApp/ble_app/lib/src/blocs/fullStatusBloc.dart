@@ -31,7 +31,7 @@ class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
   _listenToFullStatus() {
     streamSubscription = _repository.characteristicValueStream
         .listen((event) => // if(event.length > someArbitrary shit)
-            addEvent(generateFullStatus(event)));
+            addEvent(_generateFullStatus(event)));
   }
 
   @override

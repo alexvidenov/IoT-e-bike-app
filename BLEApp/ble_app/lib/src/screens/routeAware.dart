@@ -33,7 +33,7 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   didChangeDependencies() {
     super.didChangeDependencies();
     final route = ModalRoute.of(context);
-    // null check needed for the entry screen when we don't have context.
+    // null check needed for the entry screen when we don't have Modal route context.
     if (route != null) routeObserver.subscribe(this, route);
     widget.onCreate();
   }
