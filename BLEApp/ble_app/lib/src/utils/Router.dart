@@ -1,4 +1,6 @@
 import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/screens/parameterFetchScreen.dart';
 import 'package:ble_app/src/screens/authentication/bleAuthenticationPage.dart';
 import 'package:ble_app/src/screens/devicesListScreen.dart';
 import 'package:ble_app/src/screens/main/fullStatusPage.dart';
@@ -15,13 +17,11 @@ class _PathError extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text('Error'),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+        body: Center(
+          child: Text('Error'),
+        ),
+      );
 }
 
 abstract class Router {
@@ -53,6 +53,10 @@ abstract class Router {
       case '/auth':
         return MaterialPageRoute(
             builder: (_) => BLEAuthenticationScreen($(), $(), $()));
+      case '/fetchParameters':
+        return MaterialPageRoute(
+            builder: (_) => ParameterFetchScreen(
+                $(), $(), $(), $<DeviceRepository>().deviceId));
       case '/batterySettings':
         return MaterialPageRoute(builder: (_) => BatterySettingsScreen());
     }
@@ -67,6 +71,10 @@ abstract class Router {
       case '/auth':
         return MaterialPageRoute(
             builder: (_) => BLEAuthenticationScreen($(), $(), $()));
+      case '/fetchParameters':
+        return MaterialPageRoute(
+            builder: (_) => ParameterFetchScreen(
+                $(), $(), $(), $<DeviceRepository>().deviceId));
       case '/home':
         return MaterialPageRoute(builder: (_) => HomeScreen($(), $()));
       case '/settings':

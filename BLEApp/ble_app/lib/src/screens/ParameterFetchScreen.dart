@@ -1,15 +1,18 @@
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/deviceParametersBloc.dart';
+import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/sealedStates/ParameterFetchState.dart';
 import 'package:flutter/material.dart';
 
 class ParameterFetchScreen extends RouteAwareWidget<DeviceParametersBloc> {
-  const ParameterFetchScreen(
-      DeviceParametersBloc _deviceParameterBloc, this._deviceBloc)
+  const ParameterFetchScreen(DeviceParametersBloc _deviceParameterBloc,
+      this._deviceBloc, this._localDatabase, this.deviceId)
       : super(bloc: _deviceParameterBloc);
 
-  final DeviceBloc _deviceBloc;
+  final DeviceBloc _deviceBloc; // remove this in release
+  final String deviceId;
+  final LocalDatabase _localDatabase;
 
   Future<bool> _onWillPop(context) {
     return showDialog(
@@ -52,6 +55,8 @@ class ParameterFetchScreen extends RouteAwareWidget<DeviceParametersBloc> {
           builder: (_, snapshot) {
             if (snapshot.connectionState == ConnectionState.active) {
               snapshot.data.when(fetched: (fetched) {
+                _localDatabase.deviceDao.updateDeviceParameters(
+                    deviceId, fetched.parameters.toJson());
                 // here call some db insert method that will take fetched.parameters.
               }, fetching: () {
                 return Center(child: CircularProgressIndicator());

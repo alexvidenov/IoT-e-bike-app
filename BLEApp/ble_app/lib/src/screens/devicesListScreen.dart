@@ -67,7 +67,7 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.search),
-        onPressed: () => {},
+        onPressed: () => _devicesBloc.refresh(),
       ),
     );
   }

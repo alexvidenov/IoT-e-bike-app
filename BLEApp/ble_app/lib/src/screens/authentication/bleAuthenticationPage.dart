@@ -4,7 +4,7 @@ import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/screens/ParameterFetchScreen.dart';
+import 'package:ble_app/src/screens/parameterFetchScreen.dart';
 import 'package:ble_app/src/sealedStates/BTAuthState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
@@ -72,10 +72,8 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
         event.when(
             bTAuthenticated: () {
               _isAuthenticated = true;
-              Navigator.of(context).pushReplacementNamed('/home');
-              //Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  //builder: (_) =>
-                    //  ParameterFetchScreen($(), $()))); // TODO add to router
+              //Navigator.of(context).pushReplacementNamed('/home');
+              Navigator.of(context).pushReplacementNamed('/fetchParameters');
             },
             bTNotAuthenticated: (reason) => _presentDialog(context,
                 message: reason.reason.toString(), action: 'TRY AGAIN'));

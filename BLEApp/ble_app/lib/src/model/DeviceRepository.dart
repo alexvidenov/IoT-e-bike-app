@@ -24,7 +24,7 @@ class DeviceRepository {
   Timer _timer;
 
   final _characteristicController =
-      PublishSubject<String>(); // packets, emmited from bluetooth
+      PublishSubject<String>(); // packets, emitted from bluetooth
 
   Stream<String> get characteristicValueStream =>
       _characteristicController.stream;
@@ -60,7 +60,7 @@ class DeviceRepository {
             } else {
               List<int> curList = [event.elementAt(i)];
               _curValue += DataParser.parseList(curList);
-            } //the problem was that I wasn't updating curValue after passing the '\n' in the packet
+            }
           }
         } else {
           _curValue += DataParser.parseList(event);
@@ -78,14 +78,14 @@ class DeviceRepository {
 
   periodicShortStatus() {
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(milliseconds: 300),
-        (_) => _writeData("N\r")); // CARRIAGE RETURN NEEDED
+    _timer =
+        Timer.periodic(Duration(milliseconds: 300), (_) => _writeData('N\r'));
   }
 
   periodicFullStatus() {
     _timer?.cancel();
     _timer =
-        Timer.periodic(Duration(milliseconds: 400), (_) => _writeData("F\r"));
+        Timer.periodic(Duration(milliseconds: 400), (_) => _writeData('F\r'));
   }
 
   cancel() => _timer?.cancel();

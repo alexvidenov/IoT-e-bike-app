@@ -7,5 +7,8 @@ class Device {
 
   final String userId;
 
-  const Device(this.deviceId, this.userId);
+  String
+      deviceParametersModel; // toJson and fromJson required from the calling object
+
+  Device(this.deviceId, this.userId);
 }

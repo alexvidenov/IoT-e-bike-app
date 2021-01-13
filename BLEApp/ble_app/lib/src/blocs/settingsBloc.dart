@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/sharedPrefsBloc.dart';
+import 'package:ble_app/src/blocs/sharedPrefsService.dart';
 import 'package:ble_app/src/screens/settings/settingsPage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';

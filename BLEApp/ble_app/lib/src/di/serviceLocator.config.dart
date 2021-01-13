@@ -21,7 +21,7 @@ import '../blocs/locationBloc.dart';
 import '../blocs/navigationBloc.dart';
 import '../blocs/navigationService.dart';
 import '../blocs/settingsBloc.dart';
-import '../blocs/sharedPrefsBloc.dart';
+import '../blocs/sharedPrefsService.dart';
 import '../blocs/shortStatusBloc.dart';
 
 /// adds generated dependencies
@@ -46,6 +46,8 @@ GetIt $initGetIt(
         get<Auth>(),
       ));
   gh.lazySingleton<DeviceBloc>(() => DeviceBloc(get<DeviceRepository>()));
+  gh.factory<DeviceParametersBloc>(
+      () => DeviceParametersBloc(get<DeviceRepository>()));
   gh.lazySingleton<NavigationBloc>(
       () => NavigationBloc(get<NavigationService>()));
   gh.lazySingleton<SettingsBloc>(() => SettingsBloc(get<SharedPrefsService>()));
@@ -54,8 +56,6 @@ GetIt $initGetIt(
         get<SettingsBloc>(),
         get<Auth>(),
       ));
-  gh.factory<DeviceParametersBloc>(
-      () => DeviceParametersBloc(get<DeviceRepository>(), get<SettingsBloc>()));
   gh.factory<EntryEndpointBloc>(
       () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));
 
