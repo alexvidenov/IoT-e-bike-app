@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:ble_app/src/blocs/ParameterAware.dart';
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/main.dart';
@@ -10,10 +11,15 @@ import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:injectable/injectable.dart';
 
+import 'ParameterAwareBloc.dart';
+
 part '../extensions/ShortStatusParse.dart';
 
+abstract class Bloc2<T, S> extends Bloc<T, S> implements ParameterAwareBloc {}
+
 @injectable
-class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
+class ShortStatusBloc extends Bloc2<ShortStatusModel, String>
+    with ParameterAware {
   final DeviceRepository _repository;
   final SettingsBloc _settingsBloc;
   final Auth _auth;
@@ -45,6 +51,7 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
       addEvent(_model);
       _uploadTimer++;
       if (_uploadTimer == 10) {
+        // TODO: extract data logging process in a separate manager
         _appData.addCurrentRecord({
           'timeStamp': DateTime.now().toString(),
           'stats': {
@@ -77,4 +84,3 @@ class ShortStatusBloc extends Bloc<ShortStatusModel, String> {
     super.dispose();
   }
 }
-

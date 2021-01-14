@@ -1,5 +1,4 @@
-import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/blocs/ParameterAwareBloc.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
@@ -16,7 +15,7 @@ mixin _Disposable<T, S> {
   }
 }
 
-abstract class Bloc<T, S> with _Disposable<T, S>{
+abstract class Bloc<T, S> with _Disposable<T, S> {
   // state and event
   // T, S
 

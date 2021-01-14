@@ -5,6 +5,9 @@ import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
+import 'ParameterAware.dart';
+import 'ParameterAwareBloc.dart';
+
 part '../extensions/FullStatusParse.dart';
 
 @injectable

@@ -8,6 +8,7 @@ extension BLEScanMethods on DevicesBloc {
       if (scanResult.advertisementData.localName != null &&
           !bleDevices.contains(bleDevice)) {
         bleDevices.add(bleDevice);
+        // TODO replace with addEvent which will have state for searching / and stopping scan as well
         _visibleDevicesController.add(bleDevices.sublist(0));
       }
     });

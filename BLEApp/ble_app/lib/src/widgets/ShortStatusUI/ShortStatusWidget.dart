@@ -1,25 +1,24 @@
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:flutter/material.dart';
 
 import '_BottomProgressText.dart';
 import '_ProgressBars.dart';
 
 class ShortStatusUI extends StatelessWidget {
-  final ShortStatusBloc shortStatusBloc;
-  final LocationBloc locationBloc;
+  final ShortStatusBloc _shortStatusBloc;
+  final LocationBloc _locationBloc;
 
-  const ShortStatusUI(this.shortStatusBloc, this.locationBloc);
+  const ShortStatusUI(this._shortStatusBloc, this._locationBloc);
 
   @override
   Widget build(BuildContext context) {
-    final locationBloc = $<LocationBloc>();
-    locationBloc.create();
+    _locationBloc.create();
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        ProgressColumns(shortStatusBloc: shortStatusBloc, locationBloc: locationBloc),
+        ProgressColumns(
+            shortStatusBloc: _shortStatusBloc, locationBloc: _locationBloc),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[

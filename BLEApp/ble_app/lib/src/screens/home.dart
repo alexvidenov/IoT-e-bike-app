@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   @override
   void initState() {
     super.initState();
-    widget._deviceBloc.setDisconnectedListener(this);
+    widget._deviceBloc.setDisconnectedListener(this); // same thing for short and full status-es. Prolly not actually
   }
 
   @override

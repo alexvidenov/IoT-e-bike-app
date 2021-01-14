@@ -79,13 +79,13 @@ class DeviceRepository {
   periodicShortStatus() {
     _timer?.cancel();
     _timer =
-        Timer.periodic(Duration(milliseconds: 300), (_) => _writeData('N\r'));
+        Timer.periodic(Duration(milliseconds: 300), (_) => _writeData('N'));
   }
 
   periodicFullStatus() {
     _timer?.cancel();
     _timer =
-        Timer.periodic(Duration(milliseconds: 400), (_) => _writeData('F\r'));
+        Timer.periodic(Duration(milliseconds: 400), (_) => _writeData('F'));
   }
 
   cancel() => _timer?.cancel();

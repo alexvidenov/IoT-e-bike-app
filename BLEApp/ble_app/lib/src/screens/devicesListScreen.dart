@@ -19,7 +19,7 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
       : this._devicesBloc = devicesBloc,
         super(bloc: devicesBloc);
 
-  _listenForPickedDevice(BuildContext context) =>
+  _listenForPickedDevice(BuildContext context) => // TODO instead of this, have one stream with multiple states
       _pickedDevicesSubscription = _devicesBloc.pickedDevice.listen((_) {
         this.onPause();
         Navigator.of(context).pushNamed('/auth');
@@ -93,7 +93,7 @@ class _DevicesList extends ListView {
 
   static _DeviceTapListener _createTapListener(
           DevicesBloc devicesBloc, BleDevice bleDevice) =>
-      () => devicesBloc.addEvent(bleDevice);
+      () => devicesBloc.addEvent(bleDevice); // TODO: addEvent(DevicesListEvent.device(bleDevice)
 
   static Widget _buildAvatar(BuildContext context, BleDevice device) =>
       CircleAvatar(

@@ -17,29 +17,28 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
   BluetoothAuthBloc(this._repository, this._db, this._auth) : super();
 
   @override
-  create() => Future.delayed(Duration(seconds: 5), () {
-        addEvent(BTAuthState.bTAuthenticated());
-      });
-
-  /*
-  streamSubscription = _repository.characteristicValueStream.listen((event) async {
+  create() => streamSubscription =
+          _repository.characteristicValueStream.listen((event) async {
         if (event.startsWith('pass')) {
           //List<String> objects = event.split(' ');
           //String deviceId = objects.elementAt(1);
           // later on change to what the actual parameter name will be
           //final userId = _auth.getCurrentUserId();
           //if (!await checkUserExistsWithDevice('1234457', userId)) {
-            // just for simpler tests
-            //addEvent(BTAuthState.bTNotAuthenticated(
-                //reason: BTNotAuthenticatedReason.DeviceDoesNotExist));
+          // just for simpler tests
+          //addEvent(BTAuthState.bTNotAuthenticated(
+          //reason: BTNotAuthenticatedReason.DeviceDoesNotExist));
           //}
           //else{
-            _repository.deviceSerialNumber = 1234457.toString();
-            addEvent(BTAuthState.bTAuthenticated());
-         // }
+          _repository.deviceSerialNumber = 1234457.toString();
+          addEvent(BTAuthState.bTAuthenticated());
+          // }
         }
       });
-   */
+
+  //Future.delayed(Duration(seconds: 5), () {
+  //addEvent(BTAuthState.bTAuthenticated());
+  //});
 
   @override
   pause() => pauseSubscription();

@@ -20,6 +20,7 @@ import '../persistence/localDatabase.dart';
 import '../blocs/locationBloc.dart';
 import '../blocs/navigationBloc.dart';
 import '../blocs/navigationService.dart';
+import '../blocs/ParameterHolder.dart';
 import '../blocs/settingsBloc.dart';
 import '../blocs/sharedPrefsService.dart';
 import '../blocs/shortStatusBloc.dart';
@@ -38,6 +39,7 @@ GetIt $initGetIt(
   gh.factory<FullStatusBloc>(() => FullStatusBloc(get<DeviceRepository>()));
   gh.factory<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
+  gh.lazySingleton<ParameterHolder>(() => ParameterHolder());
   gh.lazySingleton<Auth>(() => Auth(localDatabase: get<LocalDatabase>()));
   gh.lazySingleton<AuthBloc>(() => AuthBloc(get<Auth>()));
   gh.factory<BluetoothAuthBloc>(() => BluetoothAuthBloc(
