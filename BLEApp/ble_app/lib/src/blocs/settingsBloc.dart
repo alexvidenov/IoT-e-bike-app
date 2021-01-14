@@ -1,5 +1,5 @@
 import 'package:ble_app/src/blocs/sharedPrefsService.dart';
-import 'package:ble_app/src/screens/settings/ConnectionSettingsCreen.dart';
+import 'package:ble_app/src/screens/settings/settingsPage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -17,20 +17,18 @@ class SettingsBloc {
 
   setUserData(String json) => _preferencesService.setUserData(json);
 
-  _deleteUserData() => _preferencesService.deleteUserData();
+  deleteUserData() => _preferencesService.deleteUserData();
 
   bool isDeviceRemembered() => _preferencesService.getDeviceExists();
 
   bool isPasswordRemembered() => _preferencesService.isPasswordRemembered();
 
-  clearPrefs() {
-    setManual();
-    _deleteUserData();
-  }
+  clearPrefs() => setManual();
 
   setAutoPassword(String deviceId) {
     _saveDevice(deviceId);
-    _savePassword(password.value);
+    _savePassword(
+        password.value); // actually call the internal valuestream here
     setConnectionSetting(ConnectionSettings.AutoPassword);
   }
 

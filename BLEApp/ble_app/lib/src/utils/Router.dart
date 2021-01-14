@@ -6,8 +6,8 @@ import 'package:ble_app/src/screens/devicesListScreen.dart';
 import 'package:ble_app/src/screens/main/fullStatusPage.dart';
 import 'package:ble_app/src/screens/main/googleMapsPage.dart';
 import 'package:ble_app/src/screens/home.dart';
-import 'package:ble_app/src/screens/settings/BatterySettingsScreen.dart';
-import 'package:ble_app/src/screens/settings/ConnectionSettingsCreen.dart';
+import 'package:ble_app/src/screens/settings/BatterySettings.dart';
+import 'package:ble_app/src/screens/settings/settingsPage.dart';
 import 'package:ble_app/src/screens/main/shortStatusPage.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +60,7 @@ abstract class Router {
             builder: (_) => ParameterFetchScreen(
                 $(), $(), $(), $<DeviceRepository>().deviceId));
       case '/batterySettings':
-        return MaterialPageRoute(builder: (_) => BatterySettingsScreen());
+        return MaterialPageRoute(builder: (_) => BatterySettingsScreen($()));
     }
     return MaterialPageRoute(builder: (_) => _PathError());
   }
@@ -87,7 +87,7 @@ abstract class Router {
         return MaterialPageRoute(
             builder: (_) => DevicesListScreen($(), $<Auth>().signOut));
       case '/batterySettings':
-        return MaterialPageRoute(builder: (_) => BatterySettingsScreen());
+        return MaterialPageRoute(builder: (_) => BatterySettingsScreen($()));
     }
     return MaterialPageRoute(builder: (_) => _PathError());
   }
