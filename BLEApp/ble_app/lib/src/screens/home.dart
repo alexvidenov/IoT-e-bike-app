@@ -2,6 +2,7 @@ import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/listeners/disconnectedListener.dart';
 import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
+import 'package:ble_app/src/services/Auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
@@ -54,7 +55,8 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   @override
   void initState() {
     super.initState();
-    widget._deviceBloc.setDisconnectedListener(this); // same thing for short and full status-es. Prolly not actually
+    widget._deviceBloc.setDisconnectedListener(
+        this); // same thing for short and full status-es. Prolly not actually
   }
 
   @override
@@ -172,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                     )
                   ],
                 )),
-            drawer: NavigationDrawer($(), $(), $()),
+            drawer: NavigationDrawer($(), $(), $<Auth>().signOut),
             body: Navigator(
               initialRoute: '/',
               key: widget.navigationBloc.navigatorKey,
@@ -200,8 +202,8 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   @override
   onReconnected() {
     if (_hasDisconnected && mounted) {
-      widget._deviceBloc.writeToBLE(
-          widget._prefsBloc.getPassword() ?? widget._prefsBloc.password.value); // initiates another session.
+      widget._deviceBloc.writeToBLE(widget._prefsBloc.getPassword() ??
+          widget._prefsBloc.password.value); // initiates another session.
       Navigator.of(context).pop();
     }
   }

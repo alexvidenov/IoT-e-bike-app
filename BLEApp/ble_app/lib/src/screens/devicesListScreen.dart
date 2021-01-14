@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
@@ -9,17 +8,20 @@ import 'package:location_permissions/location_permissions.dart' as locationPerm;
 
 typedef _DeviceTapListener = void Function();
 
+typedef _LogOutListener = Future<void> Function();
+
 // ignore: must_be_immutable
 class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
   final DevicesBloc _devicesBloc;
-  final AuthBloc _authBloc;
+  final _LogOutListener _onLogout;
   StreamSubscription _pickedDevicesSubscription;
 
-  DevicesListScreen(DevicesBloc devicesBloc, this._authBloc)
+  DevicesListScreen(DevicesBloc devicesBloc, this._onLogout)
       : this._devicesBloc = devicesBloc,
         super(bloc: devicesBloc);
 
-  _listenForPickedDevice(BuildContext context) => // TODO instead of this, have one stream with multiple states
+  _listenForPickedDevice(BuildContext context) =>
+      // TODO instead of this, have one stream with multiple states
       _pickedDevicesSubscription = _devicesBloc.pickedDevice.listen((_) {
         this.onPause();
         Navigator.of(context).pushNamed('/auth');
@@ -48,7 +50,7 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
                   child: ListTile(
                       leading: Icon(Icons.logout),
                       title: Text('Logout'),
-                      onTap: () => _authBloc.logout())),
+                      onTap: () async => await _onLogout())),
               PopupMenuItem(
                   child: ListTile(
                       leading: Icon(Icons.create), title: Text('Add device')))
@@ -93,7 +95,8 @@ class _DevicesList extends ListView {
 
   static _DeviceTapListener _createTapListener(
           DevicesBloc devicesBloc, BleDevice bleDevice) =>
-      () => devicesBloc.addEvent(bleDevice); // TODO: addEvent(DevicesListEvent.device(bleDevice)
+      () => devicesBloc.addEvent(
+          bleDevice); // TODO: addEvent(DevicesListEvent.device(bleDevice)
 
   static Widget _buildAvatar(BuildContext context, BleDevice device) =>
       CircleAvatar(

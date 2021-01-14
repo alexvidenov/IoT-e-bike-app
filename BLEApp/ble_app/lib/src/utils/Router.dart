@@ -9,6 +9,7 @@ import 'package:ble_app/src/screens/home.dart';
 import 'package:ble_app/src/screens/settings/BatterySettings.dart';
 import 'package:ble_app/src/screens/settings/settingsPage.dart';
 import 'package:ble_app/src/screens/main/shortStatusPage.dart';
+import 'package:ble_app/src/services/Auth.dart';
 import 'package:flutter/material.dart';
 
 class _PathError extends StatelessWidget {
@@ -49,7 +50,8 @@ abstract class Router {
         return MaterialPageRoute(
             builder: (_) => ConnectionSettingsScreen($(), $()));
       case '/devices':
-        return MaterialPageRoute(builder: (_) => DevicesListScreen($(), $()));
+        return MaterialPageRoute(
+            builder: (_) => DevicesListScreen($(), $<Auth>().signOut));
       case '/auth':
         return MaterialPageRoute(
             builder: (_) => BLEAuthenticationScreen($(), $(), $()));
@@ -67,7 +69,8 @@ abstract class Router {
       RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => DevicesListScreen($(), $()));
+        return MaterialPageRoute(
+            builder: (_) => DevicesListScreen($(), $<Auth>().signOut));
       case '/auth':
         return MaterialPageRoute(
             builder: (_) => BLEAuthenticationScreen($(), $(), $()));
@@ -81,7 +84,8 @@ abstract class Router {
         return MaterialPageRoute(
             builder: (_) => ConnectionSettingsScreen($(), $()));
       case '/devices':
-        return MaterialPageRoute(builder: (_) => DevicesListScreen($(), $()));
+        return MaterialPageRoute(
+            builder: (_) => DevicesListScreen($(), $<Auth>().signOut));
       case '/batterySettings':
         return MaterialPageRoute(builder: (_) => BatterySettingsScreen());
     }

@@ -1,15 +1,18 @@
 import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/Entrypoints/Root.dart';
 import 'package:flutter/material.dart';
+
+typedef _LogOutListener = Future<void> Function();
 
 class NavigationDrawer extends StatelessWidget {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
-  final AuthBloc _auth;
+  final _LogOutListener _onLogout;
 
-  const NavigationDrawer(this._prefsBloc, this._deviceBloc, this._auth);
+  const NavigationDrawer(this._prefsBloc, this._deviceBloc, this._onLogout);
 
   @override
   Widget build(BuildContext context) => Drawer(
@@ -32,9 +35,9 @@ class NavigationDrawer extends StatelessWidget {
             Divider(),
             ListTile(
                 title: Text('Logout'),
-                onTap: () async => await _auth.logout().then((_) async {
+                onTap: () async => await _onLogout().then((_) async {
                       Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => RootPage(_auth)),
+                          MaterialPageRoute(builder: (_) => RootPage($())),
                           (route) => false);
                       _prefsBloc.clearPrefs();
                       await _deviceBloc.disconnect();

@@ -19,7 +19,7 @@ class DeviceRepository {
   StreamSubscription _characteristicSubscription;
 
   String _value = ""; // will be updated every packet
-  String _curValue = ""; // which will be appended to
+  String _curValue = ""; // will be appended to
 
   Timer _timer;
 
