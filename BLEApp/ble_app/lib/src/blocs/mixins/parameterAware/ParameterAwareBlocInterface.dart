@@ -1,5 +1,5 @@
 import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
 
-abstract class ParameterAwareBloc {
+abstract class ParameterAwareInterface {
   DeviceParametersModel getParameters();
 }

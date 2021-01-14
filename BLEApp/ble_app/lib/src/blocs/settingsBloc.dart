@@ -15,30 +15,30 @@ class SettingsBloc {
 
   String getUserData() => _preferencesService.userData() ?? 'empty';
 
-  void setUserData(String json) => _preferencesService.setUserData(json);
+  setUserData(String json) => _preferencesService.setUserData(json);
 
-  void deleteUserData() => _preferencesService.deleteUserData();
+  deleteUserData() => _preferencesService.deleteUserData();
 
   bool isDeviceRemembered() => _preferencesService.getDeviceExists();
 
   bool isPasswordRemembered() => _preferencesService.isPasswordRemembered();
 
-  void clearPrefs() => setManual();
+  clearPrefs() => setManual();
 
-  void setAutoPassword(String deviceId) {
+  setAutoPassword(String deviceId) {
     _saveDevice(deviceId);
     _savePassword(
         password.value); // actually call the internal valuestream here
     setConnectionSetting(ConnectionSettings.AutoPassword);
   }
 
-  void setAutoconnect(String deviceId) {
+  setAutoconnect(String deviceId) {
     _saveDevice(deviceId);
     removePassword();
     setConnectionSetting(ConnectionSettings.AutoConnect);
   }
 
-  void setManual() {
+  setManual() {
     _removeDeviceId();
     setConnectionSetting(ConnectionSettings.Manual);
   }
@@ -47,9 +47,9 @@ class SettingsBloc {
 
   _savePassword(String password) => _preferencesService.savePassword(password);
 
-  void removePassword() => _preferencesService.removePasswordRemembrance();
+  removePassword() => _preferencesService.removePasswordRemembrance();
 
-  void _removeDeviceId() => _preferencesService.removeDeviceId();
+  _removeDeviceId() => _preferencesService.removeDeviceId();
 
   String getOptionalDeviceId() => _preferencesService.getOptionalDevice();
 

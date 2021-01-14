@@ -63,7 +63,6 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
           widget._deviceBloc.connectionState.listen((state) {
         if (state == PeripheralConnectionState.connected) {
           _connected = true;
-          // TODO: trigger a timer here => if it doesn't connect for 10 seconds, call connect again.
           if (widget._settingsBloc.isPasswordRemembered() == true) {
             widget._deviceBloc.deviceReady.listen((event) {
               if (event == true) {

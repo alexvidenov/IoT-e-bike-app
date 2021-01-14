@@ -1,7 +1,6 @@
 import 'dart:convert';
 
-import 'package:ble_app/src/blocs/ParameterAware.dart';
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
@@ -12,15 +11,10 @@ import 'package:ble_app/src/sealedStates/shortStatusState.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:injectable/injectable.dart';
 
-import 'ParameterAwareBloc.dart';
-
 part '../extensions/ShortStatusParse.dart';
 
-abstract class Bloc2<T, S> extends Bloc<T, S> implements ParameterAwareBloc {}
-
 @injectable
-class ShortStatusBloc extends Bloc2<ShortStatusState, String>
-    with ParameterAware {
+class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
   final DeviceRepository _repository;
   final SettingsBloc _settingsBloc;
   final Auth _auth;

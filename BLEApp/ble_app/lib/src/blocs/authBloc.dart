@@ -6,7 +6,7 @@ import 'package:injectable/injectable.dart';
 enum AuthPage { Login, Register }
 
 @lazySingleton
-class AuthBloc{
+class AuthBloc {
   final Auth _auth;
 
   AuthBloc(this._auth) : super();

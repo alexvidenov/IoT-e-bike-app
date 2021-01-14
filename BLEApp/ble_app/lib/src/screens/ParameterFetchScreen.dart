@@ -55,6 +55,7 @@ class ParameterFetchScreen extends RouteAwareWidget<DeviceParametersBloc> {
           builder: (_, snapshot) {
             if (snapshot.connectionState == ConnectionState.active) {
               snapshot.data.when(fetched: (fetched) {
+                // TODO: WidgetsBinding.shchedulePostFrameCallback
                 _localDatabase.deviceDao.updateDeviceParameters(
                     deviceId, fetched.parameters.toJson());
                 // here call some db insert method that will take fetched.parameters.

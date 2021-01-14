@@ -1,17 +1,16 @@
 import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
-import 'ParameterAware.dart';
-import 'ParameterAwareBloc.dart';
-
 part '../extensions/FullStatusParse.dart';
 
 @injectable
-class FullStatusBloc extends Bloc<List<FullStatusDataModel>, String> {
+class FullStatusBloc
+    extends ParameterAwareBloc<List<FullStatusDataModel>, String> {
   final DeviceRepository _repository;
 
   FullStatusBloc(this._repository) : super();
