@@ -21,12 +21,10 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
   @override
   onResume() {
     super.onResume();
-    var context = navigationBloc.navigatorKey.currentContext;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDialog(
-          context: context,
-          builder: (_) {
-            return AlertDialog(
+    final context = navigationBloc.navigatorKey.currentContext;
+    WidgetsBinding.instance.addPostFrameCallback((_) => showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
               title: Text('HM'),
               content: Text('LMAO'),
               actions: <Widget>[
@@ -37,9 +35,7 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
                   },
                 ),
               ],
-            );
-          });
-    });
+            )));
     navigationBloc.addEvent(CurrentPage.Short);
   }
 }

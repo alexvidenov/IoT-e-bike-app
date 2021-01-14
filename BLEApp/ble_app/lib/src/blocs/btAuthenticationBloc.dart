@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
@@ -17,24 +19,8 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
   BluetoothAuthBloc(this._repository, this._db, this._auth) : super();
 
   @override
-  create() => streamSubscription =
-          _repository.characteristicValueStream.listen((event) async {
-        if (event.startsWith('pass')) {
-          //List<String> objects = event.split(' ');
-          //String deviceId = objects.elementAt(1);
-          // later on change to what the actual parameter name will be
-          //final userId = _auth.getCurrentUserId();
-          //if (!await checkUserExistsWithDevice('1234457', userId)) {
-          // just for simpler tests
-          //addEvent(BTAuthState.bTNotAuthenticated(
-          //reason: BTNotAuthenticatedReason.DeviceDoesNotExist));
-          //}
-          //else{
-          _repository.deviceSerialNumber = 1234457.toString();
-          addEvent(BTAuthState.bTAuthenticated());
-          // }
-        }
-      });
+  create() => streamSubscription = _repository.characteristicValueStream
+      .listen((event) async => addEvent(event));
 
   //Future.delayed(Duration(seconds: 5), () {
   //addEvent(BTAuthState.bTAuthenticated());
@@ -50,5 +36,24 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
   dispose() {
     logger.wtf('Closing stream in BTAuthenticationBloc');
     super.dispose();
+  }
+
+  @override
+  mapEventToState(data, EventSink<BTAuthState> sink) {
+    if (data.startsWith('pass')) {
+      //List<String> objects = event.split(' ');
+      //String deviceId = objects.elementAt(1);
+      // later on change to what the actual parameter name will be
+      //final userId = _auth.getCurrentUserId();
+      //if (!await checkUserExistsWithDevice('1234457', userId)) {
+      // just for simpler tests
+      //addEvent(BTAuthState.bTNotAuthenticated(
+      //reason: BTNotAuthenticatedReason.DeviceDoesNotExist));
+      //}
+      //else{
+      sink.add(BTAuthState.bTAuthenticated());
+      _repository.deviceSerialNumber = 1234457.toString();
+      // }
+    }
   }
 }

@@ -4,7 +4,6 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
-import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -21,6 +20,7 @@ import '../persistence/localDatabase.dart';
 import '../blocs/locationBloc.dart';
 import '../blocs/navigationBloc.dart';
 import '../blocs/navigationService.dart';
+import '../blocs/mixins/parameterAware/ParameterHolder.dart';
 import '../blocs/settingsBloc.dart';
 import '../blocs/sharedPrefsService.dart';
 import '../blocs/shortStatusBloc.dart';
@@ -48,8 +48,8 @@ GetIt $initGetIt(
         get<Auth>(),
       ));
   gh.lazySingleton<DeviceBloc>(() => DeviceBloc(get<DeviceRepository>()));
-  gh.factory<DeviceParametersBloc>(
-      () => DeviceParametersBloc(get<DeviceRepository>()));
+  gh.factory<DeviceParametersBloc>(() =>
+      DeviceParametersBloc(get<DeviceRepository>(), get<ParameterHolder>()));
   gh.lazySingleton<NavigationBloc>(
       () => NavigationBloc(get<NavigationService>()));
   gh.lazySingleton<SettingsBloc>(() => SettingsBloc(get<SharedPrefsService>()));

@@ -2,29 +2,30 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 
-mixin _Disposable<T, S> {
+// state and event
+// T, S
+abstract class Bloc<T, S> {
+  // transformer
+  StreamTransformer<S, T> _transformer;
+
+  BehaviorSubject<S> _behaviourSubject$;
+
   StreamSubscription<S> streamSubscription;
 
-  BehaviorSubject<T> _publishSubject$;
+  Stream<T> get stream =>
+      _behaviourSubject$.stream.transform(
+          _transformer); // TODO: try to add Rx.merge for internal stream and externally-triggred stream
 
-  @mustCallSuper
-  dispose() {
-    streamSubscription?.cancel();
-    _publishSubject$?.close();
+  Sink<S> get _sink => _behaviourSubject$.sink;
+
+  Bloc(T initialState) {
+    this._behaviourSubject$ = BehaviorSubject<T>.seeded(initialState); // THINK OF THAAT
+    _transformer = StreamTransformer.fromHandlers(handleData: mapEventToState);
   }
-}
 
-abstract class Bloc<T, S> with _Disposable<T, S> {
-  // state and event
-  // T, S
-
-  Stream<T> get stream => _publishSubject$.stream;
-
-  Sink<T> get _sink => _publishSubject$.sink;
-
-  Bloc() {
-    this._publishSubject$ = BehaviorSubject<T>();
-  }
+  // mapper
+  mapEventToState(data, EventSink<T> sink) =>
+      sink.add(data); // default implementation. Emits same stream as the event
 
   create() {}
 
@@ -32,9 +33,15 @@ abstract class Bloc<T, S> with _Disposable<T, S> {
 
   resume() {}
 
-  Function(T) get addEvent => _sink.add;
+  Function(S) get addEvent => _sink.add;
 
   pauseSubscription() => streamSubscription?.pause();
 
   resumeSubscription() => streamSubscription?.resume();
+
+  @mustCallSuper
+  dispose() {
+    streamSubscription?.cancel();
+    _behaviourSubject$?.close();
+  }
 }

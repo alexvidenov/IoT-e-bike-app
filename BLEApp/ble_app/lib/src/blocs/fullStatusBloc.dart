@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/main.dart';
@@ -16,7 +18,8 @@ class FullStatusBloc
   FullStatusBloc(this._repository) : super();
 
   @override
-  void create() => _listenToFullStatus();
+  create() => streamSubscription =
+      _repository.characteristicValueStream.listen(addEvent);
 
   @override
   pause() {
@@ -30,15 +33,14 @@ class FullStatusBloc
     resumeSubscription();
   }
 
-  _listenToFullStatus() {
-    streamSubscription = _repository.characteristicValueStream
-        .listen((event) => // if(event.length > someArbitrary shit)
-            addEvent(_generateFullStatus(event)));
-  }
-
   @override
   dispose() {
     logger.wtf('Closing stream in Full Status Bloc');
     super.dispose();
+  }
+
+  @override
+  mapEventToState(data, EventSink<List<FullStatusDataModel>> sink) {
+    sink.add(_generateFullStatus(data));
   }
 }

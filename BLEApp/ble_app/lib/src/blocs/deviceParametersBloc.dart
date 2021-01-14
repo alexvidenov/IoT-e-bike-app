@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:collection';
 
+import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
 import 'package:ble_app/src/sealedStates/ParameterFetchState.dart';
@@ -10,8 +12,9 @@ import 'bloc.dart';
 @injectable
 class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
   final DeviceRepository _repository;
+  final ParameterHolder _parameterHolder;
 
-  DeviceParametersBloc(this._repository) : super();
+  DeviceParametersBloc(this._repository, this._parameterHolder) : super();
 
   var _parameters = SplayTreeMap<String, double>();
 
@@ -41,6 +44,7 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
           break;
         case '26':
           _parameters['26'] = value;
+          //_parameterHolder.deviceParameters = _parameters;
           ParameterFetchState.fetched(
               parameters: DeviceParametersModel(
                   cellCount: _parameters['0']
@@ -69,5 +73,10 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
             .then((_) => Future.delayed(Duration(milliseconds: 80), () {
                   _repository.writeToCharacteristic('R26\r');
                 })));
+  }
+
+  @override
+  mapEventToState(data, EventSink<ParameterFetchState> sink) {
+
   }
 }

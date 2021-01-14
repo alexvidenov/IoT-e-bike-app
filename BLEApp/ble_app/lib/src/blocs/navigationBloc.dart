@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/navigationService.dart';
 import 'package:ble_app/src/main.dart';
@@ -26,4 +28,8 @@ class NavigationBloc extends Bloc<CurrentPage, CurrentPage> {
     super.dispose();
     logger.wtf('Closing stream in NavigationBloc');
   }
+
+  @override
+  mapEventToState(CurrentPage data, EventSink<CurrentPage> sink) =>
+      sink.add(data);
 }

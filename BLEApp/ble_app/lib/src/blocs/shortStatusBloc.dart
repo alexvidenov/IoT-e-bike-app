@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
@@ -40,29 +41,7 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
   @override
   create() {
     _initData();
-    streamSubscription = _repository.characteristicValueStream.listen((event) {
-      logger.wtf('SHORT STATUS EVENT');
-      ShortStatusModel _model = _generateShortStatus(
-          event); // TODO: add method checking for abnormalities.
-      addEvent(ShortStatusState(_model));
-      //addEvent(ShortStatusState.error(, errorState))
-      _uploadTimer++;
-      if (_uploadTimer == 10) {
-        // TODO: extract data logging process in a separate manager
-        _appData.addCurrentRecord({
-          'timeStamp': DateTime.now().toString(),
-          'stats': {
-            'voltage': _model.totalVoltage,
-            'temp': _model.temperature,
-            'currentCharge': _model.currentCharge,
-            'currentDischarge': _model.currentDischarge,
-          }
-        });
-        _uploadTimer = 0;
-        _settingsBloc
-            .setUserData(jsonEncode(_appData.toJson())); // list of userData
-      }
-    });
+    streamSubscription = _repository.characteristicValueStream.listen(addEvent);
   }
 
   _initData() {
@@ -79,5 +58,29 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
   dispose() {
     logger.wtf('Closing stream in Short Status Bloc');
     super.dispose();
+  }
+
+  @override
+  mapEventToState(data, EventSink<ShortStatusState> sink) {
+    ShortStatusModel _model = _generateShortStatus(
+        data); // TODO: add method checking for abnormalities.
+    // parse
+    sink.add(ShortStatusState(_model));
+    _uploadTimer++;
+    if (_uploadTimer == 10) {
+      // TODO: extract data logging process in a separate manager
+      _appData.addCurrentRecord({
+        'timeStamp': DateTime.now().toString(),
+        'stats': {
+          'voltage': _model.totalVoltage,
+          'temp': _model.temperature,
+          'currentCharge': _model.currentCharge,
+          'currentDischarge': _model.currentDischarge,
+        }
+      });
+      _uploadTimer = 0;
+      _settingsBloc
+          .setUserData(jsonEncode(_appData.toJson())); // list of userData
+    }
   }
 }
