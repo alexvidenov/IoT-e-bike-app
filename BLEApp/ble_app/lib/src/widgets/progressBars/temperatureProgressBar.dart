@@ -1,4 +1,5 @@
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/sealedStates/shortStatusState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
@@ -9,16 +10,28 @@ class TemperatureProgressBar extends StatelessWidget {
   const TemperatureProgressBar({@required this.bloc});
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<ShortStatusModel>(
+  Widget build(BuildContext context) => StreamBuilder<ShortStatusState>(
       stream: bloc.stream,
-      initialData: ShortStatusModel.empty(),
+      initialData: ShortStatusState(ShortStatusModel.empty()),
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active) {
-          // PSEUDO CODE
-          // snapshot.whenPartial()
-          // depending on the whenpartial, the progress bar will change its color
-          // it won't know when to change it, its merely UI element.
-          final temperature = shortStatus.data.temperature;
+          double temperature;
+          Color color;
+          shortStatus.data.when((normal) => temperature = normal.temperature,
+              error: (errorState, model) {
+            switch (errorState) {
+              case ErrorState.HighTemp:
+                color = Colors.red;
+                break;
+              case ErrorState.LowTemp:
+                color = Colors.lightBlueAccent;
+                break;
+              default:
+                color = Colors.green;
+                break;
+            }
+            temperature = model.temperature;
+          });
           return Container(
             height: 180,
             width: 20,
@@ -36,9 +49,7 @@ class TemperatureProgressBar extends StatelessWidget {
               direction: Axis.vertical,
               verticalDirection: VerticalDirection.up,
               backgroundColor: Colors.black87,
-              progressColor: Colors.greenAccent,
-              changeColorValue: 1500, // These two will not be needed if using state approaach
-              changeProgressColor: Colors.red,
+              progressColor: color,
             ),
           );
         } else {

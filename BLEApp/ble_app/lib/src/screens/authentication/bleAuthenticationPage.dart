@@ -30,18 +30,26 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
 
   bool _isAuthenticated = false;
 
+  bool _connected = false;
+
   @override
   didChangeDependencies() {
     super.didChangeDependencies();
     widget._deviceBloc.init();
     widget._authBloc.create();
     widget._deviceBloc.connect().then((_) => _init());
+    _handleBLEError();
   }
 
   _init() {
     _listenToAuthBloc();
     _listenToConnectBloc();
   }
+
+  _handleBLEError() => Future.delayed(Duration(seconds: 5), () {
+        // TODO: extract in some handlers object
+        if (!_connected) widget._deviceBloc.connect();
+      });
 
   @override
   void dispose() {
@@ -54,6 +62,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   _listenToConnectBloc() => _streamSubscriptionState =
           widget._deviceBloc.connectionState.listen((state) {
         if (state == PeripheralConnectionState.connected) {
+          _connected = true;
           // TODO: trigger a timer here => if it doesn't connect for 10 seconds, call connect again.
           if (widget._settingsBloc.isPasswordRemembered() == true) {
             widget._deviceBloc.deviceReady.listen((event) {
@@ -80,7 +89,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
                 message: reason.reason.toString(), action: 'TRY AGAIN'));
       });
 
-  // this retry will be in the bloc
+// this retry will be in the bloc
   _retry() => Future.delayed(Duration(seconds: 4), () {
         if (_isAuthenticated == false)
           _presentDialog(context,

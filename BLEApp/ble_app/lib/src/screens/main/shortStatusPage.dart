@@ -7,8 +7,7 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
-class DeviceScreen extends RouteAwareWidget<ShortStatusBloc>
-    with Navigation {
+class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
   DeviceScreen(ShortStatusBloc shortStatusBloc) : super(bloc: shortStatusBloc);
 
   @override
@@ -22,6 +21,25 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc>
   @override
   onResume() {
     super.onResume();
+    var context = navigationBloc.navigatorKey.currentContext;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              title: Text('HM'),
+              content: Text('LMAO'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('LMAO'),
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: true).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    });
     navigationBloc.addEvent(CurrentPage.Short);
   }
 }

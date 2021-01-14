@@ -2,6 +2,7 @@ import 'package:ble_app/src/persistence/dao/dao.dart';
 import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:floor/floor.dart';
 
+//@TypeConverters(value)
 @dao
 abstract class DeviceDao extends Dao<Device> {
   @Query("SELECT * FROM devices")

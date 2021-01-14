@@ -1,11 +1,22 @@
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
-import 'package:super_enum/super_enum.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-@superEnum
-enum _ShortStatusState {
-  @Data(fields: [DataField<ShortStatusModel>('shortStatus')])
-  Overdischarge,
+part 'shortStatusState.freezed.dart';
 
-  @Data(fields: [DataField<ShortStatusModel>('shortStatus')])
-  Overcharge
+enum ErrorState {
+  HighVoltage,
+  Overcharge,
+  OverDischarge,
+  HighTemp,
+  LowTemp,
+}
+
+// TODO: Generify
+@freezed
+abstract class ShortStatusState with _$ShortStatusState {
+  const factory ShortStatusState(ShortStatusModel model) = Normal;
+
+  const factory ShortStatusState.error(
+  ErrorState errorState, [ShortStatusModel model]) = Error;
+
 }

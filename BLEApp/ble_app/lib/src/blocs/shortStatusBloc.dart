@@ -8,6 +8,7 @@ import 'package:ble_app/src/model/DeviceRepository.dart';
 
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
+import 'package:ble_app/src/sealedStates/shortStatusState.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:injectable/injectable.dart';
 
@@ -18,7 +19,7 @@ part '../extensions/ShortStatusParse.dart';
 abstract class Bloc2<T, S> extends Bloc<T, S> implements ParameterAwareBloc {}
 
 @injectable
-class ShortStatusBloc extends Bloc2<ShortStatusModel, String>
+class ShortStatusBloc extends Bloc2<ShortStatusState, String>
     with ParameterAware {
   final DeviceRepository _repository;
   final SettingsBloc _settingsBloc;
@@ -47,8 +48,10 @@ class ShortStatusBloc extends Bloc2<ShortStatusModel, String>
     _initData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       logger.wtf('SHORT STATUS EVENT');
-      ShortStatusModel _model = _generateShortStatus(event);
-      addEvent(_model);
+      ShortStatusModel _model = _generateShortStatus(
+          event); // TODO: add method checking for abnormalities.
+      addEvent(ShortStatusState(_model));
+      //addEvent(ShortStatusState.error(, errorState))
       _uploadTimer++;
       if (_uploadTimer == 10) {
         // TODO: extract data logging process in a separate manager

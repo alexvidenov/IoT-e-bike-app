@@ -1,3 +1,4 @@
+import 'package:ble_app/src/sealedStates/shortStatusState.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
@@ -10,13 +11,32 @@ class CurrentRow extends StatelessWidget {
   const CurrentRow({@required this.bloc});
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<ShortStatusModel>(
+  Widget build(BuildContext context) => StreamBuilder<ShortStatusState>(
       stream: bloc.stream,
-      initialData: ShortStatusModel.empty(),
+      initialData: ShortStatusState(ShortStatusModel.empty()),
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active) {
-          final currentCharge = shortStatus.data.currentCharge;
-          final currentDischarge = shortStatus.data.currentDischarge;
+          var currentCharge;
+          Color CCColor = Colors.lightBlueAccent;
+          var currentDischarge;
+          Color DCColor = Colors.lightBlueAccent;
+          shortStatus.data.when((model) {
+            currentCharge = model.currentCharge;
+            currentDischarge = model.currentDischarge;
+          }, error: (error, model) {
+            switch (error) {
+              case ErrorState.Overcharge:
+                CCColor = Colors.red;
+                break;
+              case ErrorState.OverDischarge:
+                DCColor = Colors.red;
+                break;
+              default:
+                break;
+            }
+            currentCharge = model.currentCharge;
+            currentDischarge = model.currentDischarge;
+          });
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -42,10 +62,8 @@ class CurrentRow extends StatelessWidget {
                             .toInt(),
                         size: 50,
                         maxValue: 27,
-                        changeColorValue: 20,
-                        changeProgressColor: Colors.redAccent,
                         backgroundColor: Colors.black,
-                        progressColor: Colors.lightBlueAccent,
+                        progressColor: CCColor,
                         animatedDuration: const Duration(milliseconds: 700),
                         direction: Axis.horizontal,
                       ),
@@ -81,12 +99,9 @@ class CurrentRow extends StatelessWidget {
                     child: FAProgressBar(
                       currentValue: currentDischarge //currentDischarge
                           .toInt(),
-                      // fix that as well currentDischarge.toInt()
                       maxValue: 25,
-                      changeColorValue: 20,
-                      changeProgressColor: Colors.redAccent,
                       backgroundColor: Colors.black,
-                      progressColor: Colors.lightBlueAccent,
+                      progressColor: DCColor,
                       animatedDuration: const Duration(milliseconds: 700),
                       direction: Axis.horizontal,
                     ),

@@ -1,21 +1,32 @@
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/sealedStates/shortStatusState.dart';
+import 'package:ble_app/src/sealedStates/shortStatusState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 
+// abstract these please
 class VoltageProgressBar extends StatelessWidget {
   final ShortStatusBloc bloc;
 
   const VoltageProgressBar({@required this.bloc});
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<ShortStatusModel>(
+  Widget build(BuildContext context) => StreamBuilder<ShortStatusState>(
       stream: bloc.stream,
-      initialData: ShortStatusModel.empty(),
+      initialData: ShortStatusState(ShortStatusModel.empty()),
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active) {
-          final voltage = shortStatus.data.totalVoltage;
+          double voltage;
+          Color color = Colors.lightBlueAccent;
+          shortStatus.data.when((model) => voltage = model.totalVoltage,
+              error: (errorState, model) {
+            voltage = model.totalVoltage;
+            if (errorState == ErrorState.HighVoltage) {
+              color = Colors.redAccent;
+            }
+          });
           return Container(
             height: 180,
             width: 20,
@@ -28,14 +39,13 @@ class VoltageProgressBar extends StatelessWidget {
                 ]),
             child: FAProgressBar(
               currentValue: voltage.toInt(),
-              maxValue: 2000, // bloc.getParameters().maxRecoveryVoltage.toInt(),
+              maxValue: 2000,
+              // bloc.getParameters().maxRecoveryVoltage.toInt(),
               animatedDuration: const Duration(milliseconds: 300),
               direction: Axis.vertical,
               verticalDirection: VerticalDirection.up,
               backgroundColor: Colors.black87,
-              progressColor: Colors.blue,
-              changeColorValue: 1500,
-              changeProgressColor: Colors.red,
+              progressColor: color,
             ),
           );
         } else
