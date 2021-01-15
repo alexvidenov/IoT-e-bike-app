@@ -1,14 +1,15 @@
-import 'package:super_enum/super_enum.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'BTAuthState.super.dart';
+part 'BTAuthState.freezed.dart';
 
 enum BTNotAuthenticatedReason { WrongPassword, DeviceIsNotRegistered }
 
-@superEnum
-enum _BTAuthState {
-  @object
-  BTAuthenticated,
+@freezed
+abstract class BTAuthState with _$BTAuthState {
+  const factory BTAuthState.btAuthenticated() = BTAuthenticated;
 
-  @Data(fields: [DataField<BTNotAuthenticatedReason>('reason')])
-  BTNotAuthenticated
+  const factory BTAuthState.notBTAuthenticated(
+      [BTNotAuthenticatedReason reason]) = BTNotAuthenticated;
+
+  const factory BTAuthState.authenticating() = Authenticating;
 }

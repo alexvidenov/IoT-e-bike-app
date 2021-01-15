@@ -33,12 +33,17 @@ class FullStatusBloc
   _listenToFullStatus() {
     streamSubscription = _repository.characteristicValueStream
         .listen((event) => // if(event.length > someArbitrary shit)
-            addEvent(_generateFullStatus(event)));
+            addState(event));
   }
 
   @override
   dispose() {
     logger.wtf('Closing stream in Full Status Bloc');
     super.dispose();
+  }
+
+  @override
+  List<FullStatusDataModel> mapEventToState(String event) {
+    return _generateFullStatus(event);
   }
 }

@@ -53,5 +53,10 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
     logger.wtf('Closing stream in Location Bloc');
     super.dispose();
   }
+
+  @override
+  LocationData mapEventToState(LocationData event) {
+    return event;
+  }
 }
 

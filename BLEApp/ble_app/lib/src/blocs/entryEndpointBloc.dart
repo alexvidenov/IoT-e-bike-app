@@ -33,4 +33,10 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint>{
 
   @override
   pause() => _devicePickedSubscription.cancel();
+
+  @override
+  Endpoint mapEventToState(Endpoint event) {
+    // TODO: implement mapEventToState
+    throw UnimplementedError();
+  }
 }

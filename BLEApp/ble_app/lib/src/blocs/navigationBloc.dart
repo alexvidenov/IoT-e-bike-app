@@ -26,4 +26,9 @@ class NavigationBloc extends Bloc<CurrentPage, CurrentPage> {
     super.dispose();
     logger.wtf('Closing stream in NavigationBloc');
   }
+
+  @override
+  CurrentPage mapEventToState(CurrentPage event) {
+    return event;
+  }
 }

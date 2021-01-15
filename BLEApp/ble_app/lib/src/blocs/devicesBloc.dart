@@ -65,4 +65,9 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
 
   @override
   resume() => init();
+
+  @override
+  BleDevice mapEventToState(BleDevice event) {
+    return event;
+  }
 }
