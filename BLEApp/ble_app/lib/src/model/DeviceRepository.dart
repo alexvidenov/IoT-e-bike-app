@@ -93,6 +93,8 @@ class DeviceRepository {
   resumeTimer(bool isShort) =>
       isShort ? periodicShortStatus() : periodicFullStatus();
 
+  resume() => periodicShortStatus();
+
   Future<void> discoverServicesAndStartMonitoring() async => await _discover()
       .then((c) => this._characteristic = c)
       .then((c) => _listenToCharacteristic());

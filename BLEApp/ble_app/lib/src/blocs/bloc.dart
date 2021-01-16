@@ -1,4 +1,3 @@
-import 'package:ble_app/src/events/blocEvent.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
@@ -15,8 +14,8 @@ abstract class Bloc<T, S> {
 
   Sink<T> get _sink => _publishSubject$.sink;
 
-  Bloc({T initialState}) {
-    this._publishSubject$ = BehaviorSubject<T>.seeded(initialState); // seeds null LMAO.
+  Bloc() {
+    this._publishSubject$ = BehaviorSubject<T>();
   }
 
   create() {}
@@ -26,10 +25,6 @@ abstract class Bloc<T, S> {
   resume() {}
 
   Function(T) get addEvent => _sink.add;
-
-  addState(S data) => _sink.add(mapEventToState(data));
-
-  T mapEventToState(S event);
 
   pauseSubscription() => streamSubscription?.pause();
 

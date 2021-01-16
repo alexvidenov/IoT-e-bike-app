@@ -23,7 +23,37 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
     addEvent(ParameterFetchState.fetching());
     queryParameters();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
-      addState(event);
+      print('PARAMETER EVENT: ' + event);
+      var buffer = StringBuffer();
+      for (var i = 3; i < event.length; i++) {
+        buffer.write('${event[i]}');
+      }
+      final value = double.parse(buffer.toString());
+      print('Parameter: ' + value.toString());
+
+      String command = '${event[1]}' + '${event[2]}';
+      _parameters[command] = value;
+
+      if (command == '26')
+        addEvent(ParameterFetchState.fetched(
+            parameters: DeviceParametersModel(
+                cellCount: _parameters['00'].toInt(),
+                maxCellVoltage: _parameters['01'],
+                maxRecoveryVoltage: _parameters['02'],
+                balanceCellVoltage: _parameters['03'],
+                minCellVoltage: _parameters['04'],
+                minCellRecoveryVoltage: _parameters['05'],
+                ultraLowCellVoltage: _parameters['06'],
+                maxTimeLimitedDischargeCurrent: _parameters['12'],
+                maxCutoffDischargeCurrent: _parameters['13'],
+                maxCurrentTimeLimitPeriod: _parameters['14'].toInt(),
+                maxCutoffChargeCurrent: _parameters['15'],
+                motoHoursCounterCurrentThreshold: _parameters['16'].toInt(),
+                currentCutOffTimerPeriod: _parameters['17'].toInt(),
+                maxCutoffTemperature: _parameters['23'].toInt(),
+                maxTemperatureRecovery: _parameters['24'].toInt(),
+                minTemperatureRecovery: _parameters['25'].toInt(),
+                minCutoffTemperature: _parameters['26'].toInt())));
     });
   }
 
@@ -51,39 +81,4 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
 
   setParameters(DeviceParametersModel parameters) =>
       _holder.deviceParameters = parameters;
-
-  @override
-  ParameterFetchState mapEventToState(String event) {
-    print('PARAMETER EVENT: ' + event);
-    var buffer = StringBuffer();
-    for (var i = 3; i < event.length; i++) {
-      buffer.write('${event[i]}');
-    }
-    final value = double.parse(buffer.toString());
-    print('Parameter: ' + value.toString());
-
-    String command = '${event[1]}' + '${event[2]}';
-    _parameters[command] = value;
-
-    if (command == '26')
-      addEvent(ParameterFetchState.fetched(
-          parameters: DeviceParametersModel(
-              cellCount: _parameters['00'].toInt(),
-              maxCellVoltage: _parameters['01'],
-              maxRecoveryVoltage: _parameters['02'],
-              balanceCellVoltage: _parameters['03'],
-              minCellVoltage: _parameters['04'],
-              minCellRecoveryVoltage: _parameters['05'],
-              ultraLowCellVoltage: _parameters['06'],
-              maxTimeLimitedDischargeCurrent: _parameters['12'],
-              maxCutoffDischargeCurrent: _parameters['13'],
-              maxCurrentTimeLimitPeriod: _parameters['14'].toInt(),
-              maxCutoffChargeCurrent: _parameters['15'],
-              motoHoursCounterCurrentThreshold: _parameters['16'].toInt(),
-              currentCutOffTimerPeriod: _parameters['17'].toInt(),
-              maxCutoffTemperature: _parameters['23'].toInt(),
-              maxTemperatureRecovery: _parameters['24'].toInt(),
-              minTemperatureRecovery: _parameters['25'].toInt(),
-              minCutoffTemperature: _parameters['26'].toInt())));
-  }
 }

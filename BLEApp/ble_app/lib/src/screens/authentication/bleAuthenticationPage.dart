@@ -52,7 +52,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
       });
 
   @override
-  dispose() {
+  void dispose() {
     super.dispose();
     widget._deviceBloc.dispose();
     _streamSubscriptionState.cancel();
@@ -79,13 +79,13 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   _listenToAuthBloc() =>
       _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
         event.when(
-            btAuthenticated: () {
+            bTAuthenticated: () {
               _isAuthenticated = true;
               Navigator.of(context).pushReplacementNamed('/home');
               //Navigator.of(context).pushReplacementNamed('/fetchParameters');
             },
-            notBTAuthenticated: (reason) => _presentDialog(context,
-                message: reason.toString(), action: 'TRY AGAIN'));
+            bTNotAuthenticated: (reason) => _presentDialog(context,
+                message: reason.reason.toString(), action: 'TRY AGAIN'));
       });
 
 // this retry will be in the bloc

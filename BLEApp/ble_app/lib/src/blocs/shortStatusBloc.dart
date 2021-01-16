@@ -42,7 +42,26 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
     _initData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       logger.wtf('SHORT STATUS EVENT');
-      addState(event);
+      ShortStatusModel _model = _generateShortStatus(
+          event); // TODO: add method checking for abnormalities.
+      addEvent(ShortStatusState(_model));
+      //addEvent(ShortStatusState.error(, errorState))
+      _uploadTimer++;
+      if (_uploadTimer == 10) {
+        // TODO: extract data logging process in a separate manager
+        _appData.addCurrentRecord({
+          'timeStamp': DateTime.now().toString(),
+          'stats': {
+            'voltage': _model.totalVoltage,
+            'temp': _model.temperature,
+            'currentCharge': _model.currentCharge,
+            'currentDischarge': _model.currentDischarge,
+          }
+        });
+        _uploadTimer = 0;
+        _settingsBloc
+            .setUserData(jsonEncode(_appData.toJson())); // list of userData
+      }
     });
   }
 
@@ -60,28 +79,5 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
   dispose() {
     logger.wtf('Closing stream in Short Status Bloc');
     super.dispose();
-  }
-
-  @override
-  ShortStatusState mapEventToState(String event) {
-    ShortStatusModel _model = _generateShortStatus(
-        event); // TODO: add method checking for abnormalities.
-    _uploadTimer++;
-    if (_uploadTimer == 10) {
-      // TODO: extract data logging process in a separate manager
-      _appData.addCurrentRecord({
-        'timeStamp': DateTime.now().toString(),
-        'stats': {
-          'voltage': _model.totalVoltage,
-          'temp': _model.temperature,
-          'currentCharge': _model.currentCharge,
-          'currentDischarge': _model.currentDischarge,
-        }
-      });
-      _uploadTimer = 0;
-      _settingsBloc
-          .setUserData(jsonEncode(_appData.toJson())); // list of userData
-    }
-    return ShortStatusState(_model);
   }
 }

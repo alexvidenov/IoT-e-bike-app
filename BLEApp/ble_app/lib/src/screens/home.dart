@@ -1,5 +1,6 @@
 import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/listeners/disconnectedListener.dart';
+import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/services/Auth.dart';
@@ -123,6 +124,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                         onPressed: () {
                           widget._deviceBloc.removeListener();
                           widget._prefsBloc.clearPrefs();
+                          $<DeviceRepository>().cancel(); // fix that of course
                           widget._deviceBloc.disconnect().then((_) =>
                               Navigator.of(context).pushNamedAndRemoveUntil(
                                   '/devices', (_) => false));
@@ -172,7 +174,8 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                     )
                   ],
                 )),
-            drawer: NavigationDrawer($(), $(), $<Auth>().signOut),
+            drawer: NavigationDrawer($(), $(), $<Auth>().signOut,
+                $<DeviceRepository>().cancel, $<DeviceRepository>().resume),
             body: Navigator(
               initialRoute: '/',
               key: widget.navigationBloc.navigatorKey,
