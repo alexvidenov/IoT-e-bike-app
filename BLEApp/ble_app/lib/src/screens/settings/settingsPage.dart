@@ -74,7 +74,7 @@ class ConnectionSettingsScreen extends StatelessWidget {
                 value: ConnectionSettings.AutoConnect,
                 title: 'Auto connect',
                 onChanged: (_) => _settingsBloc
-                    .setAutoconnect(_deviceRepository.pickedDevice.value.id),
+                    .setAutoConnect(_deviceRepository.pickedDevice.value.id),
                 secondary: Icon(Icons.bluetooth_connected)),
             _generateListTileStreamBuilder(
               value: ConnectionSettings.AutoPassword,

@@ -32,7 +32,7 @@ class SettingsBloc {
     setConnectionSetting(ConnectionSettings.AutoPassword);
   }
 
-  setAutoconnect(String deviceId) {
+  setAutoConnect(String deviceId) {
     _saveDevice(deviceId);
     removePassword();
     setConnectionSetting(ConnectionSettings.AutoConnect);

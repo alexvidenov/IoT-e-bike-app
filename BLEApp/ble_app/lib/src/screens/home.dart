@@ -14,8 +14,9 @@ import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
+  final DeviceRepository _repository;
 
-  HomeScreen(this._prefsBloc, this._deviceBloc);
+  HomeScreen(this._prefsBloc, this._deviceBloc, this._repository);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -124,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                         onPressed: () {
                           widget._deviceBloc.removeListener();
                           widget._prefsBloc.clearPrefs();
-                          $<DeviceRepository>().cancel(); // fix that of course
+                          widget._repository.cancel(); // fix that of course
                           widget._deviceBloc.disconnect().then((_) =>
                               Navigator.of(context).pushNamedAndRemoveUntil(
                                   '/devices', (_) => false));
@@ -175,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                   ],
                 )),
             drawer: NavigationDrawer($(), $(), $<Auth>().signOut,
-                $<DeviceRepository>().cancel, $<DeviceRepository>().resume),
+                widget._repository.cancel, _resumeSession),
             body: Navigator(
               initialRoute: '/',
               key: widget.navigationBloc.navigatorKey,
@@ -184,6 +185,12 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
             ),
           ),
         ));
+  }
+
+  _resumeSession() {
+    widget._repository.writeToCharacteristic(
+        widget._prefsBloc.getPassword() ?? widget._prefsBloc.password.value);
+    widget._repository.resume();
   }
 
   @override

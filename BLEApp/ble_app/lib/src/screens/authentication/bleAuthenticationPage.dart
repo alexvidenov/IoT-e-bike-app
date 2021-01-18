@@ -46,7 +46,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
     _listenToConnectBloc();
   }
 
-  _handleBLEError() => Future.delayed(Duration(seconds: 3), () {
+  _handleBLEError() => Future.delayed(Duration(seconds: 5), () {
         // TODO: extract in some handlers object
         if (!_connected) widget._deviceBloc.connect();
       });
@@ -81,8 +81,8 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
         event.when(
             bTAuthenticated: () {
               _isAuthenticated = true;
-              //Navigator.of(context).pushReplacementNamed('/home');
-              Navigator.of(context).pushReplacementNamed('/fetchParameters');
+              Navigator.of(context).pushReplacementNamed('/home');
+              //Navigator.of(context).pushReplacementNamed('/fetchParameters');
             },
             bTNotAuthenticated: (reason) => _presentDialog(context,
                 message: reason.reason.toString(), action: 'TRY AGAIN'));

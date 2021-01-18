@@ -59,11 +59,10 @@ class DeviceBloc {
               emitCurrentValue: true, completeOnDisconnect: true)
           .listen((connectionState) {
         _connectionEvent.add(connectionState);
-        if (connectionState == PeripheralConnectionState.connected) {
+        if (connectionState == PeripheralConnectionState.connected)
           _disconnectedListener?.onReconnected();
-        } else if (connectionState == PeripheralConnectionState.disconnected) {
+        else if (connectionState == PeripheralConnectionState.disconnected)
           _disconnectedListener?.onDisconnected();
-        }
       }));
 
   dispose() async {

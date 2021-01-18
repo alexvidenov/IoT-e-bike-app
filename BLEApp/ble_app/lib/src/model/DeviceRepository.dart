@@ -9,6 +9,8 @@ import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
+enum CurrentStatus { ShortStatus, FullStatus }
+
 @lazySingleton
 class DeviceRepository {
   static BleDevice _bleDevice;
@@ -18,6 +20,8 @@ class DeviceRepository {
 
   Characteristic _characteristic;
   StreamSubscription _characteristicSubscription;
+
+  CurrentStatus _currentStatus;
 
   String _value = ""; // will be updated every packet
   String _curValue = ""; // will be appended to
@@ -84,12 +88,14 @@ class DeviceRepository {
     _timer?.cancel();
     _timer =
         Timer.periodic(Duration(milliseconds: 300), (_) => _writeData('N\r'));
+    _currentStatus = CurrentStatus.ShortStatus;
   }
 
   periodicFullStatus() {
     _timer?.cancel();
     _timer =
         Timer.periodic(Duration(milliseconds: 400), (_) => _writeData('F\r'));
+    _currentStatus = CurrentStatus.FullStatus;
   }
 
   cancel() => _timer?.cancel();
@@ -97,7 +103,16 @@ class DeviceRepository {
   resumeTimer(bool isShort) =>
       isShort ? periodicShortStatus() : periodicFullStatus();
 
-  resume() => periodicShortStatus();
+  resume() {
+    switch (_currentStatus) {
+      case CurrentStatus.ShortStatus:
+        periodicShortStatus();
+        break;
+      case CurrentStatus.FullStatus:
+        periodicFullStatus();
+        break;
+    }
+  }
 
   Future<void> discoverServicesAndStartMonitoring() async => await _discover()
       .then((c) => this._characteristic = c)

@@ -68,5 +68,4 @@ class ParameterFetchScreen extends RouteAwareWidget<DeviceParametersBloc> {
           },
         ),
       ));
-
 }

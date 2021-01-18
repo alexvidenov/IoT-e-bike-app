@@ -38,11 +38,11 @@ class _CardParameter extends StatelessWidget {
 }
 
 class BatterySettingsScreen extends StatefulWidget {
-  final ParameterHolder _holder;
+  final ParameterHolder
+      _holder; //  change it to a stream from some bloc (the parameter change)
   final SettingsBloc _settingsBloc;
   final BluetoothAuthBloc _authBloc;
-  final DeviceRepository
-      _repository; // prolly change is to stream from some bloc (the parameter change)
+  final DeviceRepository _repository;
 
   const BatterySettingsScreen(
       this._holder, this._repository, this._settingsBloc, this._authBloc);
@@ -56,7 +56,8 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
 
   bool _isAuthenticated = false;
 
-  _retry() => Future.delayed(Duration(seconds: 4), () {
+  _retry() => Future.delayed(Duration(seconds: 2), () {
+        // see the time
         if (_isAuthenticated == false) _resetSession();
       });
 
@@ -69,11 +70,19 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
         event.when(
             bTAuthenticated: () {
               _isAuthenticated = true;
-              widget._repository
-                  .writeToCharacteristic(_writeController.value.text + '\r');
+              widget._repository.writeToCharacteristic(
+                  _writeController.value.text +
+                      '\r'); // will send only when authenticated
             },
             bTNotAuthenticated: (reason) => {});
       });
+
+  @override
+  initState() {
+    super.initState();
+    widget._authBloc.create();
+    _listenToAuthBloc();
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -230,7 +239,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
             child: Text(action),
             onPressed: () {
               _resetSession();
-              _retry(); // the same for that one
+              _retry();
               Navigator.of(context).pop();
             },
           ),

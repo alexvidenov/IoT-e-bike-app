@@ -35,12 +35,6 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
     });
   }
 
-  @override
-  pause() => pauseSubscription();
-
-  @override
-  resume() => resumeSubscription();
-
   queryParameters() async {
     for (var i = 0; i < 7; i++) await _querySingleParam('R0$i\r');
     for (var i = 12; i < 18; i++) await _querySingleParam('R$i\r');
