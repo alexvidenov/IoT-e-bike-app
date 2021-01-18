@@ -20,9 +20,7 @@ abstract class LocalDatabase extends FloorDatabase {
 
   @preResolve
   @factoryMethod
-  static Future<LocalDatabase> getInstance() async {
-    return await $FloorLocalDatabase
-        .databaseBuilder('ble_app_local_database.db')
-        .build();
-  }
+  static Future<LocalDatabase> getInstance() async => await $FloorLocalDatabase
+      .databaseBuilder('ble_app_local_database.db')
+      .build();
 }

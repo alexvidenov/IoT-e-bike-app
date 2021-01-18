@@ -12,9 +12,12 @@ class FirestoreDatabase {
   Future<void> updateUserData() async =>
       await _users.doc(uid).set({'id': this.uid});
 
-  Future<void> updateDeviceData({@required String deviceId}) async =>
-      await _users.doc(uid).collection('devices').doc(deviceId).set({
-        'id': deviceId
+  Future<void> updateDeviceData(
+          {@required String deviceId,
+          @required Map<String, dynamic> parameters}) =>
+      _users.doc(uid).collection('devices').doc(deviceId).set({
+        'id': deviceId,
+        'parameters': parameters
       }); // later on populate with the real device parameters
 
 }

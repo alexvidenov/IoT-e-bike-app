@@ -19,18 +19,16 @@ abstract class Bloc<T, S> {
   }
 
   create() {}
-
-  @mustCallSuper
-  pause() => pauseSubscription();
-
-  @mustCallSuper
-  resume() => resumeSubscription();
+  
+  pause() => _pauseSubscription();
+  
+  resume() => _resumeSubscription();
 
   Function(T) get addEvent => _sink.add;
 
-  pauseSubscription() => streamSubscription?.pause();
+  _pauseSubscription() => streamSubscription?.pause();
 
-  resumeSubscription() => streamSubscription?.resume();
+  _resumeSubscription() => streamSubscription?.resume();
 
   @mustCallSuper
   dispose() {

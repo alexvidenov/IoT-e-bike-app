@@ -1,9 +1,12 @@
 import 'dart:collection';
 
 import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
 import 'package:ble_app/src/sealedStates/ParameterFetchState.dart';
+import 'package:ble_app/src/services/Auth.dart';
+import 'package:ble_app/src/services/Database.dart';
 import 'package:injectable/injectable.dart';
 
 import 'bloc.dart';
@@ -15,7 +18,7 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
 
   DeviceParametersBloc(this._repository, this._holder) : super();
 
-  var _parameters = SplayTreeMap<String, double>();
+  final _parameters = SplayTreeMap<String, double>();
 
   @override
   create() {
@@ -30,7 +33,6 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
       }
       final value = double.parse(buffer.toString());
       print('Parameter: ' + value.toString());
-
       _parameters['${event[1]}' + '${event[2]}'] = value;
     });
   }
@@ -39,8 +41,10 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
     for (var i = 0; i < 7; i++) await _querySingleParam('R0$i\r');
     for (var i = 12; i < 18; i++) await _querySingleParam('R$i\r');
     for (var i = 23; i < 27; i++) await _querySingleParam('R$i\r');
-    Future.delayed(Duration(milliseconds: 80), () {
+    Future.delayed(Duration(milliseconds: 100), () {
       if (_parameters.keys.length == 17) {
+        FirestoreDatabase(uid: $<Auth>().getCurrentUserId()).updateDeviceData(
+            deviceId: _repository.deviceId, parameters: _parameters);
         addEvent(ParameterFetchState.fetched(
             parameters: DeviceParametersModel(
                 cellCount: _parameters['00'].toInt(),
@@ -71,5 +75,5 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
       () => _repository.writeToCharacteristic(command));
 
   setParameters(DeviceParametersModel parameters) =>
-      _holder.deviceParameters = parameters;
+      _holder.addEvent(parameters);
 }

@@ -34,7 +34,7 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
   @override
   resume() {
     super.resume();
-    //_repository.writeToCharacteristic('') // the password
+    //_repository.writeToCharacteristic('') // the password.
     _repository.resumeTimer(true);
   }
 

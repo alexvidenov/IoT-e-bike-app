@@ -2,6 +2,7 @@ import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
 import 'package:flutter/material.dart';
 
 class _CardParameter extends StatelessWidget {
@@ -57,7 +58,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
   bool _isAuthenticated = false;
 
   _retry() => Future.delayed(Duration(seconds: 2), () {
-        // see the time
+        // see the time if corrections are needed
         if (_isAuthenticated == false) _resetSession();
       });
 
@@ -71,8 +72,8 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
             bTAuthenticated: () {
               _isAuthenticated = true;
               widget._repository.writeToCharacteristic(
-                  _writeController.value.text +
-                      '\r'); // will send only when authenticated
+                  _writeController.value.text + '\r'); // will sen
+              // Future.delayed(3 seconds) => isAuthenticated = false needs to be reset// d only when authenticated
             },
             bTNotAuthenticated: (reason) => {});
       });
@@ -92,141 +93,142 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
         backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _CardParameter(
-                0,
-                'Cell Num',
-                widget._holder.deviceParameters?.cellCount ?? 4,
-                'Number of active cells',
-                '',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                1,
-                'V Max',
-                widget._holder.deviceParameters?.maxCellVoltage ?? 4.28,
-                'Max cell voltage',
-                'V',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                2,
-                'V MaxR',
-                widget._holder.deviceParameters?.maxRecoveryVoltage ?? 4.15,
-                'Max recovery voltage',
-                'V',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                3,
-                'V Bal',
-                widget._holder.deviceParameters?.balanceCellVoltage ?? 4.20,
-                'Balance cell voltage',
-                'V',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                4,
-                'VMin',
-                widget._holder.deviceParameters?.minCellVoltage ?? 2.80,
-                'Min cell voltage',
-                'V',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                5,
-                'VMinR',
-                widget._holder.deviceParameters?.minCellRecoveryVoltage ?? 3.10,
-                'Min cell recovery voltage',
-                'V',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                6,
-                'VULOW',
-                widget._holder.deviceParameters?.ultraLowCellVoltage ?? 2,
-                'Ultra low cell voltage',
-                'V',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                7,
-                'IDMax1',
-                widget._holder.deviceParameters
-                        ?.maxTimeLimitedDischargeCurrent ??
-                    20,
-                'Max limited discharge current',
-                'A',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                8,
-                'IDMax2',
-                widget._holder.deviceParameters?.maxCutoffDischargeCurrent ??
-                    25,
-                'Max cut-off discharge current',
-                'A',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                8,
-                'Id max 1 time',
-                widget._holder.deviceParameters?.maxCurrentTimeLimitPeriod ??
+          child: StreamBuilder<DeviceParametersModel>(
+        stream: widget._holder.stream,
+        builder: (_, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _CardParameter(
+                    0,
+                    'Cell Num',
+                    snapshot.data.cellCount ?? 4,
+                    'Number of active cells',
+                    '',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    1,
+                    'V Max',
+                    snapshot.data.maxCellVoltage ?? 4.28,
+                    'Max cell voltage',
+                    'V',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    2,
+                    'V MaxR',
+                    snapshot.data.maxRecoveryVoltage ?? 4.15,
+                    'Max recovery voltage',
+                    'V',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    3,
+                    'V Bal',
+                    snapshot.data.balanceCellVoltage ?? 4.20,
+                    'Balance cell voltage',
+                    'V',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    4,
+                    'VMin',
+                    snapshot.data.minCellVoltage ?? 2.80,
+                    'Min cell voltage',
+                    'V',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    5,
+                    'VMinR',
+                    snapshot.data.minCellRecoveryVoltage ?? 3.10,
+                    'Min cell recovery voltage',
+                    'V',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    6,
+                    'VULOW',
+                    snapshot.data.ultraLowCellVoltage ?? 2,
+                    'Ultra low cell voltage',
+                    'V',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    7,
+                    'IDMax1',
+                    snapshot.data.maxTimeLimitedDischargeCurrent ?? 20,
+                    'Max limited discharge current',
+                    'A',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    8,
+                    'IDMax2',
+                    snapshot.data.maxCutoffDischargeCurrent ?? 25,
+                    'Max cut-off discharge current',
+                    'A',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    8,
+                    'Id max 1 time',
+                    snapshot.data.maxCurrentTimeLimitPeriod ?? 10,
+                    'Max current time-limit period',
+                    's',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
                     10,
-                'Max current time-limit period',
-                's',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                10,
-                'ICMax',
-                widget._holder.deviceParameters?.maxCutoffChargeCurrent ?? 8,
-                'Max cut-off charge current',
-                'A',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                11,
-                'I Thr Count',
-                widget._holder.deviceParameters
-                        ?.motoHoursCounterCurrentThreshold ??
-                    40,
-                'Moto-hours current threshold',
-                'A',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                12,
-                'I Max c-off Time ',
-                widget._holder.deviceParameters?.currentCutOffTimerPeriod ?? 5,
-                'Max cut-off time period',
-                's',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                13,
-                'T Max',
-                widget._holder.deviceParameters?.maxCutoffTemperature ?? 240,
-                'Max temperature cut-off',
-                '°C',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                15,
-                'T MaxR',
-                widget._holder.deviceParameters?.maxTemperatureRecovery ?? 530,
-                'Max temperature recovery ',
-                '°C',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                16,
-                'T Min',
-                widget._holder.deviceParameters?.minCutoffTemperature ?? 2480,
-                'Min temperature cut-off',
-                '°C',
-                () => _presentDialog(context, action: 'Change')),
-            _CardParameter(
-                17,
-                'T MinR',
-                widget._holder.deviceParameters?.minTemperatureRecovery ?? 1680,
-                'Min temperature recovery',
-                '°C',
-                () => _presentDialog(context, action: 'Change')),
-          ],
-        ),
-      ));
+                    'ICMax',
+                    snapshot.data.maxCutoffChargeCurrent ?? 8,
+                    'Max cut-off charge current',
+                    'A',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    11,
+                    'I Thr Count',
+                    snapshot.data?.motoHoursCounterCurrentThreshold ?? 40,
+                    'Moto-hours current threshold',
+                    'A',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    12,
+                    'I Max c-off Time ',
+                    snapshot.data.currentCutOffTimerPeriod ?? 5,
+                    'Max cut-off time period',
+                    's',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    13,
+                    'T Max',
+                    snapshot.data.maxCutoffTemperature ?? 240,
+                    'Max temperature cut-off',
+                    '°C',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    15,
+                    'T MaxR',
+                    snapshot.data.maxTemperatureRecovery ?? 530,
+                    'Max temperature recovery ',
+                    '°C',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    16,
+                    'T Min',
+                    snapshot.data.minCutoffTemperature ?? 2480,
+                    'Min temperature cut-off',
+                    '°C',
+                    () => _presentDialog(context, action: 'Change')),
+                _CardParameter(
+                    17,
+                    'T MinR',
+                    snapshot.data.minTemperatureRecovery ?? 1680,
+                    'Min temperature recovery',
+                    '°C',
+                    () => _presentDialog(context, action: 'Change')),
+              ],
+            );
+          } else
+            return Container();
+        },
+      )));
 
   Future<void> _presentDialog(BuildContext widgetContext,
       {String message, String action}) async {
-    // TODO: inject the R + 01/ whatever and the parameter value, also try to restrain it a given number of symbols
+    // TODO: inject the R + 01/ whatever and the parameter value, also try to restrain it in a given number of symbols
     await showDialog(
       context: widgetContext,
       builder: (context) => AlertDialog(
@@ -238,8 +240,12 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
           FlatButton(
             child: Text(action),
             onPressed: () {
-              _resetSession();
-              _retry();
+              //_resetSession();
+              //_retry();
+              widget._repository
+                  .writeToCharacteristic(_writeController.value.text + '\r');
+              //widget._holder.addEvent() // this add event will be called once the parameters is actually got through a stream listen
+              // (prolly a new bloc specifically for that)¬
               Navigator.of(context).pop();
             },
           ),

@@ -21,13 +21,13 @@ class FullStatusBloc
   @override
   pause() {
     _repository.cancel();
-    pauseSubscription();
+    super.pause();
   }
 
   @override
   resume() {
     _repository.resumeTimer(false); // change this boolean please
-    resumeSubscription();
+    super.resume();
   }
 
   _listenToFullStatus() {

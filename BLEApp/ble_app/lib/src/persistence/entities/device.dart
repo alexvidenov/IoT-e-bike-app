@@ -5,10 +5,12 @@ class Device {
   @PrimaryKey()
   final String deviceId;
 
+  // include foreign key to that
   final String userId;
 
+  // these will be changed via FCM
   String
-      deviceParametersModel; // toJson and fromJson required from the calling object
+      parametersToChange; // toJson and fromJson required from the calling object
 
   Device(this.deviceId, this.userId);
 }

@@ -6,6 +6,5 @@ import 'ParameterHolder.dart';
 
 mixin ParameterAware implements ParameterAwareInterface {
   @override
-  DeviceParametersModel getParameters() =>
-      $<ParameterHolder>().deviceParameters;
+  Stream<DeviceParametersModel> getParameters() => $<ParameterHolder>().stream;
 }

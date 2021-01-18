@@ -21,14 +21,14 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
   @override
   onResume() {
     super.onResume();
-    var context = navigationBloc.navigatorKey.currentContext;
+    final context = navigationBloc.navigatorKey.currentContext;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showDialog(
           context: context,
           builder: (_) {
             return AlertDialog(
               title: Text('HM'),
-              content: Text('LMAO'),
+              content: Text('Test'),
               actions: <Widget>[
                 FlatButton(
                   child: Text('LMAO'),

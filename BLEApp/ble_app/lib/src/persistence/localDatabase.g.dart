@@ -84,7 +84,7 @@ class _$LocalDatabase extends LocalDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `users` (`id` TEXT, `email` TEXT, `password` TEXT, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `devices` (`deviceId` TEXT, `userId` TEXT, `deviceParametersModel` TEXT, PRIMARY KEY (`deviceId`))');
+            'CREATE TABLE IF NOT EXISTS `devices` (`deviceId` TEXT, `userId` TEXT, `parametersToChange` TEXT, PRIMARY KEY (`deviceId`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -153,7 +153,7 @@ class _$DeviceDao extends DeviceDao {
             (Device item) => <String, dynamic>{
                   'deviceId': item.deviceId,
                   'userId': item.userId,
-                  'deviceParametersModel': item.deviceParametersModel
+                  'parametersToChange': item.parametersToChange
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -178,14 +178,6 @@ class _$DeviceDao extends DeviceDao {
         arguments: <dynamic>[deviceId, userId],
         mapper: (Map<String, dynamic> row) =>
             Device(row['deviceId'] as String, row['userId'] as String));
-  }
-
-  @override
-  Future<void> updateDeviceParameters(
-      String deviceId, String deviceParameters) async {
-    await _queryAdapter.queryNoReturn(
-        'UPDATE devices SET deviceParametersModel = ? WHERE deviceId = ?',
-        arguments: <dynamic>[deviceId, deviceParameters]);
   }
 
   @override

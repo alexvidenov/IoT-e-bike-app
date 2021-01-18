@@ -115,7 +115,7 @@ extension UserStatus on Auth {
 extension AuthExceptionHandler on Auth {
   static NotAuthenticatedReason handleException(FirebaseAuthException e) {
     var status;
-    switch (e.message) {
+    switch (e.code) {
       case "ERROR_INVALID_EMAIL":
         status = NotAuthenticatedReason.invalidEmail;
         break;

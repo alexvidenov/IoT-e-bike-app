@@ -11,6 +11,21 @@ import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/utils/Router.dart' as router;
 import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  if (message.containsKey('data')) {
+    // Handle data message
+    final dynamic data = message['data'];
+    await prefs.setString('NotificationData', data.toString());
+  }
+  if (message.containsKey('notification')) {
+    // Handle notification message
+    final dynamic notification = message['notification'];
+    await prefs.setString('Notification', notification.toString());
+  }
+}
 
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
@@ -29,19 +44,23 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   final FirebaseMessaging _fcm = FirebaseMessaging();
 
   configure() {
-    _fcm.configure(onMessage: (Map<String, dynamic> message) async {
-      print('onMessage: $message');
-      Scaffold.of(context).showSnackBar(
-          SnackBar(content: Text(message['notification']['title'])));
-    }, onResume: (Map<String, dynamic> message) async {
-      print('onMessage: $message');
-      Scaffold.of(context).showSnackBar(
-          SnackBar(content: Text(message['notification']['title'])));
-    }, onLaunch: (Map<String, dynamic> message) async {
-      print('onMessage: $message');
-      Scaffold.of(context).showSnackBar(
-          SnackBar(content: Text(message['notification']['title'])));
-    });
+    _fcm.configure(
+        onMessage: (Map<String, dynamic> message) async {
+          print('onMessage: $message');
+          Scaffold.of(context).showSnackBar(
+              SnackBar(content: Text(message['notification']['title'])));
+        },
+        onResume: (Map<String, dynamic> message) async {
+          print('onMessage: $message');
+          Scaffold.of(context).showSnackBar(
+              SnackBar(content: Text(message['notification']['title'])));
+        },
+        onLaunch: (Map<String, dynamic> message) async {
+          print('onMessage: $message');
+          Scaffold.of(context).showSnackBar(
+              SnackBar(content: Text(message['notification']['title'])));
+        },
+        onBackgroundMessage: myBackgroundMessageHandler);
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -72,10 +91,9 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
           false);
 
   @override
-  void initState() {
+  initState() {
     super.initState();
-    widget._deviceBloc.setDisconnectedListener(
-        this); // same thing for short and full status-es. Prolly not actually
+    widget._deviceBloc.setDisconnectedListener(this);
     configure();
   }
 
