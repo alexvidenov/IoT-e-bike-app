@@ -16,7 +16,7 @@ class TemperatureProgressBar extends StatelessWidget {
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active) {
           double temperature;
-          Color color;
+          Color color = Colors.greenAccent;
           shortStatus.data.when((normal) => temperature = normal.temperature,
               error: (errorState, model) {
             switch (errorState) {
@@ -27,7 +27,6 @@ class TemperatureProgressBar extends StatelessWidget {
                 color = Colors.lightBlueAccent;
                 break;
               default:
-                color = Colors.green;
                 break;
             }
             temperature = model.temperature;

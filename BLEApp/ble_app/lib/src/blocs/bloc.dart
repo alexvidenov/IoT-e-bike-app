@@ -20,9 +20,11 @@ abstract class Bloc<T, S> {
 
   create() {}
 
-  pause() {}
+  @mustCallSuper
+  pause() => pauseSubscription();
 
-  resume() {}
+  @mustCallSuper
+  resume() => resumeSubscription();
 
   Function(T) get addEvent => _sink.add;
 

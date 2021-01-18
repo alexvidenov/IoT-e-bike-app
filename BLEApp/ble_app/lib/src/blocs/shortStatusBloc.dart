@@ -27,14 +27,15 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
 
   @override
   pause() {
+    super.pause();
     _repository.cancel();
-    pauseSubscription();
   }
 
   @override
   resume() {
+    super.resume();
+    //_repository.writeToCharacteristic('') // the password
     _repository.resumeTimer(true);
-    resumeSubscription();
   }
 
   @override

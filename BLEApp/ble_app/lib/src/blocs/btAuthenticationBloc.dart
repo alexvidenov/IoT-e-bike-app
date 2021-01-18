@@ -17,7 +17,12 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
   BluetoothAuthBloc(this._repository, this._db, this._auth) : super();
 
   @override
-  create() => streamSubscription =
+  create() => Future.delayed(Duration(seconds: 5), () {
+        addEvent(BTAuthState.bTAuthenticated());
+      });
+
+  /*
+  streamSubscription =
           _repository.characteristicValueStream.listen((event) async {
         if (event.startsWith('pass')) {
           //List<String> objects = event.split(' ');
@@ -35,16 +40,7 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
           // }
         }
       });
-
-  //Future.delayed(Duration(seconds: 5), () {
-  //addEvent(BTAuthState.bTAuthenticated());
-  //});
-
-  @override
-  pause() => pauseSubscription();
-
-  @override
-  resume() => resumeSubscription();
+   */
 
   @override
   dispose() {

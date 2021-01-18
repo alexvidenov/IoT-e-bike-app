@@ -59,6 +59,9 @@ class ParameterFetchScreen extends RouteAwareWidget<DeviceParametersBloc> {
                 super.bloc.setParameters(fetched.parameters);
                 _localDatabase.deviceDao.updateDeviceParameters(
                     deviceId, fetched.parameters.toJson());
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                  Navigator.of(context).pushReplacementNamed('/home');
+                });
                 // here call some db insert method that will take fetched.parameters.
               }, fetching: () {
                 return Center(child: CircularProgressIndicator());

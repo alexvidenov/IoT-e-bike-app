@@ -65,13 +65,13 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
 
   queryParameters() async {
     for (var i = 0; i < 7; i++) {
-      await _querySingleParam('R0$i');
+      await _querySingleParam('R0$i\r');
     }
     for (var i = 12; i < 18; i++) {
-      await _querySingleParam('R$i');
+      await _querySingleParam('R$i\r');
     }
     for (var i = 23; i < 27; i++) {
-      await _querySingleParam('R$i');
+      await _querySingleParam('R$i\r');
     }
   }
 

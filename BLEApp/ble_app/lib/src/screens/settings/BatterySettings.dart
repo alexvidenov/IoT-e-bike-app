@@ -206,7 +206,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
               //widget._repository
               //.writeToCharacteristic(_writeController.value.text); pass the password here
               widget._repository
-                  .writeToCharacteristic(_writeController.value.text);
+                  .writeToCharacteristic(_writeController.value.text + '\r');
               Navigator.of(context).pop();
             },
           ),
