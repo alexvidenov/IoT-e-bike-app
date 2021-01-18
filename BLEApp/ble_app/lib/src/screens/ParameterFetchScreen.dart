@@ -1,5 +1,6 @@
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/deviceParametersBloc.dart';
+import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/sealedStates/ParameterFetchState.dart';
@@ -10,34 +11,32 @@ class ParameterFetchScreen extends RouteAwareWidget<DeviceParametersBloc> {
       this._deviceBloc, this._localDatabase, this.deviceId)
       : super(bloc: _deviceParameterBloc);
 
-  final DeviceBloc _deviceBloc; // remove this in release
+  final DeviceBloc _deviceBloc; // remove this in release, not needed
   final String deviceId;
   final LocalDatabase _localDatabase;
 
-  Future<bool> _onWillPop(context) {
-    return showDialog(
-        context: context,
-        builder: (context) =>
-            AlertDialog(
-              title: Text('Are you sure?',
-                  style: TextStyle(fontFamily: 'Europe_Ext')),
-              content: Text(
-                  'Do you want to disconnect from the device and go back?',
-                  style: TextStyle(fontFamily: 'Europe_Ext')),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: Text('No')),
-                FlatButton(
-                    onPressed: () {
-                      _deviceBloc.disconnect();
-                      Navigator.of(context).pop(true);
-                    },
-                    child: Text('Yes')),
-              ],
-            ) ??
-            false);
-  }
+  Future<bool> _onWillPop(context) => showDialog(
+      context: context,
+      builder: (context) =>
+          AlertDialog(
+            title: Text('Are you sure?',
+                style: TextStyle(fontFamily: 'Europe_Ext')),
+            content: Text(
+                'Do you want to disconnect from the device and go back?',
+                style: TextStyle(fontFamily: 'Europe_Ext')),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text('No')),
+              FlatButton(
+                  onPressed: () {
+                    _deviceBloc.disconnect();
+                    Navigator.of(context).pop(true);
+                  },
+                  child: Text('Yes')),
+            ],
+          ) ??
+          false);
 
   @override
   Widget buildWidget(BuildContext context) => Scaffold(
@@ -54,22 +53,20 @@ class ParameterFetchScreen extends RouteAwareWidget<DeviceParametersBloc> {
           stream: super.bloc.stream,
           builder: (_, snapshot) {
             if (snapshot.connectionState == ConnectionState.active) {
-              snapshot.data.when(fetched: (fetched) {
-                // TODO: WidgetsBinding.schedulePostFrameCallback to move to home
-                super.bloc.setParameters(fetched.parameters);
-                _localDatabase.deviceDao.updateDeviceParameters(
-                    deviceId, fetched.parameters.toJson());
-                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  Navigator.of(context).pushReplacementNamed('/home');
-                });
-                // here call some db insert method that will take fetched.parameters.
-              }, fetching: () {
-                return Center(child: CircularProgressIndicator());
-              });
+              snapshot.data.when(
+                  fetched: (fetched) {
+                    super.bloc.setParameters(fetched.parameters);
+                    _localDatabase.deviceDao.updateDeviceParameters(
+                        deviceId, fetched.parameters.toJson());
+                    WidgetsBinding.instance.addPostFrameCallback((_) =>
+                        Navigator.of(context).pushReplacementNamed('/home'));
+                  },
+                  fetching: () => Center(child: CircularProgressIndicator()));
             } else
               return Container();
             return Container();
           },
         ),
       ));
+
 }

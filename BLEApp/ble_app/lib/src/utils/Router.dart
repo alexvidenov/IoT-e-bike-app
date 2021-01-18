@@ -60,7 +60,7 @@ abstract class Router {
             builder: (_) => ParameterFetchScreen(
                 $(), $(), $(), $<DeviceRepository>().deviceId));
       case '/batterySettings':
-        return MaterialPageRoute(builder: (_) => BatterySettingsScreen($(), $()));
+        return MaterialPageRoute(builder: (_) => BatterySettingsScreen($(), $(), $()));
     }
     return MaterialPageRoute(builder: (_) => _PathError());
   }
@@ -87,7 +87,7 @@ abstract class Router {
         return MaterialPageRoute(
             builder: (_) => DevicesListScreen($(), $<Auth>().signOut));
       case '/batterySettings':
-        return MaterialPageRoute(builder: (_) => BatterySettingsScreen($(), $()));
+        return MaterialPageRoute(builder: (_) => BatterySettingsScreen($(), $(), $()));
     }
     return MaterialPageRoute(builder: (_) => _PathError());
   }

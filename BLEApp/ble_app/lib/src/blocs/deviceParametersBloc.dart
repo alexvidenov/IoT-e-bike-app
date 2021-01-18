@@ -31,10 +31,22 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
       final value = double.parse(buffer.toString());
       print('Parameter: ' + value.toString());
 
-      String command = '${event[1]}' + '${event[2]}';
-      _parameters[command] = value;
+      _parameters['${event[1]}' + '${event[2]}'] = value;
+    });
+  }
 
-      if (command == '26')
+  @override
+  pause() => pauseSubscription();
+
+  @override
+  resume() => resumeSubscription();
+
+  queryParameters() async {
+    for (var i = 0; i < 7; i++) await _querySingleParam('R0$i\r');
+    for (var i = 12; i < 18; i++) await _querySingleParam('R$i\r');
+    for (var i = 23; i < 27; i++) await _querySingleParam('R$i\r');
+    Future.delayed(Duration(milliseconds: 80), () {
+      if (_parameters.keys.length == 17) {
         addEvent(ParameterFetchState.fetched(
             parameters: DeviceParametersModel(
                 cellCount: _parameters['00'].toInt(),
@@ -54,25 +66,10 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
                 maxTemperatureRecovery: _parameters['24'].toInt(),
                 minTemperatureRecovery: _parameters['25'].toInt(),
                 minCutoffTemperature: _parameters['26'].toInt())));
+      } else {
+        queryParameters();
+      }
     });
-  }
-
-  @override
-  pause() => pauseSubscription();
-
-  @override
-  resume() => resumeSubscription();
-
-  queryParameters() async {
-    for (var i = 0; i < 7; i++) {
-      await _querySingleParam('R0$i\r');
-    }
-    for (var i = 12; i < 18; i++) {
-      await _querySingleParam('R$i\r');
-    }
-    for (var i = 23; i < 27; i++) {
-      await _querySingleParam('R$i\r');
-    }
   }
 
   _querySingleParam(String command) async => await Future.delayed(

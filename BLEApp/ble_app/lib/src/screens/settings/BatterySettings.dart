@@ -1,4 +1,6 @@
+import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
+import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter/material.dart';
 
@@ -37,10 +39,13 @@ class _CardParameter extends StatelessWidget {
 
 class BatterySettingsScreen extends StatefulWidget {
   final ParameterHolder _holder;
+  final SettingsBloc _settingsBloc;
+  final BluetoothAuthBloc _authBloc;
   final DeviceRepository
       _repository; // prolly change is to stream from some bloc (the parameter change)
 
-  const BatterySettingsScreen(this._holder, this._repository);
+  const BatterySettingsScreen(
+      this._holder, this._repository, this._settingsBloc, this._authBloc);
 
   @override
   _BatterySettingsScreenState createState() => _BatterySettingsScreenState();
@@ -48,6 +53,27 @@ class BatterySettingsScreen extends StatefulWidget {
 
 class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
   final _writeController = TextEditingController();
+
+  bool _isAuthenticated = false;
+
+  _retry() => Future.delayed(Duration(seconds: 4), () {
+        if (_isAuthenticated == false) _resetSession();
+      });
+
+  _resetSession() => widget._repository.writeToCharacteristic(
+      (widget._settingsBloc.getPassword() ??
+              widget._settingsBloc.password.value) +
+          '\r');
+
+  _listenToAuthBloc() => widget._authBloc.stream.listen((event) {
+        event.when(
+            bTAuthenticated: () {
+              _isAuthenticated = true;
+              widget._repository
+                  .writeToCharacteristic(_writeController.value.text + '\r');
+            },
+            bTNotAuthenticated: (reason) => {});
+      });
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -203,10 +229,8 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
           FlatButton(
             child: Text(action),
             onPressed: () {
-              //widget._repository
-              //.writeToCharacteristic(_writeController.value.text); pass the password here
-              widget._repository
-                  .writeToCharacteristic(_writeController.value.text + '\r');
+              _resetSession();
+              _retry(); // the same for that one
               Navigator.of(context).pop();
             },
           ),

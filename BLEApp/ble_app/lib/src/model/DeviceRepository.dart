@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
@@ -21,7 +22,7 @@ class DeviceRepository {
   String _value = ""; // will be updated every packet
   String _curValue = ""; // will be appended to
 
-  Timer _timer;
+  Timer _timer; // timer for the periodic commands¬
 
   final _characteristicController =
       PublishSubject<String>(); // packets, emitted from bluetooth
@@ -75,6 +76,9 @@ class DeviceRepository {
   }
 
   writeToCharacteristic(String data) => _writeData(data);
+
+  Future<String> readCharacteristic() async =>
+      await _characteristic.read().then((value) => utf8.decode(value));
 
   periodicShortStatus() {
     _timer?.cancel();
