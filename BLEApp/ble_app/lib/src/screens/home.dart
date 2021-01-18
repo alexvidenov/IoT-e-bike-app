@@ -4,6 +4,7 @@ import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/services/Auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
@@ -24,6 +25,24 @@ class HomeScreen extends StatefulWidget with Navigation {
 
 class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   bool _hasDisconnected = false;
+
+  final FirebaseMessaging _fcm = FirebaseMessaging();
+
+  configure() {
+    _fcm.configure(onMessage: (Map<String, dynamic> message) async {
+      print('onMessage: $message');
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text(message['notification']['title'])));
+    }, onResume: (Map<String, dynamic> message) async {
+      print('onMessage: $message');
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text(message['notification']['title'])));
+    }, onLaunch: (Map<String, dynamic> message) async {
+      print('onMessage: $message');
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text(message['notification']['title'])));
+    });
+  }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -57,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
     super.initState();
     widget._deviceBloc.setDisconnectedListener(
         this); // same thing for short and full status-es. Prolly not actually
+    configure();
   }
 
   @override
