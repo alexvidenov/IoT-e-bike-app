@@ -32,7 +32,7 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
               content: Text('Test'),
               actions: <Widget>[
                 FlatButton(
-                  child: Text('LMAO'),
+                  child: Text('Test'),
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).pop();
                   },

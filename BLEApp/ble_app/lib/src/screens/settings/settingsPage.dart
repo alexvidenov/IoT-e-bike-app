@@ -17,7 +17,8 @@ class ConnectionSettingsScreen extends StatelessWidget {
 
   ConnectionSettings _connectionSettings;
 
-  ConnectionSettingsScreen(this._deviceRepository, this._settingsBloc, this._authBloc) {
+  ConnectionSettingsScreen(
+      this._deviceRepository, this._settingsBloc, this._authBloc) {
     _listenToConnectionSettingsChanges();
     if (_settingsBloc.isPasswordRemembered())
       _connectionSettings = ConnectionSettings.AutoPassword;
@@ -118,8 +119,10 @@ class ConnectionSettingsScreen extends StatelessWidget {
             FlatButton(
               child: Text("Confirm"),
               onPressed: () {
-                // same mechanism for resrtting password (should get latest one) and listen and stuff..
+                _deviceRepository.cancel();
                 _authBloc.changePassword(_writeController.value.text);
+                Future.delayed(Duration(milliseconds: 80),
+                    () => _deviceRepository.resume());
                 _settingsBloc.setPassword(_writeController.value.text);
                 Navigator.of(context).pop(false);
               },

@@ -1,5 +1,8 @@
+import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
+import 'package:ble_app/src/sealedStates/shortStatusState.dart';
 import 'package:ble_app/src/widgets/progressBars/temperatureProgressBar.dart';
 import 'package:ble_app/src/widgets/progressBars/voltageProgressBar.dart';
 import 'package:flutter/material.dart';
@@ -83,13 +86,7 @@ class ProgressColumns extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Column(
                       children: <Widget>[
-                        Text(
-                          "56.7", // StreamBuilder
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 28,
-                              color: Colors.white),
-                        ),
+                        VoltageText(shortStatusBloc),
                         Text(
                           "V",
                           style: TextStyle(
@@ -126,4 +123,36 @@ class ProgressColumns extends StatelessWidget {
           )
         ],
       );
+}
+
+class VoltageText extends StatelessWidget {
+  final ShortStatusBloc _shortStatusBloc;
+
+  const VoltageText(this._shortStatusBloc);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<ShortStatusState>(
+      stream: _shortStatusBloc.stream,
+      initialData: ShortStatusState(ShortStatusModel.empty()),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          String voltageText;
+          snapshot.data.when((model) {
+            voltageText = (model.totalVoltage / 100).toStringAsFixed(1);
+          }, error: (error, model) {
+            voltageText = (model.totalVoltage / 100).toStringAsFixed(1);
+          });
+          return Text(
+            voltageText, // StreamBuilder
+            style: TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 28,
+                color: Colors.white),
+          );
+        } else
+          return Container();
+      },
+    );
+  }
 }

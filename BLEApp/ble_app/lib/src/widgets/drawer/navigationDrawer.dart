@@ -6,19 +6,12 @@ import 'package:flutter/material.dart';
 
 typedef _LogOutListener = Future<void> Function();
 
-typedef _OnStopSession = void Function();
-
-typedef _OnResumeSession = void Function();
-
 class NavigationDrawer extends StatelessWidget {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
   final _LogOutListener _onLogout;
-  final _OnStopSession _onStopSession;
-  final _OnResumeSession _onResumeSession;
 
-  const NavigationDrawer(this._prefsBloc, this._deviceBloc, this._onLogout,
-      this._onStopSession, this._onResumeSession);
+  const NavigationDrawer(this._prefsBloc, this._deviceBloc, this._onLogout);
 
   @override
   Widget build(BuildContext context) => Drawer(
@@ -31,21 +24,13 @@ class NavigationDrawer extends StatelessWidget {
                 icon: Icons.bluetooth,
                 text: 'Connection Settings',
                 onTap: () {
-                  _onStopSession();
-                  Navigator.of(context).pushNamed('/settings').then((_) {
-                    print('resuming');
-                    _onResumeSession();
-                  });
+                  Navigator.of(context).pushNamed('/settings');
                 }),
             _createDrawerItem(
                 icon: Icons.devices,
                 text: 'Device Settings',
                 onTap: () {
-                  _onStopSession();
-                  Navigator.of(context).pushNamed('/batterySettings').then((_) {
-                    print('resuming');
-                    _onResumeSession();
-                  });
+                  Navigator.of(context).pushNamed('/batterySettings');
                 }),
             _createDrawerItem(
                 icon: Icons.assessment, text: 'Statistics', onTap: () => {}),
@@ -56,7 +41,6 @@ class NavigationDrawer extends StatelessWidget {
                       Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(builder: (_) => RootPage($())),
                           (route) => false);
-                      _onStopSession();
                       _prefsBloc.clearPrefs();
                       await _deviceBloc.disconnect();
                     })),

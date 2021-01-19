@@ -15,11 +15,10 @@ import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
-  final BluetoothAuthBloc _authBloc;
   final DeviceRepository _repository;
 
   HomeScreen(
-      this._prefsBloc, this._deviceBloc, this._repository, this._authBloc);
+      this._prefsBloc, this._deviceBloc, this._repository);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -177,8 +176,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                     )
                   ],
                 )),
-            drawer: NavigationDrawer($(), $(), $<Auth>().signOut,
-                widget._repository.cancel, _resumeSession),
+            drawer: NavigationDrawer($(), $(), $<Auth>().signOut),
             body: Navigator(
               initialRoute: '/',
               key: widget.navigationBloc.navigatorKey,
@@ -187,21 +185,6 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
             ),
           ),
         ));
-  }
-
-  _resumeSession() {
-    final password = widget._prefsBloc.getPassword();
-    print(password);
-    if (password != 'empty') {
-      // FIXME THIS THING PLEASE
-      widget._authBloc.authenticate(password);
-    } else {
-      final localPassword = widget._prefsBloc.password.value;
-      print(localPassword);
-      widget._authBloc.authenticate(localPassword);
-    }
-    // FIXME check with the authBloc for OK
-    widget._repository.resume();
   }
 
   @override
@@ -222,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   onReconnected() {
     if (_hasDisconnected && mounted) {
       widget._deviceBloc.writeToBLE(widget._prefsBloc.getPassword() ??
-          widget._prefsBloc.password.value); // initiates another session.
+          widget._prefsBloc.password.value); // initiates another session. FIXME this is wrong lmao
       Navigator.of(context).pop();
     }
   }

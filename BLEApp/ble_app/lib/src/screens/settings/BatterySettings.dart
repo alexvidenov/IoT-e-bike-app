@@ -59,44 +59,11 @@ class BatterySettingsScreen extends StatefulWidget {
 class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
   final _writeController = TextEditingController();
 
-  bool _isAuthenticated = false;
-
-  _retry() => Future.delayed(Duration(seconds: 2), () {
-        // see the time if corrections are needed
-        if (_isAuthenticated == false) _resetSession();
-      });
-
-  _resetSession() {
-    final password = widget._settingsBloc.getPassword();
-    print(password);
-    if (password != 'empty') {
-      // FIXME THIS THING PLEASE ('empty')
-      widget._authBloc.authenticate(password);
-    } else {
-      final localPassword = widget._settingsBloc.password.value;
-      print(localPassword);
-      widget._authBloc.authenticate(localPassword);
-    }
-  }
-
-  _listenToAuthBloc() => widget._authBloc.stream.listen((event) {
-        event.when(
-            btAuthenticated: () {
-              _isAuthenticated = true;
-              widget._repository
-                  .writeToCharacteristic(_writeController.value.text + '\r');
-              //widget._authBloc.pause();
-              // Future.delayed(3 seconds) => isAuthenticated = false needs to be reset// d only when authenticated
-            },
-            failedToBTAuthenticate: (reason) => {});
-      });
-
   @override
   initState() {
     super.initState();
     widget._authBloc.create();
     widget._parameterListenerBloc.create();
-    _listenToAuthBloc(); // FIXME SHOULD STOP LISTENING AT SOME POINT TO HONT HAVE CONFUSION WITH THE OK'S
   }
 
   @override
@@ -270,16 +237,20 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
           FlatButton(
             child: Text(action),
             onPressed: () async {
-              //_retry();
-              _resetSession();
               String value;
               String controllerValue = _writeController.value.text;
-              if (controllerValue.length == 3) {
+              widget._repository.cancel();
+              if (controllerValue.length == 3) { // FIX THIS SHIT lmao
                 value = '0$controllerValue';
               } else
-                value = controllerValue; // TODO: Stop the short status bloc when changing param. After its received, resume the bloc
-              //widget._parameterListenerBloc // TODO:  After the first symbol, add comma with the bloc
-              //.changeParameter('W$parameterKey$value\r'); // W01qw
+                value =
+                    controllerValue; // TODO: Stop the short status bloc when changing param. After its received, resume the bloc
+              print('INPUT FROM SETTINGS IS ' + 'W$parameterKey$value\r');
+              Future.delayed(Duration(milliseconds: 80), () => widget
+                  ._parameterListenerBloc // TODO:  After the first symbol, add comma with the bloc
+                  .changeParameter('W$parameterKey$value\r'));
+              Future.delayed(Duration(milliseconds: 80),
+                  () => widget._repository.resume());
               Navigator.of(context).pop();
             },
           ),
