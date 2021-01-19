@@ -17,9 +17,12 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
   BluetoothAuthBloc(this._repository, this._db, this._auth) : super();
 
   @override
-  create() => Future.delayed(Duration(seconds: 5), () {
-        addEvent(BTAuthState.bTAuthenticated());
-      });
+  create() {
+    _repository.deviceSerialNumber = 1234457.toString();
+    Future.delayed(Duration(seconds: 5), () {
+      addEvent(BTAuthState.bTAuthenticated());
+    });
+  }
 
   /*
   streamSubscription =

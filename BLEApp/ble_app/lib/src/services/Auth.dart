@@ -1,3 +1,4 @@
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/dao/deviceDao.dart';
 import 'package:ble_app/src/persistence/dao/userDao.dart';
 import 'package:ble_app/src/persistence/entities/device.dart';
@@ -10,6 +11,8 @@ import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'CloudMessaging.dart';
 
 @lazySingleton
 class Auth {
@@ -43,6 +46,8 @@ class Auth {
             .signInWithEmailAndPassword(email: email, password: password);
         user = credential?.user;
         if (user != null) {
+          FirestoreDatabase(uid: user.uid)
+              .setUserDeviceToken(token: await $<CloudMessaging>().getToken());
           authStateListener.onAuthSuccessful();
           return AuthState.authenticated(userId: user.uid);
         }
@@ -73,7 +78,7 @@ class Auth {
         final _id = user.uid;
         final _db = FirestoreDatabase(uid: _id);
         await _db.updateUserData();
-        await _db.updateDeviceData(deviceId: deviceSerialNumber);
+        await _db.setDeviceId(deviceId: deviceSerialNumber);
         await _userDao.insertEntity(localUser.User(_id, email, password));
         await _deviceDao.insertEntity(Device(deviceSerialNumber, _id));
         authStateListener.onAuthSuccessful();

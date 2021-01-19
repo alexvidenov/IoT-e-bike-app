@@ -12,11 +12,11 @@ import 'package:injectable/injectable.dart';
 import 'bloc.dart';
 
 @injectable
-class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
+class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
   final DeviceRepository _repository;
   final ParameterHolder _holder;
 
-  DeviceParametersBloc(this._repository, this._holder) : super();
+  ParameterFetchBloc(this._repository, this._holder) : super();
 
   final _parameters = SplayTreeMap<String, double>();
 
@@ -43,8 +43,8 @@ class DeviceParametersBloc extends Bloc<ParameterFetchState, String> {
     for (var i = 23; i < 27; i++) await _querySingleParam('R$i\r');
     Future.delayed(Duration(milliseconds: 100), () {
       if (_parameters.keys.length == 17) {
-        FirestoreDatabase(uid: $<Auth>().getCurrentUserId()).updateDeviceData(
-            deviceId: _repository.deviceId, parameters: _parameters);
+        FirestoreDatabase(uid: $<Auth>().getCurrentUserId())
+            .setDeviceParameters(_parameters, deviceId: _repository.deviceId);
         addEvent(ParameterFetchState.fetched(
             parameters: DeviceParametersModel(
                 cellCount: _parameters['00'].toInt(),

@@ -13,20 +13,6 @@ import 'package:ble_app/src/utils/Router.dart' as router;
 import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  if (message.containsKey('data')) {
-    // Handle data message
-    final dynamic data = message['data'];
-    await prefs.setString('NotificationData', data.toString());
-  }
-  if (message.containsKey('notification')) {
-    // Handle notification message
-    final dynamic notification = message['notification'];
-    await prefs.setString('Notification', notification.toString());
-  }
-}
-
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
@@ -40,28 +26,6 @@ class HomeScreen extends StatefulWidget with Navigation {
 
 class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   bool _hasDisconnected = false;
-
-  final FirebaseMessaging _fcm = FirebaseMessaging();
-
-  configure() {
-    _fcm.configure(
-        onMessage: (Map<String, dynamic> message) async {
-          print('onMessage: $message');
-          Scaffold.of(context).showSnackBar(
-              SnackBar(content: Text(message['notification']['title'])));
-        },
-        onResume: (Map<String, dynamic> message) async {
-          print('onMessage: $message');
-          Scaffold.of(context).showSnackBar(
-              SnackBar(content: Text(message['notification']['title'])));
-        },
-        onLaunch: (Map<String, dynamic> message) async {
-          print('onMessage: $message');
-          Scaffold.of(context).showSnackBar(
-              SnackBar(content: Text(message['notification']['title'])));
-        },
-        onBackgroundMessage: myBackgroundMessageHandler);
-  }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -94,7 +58,6 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   initState() {
     super.initState();
     widget._deviceBloc.setDisconnectedListener(this);
-    configure();
   }
 
   @override

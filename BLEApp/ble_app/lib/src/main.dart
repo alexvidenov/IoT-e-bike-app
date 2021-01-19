@@ -10,6 +10,7 @@ import 'package:ble_app/src/screens/Entrypoints/DevicesEntrypoint.dart';
 import 'package:ble_app/src/screens/Entrypoints/Root.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/services/Auth.dart';
+import 'package:ble_app/src/services/CloudMessaging.dart';
 import 'package:ble_app/src/services/Storage.dart';
 import 'package:ble_app/src/utils/PrefsKeys.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,21 +28,27 @@ main() async {
   BleManager().createClient(restoreStateIdentifier: "com.parakatowski.ble_app");
   if (Platform.isAndroid) {
     await AndroidAlarmManager.initialize();
-    await AndroidAlarmManager.periodic(Duration(minutes: 1), 0, uploadCallback,
+    await AndroidAlarmManager.periodic(Duration(minutes: 2), 0, uploadCallback,
         exact: true, rescheduleOnReboot: true);
   } else if (Platform.isIOS) {
     // TODO: configure the iOS part as well
   }
+  $<CloudMessaging>().init();
   $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
 }
 
-uploadCallback() async {
+Future<void> uploadCallback() async {
   await Firebase.initializeApp();
+  print('I AM IN THE ISOLAAAAATEEEEEEEEEEEEEEEE');
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String jsonString = prefs.get(PrefsKeys.USER_DATA);
   if (jsonString != null) {
-    await prefs.remove(PrefsKeys.USER_DATA).then((_) =>
-        Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString)));
+    print('NOT NULL DATA');
+    print('User Id: ' + Auth().getCurrentUserId());
+    await prefs.remove(PrefsKeys.USER_DATA);
+    await Storage(uid: Auth().getCurrentUserId())
+        .upload(jsonDecode(jsonString))
+        .then((_) => print('UPLOADING DONE'));
   }
 }
 
@@ -50,18 +57,18 @@ class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
 
   @override
   Widget buildWidget(BuildContext context) => StreamBuilder(
-    stream: super.bloc.stream,
-    initialData: Endpoint.Unknown,
-    builder: (_, snapshot) {
-      switch (snapshot.data) {
-        case Endpoint.Unknown:
-          return Center(child: CircularProgressIndicator());
-        case Endpoint.AuthScreen:
-          return AuthEntryPoint();
-        case Endpoint.DevicesScreen:
-          return DevicesEntryPoint();
-      }
-      return Container();
-    },
-  );
+        stream: super.bloc.stream,
+        initialData: Endpoint.Unknown,
+        builder: (_, snapshot) {
+          switch (snapshot.data) {
+            case Endpoint.Unknown:
+              return Center(child: CircularProgressIndicator());
+            case Endpoint.AuthScreen:
+              return AuthEntryPoint();
+            case Endpoint.DevicesScreen:
+              return DevicesEntryPoint();
+          }
+          return Container();
+        },
+      );
 }

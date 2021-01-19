@@ -1,13 +1,13 @@
 import 'package:ble_app/src/blocs/deviceBloc.dart';
-import 'package:ble_app/src/blocs/deviceParametersBloc.dart';
+import 'package:ble_app/src/blocs/parameterFetchBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/sealedStates/ParameterFetchState.dart';
 import 'package:flutter/material.dart';
 
-class ParameterFetchScreen extends RouteAwareWidget<DeviceParametersBloc> {
-  const ParameterFetchScreen(DeviceParametersBloc _deviceParameterBloc,
+class ParameterFetchScreen extends RouteAwareWidget<ParameterFetchBloc> {
+  const ParameterFetchScreen(ParameterFetchBloc _deviceParameterBloc,
       this._deviceBloc, this._localDatabase, this.deviceId)
       : super(bloc: _deviceParameterBloc);
 

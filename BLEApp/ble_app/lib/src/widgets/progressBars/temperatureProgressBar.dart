@@ -43,6 +43,7 @@ class TemperatureProgressBar extends StatelessWidget {
                 ]),
             child: FAProgressBar(
               currentValue: temperature.toInt(),
+              // here use the holder
               maxValue: 2000,
               animatedDuration: const Duration(milliseconds: 300),
               direction: Axis.vertical,
