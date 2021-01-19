@@ -181,6 +181,14 @@ class _$DeviceDao extends DeviceDao {
   }
 
   @override
+  Future<void> updateParametersToChange(
+      String parameters, String deviceId) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE devices SET parametersToChange = ? WHERE deviceId = ?',
+        arguments: <dynamic>[parameters, deviceId]);
+  }
+
+  @override
   Future<void> insertEntity(Device entity) async {
     await _deviceInsertionAdapter.insert(entity, OnConflictStrategy.replace);
   }

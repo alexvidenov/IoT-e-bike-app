@@ -1,5 +1,5 @@
 import 'package:ble_app/src/blocs/authBloc.dart';
-import 'package:ble_app/src/sealedStates/AuthState.dart';
+import 'package:ble_app/src/sealedStates/authState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ble_app/src/utils/constants.dart';
@@ -51,10 +51,11 @@ class _LoginScreenState extends State<LoginScreen> {
       await widget._auth
           .signInWithEmailAndPassword(email: _email, password: _password)
           .then((AuthState state) {
-        state.whenPartial(
-            notAuthenticated: (notAuthenticated) => _presentDialog(context,
+        state.when(
+            authenticated: (auth) => {},
+            failedToAuthenticate: (notAuthenticated) => _presentDialog(context,
                 message: 'Auth failed',
-                additionalInformation: notAuthenticated.reason.toString()));
+                additionalInformation: notAuthenticated.toString()));
       });
     }
   }

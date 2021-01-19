@@ -12,6 +12,13 @@ abstract class DeviceDao extends Dao<Device> {
       'SELECT * FROM devices WHERE deviceId = :deviceId AND userId = :userId')
   Future<Device> fetchDevice(String deviceId, String userId);
 
+  @Query(
+      'UPDATE devices SET parametersToChange = :parameters WHERE deviceId = :deviceId')
+  Future<void> updateParametersToChange(String parameters, String deviceId);
+
+  //@Query('SELECT parametersToChange FROM devices WHERE deviceId = :deviceId')
+  //Future<String> fetchDeviceParametersToChange(String deviceId);
+
 /*
   @Query(
     'SELECT parametersToChange FROM devices WHERE deviceId = :deviceId') // TODO look up type converters

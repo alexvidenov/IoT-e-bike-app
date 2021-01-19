@@ -1,13 +1,12 @@
 import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
-import 'package:super_enum/super_enum.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'ParameterFetchState.super.dart';
+part 'parameterFetchState.freezed.dart';
 
-@superEnum
-enum _ParameterFetchState {
-  @Data(fields: [DataField<DeviceParametersModel>('parameters')])
-  Fetched,
+@freezed
+abstract class ParameterFetchState with _$ParameterFetchState {
+  const factory ParameterFetchState.fetched(DeviceParametersModel model) =
+      _Fetched;
 
-  @object
-  Fetching
+  const factory ParameterFetchState.fetching() = _Fetching;
 }

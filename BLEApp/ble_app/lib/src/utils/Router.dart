@@ -45,10 +45,10 @@ abstract class Router {
         return MaterialPageRoute(
             builder: (_) => BLEAuthenticationScreen($(), $(), $()));
       case '/home':
-        return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $()));
+        return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $(), $()));
       case '/settings':
         return MaterialPageRoute(
-            builder: (_) => ConnectionSettingsScreen($(), $()));
+            builder: (_) => ConnectionSettingsScreen($(), $(), $()));
       case '/devices':
         return MaterialPageRoute(
             builder: (_) => DevicesListScreen($(), $<Auth>().signOut));
@@ -80,10 +80,10 @@ abstract class Router {
             builder: (_) => ParameterFetchScreen(
                 $(), $(), $(), $<DeviceRepository>().deviceId));
       case '/home':
-        return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $()));
+        return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $(), $()));
       case '/settings':
         return MaterialPageRoute(
-            builder: (_) => ConnectionSettingsScreen($(), $()));
+            builder: (_) => ConnectionSettingsScreen($(), $(), $()));
       case '/devices':
         return MaterialPageRoute(
             builder: (_) => DevicesListScreen($(), $<Auth>().signOut));

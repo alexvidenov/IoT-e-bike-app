@@ -5,6 +5,10 @@ import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+// P0000 - OK
+
+// W27_newPINHERE - OK
+
 class _CardParameter extends StatelessWidget {
   final int _index;
   final String _parameterName;
@@ -41,7 +45,8 @@ class _CardParameter extends StatelessWidget {
 class BatterySettingsScreen extends StatefulWidget {
   final ParameterListenerBloc _parameterListenerBloc;
   final SettingsBloc _settingsBloc;
-  final BluetoothAuthBloc _authBloc;
+  final BluetoothAuthBloc
+      _authBloc; // FIXME try to abstract the bloc with only the necessary part
   final DeviceRepository _repository;
 
   BatterySettingsScreen(this._parameterListenerBloc, this._settingsBloc,
@@ -61,20 +66,29 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
         if (_isAuthenticated == false) _resetSession();
       });
 
-  _resetSession() => widget._repository.writeToCharacteristic(
-      (widget._settingsBloc.getPassword() ??
-              widget._settingsBloc.password.value) +
-          '\r');
+  _resetSession() {
+    final password = widget._settingsBloc.getPassword();
+    print(password);
+    if (password != 'empty') {
+      // FIXME THIS THING PLEASE ('empty')
+      widget._authBloc.authenticate(password);
+    } else {
+      final localPassword = widget._settingsBloc.password.value;
+      print(localPassword);
+      widget._authBloc.authenticate(localPassword);
+    }
+  }
 
   _listenToAuthBloc() => widget._authBloc.stream.listen((event) {
         event.when(
-            bTAuthenticated: () {
+            btAuthenticated: () {
               _isAuthenticated = true;
-              widget._repository.writeToCharacteristic(
-                  _writeController.value.text + '\r'); // will sen
+              widget._repository
+                  .writeToCharacteristic(_writeController.value.text + '\r');
+              //widget._authBloc.pause();
               // Future.delayed(3 seconds) => isAuthenticated = false needs to be reset// d only when authenticated
             },
-            bTNotAuthenticated: (reason) => {});
+            failedToBTAuthenticate: (reason) => {});
       });
 
   @override
@@ -82,7 +96,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
     super.initState();
     widget._authBloc.create();
     widget._parameterListenerBloc.create();
-    _listenToAuthBloc();
+    _listenToAuthBloc(); // FIXME SHOULD STOP LISTENING AT SOME POINT TO HONT HAVE CONFUSION WITH THE OK'S
   }
 
   @override
@@ -256,16 +270,16 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
           FlatButton(
             child: Text(action),
             onPressed: () async {
-              //_resetSession();
               //_retry();
+              _resetSession();
               String value;
               String controllerValue = _writeController.value.text;
               if (controllerValue.length == 3) {
                 value = '0$controllerValue';
               } else
-                value = controllerValue;
-              widget._parameterListenerBloc
-                  .changeParameter('W$parameterKey$value\r'); // W01qw
+                value = controllerValue; // TODO: Stop the short status bloc when changing param. After its received, resume the bloc
+              //widget._parameterListenerBloc // TODO:  After the first symbol, add comma with the bloc
+              //.changeParameter('W$parameterKey$value\r'); // W01qw
               Navigator.of(context).pop();
             },
           ),

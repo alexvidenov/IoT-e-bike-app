@@ -2,7 +2,7 @@ import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
-import 'package:ble_app/src/sealedStates/BTAuthState.dart';
+import 'package:ble_app/src/sealedStates/btAuthState.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:injectable/injectable.dart';
 
@@ -17,17 +17,11 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
   BluetoothAuthBloc(this._repository, this._db, this._auth) : super();
 
   @override
-  create() {
-    _repository.deviceSerialNumber = 1234457.toString();
-    Future.delayed(Duration(seconds: 5), () {
-      addEvent(BTAuthState.bTAuthenticated());
-    });
-  }
-
-  /*
-  streamSubscription =
+  create() => streamSubscription =
           _repository.characteristicValueStream.listen((event) async {
-        if (event.startsWith('pass')) {
+        print(event);
+        if (event.startsWith('OK')) {
+          this.pause();
           //List<String> objects = event.split(' ');
           //String deviceId = objects.elementAt(1);
           // later on change to what the actual parameter name will be
@@ -39,11 +33,10 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
           //}
           //else{
           _repository.deviceSerialNumber = 1234457.toString();
-          addEvent(BTAuthState.bTAuthenticated());
+          addEvent(BTAuthState.btAuthenticated());
           // }
         }
       });
-   */
 
   @override
   dispose() {

@@ -1,6 +1,6 @@
 import 'package:ble_app/src/listeners/authStateListener.dart';
 import 'package:ble_app/src/services/Auth.dart';
-import 'package:ble_app/src/sealedStates/AuthState.dart';
+import 'package:ble_app/src/sealedStates/authState.dart';
 import 'package:injectable/injectable.dart';
 
 enum AuthPage { Login, Register }

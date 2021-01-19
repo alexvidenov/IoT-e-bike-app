@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +10,14 @@ enum ConnectionSettings { Manual, AutoConnect, AutoPassword }
 // ignore: must_be_immutable
 class ConnectionSettingsScreen extends StatelessWidget {
   final DeviceRepository _deviceRepository;
+  final BluetoothAuthBloc _authBloc;
   final SettingsBloc _settingsBloc;
 
   final _writeController = TextEditingController();
 
   ConnectionSettings _connectionSettings;
 
-  ConnectionSettingsScreen(this._deviceRepository, this._settingsBloc) {
+  ConnectionSettingsScreen(this._deviceRepository, this._settingsBloc, this._authBloc) {
     _listenToConnectionSettingsChanges();
     if (_settingsBloc.isPasswordRemembered())
       _connectionSettings = ConnectionSettings.AutoPassword;
@@ -116,8 +118,8 @@ class ConnectionSettingsScreen extends StatelessWidget {
             FlatButton(
               child: Text("Confirm"),
               onPressed: () {
-                _deviceRepository
-                    .writeToCharacteristic(_writeController.value.text);
+                // same mechanism for resrtting password (should get latest one) and listen and stuff..
+                _authBloc.changePassword(_writeController.value.text);
                 _settingsBloc.setPassword(_writeController.value.text);
                 Navigator.of(context).pop(false);
               },

@@ -32,18 +32,20 @@ class NavigationDrawer extends StatelessWidget {
                 text: 'Connection Settings',
                 onTap: () {
                   _onStopSession();
-                  Navigator.of(context)
-                      .pushNamed('/settings')
-                      .then((_) => _onResumeSession());
+                  Navigator.of(context).pushNamed('/settings').then((_) {
+                    print('resuming');
+                    _onResumeSession();
+                  });
                 }),
             _createDrawerItem(
                 icon: Icons.devices,
                 text: 'Device Settings',
                 onTap: () {
                   _onStopSession();
-                  Navigator.of(context)
-                      .pushNamed('/batterySettings')
-                      .then((_) => _onResumeSession());
+                  Navigator.of(context).pushNamed('/batterySettings').then((_) {
+                    print('resuming');
+                    _onResumeSession();
+                  });
                 }),
             _createDrawerItem(
                 icon: Icons.assessment, text: 'Statistics', onTap: () => {}),

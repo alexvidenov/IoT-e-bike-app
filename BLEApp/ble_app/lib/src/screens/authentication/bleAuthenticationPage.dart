@@ -5,7 +5,7 @@ import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/parameterFetchScreen.dart';
-import 'package:ble_app/src/sealedStates/BTAuthState.dart';
+import 'package:ble_app/src/sealedStates/btAuthState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
@@ -46,7 +46,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
     _listenToConnectBloc();
   }
 
-  _handleBLEError() => Future.delayed(Duration(seconds: 5), () {
+  _handleBLEError() => Future.delayed(Duration(seconds: 6), () {
         // TODO: extract in some handlers object
         if (!_connected) widget._deviceBloc.connect();
       });
@@ -78,14 +78,12 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
 
   _listenToAuthBloc() =>
       _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
-        event.when(
-            bTAuthenticated: () {
-              _isAuthenticated = true;
-              Navigator.of(context).pushReplacementNamed('/home');
-              //Navigator.of(context).pushReplacementNamed('/fetchParameters');
-            },
-            bTNotAuthenticated: (reason) => _presentDialog(context,
-                message: reason.reason.toString(), action: 'TRY AGAIN'));
+        event.when(btAuthenticated: () {
+          _isAuthenticated = true;
+          //Navigator.of(context).pushReplacementNamed('/home');
+          Navigator.of(context).pushReplacementNamed('/fetchParameters');
+        }, failedToBTAuthenticate: (reason) => _presentDialog(context,
+            message: reason.toString(), action: 'TRY AGAIN'));
       });
 
 // this retry will be in the bloc

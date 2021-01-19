@@ -21,7 +21,8 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String> {
   @override
   create() {
     streamSubscription = _repository.characteristicValueStream.listen((event) {
-      print('RESPONSE: $event');
+      // FIXME will have to listen to a custom stream
+      print('RESPONSE FROM PARAM LISTENER: $event');
       if (event.startsWith('W')) {
         addEvent(ChangeStatus
             .Successful); // in the UI, wait 1 second if not successful

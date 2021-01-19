@@ -1,9 +1,8 @@
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/parameterFetchBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
-import 'package:ble_app/src/sealedStates/ParameterFetchState.dart';
+import 'package:ble_app/src/sealedStates/parameterFetchState.dart';
 import 'package:flutter/material.dart';
 
 class ParameterFetchScreen extends RouteAwareWidget<ParameterFetchBloc> {
@@ -55,7 +54,7 @@ class ParameterFetchScreen extends RouteAwareWidget<ParameterFetchBloc> {
             if (snapshot.connectionState == ConnectionState.active) {
               snapshot.data.when(
                   fetched: (fetched) {
-                    super.bloc.setParameters(fetched.parameters);
+                    super.bloc.setParameters(fetched);
                     //_localDatabase.deviceDao.updateDeviceParameters(
                     //deviceId, fetched.parameters.toJson());
                     WidgetsBinding.instance.addPostFrameCallback((_) =>

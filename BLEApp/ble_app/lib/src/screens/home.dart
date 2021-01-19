@@ -1,24 +1,25 @@
+import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/listeners/disconnectedListener.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/services/Auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/utils/Router.dart' as router;
 import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
+  final BluetoothAuthBloc _authBloc;
   final DeviceRepository _repository;
 
-  HomeScreen(this._prefsBloc, this._deviceBloc, this._repository);
+  HomeScreen(
+      this._prefsBloc, this._deviceBloc, this._repository, this._authBloc);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -139,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                     ],
                   )
                 ],
-                bottom: TabBar(
+                bottom: TabBar( // TODO: add self as controller here, and update the index
                   labelColor: Colors.lightBlueAccent,
                   unselectedLabelColor: Colors.white,
                   indicatorSize: TabBarIndicatorSize.tab,
@@ -189,8 +190,17 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   }
 
   _resumeSession() {
-    widget._repository.writeToCharacteristic(
-        widget._prefsBloc.getPassword() ?? widget._prefsBloc.password.value);
+    final password = widget._prefsBloc.getPassword();
+    print(password);
+    if (password != 'empty') {
+      // FIXME THIS THING PLEASE
+      widget._authBloc.authenticate(password);
+    } else {
+      final localPassword = widget._prefsBloc.password.value;
+      print(localPassword);
+      widget._authBloc.authenticate(localPassword);
+    }
+    // FIXME check with the authBloc for OK
     widget._repository.resume();
   }
 

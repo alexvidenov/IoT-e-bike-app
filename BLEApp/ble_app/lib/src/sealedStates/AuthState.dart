@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:super_enum/super_enum.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'AuthState.super.dart';
+part 'authState.freezed.dart';
 
 enum NotAuthenticatedReason {
   emailAlreadyExists,
@@ -14,11 +13,10 @@ enum NotAuthenticatedReason {
   undefined,
 }
 
-@superEnum
-enum _AuthState {
-  @Data(fields: [DataField<String>('userId')])
-  Authenticated,
+@freezed
+abstract class AuthState with _$AuthState {
+  const factory AuthState.authenticated(String userId) = _Authenticated;
 
-  @Data(fields: [DataField<NotAuthenticatedReason>('reason')])
-  NotAuthenticated
+  const factory AuthState.failedToAuthenticate(
+      {NotAuthenticatedReason reason}) = _FailedToAuthenticate;
 }
