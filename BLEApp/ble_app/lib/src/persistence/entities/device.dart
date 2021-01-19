@@ -9,8 +9,8 @@ class Device {
   final String userId;
 
   // these will be changed via FCM
-  String
+  final String
       parametersToChange; // toJson and fromJson required from the calling object
 
-  Device(this.deviceId, this.userId);
+  Device(this.deviceId, this.userId, this.parametersToChange);
 }

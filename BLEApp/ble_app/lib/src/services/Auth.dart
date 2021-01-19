@@ -80,7 +80,7 @@ class Auth {
         await _db.updateUserData();
         await _db.setDeviceId(deviceId: deviceSerialNumber);
         await _userDao.insertEntity(localUser.User(_id, email, password));
-        await _deviceDao.insertEntity(Device(deviceSerialNumber, _id));
+        await _deviceDao.insertEntity(Device(deviceSerialNumber, _id, 'empty'));
         authStateListener.onAuthSuccessful();
         return AuthState.authenticated(userId: user.uid);
       }

@@ -1,18 +1,16 @@
+import 'package:ble_app/src/persistence/entities/device.dart';
+import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  print('ON BACKGROUND CALLED');
+  final LocalDatabase localDatabase = await LocalDatabase.getInstance();
   if (message.containsKey('data')) {
-    // Handle data message
-    final dynamic data = message['data'];
-    await prefs.setString('NotificationData', data.toString());
-  }
-  if (message.containsKey('notification')) {
-    // Handle notification message
-    final dynamic notification = message['notification'];
-    await prefs.setString('Notification', notification.toString());
+    final String data =
+        message['data']['01'].toString(); // later on do stuff with that
+    localDatabase.deviceDao
+        .insertEntity(Device('Id', 'FROM FCM IN THE BACKGROUND', data));
   }
 }
 
@@ -25,10 +23,10 @@ class CloudMessaging {
         print('onMessage: $message');
       },
       onResume: (Map<String, dynamic> message) async {
-        print('onMessage: $message');
+        print('onResume: $message');
       },
       onLaunch: (Map<String, dynamic> message) async {
-        print('onMessage: $message');
+        print('onLaunch: $message');
       },
       onBackgroundMessage: myBackgroundMessageHandler);
 

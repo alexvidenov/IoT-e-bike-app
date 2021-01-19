@@ -81,8 +81,8 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
         event.when(
             bTAuthenticated: () {
               _isAuthenticated = true;
-              //Navigator.of(context).pushReplacementNamed('/home');
-              Navigator.of(context).pushReplacementNamed('/fetchParameters');
+              Navigator.of(context).pushReplacementNamed('/home');
+              //Navigator.of(context).pushReplacementNamed('/fetchParameters');
             },
             bTNotAuthenticated: (reason) => _presentDialog(context,
                 message: reason.reason.toString(), action: 'TRY AGAIN'));

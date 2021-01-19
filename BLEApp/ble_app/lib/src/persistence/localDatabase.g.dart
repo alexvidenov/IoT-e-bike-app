@@ -67,7 +67,7 @@ class _$LocalDatabase extends LocalDatabase {
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 1,
+      version: 2,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
       },
@@ -167,8 +167,8 @@ class _$DeviceDao extends DeviceDao {
   @override
   Future<List<Device>> fetchDevices() async {
     return _queryAdapter.queryList('SELECT * FROM devices',
-        mapper: (Map<String, dynamic> row) =>
-            Device(row['deviceId'] as String, row['userId'] as String));
+        mapper: (Map<String, dynamic> row) => Device(row['deviceId'] as String,
+            row['userId'] as String, row['parametersToChange'] as String));
   }
 
   @override
@@ -176,8 +176,8 @@ class _$DeviceDao extends DeviceDao {
     return _queryAdapter.query(
         'SELECT * FROM devices WHERE deviceId = ? AND userId = ?',
         arguments: <dynamic>[deviceId, userId],
-        mapper: (Map<String, dynamic> row) =>
-            Device(row['deviceId'] as String, row['userId'] as String));
+        mapper: (Map<String, dynamic> row) => Device(row['deviceId'] as String,
+            row['userId'] as String, row['parametersToChange'] as String));
   }
 
   @override
