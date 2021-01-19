@@ -11,10 +11,9 @@ import '_Speedometer+Current.dart';
 
 class ProgressColumns extends StatelessWidget {
   const ProgressColumns({
-    Key key,
     @required this.shortStatusBloc,
     @required this.locationBloc,
-  }) : super(key: key);
+  });
 
   final ShortStatusBloc shortStatusBloc;
   final LocationBloc locationBloc;
@@ -86,7 +85,32 @@ class ProgressColumns extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Column(
                       children: <Widget>[
-                        VoltageText(shortStatusBloc),
+                        StreamBuilder<ShortStatusState>(
+                          stream: shortStatusBloc.stream,
+                          initialData:
+                              ShortStatusState(ShortStatusModel.empty()),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.active) {
+                              String voltageText;
+                              snapshot.data.when((model) {
+                                voltageText = (model.totalVoltage / 100)
+                                    .toStringAsFixed(1);
+                              }, error: (error, model) {
+                                voltageText = (model.totalVoltage / 100)
+                                    .toStringAsFixed(1);
+                              });
+                              return Text(
+                                voltageText,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 28,
+                                    color: Colors.white),
+                              );
+                            } else
+                              return Container();
+                          },
+                        ),
                         Text(
                           "V",
                           style: TextStyle(
@@ -125,34 +149,3 @@ class ProgressColumns extends StatelessWidget {
       );
 }
 
-class VoltageText extends StatelessWidget {
-  final ShortStatusBloc _shortStatusBloc;
-
-  const VoltageText(this._shortStatusBloc);
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<ShortStatusState>(
-      stream: _shortStatusBloc.stream,
-      initialData: ShortStatusState(ShortStatusModel.empty()),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
-          String voltageText;
-          snapshot.data.when((model) {
-            voltageText = (model.totalVoltage / 100).toStringAsFixed(1);
-          }, error: (error, model) {
-            voltageText = (model.totalVoltage / 100).toStringAsFixed(1);
-          });
-          return Text(
-            voltageText, // StreamBuilder
-            style: TextStyle(
-                fontWeight: FontWeight.normal,
-                fontSize: 28,
-                color: Colors.white),
-          );
-        } else
-          return Container();
-      },
-    );
-  }
-}

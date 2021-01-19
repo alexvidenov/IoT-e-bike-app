@@ -12,7 +12,7 @@ class FullStatusPage extends RouteAwareWidget<FullStatusBloc> with Navigation {
   @override
   Widget buildWidget(BuildContext context) => InkWell(
       onTap: () => navigationBloc.navigateTo('/map'),
-      child: VoltagesBarChart(fullStatusStream: super.bloc.stream));
+      child: VoltagesBarChart(super.bloc));
 
   @override
   onResume() {

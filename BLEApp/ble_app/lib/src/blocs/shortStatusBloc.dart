@@ -21,7 +21,8 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
 
   int _uploadTimer = 0;
 
-  AppData _appData; // appData is continuously evolving even if upload occurs -> we should bind this appData instance to the upload.
+  AppData
+      _appData; // appData is continuously evolving even if upload occurs -> we should bind this appData instance to the upload somehow
 
   ShortStatusBloc(this._repository, this._settingsBloc, this._auth) : super();
 
@@ -34,7 +35,6 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
   @override
   resume() {
     super.resume();
-    //_repository.writeToCharacteristic('') // the password.
     _repository.resumeTimer(true);
   }
 
@@ -42,7 +42,7 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
   create() {
     _initData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
-      logger.wtf('SHORT STATUS EVENT');
+      logger.wtf('SHORT STATUS EVENT: $event');
       ShortStatusModel _model = _generateShortStatus(
           event); // TODO: add method checking for abnormalities.
       addEvent(ShortStatusState(_model));

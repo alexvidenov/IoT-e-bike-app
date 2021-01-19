@@ -39,7 +39,9 @@ class VoltageProgressBar extends StatelessWidget {
             child: FAProgressBar(
               currentValue: voltage ~/ 100,
               maxValue: 60,
-              // bloc.getParameters().maxRecoveryVoltage.toInt(),
+              // ((bloc.getParameters().maxRecoveryVoltage) ~/ 100),
+              // remove this logic from here
+              // 60
               animatedDuration: const Duration(milliseconds: 300),
               direction: Axis.vertical,
               verticalDirection: VerticalDirection.up,

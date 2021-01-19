@@ -78,12 +78,14 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
 
   _listenToAuthBloc() =>
       _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
-        event.when(btAuthenticated: () {
-          _isAuthenticated = true;
-          //Navigator.of(context).pushReplacementNamed('/home');
-          Navigator.of(context).pushReplacementNamed('/fetchParameters');
-        }, failedToBTAuthenticate: (reason) => _presentDialog(context,
-            message: reason.toString(), action: 'TRY AGAIN'));
+        event.when(
+            btAuthenticated: () {
+              _isAuthenticated = true;
+              //Navigator.of(context).pushReplacementNamed('/home');
+              Navigator.of(context).pushReplacementNamed('/fetchParameters');
+            },
+            failedToBTAuthenticate: (reason) => _presentDialog(context,
+                message: reason.toString(), action: 'TRY AGAIN'));
       });
 
 // this retry will be in the bloc
@@ -97,6 +99,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
       {String message, String action}) async {
     await showDialog(
       context: widgetContext,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(message),
         content: TextField(

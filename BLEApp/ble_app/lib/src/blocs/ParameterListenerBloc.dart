@@ -1,5 +1,7 @@
+import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/services/Database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,24 +20,35 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String> {
       : this._firestoreDatabase = FirestoreDatabase(
             uid: $<Auth>().getCurrentUserId(), deviceId: _repository.deviceId);
 
+  String currentCommand; // updated every time a parameter is changed
+
   @override
   create() {
     streamSubscription = _repository.characteristicValueStream.listen((event) {
-      // FIXME will have to listen to a custom stream
       print('RESPONSE FROM PARAM LISTENER: $event');
-      if (event.startsWith('W')) {
+      if (event.startsWith('OK')) {
         addEvent(ChangeStatus
             .Successful); // in the UI, wait 1 second if not successful
-        String key = '${event[1]}' + '${event[2]}';
+        String key = '${currentCommand[1] + currentCommand[2]}';
         String value =
-            '${event[3]}' + '${event[4]}' + '${event[5]}' + '${event[6]}';
+            '${currentCommand[3] + currentCommand[4] + currentCommand[5] + currentCommand[6]}';
         num numValue = num.parse(value);
         _firestoreDatabase.setIndividualParameter(key, numValue);
+        DeviceParametersModel newModel = $<ParameterHolder>()
+            .deviceParameters
+            .value
+            .copyWith(balanceCellVoltage: double.parse(value));
+        $<ParameterHolder>().deviceParameters.value =
+            newModel; // TODO; add method in the data class to parse stuff and return
+        // enum with the available parameters (?¬)
       }
     });
   }
 
-  changeParameter(String command) => _repository.writeToCharacteristic(command);
+  changeParameter(String command) {
+    currentCommand = command;
+    _repository.writeToCharacteristic(command);
+  }
 
   Stream<DocumentSnapshot> get parameters =>
       _firestoreDatabase.deviceParameters;

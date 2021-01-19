@@ -1,5 +1,6 @@
 import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
+import 'package:flutter/material.dart';
 
 abstract class ParameterAwareInterface {
-  Stream<DeviceParametersModel> getParameters();
+  ValueNotifier<DeviceParametersModel> getParameters();
 }

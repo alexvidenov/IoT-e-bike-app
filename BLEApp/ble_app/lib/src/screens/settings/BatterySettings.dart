@@ -225,13 +225,14 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
       )));
 
   Future<void> _presentDialog(BuildContext widgetContext,
-      {String parameterKey, String action}) async {
+      {String parameterKey, String action, int commaIndex}) async {
     await showDialog(
       context: widgetContext,
       builder: (context) => AlertDialog(
         title: Text('Enter new value'),
         content: TextField(
           controller: _writeController,
+          //onChanged: (text) => _writeController.text += ',',
         ),
         actions: <Widget>[
           FlatButton(
@@ -240,15 +241,25 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
               String value;
               String controllerValue = _writeController.value.text;
               widget._repository.cancel();
-              if (controllerValue.length == 3) { // FIX THIS SHIT lmao
-                value = '0$controllerValue';
-              } else
-                value =
-                    controllerValue; // TODO: Stop the short status bloc when changing param. After its received, resume the bloc
+              switch (controllerValue.length) {
+                case 1:
+                  value = '000$controllerValue';
+                  break;
+                case 2:
+                  value = '00$controllerValue';
+                  break;
+                case 3:
+                  value = '0$controllerValue';
+                  break;
+                case 4:
+                  value = controllerValue;
+              }
               print('INPUT FROM SETTINGS IS ' + 'W$parameterKey$value\r');
-              Future.delayed(Duration(milliseconds: 80), () => widget
-                  ._parameterListenerBloc // TODO:  After the first symbol, add comma with the bloc
-                  .changeParameter('W$parameterKey$value\r'));
+              Future.delayed(
+                  Duration(milliseconds: 150), // works perfectly with 80.
+                  () => widget
+                      ._parameterListenerBloc // TODO:  After the first symbol, add comma with the bloc
+                      .changeParameter('W$parameterKey$value\r'));
               Future.delayed(Duration(milliseconds: 80),
                   () => widget._repository.resume());
               Navigator.of(context).pop();
