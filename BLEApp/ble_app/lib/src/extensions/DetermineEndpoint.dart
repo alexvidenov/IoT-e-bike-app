@@ -11,7 +11,7 @@ extension DetermineEndpoint on EntryEndpointBloc {
       _devicesBloc.create();
       _devicesBloc.addEvent(device);
     } else {
-      addEvent(Endpoint.DevicesScreen); //FIXME this shit fails
+      addEvent(Endpoint.DevicesScreen);
     }
   }
 }

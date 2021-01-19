@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:android_alarm_manager/android_alarm_manager.dart';
+import 'package:background_fetch/background_fetch.dart';
 import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
@@ -21,18 +21,71 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final logger = Logger();
 
+const storageUpload = 'storageUpload';
+
+void backgroundFetchHeadlessTask(String taskId) async { // try with  this one later on
+  print('HEADLESS');
+  await Firebase.initializeApp();
+  print('I AM IN THE ISOLAAAAATEEEEEEEEEEEEEEEE');
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.reload();
+  final String jsonString = prefs.get(PrefsKeys.USER_DATA);
+  if (jsonString != null) {
+    print('NOT NULL DATA');
+    print('User Id: ' + Auth().getCurrentUserId());
+    await prefs.remove(PrefsKeys.USER_DATA);
+    Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
+  }
+  BackgroundFetch.finish(taskId);
+}
+
+void onBackgroundFetch(String taskId) async {
+  print('Running in the background (NOT HEADLESS) $taskId');
+  //await Firebase.initializeApp();
+  /*
+  print('I AM IN THE ISOLAAAAATEEEEEEEEEEEEEEEE');
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.reload();
+  final String jsonString = prefs.get(PrefsKeys.USER_DATA);
+  if (jsonString != null) {
+    print('NOT NULL DATA');
+    print('User Id: ' + Auth().getCurrentUserId());
+    await prefs.remove(PrefsKeys.USER_DATA);
+    Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
+  }
+  BackgroundFetch.finish(taskId);
+   */
+}
+
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   configureDependencies();
   BleManager().createClient(restoreStateIdentifier: "com.parakatowski.ble_app");
   if (Platform.isAndroid) {
-    await AndroidAlarmManager.initialize();
-    await AndroidAlarmManager.periodic(Duration(minutes: 2), 0, uploadCallback,
-        exact: true, rescheduleOnReboot: true);
+    await BackgroundFetch.configure(
+        BackgroundFetchConfig(
+            minimumFetchInterval: 1,
+            stopOnTerminate: false,
+            enableHeadless: true,
+            forceAlarmManager: true),
+        onBackgroundFetch);
+    //await Workmanager.initialize(callBackDispatcher, isInDebugMode: true);
+    //await AndroidAlarmManager.initialize();
+    //await AndroidAlarmManager.periodic(Duration(minutes: 2), 0, uploadCallback,
+    //exact: true, rescheduleOnReboot: true);
   } else if (Platform.isIOS) {
     // TODO: configure the iOS part as well
   }
+  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+  BackgroundFetch.scheduleTask(TaskConfig(
+      taskId: storageUpload,
+      stopOnTerminate: false,
+      startOnBoot: true,
+      periodic: false,
+      delay: 60000,
+      enableHeadless: true,
+      forceAlarmManager: true));
   $<CloudMessaging>().init();
   $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
 }
@@ -40,15 +93,14 @@ main() async {
 Future<void> uploadCallback() async {
   await Firebase.initializeApp();
   print('I AM IN THE ISOLAAAAATEEEEEEEEEEEEEEEE');
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.reload();
   final String jsonString = prefs.get(PrefsKeys.USER_DATA);
   if (jsonString != null) {
     print('NOT NULL DATA');
     print('User Id: ' + Auth().getCurrentUserId());
     await prefs.remove(PrefsKeys.USER_DATA);
-    await Storage(uid: Auth().getCurrentUserId())
-        .upload(jsonDecode(jsonString))
-        .then((_) => print('UPLOADING DONE'));
+    Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
   }
 }
 

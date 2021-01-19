@@ -6,10 +6,11 @@ import '../bloc.dart';
 
 typedef _KeepSessionCallback = dynamic Function();
 
+// can only be mixed with Route Aware's
 mixin KeepSession<T extends Bloc<dynamic, dynamic>>
     implements RouteAwareWidget<T> {
-  final _KeepSessionCallback keepSession = () {
-    $<ShortStatusBloc>().create();
-    $<ShortStatusBloc>().resume();
-  };
+  _KeepSessionCallback get keepSession => () {
+        $<ShortStatusBloc>().create();
+        $<ShortStatusBloc>().resume();
+      };
 }

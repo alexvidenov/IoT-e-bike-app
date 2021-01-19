@@ -19,6 +19,7 @@ class Storage {
         }
       }
     }
+    print('UPLOADING DONE');
   }
 
   Future<void> _convertToUInt8ListAndUpload(
@@ -42,9 +43,6 @@ class Storage {
     StorageReference fireRef =
         _root.child('/users/$uid/$deviceSerialNumber/$fileName');
 
-    await fireRef
-        .putData(uploadData)
-        .onComplete
-        .then((_) => print('Finished uploading one thing'));
+    await fireRef.putData(uploadData).onComplete;
   }
 }

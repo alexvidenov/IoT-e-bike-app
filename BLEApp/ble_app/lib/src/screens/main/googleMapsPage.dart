@@ -11,7 +11,7 @@ class MapPage extends RouteAwareWidget<LocationBloc>
     with Navigation, KeepSession<LocationBloc> {
   final LocationBloc _locationBloc;
 
-  MapPage(LocationBloc locationBloc)
+  const MapPage(LocationBloc locationBloc)
       : this._locationBloc = locationBloc,
         super(bloc: locationBloc);
 

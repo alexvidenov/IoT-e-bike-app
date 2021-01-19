@@ -9,7 +9,7 @@ enum AuthPage { Login, Register }
 class AuthBloc {
   final Auth _auth;
 
-  AuthBloc(this._auth) : super();
+  const AuthBloc(this._auth);
 
   Future<AuthState> signInWithEmailAndPassword(
           {String email, String password}) =>

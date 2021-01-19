@@ -21,7 +21,7 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
 
   int _uploadTimer = 0;
 
-  AppData _appData;
+  AppData _appData; // appData is continuously evolving even if upload occurs -> we should bind this appData instance to the upload.
 
   ShortStatusBloc(this._repository, this._settingsBloc, this._auth) : super();
 
