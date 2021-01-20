@@ -23,10 +23,9 @@ final logger = Logger();
 
 const storageUpload = 'storageUpload';
 
-void backgroundFetchHeadlessTask(String taskId) async { // try with  this one later on
-  print('HEADLESS');
+Future<void> firebaseStorageUpload() async {
   await Firebase.initializeApp();
-  print('I AM IN THE ISOLAAAAATEEEEEEEEEEEEEEEE');
+  print('I AM IN THE ISOLATE');
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.reload();
   final String jsonString = prefs.get(PrefsKeys.USER_DATA);
@@ -36,25 +35,20 @@ void backgroundFetchHeadlessTask(String taskId) async { // try with  this one la
     await prefs.remove(PrefsKeys.USER_DATA);
     Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
   }
+}
+
+void backgroundFetchHeadlessTask(String taskId) {
+  print('HEADLESS');
+  firebaseStorageUpload();
   BackgroundFetch.finish(taskId);
 }
 
-void onBackgroundFetch(String taskId) async {
+void onBackgroundFetch(String taskId) {
   print('Running in the background (NOT HEADLESS) $taskId');
-  //await Firebase.initializeApp();
-  /*
-  print('I AM IN THE ISOLAAAAATEEEEEEEEEEEEEEEE');
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.reload();
-  final String jsonString = prefs.get(PrefsKeys.USER_DATA);
-  if (jsonString != null) {
-    print('NOT NULL DATA');
-    print('User Id: ' + Auth().getCurrentUserId());
-    await prefs.remove(PrefsKeys.USER_DATA);
-    Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
+  if (taskId == storageUpload) {
+    firebaseStorageUpload();
+    BackgroundFetch.finish(taskId);
   }
-  BackgroundFetch.finish(taskId);
-   */
 }
 
 main() async {
@@ -70,13 +64,7 @@ main() async {
             enableHeadless: true,
             forceAlarmManager: true),
         onBackgroundFetch);
-    //await Workmanager.initialize(callBackDispatcher, isInDebugMode: true);
-    //await AndroidAlarmManager.initialize();
-    //await AndroidAlarmManager.periodic(Duration(minutes: 2), 0, uploadCallback,
-    //exact: true, rescheduleOnReboot: true);
-  } else if (Platform.isIOS) {
-    // TODO: configure the iOS part as well
-  }
+  } else if (Platform.isIOS) {}
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
   BackgroundFetch.scheduleTask(TaskConfig(
       taskId: storageUpload,
@@ -88,20 +76,6 @@ main() async {
       forceAlarmManager: true));
   $<CloudMessaging>().init();
   $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
-}
-
-Future<void> uploadCallback() async {
-  await Firebase.initializeApp();
-  print('I AM IN THE ISOLAAAAATEEEEEEEEEEEEEEEE');
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.reload();
-  final String jsonString = prefs.get(PrefsKeys.USER_DATA);
-  if (jsonString != null) {
-    print('NOT NULL DATA');
-    print('User Id: ' + Auth().getCurrentUserId());
-    await prefs.remove(PrefsKeys.USER_DATA);
-    Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
-  }
 }
 
 class BleApp extends RouteAwareWidget<EntryEndpointBloc> {

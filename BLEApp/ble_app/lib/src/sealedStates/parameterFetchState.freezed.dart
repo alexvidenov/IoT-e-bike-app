@@ -33,26 +33,26 @@ const $ParameterFetchState = _$ParameterFetchStateTearOff();
 /// @nodoc
 mixin _$ParameterFetchState {
   @optionalTypeArgs
-  Result when<Result extends Object>({
-    @required Result fetched(DeviceParametersModel model),
-    @required Result fetching(),
+  TResult when<TResult extends Object>({
+    @required TResult fetched(DeviceParametersModel model),
+    @required TResult fetching(),
   });
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>({
-    Result fetched(DeviceParametersModel model),
-    Result fetching(),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>({
+    TResult fetched(DeviceParametersModel model),
+    TResult fetching(),
+    @required TResult orElse(),
   });
   @optionalTypeArgs
-  Result map<Result extends Object>({
-    @required Result fetched(_Fetched value),
-    @required Result fetching(_Fetching value),
+  TResult map<TResult extends Object>({
+    @required TResult fetched(_Fetched value),
+    @required TResult fetching(_Fetching value),
   });
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>({
-    Result fetched(_Fetched value),
-    Result fetching(_Fetching value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>({
+    TResult fetched(_Fetched value),
+    TResult fetching(_Fetching value),
+    @required TResult orElse(),
   });
 }
 
@@ -130,9 +130,9 @@ class _$_Fetched implements _Fetched {
 
   @override
   @optionalTypeArgs
-  Result when<Result extends Object>({
-    @required Result fetched(DeviceParametersModel model),
-    @required Result fetching(),
+  TResult when<TResult extends Object>({
+    @required TResult fetched(DeviceParametersModel model),
+    @required TResult fetching(),
   }) {
     assert(fetched != null);
     assert(fetching != null);
@@ -141,10 +141,10 @@ class _$_Fetched implements _Fetched {
 
   @override
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>({
-    Result fetched(DeviceParametersModel model),
-    Result fetching(),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>({
+    TResult fetched(DeviceParametersModel model),
+    TResult fetching(),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (fetched != null) {
@@ -155,9 +155,9 @@ class _$_Fetched implements _Fetched {
 
   @override
   @optionalTypeArgs
-  Result map<Result extends Object>({
-    @required Result fetched(_Fetched value),
-    @required Result fetching(_Fetching value),
+  TResult map<TResult extends Object>({
+    @required TResult fetched(_Fetched value),
+    @required TResult fetching(_Fetching value),
   }) {
     assert(fetched != null);
     assert(fetching != null);
@@ -166,10 +166,10 @@ class _$_Fetched implements _Fetched {
 
   @override
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>({
-    Result fetched(_Fetched value),
-    Result fetching(_Fetching value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>({
+    TResult fetched(_Fetched value),
+    TResult fetching(_Fetching value),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (fetched != null) {
@@ -222,9 +222,9 @@ class _$_Fetching implements _Fetching {
 
   @override
   @optionalTypeArgs
-  Result when<Result extends Object>({
-    @required Result fetched(DeviceParametersModel model),
-    @required Result fetching(),
+  TResult when<TResult extends Object>({
+    @required TResult fetched(DeviceParametersModel model),
+    @required TResult fetching(),
   }) {
     assert(fetched != null);
     assert(fetching != null);
@@ -233,10 +233,10 @@ class _$_Fetching implements _Fetching {
 
   @override
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>({
-    Result fetched(DeviceParametersModel model),
-    Result fetching(),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>({
+    TResult fetched(DeviceParametersModel model),
+    TResult fetching(),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (fetching != null) {
@@ -247,9 +247,9 @@ class _$_Fetching implements _Fetching {
 
   @override
   @optionalTypeArgs
-  Result map<Result extends Object>({
-    @required Result fetched(_Fetched value),
-    @required Result fetching(_Fetching value),
+  TResult map<TResult extends Object>({
+    @required TResult fetched(_Fetched value),
+    @required TResult fetching(_Fetching value),
   }) {
     assert(fetched != null);
     assert(fetching != null);
@@ -258,10 +258,10 @@ class _$_Fetching implements _Fetching {
 
   @override
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>({
-    Result fetched(_Fetched value),
-    Result fetching(_Fetching value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>({
+    TResult fetched(_Fetched value),
+    TResult fetching(_Fetching value),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (fetching != null) {

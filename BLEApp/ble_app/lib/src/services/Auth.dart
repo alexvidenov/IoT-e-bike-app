@@ -64,7 +64,8 @@ class Auth {
           : AuthState.failedToAuthenticate(
               reason: NotAuthenticatedReason.userNotFound);
     }
-    return AuthState.failedToAuthenticate(reason: NotAuthenticatedReason.undefined);
+    return AuthState.failedToAuthenticate(
+        reason: NotAuthenticatedReason.undefined);
   }
 
   Future<AuthState> signUpWithEmailAndPassword(String email, String password,
@@ -89,7 +90,8 @@ class Auth {
       return AuthState.failedToAuthenticate(
           reason: AuthExceptionHandler.handleException(e));
     }
-    return AuthState.failedToAuthenticate(reason: NotAuthenticatedReason.undefined);
+    return AuthState.failedToAuthenticate(
+        reason: NotAuthenticatedReason.undefined);
   }
 
   Future<void> signOut() async => await _auth.signOut().then((_) {
@@ -124,23 +126,14 @@ extension AuthExceptionHandler on Auth {
       case "invalid-email":
         status = NotAuthenticatedReason.invalidEmail;
         break;
-      case "user-not-found":
+      case "wrong-password":
         status = NotAuthenticatedReason.wrongPassword;
         break;
-      case "ERROR_USER_NOT_FOUND":
+      case "user-not-found":
         status = NotAuthenticatedReason.userNotFound;
         break;
-      case "ERROR_USER_DISABLED":
+      case "user-disabled":
         status = NotAuthenticatedReason.userDisabled;
-        break;
-      case "ERROR_TOO_MANY_REQUESTS":
-        status = NotAuthenticatedReason.tooManyRequests;
-        break;
-      case "ERROR_OPERATION_NOT_ALLOWED":
-        status = NotAuthenticatedReason.operationNotAllowed;
-        break;
-      case "ERROR_EMAIL_ALREADY_IN_USE":
-        status = NotAuthenticatedReason.emailAlreadyExists;
         break;
       default:
         status = NotAuthenticatedReason.undefined;

@@ -35,26 +35,26 @@ const $AuthState = _$AuthStateTearOff();
 /// @nodoc
 mixin _$AuthState {
   @optionalTypeArgs
-  Result when<Result extends Object>({
-    @required Result authenticated(String userId),
-    @required Result failedToAuthenticate(NotAuthenticatedReason reason),
+  TResult when<TResult extends Object>({
+    @required TResult authenticated(String userId),
+    @required TResult failedToAuthenticate(NotAuthenticatedReason reason),
   });
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>({
-    Result authenticated(String userId),
-    Result failedToAuthenticate(NotAuthenticatedReason reason),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>({
+    TResult authenticated(String userId),
+    TResult failedToAuthenticate(NotAuthenticatedReason reason),
+    @required TResult orElse(),
   });
   @optionalTypeArgs
-  Result map<Result extends Object>({
-    @required Result authenticated(_Authenticated value),
-    @required Result failedToAuthenticate(_FailedToAuthenticate value),
+  TResult map<TResult extends Object>({
+    @required TResult authenticated(_Authenticated value),
+    @required TResult failedToAuthenticate(_FailedToAuthenticate value),
   });
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>({
-    Result authenticated(_Authenticated value),
-    Result failedToAuthenticate(_FailedToAuthenticate value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>({
+    TResult authenticated(_Authenticated value),
+    TResult failedToAuthenticate(_FailedToAuthenticate value),
+    @required TResult orElse(),
   });
 }
 
@@ -131,9 +131,9 @@ class _$_Authenticated implements _Authenticated {
 
   @override
   @optionalTypeArgs
-  Result when<Result extends Object>({
-    @required Result authenticated(String userId),
-    @required Result failedToAuthenticate(NotAuthenticatedReason reason),
+  TResult when<TResult extends Object>({
+    @required TResult authenticated(String userId),
+    @required TResult failedToAuthenticate(NotAuthenticatedReason reason),
   }) {
     assert(authenticated != null);
     assert(failedToAuthenticate != null);
@@ -142,10 +142,10 @@ class _$_Authenticated implements _Authenticated {
 
   @override
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>({
-    Result authenticated(String userId),
-    Result failedToAuthenticate(NotAuthenticatedReason reason),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>({
+    TResult authenticated(String userId),
+    TResult failedToAuthenticate(NotAuthenticatedReason reason),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (authenticated != null) {
@@ -156,9 +156,9 @@ class _$_Authenticated implements _Authenticated {
 
   @override
   @optionalTypeArgs
-  Result map<Result extends Object>({
-    @required Result authenticated(_Authenticated value),
-    @required Result failedToAuthenticate(_FailedToAuthenticate value),
+  TResult map<TResult extends Object>({
+    @required TResult authenticated(_Authenticated value),
+    @required TResult failedToAuthenticate(_FailedToAuthenticate value),
   }) {
     assert(authenticated != null);
     assert(failedToAuthenticate != null);
@@ -167,10 +167,10 @@ class _$_Authenticated implements _Authenticated {
 
   @override
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>({
-    Result authenticated(_Authenticated value),
-    Result failedToAuthenticate(_FailedToAuthenticate value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>({
+    TResult authenticated(_Authenticated value),
+    TResult failedToAuthenticate(_FailedToAuthenticate value),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (authenticated != null) {
@@ -248,9 +248,9 @@ class _$_FailedToAuthenticate implements _FailedToAuthenticate {
 
   @override
   @optionalTypeArgs
-  Result when<Result extends Object>({
-    @required Result authenticated(String userId),
-    @required Result failedToAuthenticate(NotAuthenticatedReason reason),
+  TResult when<TResult extends Object>({
+    @required TResult authenticated(String userId),
+    @required TResult failedToAuthenticate(NotAuthenticatedReason reason),
   }) {
     assert(authenticated != null);
     assert(failedToAuthenticate != null);
@@ -259,10 +259,10 @@ class _$_FailedToAuthenticate implements _FailedToAuthenticate {
 
   @override
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>({
-    Result authenticated(String userId),
-    Result failedToAuthenticate(NotAuthenticatedReason reason),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>({
+    TResult authenticated(String userId),
+    TResult failedToAuthenticate(NotAuthenticatedReason reason),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (failedToAuthenticate != null) {
@@ -273,9 +273,9 @@ class _$_FailedToAuthenticate implements _FailedToAuthenticate {
 
   @override
   @optionalTypeArgs
-  Result map<Result extends Object>({
-    @required Result authenticated(_Authenticated value),
-    @required Result failedToAuthenticate(_FailedToAuthenticate value),
+  TResult map<TResult extends Object>({
+    @required TResult authenticated(_Authenticated value),
+    @required TResult failedToAuthenticate(_FailedToAuthenticate value),
   }) {
     assert(authenticated != null);
     assert(failedToAuthenticate != null);
@@ -284,10 +284,10 @@ class _$_FailedToAuthenticate implements _FailedToAuthenticate {
 
   @override
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>({
-    Result authenticated(_Authenticated value),
-    Result failedToAuthenticate(_FailedToAuthenticate value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>({
+    TResult authenticated(_Authenticated value),
+    TResult failedToAuthenticate(_FailedToAuthenticate value),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (failedToAuthenticate != null) {

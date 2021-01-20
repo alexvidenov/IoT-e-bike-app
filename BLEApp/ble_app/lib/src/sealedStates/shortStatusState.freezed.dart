@@ -38,26 +38,26 @@ mixin _$ShortStatusState {
   ShortStatusModel get model;
 
   @optionalTypeArgs
-  Result when<Result extends Object>(
-    Result $default(ShortStatusModel model), {
-    @required Result error(ErrorState errorState, ShortStatusModel model),
+  TResult when<TResult extends Object>(
+    TResult $default(ShortStatusModel model), {
+    @required TResult error(ErrorState errorState, ShortStatusModel model),
   });
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>(
-    Result $default(ShortStatusModel model), {
-    Result error(ErrorState errorState, ShortStatusModel model),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>(
+    TResult $default(ShortStatusModel model), {
+    TResult error(ErrorState errorState, ShortStatusModel model),
+    @required TResult orElse(),
   });
   @optionalTypeArgs
-  Result map<Result extends Object>(
-    Result $default(Normal value), {
-    @required Result error(Error value),
+  TResult map<TResult extends Object>(
+    TResult $default(Normal value), {
+    @required TResult error(Error value),
   });
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>(
-    Result $default(Normal value), {
-    Result error(Error value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>(
+    TResult $default(Normal value), {
+    TResult error(Error value),
+    @required TResult orElse(),
   });
 
   $ShortStatusStateCopyWith<ShortStatusState> get copyWith;
@@ -148,9 +148,9 @@ class _$Normal implements Normal {
 
   @override
   @optionalTypeArgs
-  Result when<Result extends Object>(
-    Result $default(ShortStatusModel model), {
-    @required Result error(ErrorState errorState, ShortStatusModel model),
+  TResult when<TResult extends Object>(
+    TResult $default(ShortStatusModel model), {
+    @required TResult error(ErrorState errorState, ShortStatusModel model),
   }) {
     assert($default != null);
     assert(error != null);
@@ -159,10 +159,10 @@ class _$Normal implements Normal {
 
   @override
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>(
-    Result $default(ShortStatusModel model), {
-    Result error(ErrorState errorState, ShortStatusModel model),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>(
+    TResult $default(ShortStatusModel model), {
+    TResult error(ErrorState errorState, ShortStatusModel model),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if ($default != null) {
@@ -173,9 +173,9 @@ class _$Normal implements Normal {
 
   @override
   @optionalTypeArgs
-  Result map<Result extends Object>(
-    Result $default(Normal value), {
-    @required Result error(Error value),
+  TResult map<TResult extends Object>(
+    TResult $default(Normal value), {
+    @required TResult error(Error value),
   }) {
     assert($default != null);
     assert(error != null);
@@ -184,10 +184,10 @@ class _$Normal implements Normal {
 
   @override
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>(
-    Result $default(Normal value), {
-    Result error(Error value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>(
+    TResult $default(Normal value), {
+    TResult error(Error value),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if ($default != null) {
@@ -272,9 +272,9 @@ class _$Error implements Error {
 
   @override
   @optionalTypeArgs
-  Result when<Result extends Object>(
-    Result $default(ShortStatusModel model), {
-    @required Result error(ErrorState errorState, ShortStatusModel model),
+  TResult when<TResult extends Object>(
+    TResult $default(ShortStatusModel model), {
+    @required TResult error(ErrorState errorState, ShortStatusModel model),
   }) {
     assert($default != null);
     assert(error != null);
@@ -283,10 +283,10 @@ class _$Error implements Error {
 
   @override
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>(
-    Result $default(ShortStatusModel model), {
-    Result error(ErrorState errorState, ShortStatusModel model),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>(
+    TResult $default(ShortStatusModel model), {
+    TResult error(ErrorState errorState, ShortStatusModel model),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (error != null) {
@@ -297,9 +297,9 @@ class _$Error implements Error {
 
   @override
   @optionalTypeArgs
-  Result map<Result extends Object>(
-    Result $default(Normal value), {
-    @required Result error(Error value),
+  TResult map<TResult extends Object>(
+    TResult $default(Normal value), {
+    @required TResult error(Error value),
   }) {
     assert($default != null);
     assert(error != null);
@@ -308,10 +308,10 @@ class _$Error implements Error {
 
   @override
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>(
-    Result $default(Normal value), {
-    Result error(Error value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>(
+    TResult $default(Normal value), {
+    TResult error(Error value),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (error != null) {

@@ -30,8 +30,8 @@ class _CardParameter extends StatelessWidget {
                 title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text('$_parameterName :'),
-                      Text('$_parameterValue $_measureUnit')
+                      Text('$_parameterName :', style: TextStyle(fontSize: 24, color: Colors.black),),
+                      Text('$_parameterValue $_measureUnit', style: TextStyle(fontSize: 20, color: Colors.black),)
                       // here check with smt like: prefs.maxCellVoltage ?? 24.
                     ]),
                 subtitle: Text(_description),
@@ -44,7 +44,7 @@ class _CardParameter extends StatelessWidget {
 
 class BatterySettingsScreen extends StatefulWidget {
   final ParameterListenerBloc _parameterListenerBloc;
-  final SettingsBloc _settingsBloc;
+  final SettingsBloc _settingsBloc; // won't be needed
   final BluetoothAuthBloc
       _authBloc; // FIXME try to abstract the bloc with only the necessary part
   final DeviceRepository _repository;
@@ -96,7 +96,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                     'Max cell voltage',
                     'V',
                     () => _presentDialog(context,
-                        parameterKey: '01', action: 'Change')),
+                        parameterKey: '01', action: 'Change', commaIndex: 1)),
                 _CardParameter(
                     2,
                     'V MaxR',
@@ -230,10 +230,23 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
       context: widgetContext,
       builder: (context) => AlertDialog(
         title: Text('Enter new value'),
-        content: TextField(
-          controller: _writeController,
-          //onChanged: (text) => _writeController.text += ',',
-        ),
+        content: TextField(controller: _writeController
+            /*
+          onChanged: (text) {
+            if (_writeController.text.length == commaIndex) {
+              final oldControllerValue = _writeController.text;
+              //_writeController.selection =
+              final String newText = oldControllerValue + ',';
+              final newControllerValue = _writeController.value.copyWith(
+                  text: newText,
+                  composing:
+                      TextRange(start: 2, end: 3) //offset to Last Character
+                  );
+              _writeController.value = newControllerValue;
+            }
+          },
+             */
+            ),
         actions: <Widget>[
           FlatButton(
             child: Text(action),

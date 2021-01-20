@@ -23,6 +23,7 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
   onResume() {
     super.onResume();
     final context = navigationBloc.navigatorKey.currentContext;
+    /*
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showDialog(
           context: context,
@@ -41,6 +42,7 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
             );
           });
     });
+     */
     navigationBloc.addEvent(CurrentPage.Short);
   }
 }

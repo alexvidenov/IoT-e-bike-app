@@ -15,14 +15,15 @@ class VoltagesBarChart extends StatelessWidget {
 
   VoltagesBarChart(this._fullStatusBloc);
 
-  List<FullStatusDataModel> _chartData;
+  List<FullStatusDataModel>
+      _chartData; // extract that in  a  separate  widget in order to  make  this  immutable
 
   SfCartesianChart getBarChart() => SfCartesianChart(
         plotAreaBorderWidth: 0,
         primaryXAxis: NumericAxis(
           interval: 1.0,
           minimum: 0,
-          maximum: 15,
+          maximum: 17,
           // NUM of cells here
           labelStyle: TextStyle(fontSize: 20),
           majorGridLines: MajorGridLines(width: 0),
@@ -67,7 +68,16 @@ class VoltagesBarChart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              ProgressText(title: 'Umin.', content: '10V'),
+              // extract prolly
+              ValueListenableBuilder<DeviceParametersModel>(
+                valueListenable: _fullStatusBloc.getParameters(),
+                builder: (context, value, _) {
+                  return ProgressText(
+                    title: 'Umin.',
+                    content: (value.minCellVoltage / 100).toString() + 'V',
+                  );
+                },
+              ),
               ValueListenableBuilder<DeviceParametersModel>(
                 valueListenable: _fullStatusBloc.getParameters(),
                 builder: (context, value, _) {
@@ -77,12 +87,15 @@ class VoltagesBarChart extends StatelessWidget {
                   );
                 },
               ),
-              ProgressText(
-                title: 'Umax.',
-                content: (_fullStatusBloc.getParameters().value.maxCellVoltage / 100)
-                        .toString() +
-                    'V',
-              )
+              ValueListenableBuilder<DeviceParametersModel>(
+                valueListenable: _fullStatusBloc.getParameters(),
+                builder: (context, value, _) {
+                  return ProgressText(
+                    title: 'Umax.',
+                    content: (value.maxCellVoltage / 100).toString() + 'V',
+                  );
+                },
+              ),
             ],
           ),
           Padding(

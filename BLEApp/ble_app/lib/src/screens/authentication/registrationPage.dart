@@ -82,14 +82,15 @@ class _StepperBodyState extends State<StepperBody> {
   get _focusNode => FocusNode();
 
   get _focusNodeLastName => FocusNode();
+
   final data = _Credentials();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    _focusNode.addListener(() => setState(() {}));
-    _focusNodeLastName.addListener(() => setState(() {}));
+    _focusNode.addListener(() => setState(() => {}));
+    _focusNodeLastName.addListener(() => setState(() => {}));
   }
 
   @override

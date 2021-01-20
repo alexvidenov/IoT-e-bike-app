@@ -8,8 +8,6 @@ enum NotAuthenticatedReason {
   invalidEmail,
   userNotFound,
   userDisabled,
-  operationNotAllowed,
-  tooManyRequests,
   undefined,
 }
 
@@ -19,4 +17,6 @@ abstract class AuthState with _$AuthState {
 
   const factory AuthState.failedToAuthenticate(
       {NotAuthenticatedReason reason}) = _FailedToAuthenticate;
+
+//const factory AuthState.loggedOut() = _LoggedOut;
 }

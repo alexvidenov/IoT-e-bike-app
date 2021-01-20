@@ -34,26 +34,26 @@ const $BTAuthState = _$BTAuthStateTearOff();
 /// @nodoc
 mixin _$BTAuthState {
   @optionalTypeArgs
-  Result when<Result extends Object>({
-    @required Result btAuthenticated(),
-    @required Result failedToBTAuthenticate(BTNotAuthenticatedReason reason),
+  TResult when<TResult extends Object>({
+    @required TResult btAuthenticated(),
+    @required TResult failedToBTAuthenticate(BTNotAuthenticatedReason reason),
   });
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>({
-    Result btAuthenticated(),
-    Result failedToBTAuthenticate(BTNotAuthenticatedReason reason),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>({
+    TResult btAuthenticated(),
+    TResult failedToBTAuthenticate(BTNotAuthenticatedReason reason),
+    @required TResult orElse(),
   });
   @optionalTypeArgs
-  Result map<Result extends Object>({
-    @required Result btAuthenticated(_BTAuthenticated value),
-    @required Result failedToBTAuthenticate(_BTNotAuthenticated value),
+  TResult map<TResult extends Object>({
+    @required TResult btAuthenticated(_BTAuthenticated value),
+    @required TResult failedToBTAuthenticate(_BTNotAuthenticated value),
   });
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>({
-    Result btAuthenticated(_BTAuthenticated value),
-    Result failedToBTAuthenticate(_BTNotAuthenticated value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>({
+    TResult btAuthenticated(_BTAuthenticated value),
+    TResult failedToBTAuthenticate(_BTNotAuthenticated value),
+    @required TResult orElse(),
   });
 }
 
@@ -111,9 +111,9 @@ class _$_BTAuthenticated implements _BTAuthenticated {
 
   @override
   @optionalTypeArgs
-  Result when<Result extends Object>({
-    @required Result btAuthenticated(),
-    @required Result failedToBTAuthenticate(BTNotAuthenticatedReason reason),
+  TResult when<TResult extends Object>({
+    @required TResult btAuthenticated(),
+    @required TResult failedToBTAuthenticate(BTNotAuthenticatedReason reason),
   }) {
     assert(btAuthenticated != null);
     assert(failedToBTAuthenticate != null);
@@ -122,10 +122,10 @@ class _$_BTAuthenticated implements _BTAuthenticated {
 
   @override
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>({
-    Result btAuthenticated(),
-    Result failedToBTAuthenticate(BTNotAuthenticatedReason reason),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>({
+    TResult btAuthenticated(),
+    TResult failedToBTAuthenticate(BTNotAuthenticatedReason reason),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (btAuthenticated != null) {
@@ -136,9 +136,9 @@ class _$_BTAuthenticated implements _BTAuthenticated {
 
   @override
   @optionalTypeArgs
-  Result map<Result extends Object>({
-    @required Result btAuthenticated(_BTAuthenticated value),
-    @required Result failedToBTAuthenticate(_BTNotAuthenticated value),
+  TResult map<TResult extends Object>({
+    @required TResult btAuthenticated(_BTAuthenticated value),
+    @required TResult failedToBTAuthenticate(_BTNotAuthenticated value),
   }) {
     assert(btAuthenticated != null);
     assert(failedToBTAuthenticate != null);
@@ -147,10 +147,10 @@ class _$_BTAuthenticated implements _BTAuthenticated {
 
   @override
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>({
-    Result btAuthenticated(_BTAuthenticated value),
-    Result failedToBTAuthenticate(_BTNotAuthenticated value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>({
+    TResult btAuthenticated(_BTAuthenticated value),
+    TResult failedToBTAuthenticate(_BTNotAuthenticated value),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (btAuthenticated != null) {
@@ -225,9 +225,9 @@ class _$_BTNotAuthenticated implements _BTNotAuthenticated {
 
   @override
   @optionalTypeArgs
-  Result when<Result extends Object>({
-    @required Result btAuthenticated(),
-    @required Result failedToBTAuthenticate(BTNotAuthenticatedReason reason),
+  TResult when<TResult extends Object>({
+    @required TResult btAuthenticated(),
+    @required TResult failedToBTAuthenticate(BTNotAuthenticatedReason reason),
   }) {
     assert(btAuthenticated != null);
     assert(failedToBTAuthenticate != null);
@@ -236,10 +236,10 @@ class _$_BTNotAuthenticated implements _BTNotAuthenticated {
 
   @override
   @optionalTypeArgs
-  Result maybeWhen<Result extends Object>({
-    Result btAuthenticated(),
-    Result failedToBTAuthenticate(BTNotAuthenticatedReason reason),
-    @required Result orElse(),
+  TResult maybeWhen<TResult extends Object>({
+    TResult btAuthenticated(),
+    TResult failedToBTAuthenticate(BTNotAuthenticatedReason reason),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (failedToBTAuthenticate != null) {
@@ -250,9 +250,9 @@ class _$_BTNotAuthenticated implements _BTNotAuthenticated {
 
   @override
   @optionalTypeArgs
-  Result map<Result extends Object>({
-    @required Result btAuthenticated(_BTAuthenticated value),
-    @required Result failedToBTAuthenticate(_BTNotAuthenticated value),
+  TResult map<TResult extends Object>({
+    @required TResult btAuthenticated(_BTAuthenticated value),
+    @required TResult failedToBTAuthenticate(_BTNotAuthenticated value),
   }) {
     assert(btAuthenticated != null);
     assert(failedToBTAuthenticate != null);
@@ -261,10 +261,10 @@ class _$_BTNotAuthenticated implements _BTNotAuthenticated {
 
   @override
   @optionalTypeArgs
-  Result maybeMap<Result extends Object>({
-    Result btAuthenticated(_BTAuthenticated value),
-    Result failedToBTAuthenticate(_BTNotAuthenticated value),
-    @required Result orElse(),
+  TResult maybeMap<TResult extends Object>({
+    TResult btAuthenticated(_BTAuthenticated value),
+    TResult failedToBTAuthenticate(_BTNotAuthenticated value),
+    @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (failedToBTAuthenticate != null) {
