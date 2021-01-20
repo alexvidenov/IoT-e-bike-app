@@ -1,6 +1,6 @@
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/navigationService.dart';
-import 'package:ble_app/src/main.dart';
+import 'package:ble_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 

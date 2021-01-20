@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:ble_app/src/listeners/disconnectedListener.dart';
-import 'package:ble_app/src/main.dart';
+import 'package:ble_app/main.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
-part '../extensions/DeviceConnectionMethods.dart';
+part 'blocExtensions/DeviceConnectionMethods.dart';
 
 @lazySingleton
 class DeviceBloc {

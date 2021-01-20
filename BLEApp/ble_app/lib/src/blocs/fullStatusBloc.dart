@@ -1,12 +1,11 @@
-import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
-import 'package:ble_app/src/main.dart';
+import 'package:ble_app/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
-part '../extensions/FullStatusParse.dart';
+part 'blocExtensions/FullStatusParse.dart';
 
 @injectable
 class FullStatusBloc
@@ -16,7 +15,9 @@ class FullStatusBloc
   FullStatusBloc(this._repository) : super();
 
   @override
-  void create() => _listenToFullStatus();
+  create() => streamSubscription = _repository.characteristicValueStream
+      .listen((event) =>
+          addEvent(_generateFullStatus(event)));
 
   @override
   pause() {
@@ -28,12 +29,6 @@ class FullStatusBloc
   resume() {
     _repository.resumeTimer(false); // change this boolean please
     super.resume();
-  }
-
-  _listenToFullStatus() {
-    streamSubscription = _repository.characteristicValueStream
-        .listen((event) => // if(event.length > someArbitrary shit)
-            addEvent(_generateFullStatus(event)));
   }
 
   @override

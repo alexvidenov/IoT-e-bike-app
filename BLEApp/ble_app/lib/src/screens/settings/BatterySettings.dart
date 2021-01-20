@@ -9,6 +9,11 @@ import 'package:flutter/material.dart';
 
 // W27_newPINHERE - OK
 
+// Cell count
+// W0001 - first node (first to get info from master) if(ostatuk == 1) else substract a from the  second
+// W0002 - second node
+//
+
 class _CardParameter extends StatelessWidget {
   final int _index;
   final String _parameterName;
@@ -30,8 +35,14 @@ class _CardParameter extends StatelessWidget {
                 title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text('$_parameterName :', style: TextStyle(fontSize: 24, color: Colors.black),),
-                      Text('$_parameterValue $_measureUnit', style: TextStyle(fontSize: 20, color: Colors.black),)
+                      Text(
+                        '$_parameterName :',
+                        style: TextStyle(fontSize: 24, color: Colors.black),
+                      ),
+                      Text(
+                        '$_parameterValue $_measureUnit',
+                        style: TextStyle(fontSize: 20, color: Colors.black),
+                      )
                       // here check with smt like: prefs.maxCellVoltage ?? 24.
                     ]),
                 subtitle: Text(_description),
@@ -84,7 +95,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     0,
                     'Cell Num',
-                    snapshot.data['00'] ?? 4,
+                    ((snapshot.data['00'] as num).toInt()) ?? 4,
                     'Number of active cells',
                     '',
                     () => _presentDialog(context,
@@ -92,7 +103,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     1,
                     'V Max',
-                    snapshot.data['01'] ?? 4.28,
+                    (snapshot.data['01'] / 100) ?? 4.28,
                     'Max cell voltage',
                     'V',
                     () => _presentDialog(context,
@@ -100,7 +111,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     2,
                     'V MaxR',
-                    snapshot.data['02'] ?? 4.15,
+                    (snapshot.data['02'] / 100) ?? 4.15,
                     'Max recovery voltage',
                     'V',
                     () => _presentDialog(context,
@@ -108,7 +119,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     3,
                     'V Bal',
-                    snapshot.data['03'] ?? 4.20,
+                    (snapshot.data['03'] / 100) ?? 4.20,
                     'Balance cell voltage',
                     'V',
                     () => _presentDialog(context,
@@ -116,7 +127,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     4,
                     'VMin',
-                    snapshot.data['04'] ?? 2.80,
+                    (snapshot.data['04'] / 100) ?? 2.80,
                     'Min cell voltage',
                     'V',
                     () => _presentDialog(context,
@@ -124,7 +135,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     5,
                     'VMinR',
-                    snapshot.data['05'] ?? 3.10,
+                    (snapshot.data['05'] / 100) ?? 3.10,
                     'Min cell recovery voltage',
                     'V',
                     () => _presentDialog(context,
@@ -132,7 +143,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     6,
                     'VULOW',
-                    snapshot.data['06'] ?? 2,
+                    (snapshot.data['06'] / 100) ?? 2,
                     'Ultra low cell voltage',
                     'V',
                     () => _presentDialog(context,
@@ -140,7 +151,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     7,
                     'IDMax1',
-                    snapshot.data['12'] ?? 20,
+                    (snapshot.data['12'] / 100) ?? 20,
                     'Max limited discharge current',
                     'A',
                     () => _presentDialog(context,
@@ -148,7 +159,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     8,
                     'IDMax2',
-                    snapshot.data['13'] ?? 25,
+                    (snapshot.data['13'] / 100) ?? 25,
                     'Max cut-off discharge current',
                     'A',
                     () => _presentDialog(context,
@@ -156,7 +167,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     9,
                     'Id max 1 time',
-                    snapshot.data['14'] ?? 10,
+                    ((snapshot.data['14'] as num).toInt()) ?? 10,
                     'Max current time-limit period',
                     's',
                     () => _presentDialog(context,
@@ -164,7 +175,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     10,
                     'ICMax',
-                    snapshot.data['15'] ?? 8,
+                    (snapshot.data['15'] / 100) ?? 8,
                     'Max cut-off charge current',
                     'A',
                     () => _presentDialog(context,
@@ -172,7 +183,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     11,
                     'I Thr Count',
-                    snapshot.data['16'] ?? 40,
+                    (snapshot.data['16'] / 100) ?? 40,
                     'Moto-hours current threshold',
                     'A',
                     () => _presentDialog(context,
@@ -180,7 +191,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     12,
                     'I Max c-off Time ',
-                    snapshot.data['17'] ?? 5,
+                    ((snapshot.data['17'] as num).toInt()) ?? 5,
                     'Max cut-off time period',
                     's',
                     () => _presentDialog(context,
@@ -188,7 +199,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     13,
                     'T Max',
-                    snapshot.data['23'] ?? 240,
+                    (snapshot.data['23']) ?? 240,
                     'Max temperature cut-off',
                     '°C',
                     () => _presentDialog(context,

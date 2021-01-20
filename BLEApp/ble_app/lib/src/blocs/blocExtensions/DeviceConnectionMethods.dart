@@ -1,4 +1,4 @@
-part of '../blocs/deviceBloc.dart';
+part of '../deviceBloc.dart';
 
 extension DeviceConnectionMethods on DeviceBloc {
   Future<void> disconnect() =>

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
-import 'package:ble_app/src/main.dart';
+import 'package:ble_app/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
@@ -11,7 +11,7 @@ import 'package:ble_app/src/sealedStates/shortStatusState.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:injectable/injectable.dart';
 
-part '../extensions/ShortStatusParse.dart';
+part 'blocExtensions/ShortStatusParse.dart';
 
 @injectable
 class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {

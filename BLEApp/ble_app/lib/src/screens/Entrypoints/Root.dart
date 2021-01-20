@@ -2,7 +2,7 @@ import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:flutter/material.dart';
 
-import '../../main.dart';
+import '../../../main.dart';
 import '../authentication/authenticationWrapper.dart';
 import '../../listeners/authStateListener.dart';
 

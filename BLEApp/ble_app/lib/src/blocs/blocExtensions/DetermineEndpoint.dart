@@ -1,4 +1,4 @@
-part of '../blocs/entryEndpointBloc.dart';
+part of '../entryEndpointBloc.dart';
 
 extension DetermineEndpoint on EntryEndpointBloc {
   _determineEndpoint() {

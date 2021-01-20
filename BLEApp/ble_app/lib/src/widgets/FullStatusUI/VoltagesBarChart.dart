@@ -24,7 +24,7 @@ class VoltagesBarChart extends StatelessWidget {
           interval: 1.0,
           minimum: 0,
           maximum: 17,
-          // NUM of cells here
+          // NUM OF CELLS HERE
           labelStyle: TextStyle(fontSize: 20),
           majorGridLines: MajorGridLines(width: 0),
         ),
@@ -32,34 +32,33 @@ class VoltagesBarChart extends StatelessWidget {
             majorGridLines: MajorGridLines(width: 0),
             isVisible: false,
             title: AxisTitle(text: ''),
-            minimum: _fullStatusBloc.getParameters().value.minCellVoltage,
-            maximum: _fullStatusBloc.getParameters().value.maxCellVoltage,
+            minimum: _fullStatusBloc.getParameters().value.minCellVoltage / 100,
+            maximum: _fullStatusBloc.getParameters().value.maxCellVoltage / 100,
             majorTickLines: MajorTickLines(size: 0)),
         series: getBarSeries(),
       );
 
-  List<BarSeries<FullStatusDataModel, int>> getBarSeries() {
-    return <BarSeries<FullStatusDataModel, int>>[
-      BarSeries<FullStatusDataModel, int>(
-        animationDuration: 0.5,
-        dataSource: _chartData,
-        borderRadius: BorderRadius.circular(3),
-        trackColor: Colors.white12,
-        isTrackVisible: true,
-        dataLabelSettings: DataLabelSettings(
-            isVisible: true,
-            labelPosition: ChartDataLabelPosition.inside,
-            labelAlignment: ChartDataLabelAlignment.top,
-            textStyle: TextStyle(color: Colors.white, fontSize: 20)),
-        dataLabelMapper: (FullStatusDataModel status, _) =>
-            (status.y / 100).toString() + "V",
-        enableTooltip: true,
-        xValueMapper: (FullStatusDataModel status, _) => status.x,
-        yValueMapper: (FullStatusDataModel status, _) => status.y,
-        pointColorMapper: (FullStatusDataModel status, _) => status.color,
-      ),
-    ];
-  }
+  List<BarSeries<FullStatusDataModel, int>> getBarSeries() =>
+      <BarSeries<FullStatusDataModel, int>>[
+        BarSeries<FullStatusDataModel, int>(
+          animationDuration: 0.5,
+          dataSource: _chartData,
+          borderRadius: BorderRadius.circular(3),
+          trackColor: Colors.white12,
+          isTrackVisible: true,
+          dataLabelSettings: DataLabelSettings(
+              isVisible: true,
+              labelPosition: ChartDataLabelPosition.inside,
+              labelAlignment: ChartDataLabelAlignment.top,
+              textStyle: TextStyle(color: Colors.white, fontSize: 20)),
+          dataLabelMapper: (FullStatusDataModel status, _) =>
+              (status.y / 100).toString() + "V",
+          enableTooltip: true,
+          xValueMapper: (FullStatusDataModel status, _) => status.x,
+          yValueMapper: (FullStatusDataModel status, _) => status.y / 100,
+          pointColorMapper: (FullStatusDataModel status, _) => status.color,
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) => Column(
@@ -104,6 +103,7 @@ class VoltagesBarChart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 ProgressText(title: 'Charge', content: '5A'),
+                // ValueListenables
                 ProgressText(
                   title: 'Discharge',
                   content: '10A',

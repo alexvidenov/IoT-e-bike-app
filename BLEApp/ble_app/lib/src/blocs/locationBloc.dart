@@ -1,12 +1,12 @@
 import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:ble_app/src/main.dart';
+import 'package:ble_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:location/location.dart';
 
-part '../extensions/TrackLocation.dart';
+part 'blocExtensions/TrackLocation.dart';
 
 @injectable
 class LocationBloc extends Bloc<LocationData, LocationData> {

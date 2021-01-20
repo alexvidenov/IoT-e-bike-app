@@ -40,8 +40,9 @@ class NavigationDrawer extends StatelessWidget {
                 onTap: () async => await _onLogout().then((_) async {
                       Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(builder: (_) => RootPage($())),
-                          (route) => false);
+                          (_) => false);
                       _prefsBloc.clearPrefs();
+                      _prefsBloc.deleteUserData();
                       await _deviceBloc.disconnect();
                     })),
             ListTile(

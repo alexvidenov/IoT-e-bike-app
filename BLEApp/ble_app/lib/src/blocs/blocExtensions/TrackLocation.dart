@@ -1,4 +1,4 @@
-part of '../blocs/locationBloc.dart';
+part of '../locationBloc.dart';
 
 extension TrackLocation on LocationBloc {
   _startTrackingLocation() async {

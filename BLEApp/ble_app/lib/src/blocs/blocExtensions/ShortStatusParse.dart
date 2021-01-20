@@ -1,4 +1,4 @@
-part of '../blocs/shortStatusBloc.dart';
+part of '../shortStatusBloc.dart';
 
 extension ShortStatusParse on ShortStatusBloc {
   ShortStatusModel _generateShortStatus(String rawData) {

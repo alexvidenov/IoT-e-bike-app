@@ -1,4 +1,4 @@
-part of '../blocs/devicesBloc.dart';
+part of '../devicesBloc.dart';
 
 extension BLEScanMethods on DevicesBloc {
   _startScan() {

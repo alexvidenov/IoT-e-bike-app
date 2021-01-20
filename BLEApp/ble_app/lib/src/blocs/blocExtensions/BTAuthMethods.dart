@@ -1,4 +1,4 @@
-part of '../blocs/btAuthenticationBloc.dart';
+part of '../btAuthenticationBloc.dart';
 
 extension BTAuthMethods on BluetoothAuthBloc {
   authenticate(String password) =>

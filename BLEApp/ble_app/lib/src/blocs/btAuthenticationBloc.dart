@@ -1,12 +1,12 @@
 import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:ble_app/src/main.dart';
+import 'package:ble_app/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/sealedStates/btAuthState.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:injectable/injectable.dart';
 
-part '../extensions/BTAuthMethods.dart';
+part 'blocExtensions/BTAuthMethods.dart';
 
 @injectable
 class BluetoothAuthBloc extends Bloc<BTAuthState, String> {

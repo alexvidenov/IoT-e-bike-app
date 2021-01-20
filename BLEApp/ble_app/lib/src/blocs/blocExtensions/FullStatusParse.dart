@@ -1,4 +1,4 @@
-part of '../blocs/fullStatusBloc.dart';
+part of '../fullStatusBloc.dart';
 
 extension FullStatusParse on FullStatusBloc {
   List<FullStatusDataModel> _generateFullStatus(String rawData) {

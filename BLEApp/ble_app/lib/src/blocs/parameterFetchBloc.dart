@@ -43,7 +43,7 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
     for (var i = 23; i < 27; i++) await _querySingleParam('R$i\r');
     Future.delayed(Duration(milliseconds: 100), () {
       if (_parameters.keys.length == 17) {
-        // TODO: set them only if Firestore..theDocument where the parameters are is null
+        // TODO: set them only if Firestore..theDocument where the parameters are null
         FirestoreDatabase(uid: $<AuthBloc>().user)
             .setDeviceParameters(_parameters, deviceId: _repository.deviceId);
         addEvent(ParameterFetchState.fetched(DeviceParametersModel(

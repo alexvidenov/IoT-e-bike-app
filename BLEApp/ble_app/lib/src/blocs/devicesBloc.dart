@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/bloc.dart';
-import 'package:ble_app/src/main.dart';
+import 'package:ble_app/main.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
@@ -9,7 +9,7 @@ import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
-part '../extensions/BLEScanMethods.dart';
+part 'blocExtensions/BLEScanMethods.dart';
 
 @injectable
 class DevicesBloc extends Bloc<BleDevice, BleDevice> {

@@ -8,7 +8,7 @@ import 'package:injectable/injectable.dart';
 
 import 'bloc.dart';
 
-part '../extensions/DetermineEndpoint.dart';
+part 'blocExtensions/DetermineEndpoint.dart';
 
 enum Endpoint { Unknown, DevicesScreen, AuthScreen }
 

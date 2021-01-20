@@ -33,20 +33,21 @@ Future<void> firebaseStorageUpload() async {
     print('NOT NULL DATA');
     print('User Id: ' + Auth().getCurrentUserId());
     await prefs.remove(PrefsKeys.USER_DATA);
-    Storage(uid: Auth().getCurrentUserId()).upload(jsonDecode(jsonString));
+    await Storage(uid: Auth().getCurrentUserId())
+        .upload(jsonDecode(jsonString));
   }
 }
 
-void backgroundFetchHeadlessTask(String taskId) {
+void backgroundFetchHeadlessTask(String taskId) async {
   print('HEADLESS');
-  firebaseStorageUpload();
+  await firebaseStorageUpload();
   BackgroundFetch.finish(taskId);
 }
 
-void onBackgroundFetch(String taskId) {
+void onBackgroundFetch(String taskId) async {
   print('Running in the background (NOT HEADLESS) $taskId');
   if (taskId == storageUpload) {
-    firebaseStorageUpload();
+    await firebaseStorageUpload();
     BackgroundFetch.finish(taskId);
   }
 }
@@ -70,7 +71,7 @@ main() async {
       taskId: storageUpload,
       stopOnTerminate: false,
       startOnBoot: true,
-      periodic: false,
+      periodic: true,
       delay: 60000,
       enableHeadless: true,
       forceAlarmManager: true));
