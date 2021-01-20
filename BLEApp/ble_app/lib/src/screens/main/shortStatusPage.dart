@@ -13,7 +13,7 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
 
   @override
   Widget buildWidget(BuildContext context) => InkWell(
-        onTap: () => navigationBloc.navigateTo('/full'),
+        onTap: () => navigationBloc.to('/full'),
         child: Container(
           child: ShortStatusUI(super.bloc, $()),
         ),
@@ -43,6 +43,6 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
           });
     });
      */
-    navigationBloc.addEvent(CurrentPage.Short);
+    navigationBloc.addEvent(CurrentPage.ShortStatus);
   }
 }

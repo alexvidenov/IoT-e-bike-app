@@ -38,7 +38,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
     widget._deviceBloc.init();
     widget._authBloc.create();
     widget._deviceBloc.connect().then((_) => _init());
-    _handleBLEError();
+    //_handleBLEError();
   }
 
   _init() {
@@ -46,10 +46,10 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
     _listenToConnectBloc();
   }
 
-  _handleBLEError() => Future.delayed(Duration(seconds: 6), () {
-        // TODO: extract in some handlers object
-        if (!_connected) widget._deviceBloc.connect();
-      });
+  //_handleBLEError() => Future.delayed(Duration(seconds: 4), () {
+  // // TODO: extract in some handlers object
+  // if (!_connected) widget._deviceBloc.connect();
+  // });
 
   @override
   void dispose() {

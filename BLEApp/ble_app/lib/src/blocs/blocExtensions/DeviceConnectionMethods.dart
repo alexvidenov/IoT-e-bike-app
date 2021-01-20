@@ -10,10 +10,15 @@ extension DeviceConnectionMethods on DeviceBloc {
           .disconnectOrCancelConnection();
   }
 
-  Future<void> connect() async =>
+  Future<void> connect() async {
+    try {
       device.listen((bleDevice) async => await bleDevice.peripheral
           .connect()
           .then((_) => _observeConnectionState())
           .then((_) => _deviceRepository.discoverServicesAndStartMonitoring())
           .then((_) => _setDeviceReady.add(true)));
+    } catch (e) {
+      print('GattException');
+    }
+  }
 }

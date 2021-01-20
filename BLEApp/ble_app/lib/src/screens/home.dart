@@ -17,8 +17,7 @@ class HomeScreen extends StatefulWidget with Navigation {
   final DeviceBloc _deviceBloc;
   final DeviceRepository _repository;
 
-  HomeScreen(
-      this._prefsBloc, this._deviceBloc, this._repository);
+  HomeScreen(this._prefsBloc, this._deviceBloc, this._repository);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -75,19 +74,19 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                 backgroundColor: Colors.black,
                 title: StreamBuilder<CurrentPage>(
                     stream: widget.navigationBloc.stream,
-                    initialData: CurrentPage.Short,
+                    initialData: CurrentPage.ShortStatus,
                     builder: (_, snapshot) {
                       String _title;
                       Function _onPressed;
                       switch (snapshot.data) {
-                        case CurrentPage.Short:
+                        case CurrentPage.ShortStatus:
                           _onPressed =
-                              () => widget.navigationBloc.navigateTo('/full');
+                              () => widget.navigationBloc.to('/full');
                           _title = 'Main status';
                           break;
-                        case CurrentPage.Full:
+                        case CurrentPage.Controller:
                           _onPressed =
-                              () => widget.navigationBloc.navigateTo('/map');
+                              () => widget.navigationBloc.to('/map');
                           _title = 'Bat. status';
                           break;
                         case CurrentPage.Map:
@@ -139,7 +138,8 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                     ],
                   )
                 ],
-                bottom: TabBar( // TODO: add self as controller here, and update the index
+                bottom: TabBar(
+                  // TODO: add self as controller here, and update the index
                   labelColor: Colors.lightBlueAccent,
                   unselectedLabelColor: Colors.white,
                   indicatorSize: TabBarIndicatorSize.tab,
@@ -154,10 +154,10 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                         widget.navigationBloc.returnToFirstRoute();
                         break;
                       case 1:
-                        widget.navigationBloc.navigateTo('/full');
+                        widget.navigationBloc.to('/full');
                         break;
                       case 2:
-                        widget.navigationBloc.navigateTo('/map');
+                        widget.navigationBloc.to('/map');
                         break;
                     }
                   },
@@ -191,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   onDisconnected() {
     if (mounted) {
       _hasDisconnected = true;
-      _scaffoldKey.currentState.showBottomSheet((context) => InkWell(
+      _scaffoldKey.currentState.showBottomSheet((_) => InkWell(
             child: Center(
               child: Text('Reconnect',
                   style: TextStyle(fontSize: 28, letterSpacing: 1.5)),
@@ -205,7 +205,8 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   onReconnected() {
     if (_hasDisconnected && mounted) {
       widget._deviceBloc.writeToBLE(widget._prefsBloc.getPassword() ??
-          widget._prefsBloc.password.value); // initiates another session. FIXME this is wrong lmao
+          widget._prefsBloc.password
+              .value); // initiates another session. FIXME this is wrong lmao
       Navigator.of(context).pop();
     }
   }

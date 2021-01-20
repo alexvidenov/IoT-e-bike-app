@@ -52,6 +52,8 @@ class DeviceBloc {
 
   writeToBLE(String data) => _deviceRepository.writeToCharacteristic(data);
 
+  cancel() => _deviceRepository.cancel();
+
   init() => _bleManager.stopPeripheralScan();
 
   _observeConnectionState() => device.listen((bleDevice) => bleDevice.peripheral

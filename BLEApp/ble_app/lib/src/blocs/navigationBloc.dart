@@ -4,7 +4,7 @@ import 'package:ble_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
-enum CurrentPage { Short, Full, Map }
+enum CurrentPage { ShortStatus, Controller, Map }
 
 @lazySingleton
 class NavigationBloc extends Bloc<CurrentPage, CurrentPage> {
@@ -15,7 +15,7 @@ class NavigationBloc extends Bloc<CurrentPage, CurrentPage> {
   GlobalKey<NavigatorState> get navigatorKey =>
       _navigationService.innerNavigatorKey;
 
-  navigateTo(String routeName) => _navigationService.innerNavigateTo(routeName);
+  to(String routeName) => _navigationService.innerNavigateTo(routeName);
 
   returnToFirstRoute() => _navigationService.returnToFirstInner();
 

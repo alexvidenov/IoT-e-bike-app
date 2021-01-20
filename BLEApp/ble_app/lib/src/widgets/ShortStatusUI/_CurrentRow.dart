@@ -61,7 +61,11 @@ class CurrentRow extends StatelessWidget {
                         currentValue: currentCharge //currentCharge
                             .toInt(),
                         size: 50,
-                        maxValue: 27,
+                        maxValue: bloc
+                            .getParameters()
+                            .value
+                            .maxCutoffChargeCurrent
+                            .toInt(),
                         backgroundColor: Colors.black,
                         progressColor: CCColor,
                         animatedDuration: const Duration(milliseconds: 700),
@@ -99,7 +103,11 @@ class CurrentRow extends StatelessWidget {
                     child: FAProgressBar(
                       currentValue: currentDischarge //currentDischarge
                           .toInt(),
-                      maxValue: 25,
+                      maxValue: bloc
+                          .getParameters()
+                          .value
+                          .maxCutoffDischargeCurrent
+                          .toInt(),
                       backgroundColor: Colors.black,
                       progressColor: DCColor,
                       animatedDuration: const Duration(milliseconds: 700),

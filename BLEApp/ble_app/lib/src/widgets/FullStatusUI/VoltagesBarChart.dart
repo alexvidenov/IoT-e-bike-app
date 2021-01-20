@@ -16,7 +16,7 @@ class VoltagesBarChart extends StatelessWidget {
   VoltagesBarChart(this._fullStatusBloc);
 
   List<FullStatusDataModel>
-      _chartData; // extract that in  a  separate  widget in order to  make  this  immutable
+      _chartData; // extract that in  a  separate  widget in order to  make  this immutable
 
   SfCartesianChart getBarChart() => SfCartesianChart(
         plotAreaBorderWidth: 0,
@@ -29,12 +29,14 @@ class VoltagesBarChart extends StatelessWidget {
           majorGridLines: MajorGridLines(width: 0),
         ),
         primaryYAxis: NumericAxis(
-            majorGridLines: MajorGridLines(width: 0),
-            isVisible: false,
-            title: AxisTitle(text: ''),
-            minimum: _fullStatusBloc.getParameters().value.minCellVoltage / 100,
-            maximum: _fullStatusBloc.getParameters().value.maxCellVoltage / 100,
-            majorTickLines: MajorTickLines(size: 0)),
+          axisLine: AxisLine(width: 0),
+          majorGridLines: MajorGridLines(width: 0),
+          majorTickLines: MajorTickLines(size: 0),
+          isVisible: false,
+          title: AxisTitle(text: ''),
+          minimum: _fullStatusBloc.getParameters().value.minCellVoltage / 100,
+          maximum: _fullStatusBloc.getParameters().value.maxCellVoltage / 100,
+        ),
         series: getBarSeries(),
       );
 
@@ -67,7 +69,7 @@ class VoltagesBarChart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              // extract prolly
+              // TODO: extract in some widget
               ValueListenableBuilder<DeviceParametersModel>(
                 valueListenable: _fullStatusBloc.getParameters(),
                 builder: (context, value, _) {
@@ -103,7 +105,7 @@ class VoltagesBarChart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 ProgressText(title: 'Charge', content: '5A'),
-                // ValueListenables
+                // ValueListenables as well
                 ProgressText(
                   title: 'Discharge',
                   content: '10A',

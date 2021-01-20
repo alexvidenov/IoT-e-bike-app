@@ -23,18 +23,31 @@ class NavigationDrawer extends StatelessWidget {
             _createDrawerItem(
                 icon: Icons.bluetooth,
                 text: 'Connection Settings',
-                onTap: () {
-                  Navigator.of(context).pushNamed('/settings');
-                }),
+                onTap: () => Navigator.of(context).pushNamed('/settings')),
             _createDrawerItem(
                 icon: Icons.devices,
                 text: 'Device Settings',
-                onTap: () {
-                  Navigator.of(context).pushNamed('/batterySettings');
-                }),
+                onTap: () =>
+                    Navigator.of(context).pushNamed('/batterySettings')),
+            _createDrawerItem(
+                icon: Icons.app_settings_alt,
+                text: 'Battery status',
+                // change the icon somehow
+                onTap: () => Navigator.of(context).pushNamed('/full')),
             _createDrawerItem(
                 icon: Icons.assessment, text: 'Statistics', onTap: () => {}),
             Divider(),
+            ListTile(
+              title: Text('Disconnect'),
+              onTap: () {
+                _deviceBloc.removeListener();
+                _prefsBloc.clearPrefs();
+                _deviceBloc.cancel();
+                _deviceBloc.disconnect().then((_) =>
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/devices', (_) => false));
+              },
+            ),
             ListTile(
                 title: Text('Logout'),
                 onTap: () async => await _onLogout().then((_) async {
