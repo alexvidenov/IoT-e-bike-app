@@ -5,6 +5,10 @@ import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 
+// delta v-ta
+// delta 1 - sredno v pokoi (po malko ot I threshold)
+// delta 2 - sredno kogato e po - golqmo ot idmax2 / 2
+
 class CurrentRow extends StatelessWidget {
   final ShortStatusBloc bloc;
 
@@ -37,6 +41,18 @@ class CurrentRow extends StatelessWidget {
             currentCharge = model.currentCharge;
             currentDischarge = model.currentDischarge;
           });
+          int charge = bloc
+              .getParameters()
+              .value
+              .maxCutoffChargeCurrent
+              .toInt();
+          int discharge = bloc
+              .getParameters()
+              .value
+              .maxCutoffDischargeCurrent
+              .toInt();
+          print('DISCHARGE MAX IS $discharge');
+          print('CHARGE MAX IS $charge');
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -66,6 +82,7 @@ class CurrentRow extends StatelessWidget {
                             .value
                             .maxCutoffChargeCurrent
                             .toInt(),
+                        // should be 800
                         backgroundColor: Colors.black,
                         progressColor: CCColor,
                         animatedDuration: const Duration(milliseconds: 700),
@@ -74,13 +91,13 @@ class CurrentRow extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  Text("Ch",
+                  Text("Chg",
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
+                          fontSize: 25.0,
                           letterSpacing: 1.5)),
                 ],
               ),
@@ -91,7 +108,7 @@ class CurrentRow extends StatelessWidget {
                     width: MediaQuery.of(context).size.width *
                         0.4, // experimental values
                     height: 30,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                         color: Colors.black26,
                         shape: BoxShape.rectangle,
                         boxShadow: [
@@ -117,24 +134,42 @@ class CurrentRow extends StatelessWidget {
                   const SizedBox(height: 15),
                   Row(
                     children: <Widget>[
-                      Text("1130w",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25.0,
-                              letterSpacing: 1.5,
-                              fontFamily: 'Europe_Ext')),
+                      StreamBuilder<ShortStatusState>(
+                        stream: bloc.stream,
+                        builder: (_, model) {
+                          if (model.connectionState == ConnectionState.active) {
+                            var color;
+                            double current;
+                            model.data.when((state) {
+                              // TODO: check for charge or discharge here
+                              color = Colors.white;
+                              current = state.currentCharge;
+                            }, error: (error, state) {
+                              color = Colors.red;
+                              current = state.currentCharge;
+                            });
+                            return Text((current / 100).toStringAsFixed(2),
+                                style: TextStyle(
+                                    color: color,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 25.0,
+                                    letterSpacing: 1.5,
+                                    fontFamily: 'Europe_Ext'));
+                          } else
+                            return Container();
+                        },
+                      ),
                       const SizedBox(
                         width: 30,
                       ),
-                      Text(
-                        "Dh",
+                      const Text(
+                        "Dch",
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
+                            fontSize: 25.0,
                             letterSpacing: 1.5,
                             fontFamily: 'Europe_Ext'),
                       )

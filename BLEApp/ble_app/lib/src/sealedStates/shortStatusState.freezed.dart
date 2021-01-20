@@ -69,6 +69,8 @@ abstract class $ShortStatusStateCopyWith<$Res> {
           ShortStatusState value, $Res Function(ShortStatusState) then) =
       _$ShortStatusStateCopyWithImpl<$Res>;
   $Res call({ShortStatusModel model});
+
+  $ShortStatusModelCopyWith<$Res> get model;
 }
 
 /// @nodoc
@@ -88,6 +90,16 @@ class _$ShortStatusStateCopyWithImpl<$Res>
       model: model == freezed ? _value.model : model as ShortStatusModel,
     ));
   }
+
+  @override
+  $ShortStatusModelCopyWith<$Res> get model {
+    if (_value.model == null) {
+      return null;
+    }
+    return $ShortStatusModelCopyWith<$Res>(_value.model, (value) {
+      return _then(_value.copyWith(model: value));
+    });
+  }
 }
 
 /// @nodoc
@@ -97,6 +109,9 @@ abstract class $NormalCopyWith<$Res>
       _$NormalCopyWithImpl<$Res>;
   @override
   $Res call({ShortStatusModel model});
+
+  @override
+  $ShortStatusModelCopyWith<$Res> get model;
 }
 
 /// @nodoc
@@ -212,6 +227,9 @@ abstract class $ErrorCopyWith<$Res> implements $ShortStatusStateCopyWith<$Res> {
       _$ErrorCopyWithImpl<$Res>;
   @override
   $Res call({ErrorState errorState, ShortStatusModel model});
+
+  @override
+  $ShortStatusModelCopyWith<$Res> get model;
 }
 
 /// @nodoc

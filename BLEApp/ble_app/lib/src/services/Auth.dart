@@ -22,7 +22,8 @@ class Auth {
 
   LocalDatabase _localDatabase;
 
-  BehaviorSubject<AuthState> _behaviorSubject;
+  BehaviorSubject<AuthState>
+      _behaviorSubject; // all this is kinda useless. Should just listen to stream upon init and delegate callbacks to the UI
 
   Sink<AuthState> get _sink => _behaviorSubject.sink;
 

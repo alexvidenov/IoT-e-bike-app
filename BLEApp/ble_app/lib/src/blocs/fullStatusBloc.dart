@@ -2,6 +2,7 @@ import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
+import 'package:ble_app/src/modules/dataClasses/fullStatusModel.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
@@ -9,7 +10,7 @@ part 'blocExtensions/FullStatusParse.dart';
 
 @injectable
 class FullStatusBloc
-    extends ParameterAwareBloc<List<FullStatusDataModel>, String> {
+    extends ParameterAwareBloc<FullStatusModel, String> {
   final DeviceRepository _repository;
 
   FullStatusBloc(this._repository) : super();

@@ -2,6 +2,7 @@ import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/Entrypoints/Root.dart';
+import 'package:ble_app/src/screens/main/fullStatusPage.dart';
 import 'package:flutter/material.dart';
 
 typedef _LogOutListener = Future<void> Function();
@@ -33,7 +34,8 @@ class NavigationDrawer extends StatelessWidget {
                 icon: Icons.app_settings_alt,
                 text: 'Battery status',
                 // change the icon somehow
-                onTap: () => Navigator.of(context).pushNamed('/full')),
+                onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => FullStatusPage($())))),
             _createDrawerItem(
                 icon: Icons.assessment, text: 'Statistics', onTap: () => {}),
             Divider(),
@@ -43,9 +45,8 @@ class NavigationDrawer extends StatelessWidget {
                 _deviceBloc.removeListener();
                 _prefsBloc.clearPrefs();
                 _deviceBloc.cancel();
-                _deviceBloc.disconnect().then((_) =>
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/devices', (_) => false));
+                _deviceBloc.disconnect().then((_) => Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/devices', (_) => false));
               },
             ),
             ListTile(

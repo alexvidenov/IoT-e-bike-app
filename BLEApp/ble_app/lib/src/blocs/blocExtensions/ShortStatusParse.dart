@@ -8,9 +8,6 @@ extension ShortStatusParse on ShortStatusBloc {
     final currentDischarge = double.parse(splitObject[3]);
     final temperature = double.parse(splitObject[4]);
     return ShortStatusModel(
-        totalVoltage: voltage,
-        currentCharge: currentCharge,
-        currentDischarge: currentDischarge,
-        temperature: temperature);
+        voltage, currentCharge, currentDischarge, temperature);
   }
 }

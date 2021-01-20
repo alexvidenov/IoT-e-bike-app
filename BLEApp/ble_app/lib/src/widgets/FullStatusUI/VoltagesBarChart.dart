@@ -2,6 +2,7 @@ import 'package:ble_app/src/blocs/fullStatusBloc.dart';
 import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
+import 'package:ble_app/src/modules/dataClasses/fullStatusModel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -30,9 +31,8 @@ class VoltagesBarChart extends StatelessWidget {
         ),
         primaryYAxis: NumericAxis(
           axisLine: AxisLine(width: 0),
-          majorGridLines: MajorGridLines(width: 0),
           majorTickLines: MajorTickLines(size: 0),
-          isVisible: false,
+          isVisible: true,
           title: AxisTitle(text: ''),
           minimum: _fullStatusBloc.getParameters().value.minCellVoltage / 100,
           maximum: _fullStatusBloc.getParameters().value.maxCellVoltage / 100,
@@ -40,9 +40,9 @@ class VoltagesBarChart extends StatelessWidget {
         series: getBarSeries(),
       );
 
-  List<BarSeries<FullStatusDataModel, int>> getBarSeries() =>
-      <BarSeries<FullStatusDataModel, int>>[
-        BarSeries<FullStatusDataModel, int>(
+  List<ColumnSeries<FullStatusDataModel, int>> getBarSeries() =>
+      <ColumnSeries<FullStatusDataModel, int>>[
+        ColumnSeries<FullStatusDataModel, int>(
           animationDuration: 0.5,
           dataSource: _chartData,
           borderRadius: BorderRadius.circular(3),
@@ -53,8 +53,8 @@ class VoltagesBarChart extends StatelessWidget {
               labelPosition: ChartDataLabelPosition.inside,
               labelAlignment: ChartDataLabelAlignment.top,
               textStyle: TextStyle(color: Colors.white, fontSize: 20)),
-          dataLabelMapper: (FullStatusDataModel status, _) =>
-              (status.y / 100).toString() + "V",
+          dataLabelMapper: (FullStatusDataModel status, _) => '',
+          // (status.y / 100).toString() + "V",
           enableTooltip: true,
           xValueMapper: (FullStatusDataModel status, _) => status.x,
           yValueMapper: (FullStatusDataModel status, _) => status.y / 100,
@@ -66,63 +66,96 @@ class VoltagesBarChart extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              // TODO: extract in some widget
-              ValueListenableBuilder<DeviceParametersModel>(
-                valueListenable: _fullStatusBloc.getParameters(),
-                builder: (context, value, _) {
-                  return ProgressText(
-                    title: 'Umin.',
-                    content: (value.minCellVoltage / 100).toString() + 'V',
-                  );
-                },
-              ),
-              ValueListenableBuilder<DeviceParametersModel>(
-                valueListenable: _fullStatusBloc.getParameters(),
-                builder: (context, value, _) {
-                  return ProgressText(
-                    title: 'Ubal.',
-                    content: (value.balanceCellVoltage / 100).toString() + 'V',
-                  );
-                },
-              ),
-              ValueListenableBuilder<DeviceParametersModel>(
-                valueListenable: _fullStatusBloc.getParameters(),
-                builder: (context, value, _) {
-                  return ProgressText(
-                    title: 'Umax.',
-                    content: (value.maxCellVoltage / 100).toString() + 'V',
-                  );
-                },
-              ),
-            ],
+          StreamBuilder<FullStatusModel>(
+            stream: _fullStatusBloc.stream,
+            builder: (_, model) {
+              if (model.connectionState == ConnectionState.active) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    ProgressText(
+                      title: 'Utotal.',
+                      content:
+                          (model.data.totalVoltage / 100).toStringAsFixed(2) +
+                              'V',
+                    ),
+                    ProgressText(
+                      title: 'Current',
+                      content:
+                          (model.data.current / 100).toStringAsFixed(2) + 'A',
+                    ),
+                    ProgressText(
+                      title: 'Temp.',
+                      content: (model.data.temperature).toString() + '°C',
+                    ),
+                  ],
+                );
+              } else
+                return Container();
+            },
           ),
           Padding(
             padding: EdgeInsets.only(top: 10, bottom: 5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                ProgressText(title: 'Charge', content: '5A'),
-                // ValueListenables as well
+                ValueListenableBuilder<DeviceParametersModel>(
+                  // extract
+                  valueListenable: _fullStatusBloc.getParameters(),
+                  builder: (context, value, _) => ProgressText(
+                    title: 'Chg. time',
+                    content: (value.balanceCellVoltage).toString() + 'V',
+                  ),
+                ),
+                StreamBuilder<FullStatusModel>(
+                  stream: _fullStatusBloc.stream,
+                  builder: (_, model) =>
+                      model.connectionState == ConnectionState.active
+                          ? ProgressText(
+                              title: 'Bat.status',
+                              content: model.data.status.string(),
+                            )
+                          : Container(),
+                ),
+                ValueListenableBuilder<DeviceParametersModel>(
+                  valueListenable: _fullStatusBloc.getParameters(),
+                  builder: (context, value, _) => ProgressText(
+                    title: 'Dch. time',
+                    content: (value.balanceCellVoltage / 100).toString() + 'V',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 10, bottom: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
                 ProgressText(
-                  title: 'Discharge',
-                  content: '10A',
+                  title: 'ΔV1Cell',
+                  content: '0.32V',
                 ),
                 ProgressText(
-                  title: 'Total voltage',
-                  content: '60V',
-                )
+                  title: 'ΔV2Cell',
+                  content: '0.56V',
+                ),
+                ProgressText(
+                  title: 'Rin',
+                  content: '200',
+                ),
               ],
             ),
           ),
           Expanded(
-              child: StreamBuilder<List<FullStatusDataModel>>(
+              child: StreamBuilder<FullStatusModel>(
                   stream: this._fullStatusBloc.stream,
                   builder: (_, snapshot) {
-                    _chartData = snapshot.data;
-                    return getBarChart();
+                    if (snapshot.connectionState == ConnectionState.active) {
+                      _chartData = snapshot.data.fullStatus;
+                      return getBarChart();
+                    } else
+                      return Container();
                   })),
         ],
       );

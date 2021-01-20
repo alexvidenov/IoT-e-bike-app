@@ -16,7 +16,7 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> with AuthStateListener {
-  bool get isLoggedIn => widget._auth.user != null ? true : false;
+  bool get isLoggedIn => widget._auth.user != null;
 
   @override
   initState() {
@@ -27,6 +27,9 @@ class _RootPageState extends State<RootPage> with AuthStateListener {
   @override
   Widget build(BuildContext context) =>
       isLoggedIn ? BleApp($()) : AuthenticationWrapper(widget._auth);
+
+  // @override
+  // onAuthStateChange(AuthState)
 
   @override
   onLoggedOut() => setState(() {});
