@@ -74,7 +74,7 @@ class VoltagesBarChart extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     ProgressText(
-                      title: 'Utotal.',
+                      title: 'Utot.',
                       content:
                           (model.data.totalVoltage / 100).toStringAsFixed(2) +
                               'V',
@@ -104,7 +104,7 @@ class VoltagesBarChart extends StatelessWidget {
                   valueListenable: _fullStatusBloc.getParameters(),
                   builder: (context, value, _) => ProgressText(
                     title: 'Chg. time',
-                    content: (value.balanceCellVoltage).toString() + 'V',
+                    content: (value.motoHoursChargeCounter).toString() + 'h',
                   ),
                 ),
                 StreamBuilder<FullStatusModel>(
@@ -121,7 +121,7 @@ class VoltagesBarChart extends StatelessWidget {
                   valueListenable: _fullStatusBloc.getParameters(),
                   builder: (context, value, _) => ProgressText(
                     title: 'Dch. time',
-                    content: (value.balanceCellVoltage / 100).toString() + 'V',
+                    content: (value.motoHoursDischargeCounter).toString() + 'h',
                   ),
                 ),
               ],

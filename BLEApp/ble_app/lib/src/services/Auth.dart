@@ -31,7 +31,7 @@ class Auth {
 
   Auth({LocalDatabase localDatabase}) {
     this._localDatabase = localDatabase;
-    this.combinedStream.listen((this.authStateListener.onAuthStateChanged));
+    this.combinedStream.listen(this.authStateListener.onAuthStateChanged);
   }
 
   Future<AuthState> signInWithEmailAndPassword(
@@ -45,8 +45,6 @@ class Auth {
         if (user != null) {
           FirestoreDatabase(uid: user.uid)
               .setUserDeviceToken(token: await $<CloudMessaging>().getToken());
-          authStateListener
-              .onAuthStateChanged(AuthState.authenticated(user.uid));
           return AuthState.authenticated(user.uid);
         }
       } catch (e) {
@@ -80,10 +78,10 @@ class Auth {
         await _db.setDeviceId(deviceId: deviceSerialNumber);
         await _userDao.insertEntity(localUser.User(_id, email, password));
         await _deviceDao.insertEntity(Device(deviceSerialNumber, _id, 'empty'));
-        authStateListener.onAuthStateChanged(AuthState.authenticated(user.uid));
+        //authStateListener.onAuthStateChanged(AuthState.authenticated(user.uid));
         return AuthState.authenticated(user.uid);
       }
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
       return AuthState.failedToAuthenticate(
           reason: AuthExceptionHandler.handleException(e));
     }
@@ -92,6 +90,7 @@ class Auth {
   }
 
   Future<void> signOut() async => await _auth.signOut().then((_) {
+        // check if we're offline
         localStream.addEvent(AuthState.loggedOut());
         authStateListener.onAuthStateChanged(AuthState.loggedOut());
       });

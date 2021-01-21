@@ -19,12 +19,14 @@ class DeviceParametersModel {
   final double maxCutoffDischargeCurrent;
   final int maxCurrentTimeLimitPeriod;
   final double maxCutoffChargeCurrent;
-  final int motoHoursCounterCurrentThreshold; // FIXME possible double here
+  final int motoHoursCounterCurrentThreshold;
   final int currentCutOffTimerPeriod;
   final int maxCutoffTemperature;
   final int maxTemperatureRecovery;
   final int minTemperatureRecovery;
   final int minCutoffTemperature;
+  final int motoHoursChargeCounter;
+  final int motoHoursDischargeCounter;
 
   const DeviceParametersModel({
     @required this.cellCount,
@@ -44,6 +46,8 @@ class DeviceParametersModel {
     @required this.maxTemperatureRecovery,
     @required this.minTemperatureRecovery,
     @required this.minCutoffTemperature,
+    @required this.motoHoursChargeCounter,
+    @required this.motoHoursDischargeCounter,
   });
 
   @override
@@ -69,7 +73,9 @@ class DeviceParametersModel {
           maxCutoffTemperature == other.maxCutoffTemperature &&
           maxTemperatureRecovery == other.maxTemperatureRecovery &&
           minTemperatureRecovery == other.minTemperatureRecovery &&
-          minCutoffTemperature == other.minCutoffTemperature;
+          minCutoffTemperature == other.minCutoffTemperature &&
+          motoHoursChargeCounter == other.motoHoursChargeCounter &&
+          motoHoursDischargeCounter == other.motoHoursDischargeCounter;
 
   @override
   int get hashCode =>
@@ -89,7 +95,9 @@ class DeviceParametersModel {
       maxCutoffTemperature.hashCode ^
       maxTemperatureRecovery.hashCode ^
       minTemperatureRecovery.hashCode ^
-      minCutoffTemperature.hashCode;
+      minCutoffTemperature.hashCode ^
+      motoHoursChargeCounter.hashCode ^
+      motoHoursDischargeCounter.hashCode;
 
   @override
   String toString() {
@@ -127,6 +135,10 @@ class DeviceParametersModel {
         minTemperatureRecovery.toString() +
         ', minCutoffTemperature: ' +
         minCutoffTemperature.toString() +
+        ', motoHoursChargeCounter: ' +
+        motoHoursChargeCounter.toString() +
+        ', motoHoursDischargeCounter: ' +
+        motoHoursDischargeCounter.toString() +
         '}';
   }
 
@@ -148,6 +160,8 @@ class DeviceParametersModel {
     int maxTemperatureRecovery,
     int minTemperatureRecovery,
     int minCutoffTemperature,
+    int motoHoursChargeCounter,
+    int motoHoursDischargeCounter,
   }) {
     return DeviceParametersModel(
       cellCount: cellCount ?? this.cellCount,
@@ -176,6 +190,10 @@ class DeviceParametersModel {
       minTemperatureRecovery:
           minTemperatureRecovery ?? this.minTemperatureRecovery,
       minCutoffTemperature: minCutoffTemperature ?? this.minCutoffTemperature,
+      motoHoursChargeCounter:
+          motoHoursChargeCounter ?? this.motoHoursChargeCounter,
+      motoHoursDischargeCounter:
+          motoHoursDischargeCounter ?? this.motoHoursDischargeCounter,
     );
   }
 
@@ -197,7 +215,9 @@ class DeviceParametersModel {
         maxCutoffTemperature = m['maxCutoffTemperature'],
         maxTemperatureRecovery = m['maxTemperatureRecovery'],
         minTemperatureRecovery = m['minTemperatureRecovery'],
-        minCutoffTemperature = m['minCutoffTemperature'];
+        minCutoffTemperature = m['minCutoffTemperature'],
+        motoHoursChargeCounter = m['motoHoursChargeCounter'],
+        motoHoursDischargeCounter = m['motoHoursDischargeCounter'];
 
   Map<String, dynamic> toMap() => {
         'cellCount': cellCount,
@@ -216,7 +236,9 @@ class DeviceParametersModel {
         'maxCutoffTemperature': maxCutoffTemperature,
         'maxTemperatureRecovery': maxTemperatureRecovery,
         'minTemperatureRecovery': minTemperatureRecovery,
-        'minCutoffTemperature': minCutoffTemperature
+        'minCutoffTemperature': minCutoffTemperature,
+        'motoHoursChargeCounter': motoHoursChargeCounter,
+        'motoHoursDischargeCounter': motoHoursDischargeCounter
       };
 
   factory DeviceParametersModel.fromJson(String json) =>

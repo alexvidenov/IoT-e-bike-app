@@ -11,12 +11,10 @@ class Login extends StatelessWidget {
   const Login(this._auth, {this.toggleView});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        color: Colors.lightBlue,
-        theme: ThemeData(fontFamily: 'Europe_Ext'),
-        home: LoginScreen(_auth, toggleView: toggleView));
-  }
+  Widget build(BuildContext context) => MaterialApp(
+      color: Colors.lightBlue,
+      theme: ThemeData(fontFamily: 'Europe_Ext'),
+      home: LoginScreen(_auth, toggleView: toggleView));
 }
 
 class LoginScreen extends StatefulWidget {

@@ -14,8 +14,8 @@ class FullStatusBloc
     extends ParameterAwareBloc<FullStatusModel, String> {
   final DeviceRepository _repository;
 
-  var delta1Holder = StreamHolder<double>();
-  var delta2Holder = StreamHolder<double>();
+  final delta1Holder = StreamHolder<double>();
+  final delta2Holder = StreamHolder<double>();
 
   int deltaCounter = 0;
 

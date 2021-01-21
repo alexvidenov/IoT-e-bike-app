@@ -38,12 +38,10 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
   }
 
   queryParameters() async {
-    for (var i = 0; i < 7; i++)
-      await _querySingleParam('R0$i\r');
-    for (var i = 12; i < 18; i++)
-      await _querySingleParam('R$i\r');
-    for (var i = 23; i < 27; i++)
-      await _querySingleParam('R$i\r');
+    for (var i = 0; i < 7; i++) await _querySingleParam('R0$i\r');
+    for (var i = 12; i < 18; i++) await _querySingleParam('R$i\r');
+    for (var i = 23; i < 27; i++) await _querySingleParam('R$i\r');
+    for (var i = 28; i < 30; i++) await _querySingleParam('R$i\r');
     Future.delayed(Duration(milliseconds: 100), () async {
       if (_parameters.keys.length == 17) {
         final db = FirestoreDatabase(uid: $<AuthBloc>().user);
@@ -68,17 +66,17 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
             maxCutoffTemperature: _parameters['23'].toInt(),
             maxTemperatureRecovery: _parameters['24'].toInt(),
             minTemperatureRecovery: _parameters['25'].toInt(),
-            minCutoffTemperature: _parameters['26'].toInt())));
-      } else {
+            minCutoffTemperature: _parameters['26'].toInt(),
+            motoHoursChargeCounter: _parameters['28'].toInt(),
+            motoHoursDischargeCounter: _parameters['29'].toInt())));
+      } else
         queryParameters();
-      }
     });
   }
 
-  _querySingleParam(String command) async =>
-      await Future.delayed(
-          Duration(milliseconds: 80),
-              () => _repository.writeToCharacteristic(command));
+  _querySingleParam(String command) async => await Future.delayed(
+      Duration(milliseconds: 80),
+      () => _repository.writeToCharacteristic(command));
 
   setParameters(DeviceParametersModel parameters) {
     print('Device parameters are:' + parameters.toString());

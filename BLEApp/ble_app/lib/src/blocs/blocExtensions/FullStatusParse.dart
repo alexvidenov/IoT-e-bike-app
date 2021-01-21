@@ -60,7 +60,7 @@ extension FullStatusParse on FullStatusBloc {
       }
     }
 
-    if (counter == 4) {
+    if (deltaCounter == 4) {
       if (!fullStatus.isEmpty) {
         final maxValue = fullStatus
             .reduce((value, element) => value.y > element.y ? value : element);
@@ -72,13 +72,12 @@ extension FullStatusParse on FullStatusBloc {
       }
 
       if (current < getParameters().value.motoHoursCounterCurrentThreshold) {
-        // prolly move that
         delta1Holder.addEvent(delta); // TODO: check if / 100 is not needed
       } else if (current >
           (getParameters().value.maxTimeLimitedDischargeCurrent / 2)) {
         delta2Holder.addEvent(delta);
       }
-      counter = 0;
+      deltaCounter = 0;
     }
 
     return FullStatusModel(

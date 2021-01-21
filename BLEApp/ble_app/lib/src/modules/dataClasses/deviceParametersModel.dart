@@ -27,4 +27,7 @@ class $DeviceParametersModel {
   int maxTemperatureRecovery;
   int minTemperatureRecovery;
   int minCutoffTemperature;
+
+  int motoHoursChargeCounter;
+  int motoHoursDischargeCounter;
 }

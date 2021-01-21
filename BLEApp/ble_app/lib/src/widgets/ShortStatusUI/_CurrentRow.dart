@@ -82,7 +82,6 @@ class CurrentRow extends StatelessWidget {
                             .value
                             .maxCutoffChargeCurrent
                             .toInt(),
-                        // should be 800
                         backgroundColor: Colors.black,
                         progressColor: CCColor,
                         animatedDuration: const Duration(milliseconds: 700),

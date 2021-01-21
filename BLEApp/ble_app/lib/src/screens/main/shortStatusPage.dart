@@ -22,7 +22,7 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
   @override
   onResume() {
     super.onResume();
-    final context = navigationBloc.navigatorKey.currentContext;
+    //final context = navigationBloc.navigatorKey.currentContext;
     /*
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showDialog(
