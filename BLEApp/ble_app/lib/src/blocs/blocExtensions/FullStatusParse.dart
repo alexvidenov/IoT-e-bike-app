@@ -6,10 +6,16 @@ extension FullStatusParse on FullStatusBloc {
 
     int counter = 0;
 
-    double current;
-    double temperature;
-    BattStatus battStatus;
     double totalVoltage = 0;
+    double current;
+
+    double temperature;
+
+    double delta;
+
+    BattStatus battStatus;
+
+    deltaCounter++;
 
     String status = '${rawData[0]}';
 
@@ -53,7 +59,29 @@ extension FullStatusParse on FullStatusBloc {
         }
       }
     }
+
+    if (counter == 4) {
+      if (!fullStatus.isEmpty) {
+        final maxValue = fullStatus
+            .reduce((value, element) => value.y > element.y ? value : element);
+
+        final lowestValue = fullStatus
+            .reduce((value, element) => value.y < element.y ? value : element);
+
+        delta = maxValue.y - lowestValue.y;
+      }
+
+      if (current < getParameters().value.motoHoursCounterCurrentThreshold) {
+        // prolly move that
+        delta1Holder.addEvent(delta); // TODO: check if / 100 is not needed
+      } else if (current >
+          (getParameters().value.maxTimeLimitedDischargeCurrent / 2)) {
+        delta2Holder.addEvent(delta);
+      }
+      counter = 0;
+    }
+
     return FullStatusModel(
-        fullStatus, totalVoltage, current, temperature, 0, 0, 0, battStatus);
+        fullStatus, totalVoltage, current, temperature, 0, battStatus);
   }
 }

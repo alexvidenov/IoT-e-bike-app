@@ -132,13 +132,30 @@ class VoltagesBarChart extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                ProgressText(
-                  title: 'ΔV1Cell',
-                  content: '0.32V',
+                StreamBuilder<double>(
+                  stream: _fullStatusBloc.delta1Holder.stream,
+                  builder: (_, model) => model.connectionState ==
+                          ConnectionState.active
+                      ? ProgressText(
+                          title: 'ΔV1Cell',
+                          content:
+                              model.connectionState == ConnectionState.active
+                                  ? ((model.data != null
+                                          ? (model.data / 100)
+                                          : '-'))
+                                      .toString()
+                                  : '-')
+                      : Container(),
                 ),
-                ProgressText(
-                  title: 'ΔV2Cell',
-                  content: '0.56V',
+                StreamBuilder<double>(
+                  stream: _fullStatusBloc.delta2Holder.stream,
+                  builder: (_, model) => ProgressText(
+                    title: 'ΔV2 Cell',
+                    content: model.connectionState == ConnectionState.active
+                        ? ((model.data != null ? (model.data / 100) : '-'))
+                            .toString()
+                        : '-',
+                  ),
                 ),
                 ProgressText(
                   title: 'Rin',

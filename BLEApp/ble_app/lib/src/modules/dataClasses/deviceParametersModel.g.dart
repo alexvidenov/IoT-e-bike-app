@@ -19,7 +19,7 @@ class DeviceParametersModel {
   final double maxCutoffDischargeCurrent;
   final int maxCurrentTimeLimitPeriod;
   final double maxCutoffChargeCurrent;
-  final int motoHoursCounterCurrentThreshold;
+  final int motoHoursCounterCurrentThreshold; // FIXME possible double here
   final int currentCutOffTimerPeriod;
   final int maxCutoffTemperature;
   final int maxTemperatureRecovery;

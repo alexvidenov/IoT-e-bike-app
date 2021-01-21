@@ -5,6 +5,7 @@ import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusModel.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+import 'bloc.dart';
 
 part 'blocExtensions/FullStatusParse.dart';
 
@@ -12,6 +13,11 @@ part 'blocExtensions/FullStatusParse.dart';
 class FullStatusBloc
     extends ParameterAwareBloc<FullStatusModel, String> {
   final DeviceRepository _repository;
+
+  var delta1Holder = StreamHolder<double>();
+  var delta2Holder = StreamHolder<double>();
+
+  int deltaCounter = 0;
 
   FullStatusBloc(this._repository) : super();
 

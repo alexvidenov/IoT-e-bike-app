@@ -57,6 +57,7 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
             'temp': _model.temperature,
             'currentCharge': _model.currentCharge,
             'currentDischarge': _model.currentDischarge,
+            // TODO: add the delta here
           }
         });
         _uploadTimer = 0;

@@ -17,8 +17,6 @@ abstract class FullStatusModel with _$FullStatusModel {
       double totalVoltage,
       double current, // extract into its own holder class (or enum)
       double temperature,
-      double lowCurrentDelta,
-      double highCurrentDelta,
       int rIn,
       BattStatus status) = _FullStatus;
 }

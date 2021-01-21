@@ -14,22 +14,13 @@ class _$FullStatusModelTearOff {
   const _$FullStatusModelTearOff();
 
 // ignore: unused_element
-  _FullStatus call(
-      List<FullStatusDataModel> fullStatus,
-      double totalVoltage,
-      double current,
-      double temperature,
-      double lowCurrentDelta,
-      double highCurrentDelta,
-      int rIn,
-      BattStatus status) {
+  _FullStatus call(List<FullStatusDataModel> fullStatus, double totalVoltage,
+      double current, double temperature, int rIn, BattStatus status) {
     return _FullStatus(
       fullStatus,
       totalVoltage,
       current,
       temperature,
-      lowCurrentDelta,
-      highCurrentDelta,
       rIn,
       status,
     );
@@ -46,8 +37,6 @@ mixin _$FullStatusModel {
   double get totalVoltage;
   double get current; // extract into its own holder class (or enum)
   double get temperature;
-  double get lowCurrentDelta;
-  double get highCurrentDelta;
   int get rIn;
   BattStatus get status;
 
@@ -64,8 +53,6 @@ abstract class $FullStatusModelCopyWith<$Res> {
       double totalVoltage,
       double current,
       double temperature,
-      double lowCurrentDelta,
-      double highCurrentDelta,
       int rIn,
       BattStatus status});
 }
@@ -85,8 +72,6 @@ class _$FullStatusModelCopyWithImpl<$Res>
     Object totalVoltage = freezed,
     Object current = freezed,
     Object temperature = freezed,
-    Object lowCurrentDelta = freezed,
-    Object highCurrentDelta = freezed,
     Object rIn = freezed,
     Object status = freezed,
   }) {
@@ -100,12 +85,6 @@ class _$FullStatusModelCopyWithImpl<$Res>
       current: current == freezed ? _value.current : current as double,
       temperature:
           temperature == freezed ? _value.temperature : temperature as double,
-      lowCurrentDelta: lowCurrentDelta == freezed
-          ? _value.lowCurrentDelta
-          : lowCurrentDelta as double,
-      highCurrentDelta: highCurrentDelta == freezed
-          ? _value.highCurrentDelta
-          : highCurrentDelta as double,
       rIn: rIn == freezed ? _value.rIn : rIn as int,
       status: status == freezed ? _value.status : status as BattStatus,
     ));
@@ -124,8 +103,6 @@ abstract class _$FullStatusCopyWith<$Res>
       double totalVoltage,
       double current,
       double temperature,
-      double lowCurrentDelta,
-      double highCurrentDelta,
       int rIn,
       BattStatus status});
 }
@@ -147,8 +124,6 @@ class __$FullStatusCopyWithImpl<$Res>
     Object totalVoltage = freezed,
     Object current = freezed,
     Object temperature = freezed,
-    Object lowCurrentDelta = freezed,
-    Object highCurrentDelta = freezed,
     Object rIn = freezed,
     Object status = freezed,
   }) {
@@ -159,12 +134,6 @@ class __$FullStatusCopyWithImpl<$Res>
       totalVoltage == freezed ? _value.totalVoltage : totalVoltage as double,
       current == freezed ? _value.current : current as double,
       temperature == freezed ? _value.temperature : temperature as double,
-      lowCurrentDelta == freezed
-          ? _value.lowCurrentDelta
-          : lowCurrentDelta as double,
-      highCurrentDelta == freezed
-          ? _value.highCurrentDelta
-          : highCurrentDelta as double,
       rIn == freezed ? _value.rIn : rIn as int,
       status == freezed ? _value.status : status as BattStatus,
     ));
@@ -173,21 +142,12 @@ class __$FullStatusCopyWithImpl<$Res>
 
 /// @nodoc
 class _$_FullStatus implements _FullStatus {
-  const _$_FullStatus(
-      this.fullStatus,
-      this.totalVoltage,
-      this.current,
-      this.temperature,
-      this.lowCurrentDelta,
-      this.highCurrentDelta,
-      this.rIn,
-      this.status)
+  const _$_FullStatus(this.fullStatus, this.totalVoltage, this.current,
+      this.temperature, this.rIn, this.status)
       : assert(fullStatus != null),
         assert(totalVoltage != null),
         assert(current != null),
         assert(temperature != null),
-        assert(lowCurrentDelta != null),
-        assert(highCurrentDelta != null),
         assert(rIn != null),
         assert(status != null);
 
@@ -200,17 +160,13 @@ class _$_FullStatus implements _FullStatus {
   @override // extract into its own holder class (or enum)
   final double temperature;
   @override
-  final double lowCurrentDelta;
-  @override
-  final double highCurrentDelta;
-  @override
   final int rIn;
   @override
   final BattStatus status;
 
   @override
   String toString() {
-    return 'FullStatusModel(fullStatus: $fullStatus, totalVoltage: $totalVoltage, current: $current, temperature: $temperature, lowCurrentDelta: $lowCurrentDelta, highCurrentDelta: $highCurrentDelta, rIn: $rIn, status: $status)';
+    return 'FullStatusModel(fullStatus: $fullStatus, totalVoltage: $totalVoltage, current: $current, temperature: $temperature, rIn: $rIn, status: $status)';
   }
 
   @override
@@ -229,12 +185,6 @@ class _$_FullStatus implements _FullStatus {
             (identical(other.temperature, temperature) ||
                 const DeepCollectionEquality()
                     .equals(other.temperature, temperature)) &&
-            (identical(other.lowCurrentDelta, lowCurrentDelta) ||
-                const DeepCollectionEquality()
-                    .equals(other.lowCurrentDelta, lowCurrentDelta)) &&
-            (identical(other.highCurrentDelta, highCurrentDelta) ||
-                const DeepCollectionEquality()
-                    .equals(other.highCurrentDelta, highCurrentDelta)) &&
             (identical(other.rIn, rIn) ||
                 const DeepCollectionEquality().equals(other.rIn, rIn)) &&
             (identical(other.status, status) ||
@@ -248,8 +198,6 @@ class _$_FullStatus implements _FullStatus {
       const DeepCollectionEquality().hash(totalVoltage) ^
       const DeepCollectionEquality().hash(current) ^
       const DeepCollectionEquality().hash(temperature) ^
-      const DeepCollectionEquality().hash(lowCurrentDelta) ^
-      const DeepCollectionEquality().hash(highCurrentDelta) ^
       const DeepCollectionEquality().hash(rIn) ^
       const DeepCollectionEquality().hash(status);
 
@@ -264,8 +212,6 @@ abstract class _FullStatus implements FullStatusModel {
       double totalVoltage,
       double current,
       double temperature,
-      double lowCurrentDelta,
-      double highCurrentDelta,
       int rIn,
       BattStatus status) = _$_FullStatus;
 
@@ -277,10 +223,6 @@ abstract class _FullStatus implements FullStatusModel {
   double get current;
   @override // extract into its own holder class (or enum)
   double get temperature;
-  @override
-  double get lowCurrentDelta;
-  @override
-  double get highCurrentDelta;
   @override
   int get rIn;
   @override
