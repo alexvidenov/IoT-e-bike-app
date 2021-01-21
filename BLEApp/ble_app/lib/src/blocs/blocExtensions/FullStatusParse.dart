@@ -29,7 +29,7 @@ extension FullStatusParse on FullStatusBloc {
       case 'A':
         battStatus = BattStatus.OC;
         break;
-      case 'E':
+      case 'C': // should be E, regarding the new protocol?
         battStatus = BattStatus.OCOD;
         break;
       case '2':

@@ -38,13 +38,13 @@ Future<void> firebaseStorageUpload() async {
   }
 }
 
-void backgroundFetchHeadlessTask(String taskId) async {
+backgroundFetchHeadlessTask(String taskId) async {
   print('HEADLESS');
   await firebaseStorageUpload();
   BackgroundFetch.finish(taskId);
 }
 
-void onBackgroundFetch(String taskId) async {
+onBackgroundFetch(String taskId) async {
   print('Running in the background (NOT HEADLESS) $taskId');
   if (taskId == storageUpload) {
     await firebaseStorageUpload();

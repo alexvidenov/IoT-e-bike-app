@@ -26,10 +26,15 @@ class _RootPageState extends State<RootPage> with AuthStateListener {
   }
 
   @override
-  Widget build(BuildContext context) => currAuthState.maybeWhen(
-      authenticated: (_) => BleApp($()),
-      loggedOut: () => AuthenticationWrapper(widget._auth),
-      orElse: null);
+  Widget build(BuildContext context) {
+    if (currAuthState != null) {
+      return currAuthState.maybeWhen(
+          authenticated: (_) => BleApp($()),
+          loggedOut: () => AuthenticationWrapper(widget._auth),
+          orElse: () => Container());
+    } else
+      return Container();
+  }
 
   @override
   onAuthStateChanged(AuthState authState) =>

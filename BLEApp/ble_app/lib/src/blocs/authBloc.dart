@@ -26,5 +26,6 @@ class AuthBloc {
 
   Future<void> logout() async => await _auth.signOut();
 
-  setListener(AuthStateListener listener) => _auth.authStateListener = listener;
+  setListener(AuthStateListener listener) =>
+      _auth.setListenerAndDetermineState(listener);
 }

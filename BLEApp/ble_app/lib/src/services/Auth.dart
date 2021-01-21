@@ -15,6 +15,7 @@ import 'package:rxdart/rxdart.dart';
 
 import 'CloudMessaging.dart';
 
+// implementation platform('com.google.firebase:firebase-bom:26.0.0')
 @lazySingleton
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -31,7 +32,11 @@ class Auth {
 
   Auth({LocalDatabase localDatabase}) {
     this._localDatabase = localDatabase;
-    this.combinedStream.listen(this.authStateListener.onAuthStateChanged);
+  }
+
+  setListenerAndDetermineState(AuthStateListener listener) {
+    this.authStateListener = listener;
+    combinedStream.listen(this.authStateListener.onAuthStateChanged);
   }
 
   Future<AuthState> signInWithEmailAndPassword(
@@ -47,7 +52,7 @@ class Auth {
               .setUserDeviceToken(token: await $<CloudMessaging>().getToken());
           return AuthState.authenticated(user.uid);
         }
-      } catch (e) {
+      } on FirebaseAuthException catch (e) {
         return AuthState.failedToAuthenticate(
             reason: AuthExceptionHandler.handleException(e));
       }
@@ -98,13 +103,9 @@ class Auth {
 
 extension UserStatus on Auth {
   Stream<AuthState> get _onAuthStateChanged =>
-      _auth.userChanges().map((User user) {
-        if (user != null)
-          return AuthState.authenticated(user.uid);
-        else
-          return AuthState.failedToAuthenticate(
-              reason: NotAuthenticatedReason.undefined);
-      });
+      _auth.userChanges().map((User user) => user != null
+          ? AuthState.authenticated(user.uid)
+          : AuthState.loggedOut());
 
   Stream<AuthState> get _onLocalAuthStateChanged => localStream.stream;
 

@@ -53,7 +53,7 @@ class NavigationDrawer extends StatelessWidget {
                 title: Text('Logout'),
                 onTap: () async => await _onLogout().then((_) async {
                       Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => RootPage($())),
+                          MaterialPageRoute(builder: (_) => RootPage($())), // actually use popUntil route.isFirst
                           (_) => false);
                       _prefsBloc.clearPrefs();
                       _prefsBloc.deleteUserData();
