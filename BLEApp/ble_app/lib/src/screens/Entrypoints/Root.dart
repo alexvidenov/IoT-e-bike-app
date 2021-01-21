@@ -1,5 +1,6 @@
 import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/sealedStates/authState.dart';
 import 'package:flutter/material.dart';
 
 import '../../../main.dart';
@@ -16,7 +17,7 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> with AuthStateListener {
-  bool get isLoggedIn => widget._auth.user != null;
+  AuthState currAuthState;
 
   @override
   initState() {
@@ -25,34 +26,12 @@ class _RootPageState extends State<RootPage> with AuthStateListener {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      isLoggedIn ? BleApp($()) : AuthenticationWrapper(widget._auth);
-
-  // @override
-  // onAuthStateChange(AuthState)
-
-  @override
-  onLoggedOut() => setState(() {});
+  Widget build(BuildContext context) => currAuthState.maybeWhen(
+      authenticated: (_) => BleApp($()),
+      loggedOut: () => AuthenticationWrapper(widget._auth),
+      orElse: null);
 
   @override
-  onAuthSuccessful() => setState(() {});
+  onAuthStateChanged(AuthState authState) =>
+      setState(() => currAuthState = authState);
 }
-
-/*
-StreamBuilder<AuthState>(
-stream: widget._auth.authStream,
-builder: (_, snapshot) {
-if (snapshot.connectionState == ConnectionState.active) {
-if (snapshot.hasData) {
-Widget _widget;
-snapshot.data.when(
-authenticated: (auth) => _widget = BleApp($()),
-notAuthenticated: (reason) =>
-_widget = AuthenticationWrapper(widget._auth));
-return _widget;
-}
-return WaitingScreen();
-} else
-return WaitingScreen();
-});
- */

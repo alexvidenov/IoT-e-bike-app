@@ -1,3 +1,4 @@
+import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/dao/deviceDao.dart';
 import 'package:ble_app/src/persistence/dao/userDao.dart';
@@ -22,10 +23,7 @@ class Auth {
 
   LocalDatabase _localDatabase;
 
-  BehaviorSubject<AuthState>
-      _behaviorSubject; // all this is kinda useless. Should just listen to stream upon init and delegate callbacks to the UI
-
-  Sink<AuthState> get _sink => _behaviorSubject.sink;
+  final localStream = StreamHolder<AuthState>();
 
   UserDao get _userDao => _localDatabase.userDao;
 
@@ -33,10 +31,8 @@ class Auth {
 
   Auth({LocalDatabase localDatabase}) {
     this._localDatabase = localDatabase;
-    _behaviorSubject = BehaviorSubject<AuthState>();
+    this.combinedStream.listen((this.authStateListener.onAuthStateChanged));
   }
-
-  Function(AuthState) get addEvent => _sink.add;
 
   Future<AuthState> signInWithEmailAndPassword(
       String email, String password) async {
@@ -49,17 +45,18 @@ class Auth {
         if (user != null) {
           FirestoreDatabase(uid: user.uid)
               .setUserDeviceToken(token: await $<CloudMessaging>().getToken());
-          authStateListener.onAuthSuccessful();
+          authStateListener
+              .onAuthStateChanged(AuthState.authenticated(user.uid));
           return AuthState.authenticated(user.uid);
         }
       } catch (e) {
-        authStateListener.onLoggedOut();
         return AuthState.failedToAuthenticate(
             reason: AuthExceptionHandler.handleException(e));
       }
     } else {
       localUser.User user;
       user = await _userDao.fetchUser(email); // TODO: and password
+      authStateListener.onAuthStateChanged(AuthState.authenticated(user.id));
       return user != null
           ? AuthState.authenticated(user.id)
           : AuthState.failedToAuthenticate(
@@ -83,11 +80,10 @@ class Auth {
         await _db.setDeviceId(deviceId: deviceSerialNumber);
         await _userDao.insertEntity(localUser.User(_id, email, password));
         await _deviceDao.insertEntity(Device(deviceSerialNumber, _id, 'empty'));
-        authStateListener.onAuthSuccessful();
+        authStateListener.onAuthStateChanged(AuthState.authenticated(user.uid));
         return AuthState.authenticated(user.uid);
       }
     } catch (e) {
-      authStateListener.onLoggedOut();
       return AuthState.failedToAuthenticate(
           reason: AuthExceptionHandler.handleException(e));
     }
@@ -96,9 +92,8 @@ class Auth {
   }
 
   Future<void> signOut() async => await _auth.signOut().then((_) {
-        addEvent(AuthState.failedToAuthenticate(
-            reason: NotAuthenticatedReason.undefined));
-        authStateListener.onLoggedOut();
+        localStream.addEvent(AuthState.loggedOut());
+        authStateListener.onAuthStateChanged(AuthState.loggedOut());
       });
 }
 
@@ -112,7 +107,7 @@ extension UserStatus on Auth {
               reason: NotAuthenticatedReason.undefined);
       });
 
-  Stream<AuthState> get _onLocalAuthStateChanged => _behaviorSubject.stream;
+  Stream<AuthState> get _onLocalAuthStateChanged => localStream.stream;
 
   Stream<AuthState> get combinedStream =>
       Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]);

@@ -1,5 +1,5 @@
-mixin AuthStateListener {
-  onAuthSuccessful();
+import 'package:ble_app/src/sealedStates/authState.dart';
 
-  onLoggedOut();
+mixin AuthStateListener {
+  onAuthStateChanged(AuthState authState);
 }

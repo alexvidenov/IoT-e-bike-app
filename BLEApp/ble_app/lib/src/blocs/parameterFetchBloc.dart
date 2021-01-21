@@ -38,14 +38,19 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
   }
 
   queryParameters() async {
-    for (var i = 0; i < 7; i++) await _querySingleParam('R0$i\r');
-    for (var i = 12; i < 18; i++) await _querySingleParam('R$i\r');
-    for (var i = 23; i < 27; i++) await _querySingleParam('R$i\r');
-    Future.delayed(Duration(milliseconds: 100), () {
+    for (var i = 0; i < 7; i++)
+      await _querySingleParam('R0$i\r');
+    for (var i = 12; i < 18; i++)
+      await _querySingleParam('R$i\r');
+    for (var i = 23; i < 27; i++)
+      await _querySingleParam('R$i\r');
+    Future.delayed(Duration(milliseconds: 100), () async {
       if (_parameters.keys.length == 17) {
-        // TODO: set them only if Firestore..theDocument where the parameters are null
-        FirestoreDatabase(uid: $<AuthBloc>().user)
-            .setDeviceParameters(_parameters, deviceId: _repository.deviceId);
+        final db = FirestoreDatabase(uid: $<AuthBloc>().user);
+        if (!(await db.parametersExist(deviceId: _repository.deviceId))) {
+          FirestoreDatabase(uid: $<AuthBloc>().user)
+              .setDeviceParameters(_parameters, deviceId: _repository.deviceId);
+        }
         addEvent(ParameterFetchState.fetched(DeviceParametersModel(
             cellCount: _parameters['00'].toInt(),
             maxCellVoltage: _parameters['01'],
@@ -70,9 +75,10 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
     });
   }
 
-  _querySingleParam(String command) async => await Future.delayed(
-      Duration(milliseconds: 80),
-      () => _repository.writeToCharacteristic(command));
+  _querySingleParam(String command) async =>
+      await Future.delayed(
+          Duration(milliseconds: 80),
+              () => _repository.writeToCharacteristic(command));
 
   setParameters(DeviceParametersModel parameters) {
     print('Device parameters are:' + parameters.toString());

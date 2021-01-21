@@ -50,13 +50,13 @@ class _LoginScreenState extends State<LoginScreen> {
     if (validateAndSave()) {
       await widget._auth
           .signInWithEmailAndPassword(email: _email, password: _password)
-          .then((AuthState state) {
-        state.when(
-            authenticated: (auth) => {},
-            failedToAuthenticate: (notAuthenticated) => _presentDialog(context,
-                message: 'Auth failed',
-                additionalInformation: notAuthenticated.toString()));
-      });
+          .then((AuthState state) => state.when(
+              authenticated: (auth) => {},
+              failedToAuthenticate: (notAuthenticated) => _presentDialog(
+                  context,
+                  message: 'Auth failed',
+                  additionalInformation: notAuthenticated.toString()),
+              loggedOut: () => {}));
     }
   }
 

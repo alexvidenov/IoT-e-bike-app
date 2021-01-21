@@ -18,5 +18,5 @@ abstract class AuthState with _$AuthState {
   const factory AuthState.failedToAuthenticate(
       {NotAuthenticatedReason reason}) = _FailedToAuthenticate;
 
-//const factory AuthState.loggedOut() = _LoggedOut;
+  const factory AuthState.loggedOut() = _LoggedOut;
 }

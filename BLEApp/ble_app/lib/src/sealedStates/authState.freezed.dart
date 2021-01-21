@@ -26,6 +26,11 @@ class _$AuthStateTearOff {
       reason: reason,
     );
   }
+
+// ignore: unused_element
+  _LoggedOut loggedOut() {
+    return const _LoggedOut();
+  }
 }
 
 /// @nodoc
@@ -38,22 +43,26 @@ mixin _$AuthState {
   TResult when<TResult extends Object>({
     @required TResult authenticated(String userId),
     @required TResult failedToAuthenticate(NotAuthenticatedReason reason),
+    @required TResult loggedOut(),
   });
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>({
     TResult authenticated(String userId),
     TResult failedToAuthenticate(NotAuthenticatedReason reason),
+    TResult loggedOut(),
     @required TResult orElse(),
   });
   @optionalTypeArgs
   TResult map<TResult extends Object>({
     @required TResult authenticated(_Authenticated value),
     @required TResult failedToAuthenticate(_FailedToAuthenticate value),
+    @required TResult loggedOut(_LoggedOut value),
   });
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object>({
     TResult authenticated(_Authenticated value),
     TResult failedToAuthenticate(_FailedToAuthenticate value),
+    TResult loggedOut(_LoggedOut value),
     @required TResult orElse(),
   });
 }
@@ -134,9 +143,11 @@ class _$_Authenticated implements _Authenticated {
   TResult when<TResult extends Object>({
     @required TResult authenticated(String userId),
     @required TResult failedToAuthenticate(NotAuthenticatedReason reason),
+    @required TResult loggedOut(),
   }) {
     assert(authenticated != null);
     assert(failedToAuthenticate != null);
+    assert(loggedOut != null);
     return authenticated(userId);
   }
 
@@ -145,6 +156,7 @@ class _$_Authenticated implements _Authenticated {
   TResult maybeWhen<TResult extends Object>({
     TResult authenticated(String userId),
     TResult failedToAuthenticate(NotAuthenticatedReason reason),
+    TResult loggedOut(),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
@@ -159,9 +171,11 @@ class _$_Authenticated implements _Authenticated {
   TResult map<TResult extends Object>({
     @required TResult authenticated(_Authenticated value),
     @required TResult failedToAuthenticate(_FailedToAuthenticate value),
+    @required TResult loggedOut(_LoggedOut value),
   }) {
     assert(authenticated != null);
     assert(failedToAuthenticate != null);
+    assert(loggedOut != null);
     return authenticated(this);
   }
 
@@ -170,6 +184,7 @@ class _$_Authenticated implements _Authenticated {
   TResult maybeMap<TResult extends Object>({
     TResult authenticated(_Authenticated value),
     TResult failedToAuthenticate(_FailedToAuthenticate value),
+    TResult loggedOut(_LoggedOut value),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
@@ -251,9 +266,11 @@ class _$_FailedToAuthenticate implements _FailedToAuthenticate {
   TResult when<TResult extends Object>({
     @required TResult authenticated(String userId),
     @required TResult failedToAuthenticate(NotAuthenticatedReason reason),
+    @required TResult loggedOut(),
   }) {
     assert(authenticated != null);
     assert(failedToAuthenticate != null);
+    assert(loggedOut != null);
     return failedToAuthenticate(reason);
   }
 
@@ -262,6 +279,7 @@ class _$_FailedToAuthenticate implements _FailedToAuthenticate {
   TResult maybeWhen<TResult extends Object>({
     TResult authenticated(String userId),
     TResult failedToAuthenticate(NotAuthenticatedReason reason),
+    TResult loggedOut(),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
@@ -276,9 +294,11 @@ class _$_FailedToAuthenticate implements _FailedToAuthenticate {
   TResult map<TResult extends Object>({
     @required TResult authenticated(_Authenticated value),
     @required TResult failedToAuthenticate(_FailedToAuthenticate value),
+    @required TResult loggedOut(_LoggedOut value),
   }) {
     assert(authenticated != null);
     assert(failedToAuthenticate != null);
+    assert(loggedOut != null);
     return failedToAuthenticate(this);
   }
 
@@ -287,6 +307,7 @@ class _$_FailedToAuthenticate implements _FailedToAuthenticate {
   TResult maybeMap<TResult extends Object>({
     TResult authenticated(_Authenticated value),
     TResult failedToAuthenticate(_FailedToAuthenticate value),
+    TResult loggedOut(_LoggedOut value),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
@@ -303,4 +324,99 @@ abstract class _FailedToAuthenticate implements AuthState {
 
   NotAuthenticatedReason get reason;
   _$FailedToAuthenticateCopyWith<_FailedToAuthenticate> get copyWith;
+}
+
+/// @nodoc
+abstract class _$LoggedOutCopyWith<$Res> {
+  factory _$LoggedOutCopyWith(
+          _LoggedOut value, $Res Function(_LoggedOut) then) =
+      __$LoggedOutCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$LoggedOutCopyWithImpl<$Res> extends _$AuthStateCopyWithImpl<$Res>
+    implements _$LoggedOutCopyWith<$Res> {
+  __$LoggedOutCopyWithImpl(_LoggedOut _value, $Res Function(_LoggedOut) _then)
+      : super(_value, (v) => _then(v as _LoggedOut));
+
+  @override
+  _LoggedOut get _value => super._value as _LoggedOut;
+}
+
+/// @nodoc
+class _$_LoggedOut implements _LoggedOut {
+  const _$_LoggedOut();
+
+  @override
+  String toString() {
+    return 'AuthState.loggedOut()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) || (other is _LoggedOut);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object>({
+    @required TResult authenticated(String userId),
+    @required TResult failedToAuthenticate(NotAuthenticatedReason reason),
+    @required TResult loggedOut(),
+  }) {
+    assert(authenticated != null);
+    assert(failedToAuthenticate != null);
+    assert(loggedOut != null);
+    return loggedOut();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object>({
+    TResult authenticated(String userId),
+    TResult failedToAuthenticate(NotAuthenticatedReason reason),
+    TResult loggedOut(),
+    @required TResult orElse(),
+  }) {
+    assert(orElse != null);
+    if (loggedOut != null) {
+      return loggedOut();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object>({
+    @required TResult authenticated(_Authenticated value),
+    @required TResult failedToAuthenticate(_FailedToAuthenticate value),
+    @required TResult loggedOut(_LoggedOut value),
+  }) {
+    assert(authenticated != null);
+    assert(failedToAuthenticate != null);
+    assert(loggedOut != null);
+    return loggedOut(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object>({
+    TResult authenticated(_Authenticated value),
+    TResult failedToAuthenticate(_FailedToAuthenticate value),
+    TResult loggedOut(_LoggedOut value),
+    @required TResult orElse(),
+  }) {
+    assert(orElse != null);
+    if (loggedOut != null) {
+      return loggedOut(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _LoggedOut implements AuthState {
+  const factory _LoggedOut() = _$_LoggedOut;
 }
