@@ -142,7 +142,7 @@ class CurrentRow extends StatelessWidget {
                             model.data.when((state) {
                               // TODO: check for charge or discharge here
                               color = Colors.white;
-                              current = state.currentCharge;
+                              current = state.currentCharge;// or discharge. FIXME fix the data model
                             }, error: (error, state) {
                               color = Colors.red;
                               current = state.currentCharge;
