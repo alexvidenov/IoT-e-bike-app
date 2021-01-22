@@ -13,6 +13,12 @@ class SettingsBloc {
 
   SettingsBloc(this._preferencesService);
 
+  List<String> cachedDevices() =>
+      _preferencesService.getCachedDevices(); // NULLABLE
+
+  addDevice(String deviceName, String macAddress) =>
+      _preferencesService.addCachedDevice(deviceName, macAddress);
+
   String getUserData() => _preferencesService.userData() ?? 'empty';
 
   setUserData(String json) => _preferencesService.setUserData(json);
@@ -22,6 +28,8 @@ class SettingsBloc {
   bool isDeviceRemembered() => _preferencesService.getDeviceExists();
 
   bool isPasswordRemembered() => _preferencesService.isPasswordRemembered();
+
+  clearAllPrefs() async => await _preferencesService.clearAllPrefs();
 
   clearPrefs() => setManual();
 

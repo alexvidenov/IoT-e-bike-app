@@ -4,4 +4,5 @@ abstract class PrefsKeys {
   static const REMEMBER_PASSWORD = "remember_password";
   static const PASSWORD = "password";
   static const USER_DATA = "user_data";
+  static const CACHED_DEVICES = "cached_devices";
 }

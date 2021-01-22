@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/main.dart';
+import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/modules/jsonClasses/bleCacheModel.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
@@ -14,6 +17,7 @@ part 'blocExtensions/BLEScanMethods.dart';
 @injectable
 class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   final DeviceRepository _deviceRepository;
+  final SettingsBloc _settingsBloc;
   final BleManager _bleManager;
 
   final List<BleDevice> bleDevices = <BleDevice>[];
@@ -29,10 +33,10 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   Stream<BleDevice> get pickedDevice => _deviceRepository.pickedDevice
       .skipWhile((bleDevice) => bleDevice == null);
 
-  DevicesBloc(this._deviceRepository) : this._bleManager = BleManager();
+  DevicesBloc(this._deviceRepository, this._settingsBloc)
+      : this._bleManager = BleManager();
 
-  _handlePickedDevice(BleDevice bleDevice) =>
-      _deviceRepository.pickDevice(bleDevice);
+  _handlePickedDevice(BleDevice bleDevice) => _deviceRepository.pickDevice(bleDevice);
 
   init() {
     bleDevices.clear();

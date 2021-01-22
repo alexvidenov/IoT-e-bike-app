@@ -38,7 +38,6 @@ GetIt $initGetIt(
   final gh = GetItHelper(get, environment, environmentFilter);
   gh.lazySingleton<CloudMessaging>(() => CloudMessaging());
   gh.lazySingleton<DeviceRepository>(() => DeviceRepository());
-  gh.factory<DevicesBloc>(() => DevicesBloc(get<DeviceRepository>()));
   gh.factory<FullStatusBloc>(() => FullStatusBloc(get<DeviceRepository>()));
   gh.factory<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
@@ -63,6 +62,8 @@ GetIt $initGetIt(
         get<SettingsBloc>(),
         get<Auth>(),
       ));
+  gh.factory<DevicesBloc>(
+      () => DevicesBloc(get<DeviceRepository>(), get<SettingsBloc>()));
   gh.factory<EntryEndpointBloc>(
       () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));
 

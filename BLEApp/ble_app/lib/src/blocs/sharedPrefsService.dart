@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:ble_app/src/modules/jsonClasses/bleCacheModel.dart';
 import 'package:ble_app/src/utils/PrefsKeys.dart';
 import 'package:injectable/injectable.dart';
 
@@ -41,6 +43,22 @@ class SharedPrefsService {
       await _preferences.setDouble(key, value);
     }
   }
+
+  addCachedDevice(String deviceName, String macAddress) {
+    List<String> oldDevices =
+        _preferences.getStringList(PrefsKeys.CACHED_DEVICES);
+    final String cacheModel = jsonEncode(
+        BLECacheModel(deviceName: deviceName, macAddress: macAddress).toJson());
+    if (oldDevices != null) {
+      oldDevices.add(cacheModel);
+      _preferences.setStringList(PrefsKeys.CACHED_DEVICES, oldDevices);
+    } else {
+      _preferences.setStringList(PrefsKeys.CACHED_DEVICES, [cacheModel]);
+    }
+  }
+
+  List<String> getCachedDevices() =>
+      _preferences.getStringList(PrefsKeys.CACHED_DEVICES);
 
   String userData() => _getPrefs(PrefsKeys.USER_DATA);
 
