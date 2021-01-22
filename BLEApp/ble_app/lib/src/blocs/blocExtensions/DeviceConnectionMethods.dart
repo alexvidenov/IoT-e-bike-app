@@ -1,5 +1,7 @@
 part of '../deviceBloc.dart';
 
+typedef AsyncFunction = Future<void> Function();
+
 extension DeviceConnectionMethods on DeviceBloc {
   Future<void> disconnect() =>
       _disconnectManual().then((_) => _deviceRepository.pickDevice(null));
@@ -10,15 +12,19 @@ extension DeviceConnectionMethods on DeviceBloc {
           .disconnectOrCancelConnection();
   }
 
-  Future<void> connect() async {
-    try {
-      device.listen((bleDevice) async => await bleDevice.peripheral
+  Future<void> connect() async => device.listen((bleDevice) async =>
+      await _runWithErrorHandling(() async => bleDevice.peripheral
           .connect()
           .then((_) => _observeConnectionState())
           .then((_) => _deviceRepository.discoverServicesAndStartMonitoring())
-          .then((_) => _setDeviceReady.add(true)));
-    } catch (e) {
-      print('GattException');
+          .then((_) => _setDeviceReady.add(true))));
+
+  Future<void> _runWithErrorHandling(AsyncFunction asyncFunction) async { // todo: extract in handler object
+    try {
+      await asyncFunction();
+    } on BleError catch (e) {
+      print(e.reason);
+      asyncFunction();
     }
   }
 }

@@ -84,7 +84,7 @@ class _$LocalDatabase extends LocalDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `users` (`id` TEXT, `email` TEXT, `password` TEXT, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `devices` (`deviceId` TEXT, `userId` TEXT, `parametersToChange` TEXT, PRIMARY KEY (`deviceId`))');
+            'CREATE TABLE IF NOT EXISTS `devices` (`deviceId` TEXT, `user_id` TEXT NOT NULL, `parametersToChange` TEXT, FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, PRIMARY KEY (`deviceId`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -152,7 +152,7 @@ class _$DeviceDao extends DeviceDao {
             'devices',
             (Device item) => <String, dynamic>{
                   'deviceId': item.deviceId,
-                  'userId': item.userId,
+                  'user_id': item.userId,
                   'parametersToChange': item.parametersToChange
                 });
 
@@ -168,7 +168,7 @@ class _$DeviceDao extends DeviceDao {
   Future<List<Device>> fetchDevices() async {
     return _queryAdapter.queryList('SELECT * FROM devices',
         mapper: (Map<String, dynamic> row) => Device(row['deviceId'] as String,
-            row['userId'] as String, row['parametersToChange'] as String));
+            row['user_id'] as String, row['parametersToChange'] as String));
   }
 
   @override
@@ -177,7 +177,7 @@ class _$DeviceDao extends DeviceDao {
         'SELECT * FROM devices WHERE deviceId = ? AND userId = ?',
         arguments: <dynamic>[deviceId, userId],
         mapper: (Map<String, dynamic> row) => Device(row['deviceId'] as String,
-            row['userId'] as String, row['parametersToChange'] as String));
+            row['user_id'] as String, row['parametersToChange'] as String));
   }
 
   @override

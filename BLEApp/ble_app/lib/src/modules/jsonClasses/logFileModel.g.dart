@@ -10,8 +10,7 @@ _BatteryStatusModel _$_BatteryStatusModelFromJson(Map<String, dynamic> json) {
   return _BatteryStatusModel(
     voltage: (json['voltage'] as num).toDouble(),
     temp: (json['temp'] as num).toDouble(),
-    currentCharge: (json['currentCharge'] as num).toDouble(),
-    currentDischarge: (json['currentDischarge'] as num).toDouble(),
+    current: (json['current'] as num).toDouble(),
   );
 }
 
@@ -20,8 +19,7 @@ Map<String, dynamic> _$_BatteryStatusModelToJson(
     <String, dynamic>{
       'voltage': instance.voltage,
       'temp': instance.temp,
-      'currentCharge': instance.currentCharge,
-      'currentDischarge': instance.currentDischarge,
+      'current': instance.current,
     };
 
 LogModel _$LogModelFromJson(Map<String, dynamic> json) {

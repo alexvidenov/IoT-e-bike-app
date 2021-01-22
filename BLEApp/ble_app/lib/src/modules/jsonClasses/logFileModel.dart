@@ -6,11 +6,10 @@ part 'logFileModel.g.dart';
 class _BatteryStatusModel {
   final double voltage;
   final double temp;
-  final double currentCharge;
-  final double currentDischarge;
+  final double current;
 
   const _BatteryStatusModel(
-      {this.voltage, this.temp, this.currentCharge, this.currentDischarge});
+      {this.voltage, this.temp, this.current});
 
   factory _BatteryStatusModel.fromJson(Map<String, dynamic> json) =>
       _$_BatteryStatusModelFromJson(json);

@@ -6,6 +6,7 @@ import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
 import 'package:ble_app/src/sealedStates/parameterFetchState.dart';
 import 'package:ble_app/src/services/Database.dart';
+import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:injectable/injectable.dart';
 
 import 'authBloc.dart';
@@ -43,13 +44,16 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
     for (var i = 23; i < 27; i++) await _querySingleParam('R$i\r');
     for (var i = 28; i < 30; i++) await _querySingleParam('R$i\r');
     print(_parameters.keys.length);
-    Future.delayed(Duration(milliseconds: 120), () async { // was 100, try to vary that
+    Future.delayed(Duration(milliseconds: 120), () async {
+      // was 100, try to vary that
       if (_parameters.keys.length == 19) {
-        final db = FirestoreDatabase(uid: $<AuthBloc>().user);
-        if (!(await db.parametersExist(deviceId: _repository.deviceId))) {
+        //final db = FirestoreDatabase(uid: $<AuthBloc>().user);
+        //if (!(await db.parametersExist(deviceId: _repository.deviceId))) {
+        if (await ConnectivityManager.isOnline()) {
           FirestoreDatabase(uid: $<AuthBloc>().user)
               .setDeviceParameters(_parameters, deviceId: _repository.deviceId);
         }
+        //}
         addEvent(ParameterFetchState.fetched(DeviceParametersModel(
             cellCount: _parameters['00'].toInt(),
             maxCellVoltage: _parameters['01'],
@@ -76,7 +80,7 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
   }
 
   _querySingleParam(String command) async => await Future.delayed(
-      Duration(milliseconds: 80), // 100
+      Duration(milliseconds: 100), // 100
       () => _repository.writeToCharacteristic(command));
 
   setParameters(DeviceParametersModel parameters) {

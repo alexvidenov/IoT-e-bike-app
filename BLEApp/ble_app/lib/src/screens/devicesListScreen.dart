@@ -5,6 +5,7 @@ import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
 import 'package:location_permissions/location_permissions.dart' as locationPerm;
+import 'package:location/location.dart';
 
 typedef _DeviceTapListener = void Function();
 
@@ -34,6 +35,8 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
         await locationPerm.LocationPermissions().checkPermissionStatus();
     if (permissionStatus != locationPerm.PermissionStatus.granted) {
       await locationPerm.LocationPermissions().requestPermissions();
+    } else if (!await Location().serviceEnabled()) {
+      Location().requestService();
     }
   }
 
@@ -45,7 +48,7 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
         title: Text('Bluetooth devices'),
         actions: [
           PopupMenuButton(
-            itemBuilder: (context) => [
+            itemBuilder: (_) => [
               PopupMenuItem(
                   child: ListTile(
                       leading: Icon(Icons.logout),

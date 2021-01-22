@@ -19,7 +19,7 @@ class DeviceRepository {
   String _deviceSerialNumber; // will be updated on every call to connect()
 
   Characteristic _characteristic;
-  StreamSubscription _characteristicSubscription;
+  StreamSubscription<Uint8List> _characteristicSubscription;
 
   CurrentStatus _currentStatus;
 

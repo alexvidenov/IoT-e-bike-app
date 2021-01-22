@@ -14,26 +14,20 @@ class _$ShortStatusModelTearOff {
   const _$ShortStatusModelTearOff();
 
 // ignore: unused_element
-  _ShortStatus call(double totalVoltage, double currentCharge,
-      double currentDischarge, double temperature) {
+  _ShortStatus call(double totalVoltage, double current, double temperature) {
     return _ShortStatus(
       totalVoltage,
-      currentCharge,
-      currentDischarge,
+      current,
       temperature,
     );
   }
 
 // ignore: unused_element
   _EmptyShortStatus empty(
-      [double totalVoltage = 0,
-      double currentCharge = 0,
-      double currentDischarge = 0,
-      double temperature = 0]) {
+      [double totalVoltage = 0, double current = 0, double temperature = 0]) {
     return _EmptyShortStatus(
       totalVoltage,
-      currentCharge,
-      currentDischarge,
+      current,
       temperature,
     );
   }
@@ -46,24 +40,19 @@ const $ShortStatusModel = _$ShortStatusModelTearOff();
 /// @nodoc
 mixin _$ShortStatusModel {
   double get totalVoltage;
-  double get currentCharge;
-  double get currentDischarge;
+  double get current;
   double get temperature;
 
   @optionalTypeArgs
   TResult when<TResult extends Object>(
-    TResult $default(double totalVoltage, double currentCharge,
-        double currentDischarge, double temperature), {
+    TResult $default(double totalVoltage, double current, double temperature), {
     @required
-        TResult empty(double totalVoltage, double currentCharge,
-            double currentDischarge, double temperature),
+        TResult empty(double totalVoltage, double current, double temperature),
   });
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>(
-    TResult $default(double totalVoltage, double currentCharge,
-        double currentDischarge, double temperature), {
-    TResult empty(double totalVoltage, double currentCharge,
-        double currentDischarge, double temperature),
+    TResult $default(double totalVoltage, double current, double temperature), {
+    TResult empty(double totalVoltage, double current, double temperature),
     @required TResult orElse(),
   });
   @optionalTypeArgs
@@ -86,11 +75,7 @@ abstract class $ShortStatusModelCopyWith<$Res> {
   factory $ShortStatusModelCopyWith(
           ShortStatusModel value, $Res Function(ShortStatusModel) then) =
       _$ShortStatusModelCopyWithImpl<$Res>;
-  $Res call(
-      {double totalVoltage,
-      double currentCharge,
-      double currentDischarge,
-      double temperature});
+  $Res call({double totalVoltage, double current, double temperature});
 }
 
 /// @nodoc
@@ -105,20 +90,14 @@ class _$ShortStatusModelCopyWithImpl<$Res>
   @override
   $Res call({
     Object totalVoltage = freezed,
-    Object currentCharge = freezed,
-    Object currentDischarge = freezed,
+    Object current = freezed,
     Object temperature = freezed,
   }) {
     return _then(_value.copyWith(
       totalVoltage: totalVoltage == freezed
           ? _value.totalVoltage
           : totalVoltage as double,
-      currentCharge: currentCharge == freezed
-          ? _value.currentCharge
-          : currentCharge as double,
-      currentDischarge: currentDischarge == freezed
-          ? _value.currentDischarge
-          : currentDischarge as double,
+      current: current == freezed ? _value.current : current as double,
       temperature:
           temperature == freezed ? _value.temperature : temperature as double,
     ));
@@ -132,11 +111,7 @@ abstract class _$ShortStatusCopyWith<$Res>
           _ShortStatus value, $Res Function(_ShortStatus) then) =
       __$ShortStatusCopyWithImpl<$Res>;
   @override
-  $Res call(
-      {double totalVoltage,
-      double currentCharge,
-      double currentDischarge,
-      double temperature});
+  $Res call({double totalVoltage, double current, double temperature});
 }
 
 /// @nodoc
@@ -153,16 +128,12 @@ class __$ShortStatusCopyWithImpl<$Res>
   @override
   $Res call({
     Object totalVoltage = freezed,
-    Object currentCharge = freezed,
-    Object currentDischarge = freezed,
+    Object current = freezed,
     Object temperature = freezed,
   }) {
     return _then(_ShortStatus(
       totalVoltage == freezed ? _value.totalVoltage : totalVoltage as double,
-      currentCharge == freezed ? _value.currentCharge : currentCharge as double,
-      currentDischarge == freezed
-          ? _value.currentDischarge
-          : currentDischarge as double,
+      current == freezed ? _value.current : current as double,
       temperature == freezed ? _value.temperature : temperature as double,
     ));
   }
@@ -170,25 +141,21 @@ class __$ShortStatusCopyWithImpl<$Res>
 
 /// @nodoc
 class _$_ShortStatus implements _ShortStatus {
-  const _$_ShortStatus(this.totalVoltage, this.currentCharge,
-      this.currentDischarge, this.temperature)
+  const _$_ShortStatus(this.totalVoltage, this.current, this.temperature)
       : assert(totalVoltage != null),
-        assert(currentCharge != null),
-        assert(currentDischarge != null),
+        assert(current != null),
         assert(temperature != null);
 
   @override
   final double totalVoltage;
   @override
-  final double currentCharge;
-  @override
-  final double currentDischarge;
+  final double current;
   @override
   final double temperature;
 
   @override
   String toString() {
-    return 'ShortStatusModel(totalVoltage: $totalVoltage, currentCharge: $currentCharge, currentDischarge: $currentDischarge, temperature: $temperature)';
+    return 'ShortStatusModel(totalVoltage: $totalVoltage, current: $current, temperature: $temperature)';
   }
 
   @override
@@ -198,12 +165,9 @@ class _$_ShortStatus implements _ShortStatus {
             (identical(other.totalVoltage, totalVoltage) ||
                 const DeepCollectionEquality()
                     .equals(other.totalVoltage, totalVoltage)) &&
-            (identical(other.currentCharge, currentCharge) ||
+            (identical(other.current, current) ||
                 const DeepCollectionEquality()
-                    .equals(other.currentCharge, currentCharge)) &&
-            (identical(other.currentDischarge, currentDischarge) ||
-                const DeepCollectionEquality()
-                    .equals(other.currentDischarge, currentDischarge)) &&
+                    .equals(other.current, current)) &&
             (identical(other.temperature, temperature) ||
                 const DeepCollectionEquality()
                     .equals(other.temperature, temperature)));
@@ -213,8 +177,7 @@ class _$_ShortStatus implements _ShortStatus {
   int get hashCode =>
       runtimeType.hashCode ^
       const DeepCollectionEquality().hash(totalVoltage) ^
-      const DeepCollectionEquality().hash(currentCharge) ^
-      const DeepCollectionEquality().hash(currentDischarge) ^
+      const DeepCollectionEquality().hash(current) ^
       const DeepCollectionEquality().hash(temperature);
 
   @override
@@ -224,30 +187,25 @@ class _$_ShortStatus implements _ShortStatus {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object>(
-    TResult $default(double totalVoltage, double currentCharge,
-        double currentDischarge, double temperature), {
+    TResult $default(double totalVoltage, double current, double temperature), {
     @required
-        TResult empty(double totalVoltage, double currentCharge,
-            double currentDischarge, double temperature),
+        TResult empty(double totalVoltage, double current, double temperature),
   }) {
     assert($default != null);
     assert(empty != null);
-    return $default(totalVoltage, currentCharge, currentDischarge, temperature);
+    return $default(totalVoltage, current, temperature);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>(
-    TResult $default(double totalVoltage, double currentCharge,
-        double currentDischarge, double temperature), {
-    TResult empty(double totalVoltage, double currentCharge,
-        double currentDischarge, double temperature),
+    TResult $default(double totalVoltage, double current, double temperature), {
+    TResult empty(double totalVoltage, double current, double temperature),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
     if ($default != null) {
-      return $default(
-          totalVoltage, currentCharge, currentDischarge, temperature);
+      return $default(totalVoltage, current, temperature);
     }
     return orElse();
   }
@@ -279,15 +237,13 @@ class _$_ShortStatus implements _ShortStatus {
 }
 
 abstract class _ShortStatus implements ShortStatusModel {
-  const factory _ShortStatus(double totalVoltage, double currentCharge,
-      double currentDischarge, double temperature) = _$_ShortStatus;
+  const factory _ShortStatus(
+      double totalVoltage, double current, double temperature) = _$_ShortStatus;
 
   @override
   double get totalVoltage;
   @override
-  double get currentCharge;
-  @override
-  double get currentDischarge;
+  double get current;
   @override
   double get temperature;
   @override
@@ -301,11 +257,7 @@ abstract class _$EmptyShortStatusCopyWith<$Res>
           _EmptyShortStatus value, $Res Function(_EmptyShortStatus) then) =
       __$EmptyShortStatusCopyWithImpl<$Res>;
   @override
-  $Res call(
-      {double totalVoltage,
-      double currentCharge,
-      double currentDischarge,
-      double temperature});
+  $Res call({double totalVoltage, double current, double temperature});
 }
 
 /// @nodoc
@@ -322,16 +274,12 @@ class __$EmptyShortStatusCopyWithImpl<$Res>
   @override
   $Res call({
     Object totalVoltage = freezed,
-    Object currentCharge = freezed,
-    Object currentDischarge = freezed,
+    Object current = freezed,
     Object temperature = freezed,
   }) {
     return _then(_EmptyShortStatus(
       totalVoltage == freezed ? _value.totalVoltage : totalVoltage as double,
-      currentCharge == freezed ? _value.currentCharge : currentCharge as double,
-      currentDischarge == freezed
-          ? _value.currentDischarge
-          : currentDischarge as double,
+      current == freezed ? _value.current : current as double,
       temperature == freezed ? _value.temperature : temperature as double,
     ));
   }
@@ -340,13 +288,9 @@ class __$EmptyShortStatusCopyWithImpl<$Res>
 /// @nodoc
 class _$_EmptyShortStatus implements _EmptyShortStatus {
   const _$_EmptyShortStatus(
-      [this.totalVoltage = 0,
-      this.currentCharge = 0,
-      this.currentDischarge = 0,
-      this.temperature = 0])
+      [this.totalVoltage = 0, this.current = 0, this.temperature = 0])
       : assert(totalVoltage != null),
-        assert(currentCharge != null),
-        assert(currentDischarge != null),
+        assert(current != null),
         assert(temperature != null);
 
   @JsonKey(defaultValue: 0)
@@ -354,17 +298,14 @@ class _$_EmptyShortStatus implements _EmptyShortStatus {
   final double totalVoltage;
   @JsonKey(defaultValue: 0)
   @override
-  final double currentCharge;
-  @JsonKey(defaultValue: 0)
-  @override
-  final double currentDischarge;
+  final double current;
   @JsonKey(defaultValue: 0)
   @override
   final double temperature;
 
   @override
   String toString() {
-    return 'ShortStatusModel.empty(totalVoltage: $totalVoltage, currentCharge: $currentCharge, currentDischarge: $currentDischarge, temperature: $temperature)';
+    return 'ShortStatusModel.empty(totalVoltage: $totalVoltage, current: $current, temperature: $temperature)';
   }
 
   @override
@@ -374,12 +315,9 @@ class _$_EmptyShortStatus implements _EmptyShortStatus {
             (identical(other.totalVoltage, totalVoltage) ||
                 const DeepCollectionEquality()
                     .equals(other.totalVoltage, totalVoltage)) &&
-            (identical(other.currentCharge, currentCharge) ||
+            (identical(other.current, current) ||
                 const DeepCollectionEquality()
-                    .equals(other.currentCharge, currentCharge)) &&
-            (identical(other.currentDischarge, currentDischarge) ||
-                const DeepCollectionEquality()
-                    .equals(other.currentDischarge, currentDischarge)) &&
+                    .equals(other.current, current)) &&
             (identical(other.temperature, temperature) ||
                 const DeepCollectionEquality()
                     .equals(other.temperature, temperature)));
@@ -389,8 +327,7 @@ class _$_EmptyShortStatus implements _EmptyShortStatus {
   int get hashCode =>
       runtimeType.hashCode ^
       const DeepCollectionEquality().hash(totalVoltage) ^
-      const DeepCollectionEquality().hash(currentCharge) ^
-      const DeepCollectionEquality().hash(currentDischarge) ^
+      const DeepCollectionEquality().hash(current) ^
       const DeepCollectionEquality().hash(temperature);
 
   @override
@@ -400,29 +337,25 @@ class _$_EmptyShortStatus implements _EmptyShortStatus {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object>(
-    TResult $default(double totalVoltage, double currentCharge,
-        double currentDischarge, double temperature), {
+    TResult $default(double totalVoltage, double current, double temperature), {
     @required
-        TResult empty(double totalVoltage, double currentCharge,
-            double currentDischarge, double temperature),
+        TResult empty(double totalVoltage, double current, double temperature),
   }) {
     assert($default != null);
     assert(empty != null);
-    return empty(totalVoltage, currentCharge, currentDischarge, temperature);
+    return empty(totalVoltage, current, temperature);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>(
-    TResult $default(double totalVoltage, double currentCharge,
-        double currentDischarge, double temperature), {
-    TResult empty(double totalVoltage, double currentCharge,
-        double currentDischarge, double temperature),
+    TResult $default(double totalVoltage, double current, double temperature), {
+    TResult empty(double totalVoltage, double current, double temperature),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (empty != null) {
-      return empty(totalVoltage, currentCharge, currentDischarge, temperature);
+      return empty(totalVoltage, current, temperature);
     }
     return orElse();
   }
@@ -456,16 +389,13 @@ class _$_EmptyShortStatus implements _EmptyShortStatus {
 abstract class _EmptyShortStatus implements ShortStatusModel {
   const factory _EmptyShortStatus(
       [double totalVoltage,
-      double currentCharge,
-      double currentDischarge,
+      double current,
       double temperature]) = _$_EmptyShortStatus;
 
   @override
   double get totalVoltage;
   @override
-  double get currentCharge;
-  @override
-  double get currentDischarge;
+  double get current;
   @override
   double get temperature;
   @override

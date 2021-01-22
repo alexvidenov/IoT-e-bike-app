@@ -20,13 +20,11 @@ class CurrentRow extends StatelessWidget {
       initialData: ShortStatusState(ShortStatusModel.empty()),
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active) {
-          var currentCharge;
+          var current;
           Color CCColor = Colors.lightBlueAccent;
-          var currentDischarge;
           Color DCColor = Colors.lightBlueAccent;
           shortStatus.data.when((model) {
-            currentCharge = model.currentCharge;
-            currentDischarge = model.currentDischarge;
+            current = model.current;
           }, error: (error, model) {
             switch (error) {
               case ErrorState.Overcharge:
@@ -38,19 +36,12 @@ class CurrentRow extends StatelessWidget {
               default:
                 break;
             }
-            currentCharge = model.currentCharge;
-            currentDischarge = model.currentDischarge;
+            current = model.current;
           });
-          int charge = bloc
-              .getParameters()
-              .value
-              .maxCutoffChargeCurrent
-              .toInt();
-          int discharge = bloc
-              .getParameters()
-              .value
-              .maxCutoffDischargeCurrent
-              .toInt();
+          int charge =
+              bloc.getParameters().value.maxCutoffChargeCurrent.toInt();
+          int discharge =
+              bloc.getParameters().value.maxCutoffDischargeCurrent.toInt();
           print('DISCHARGE MAX IS $discharge');
           print('CHARGE MAX IS $charge');
           return Row(
@@ -74,8 +65,10 @@ class CurrentRow extends StatelessWidget {
                     child: RotatedBox(
                       quarterTurns: 2,
                       child: FAProgressBar(
-                        currentValue: currentCharge //currentCharge
-                            .toInt(),
+                        currentValue: current > 0
+                            ? current //currentCharge
+                                .toInt()
+                            : 0,
                         size: 50,
                         maxValue: bloc
                             .getParameters()
@@ -117,8 +110,10 @@ class CurrentRow extends StatelessWidget {
                               spreadRadius: 5.0),
                         ]),
                     child: FAProgressBar(
-                      currentValue: currentDischarge //currentDischarge
-                          .toInt(),
+                      currentValue: current < 0
+                          ? current //currentDischarge
+                              .toInt()
+                          : 0,
                       maxValue: bloc
                           .getParameters()
                           .value
@@ -142,10 +137,11 @@ class CurrentRow extends StatelessWidget {
                             model.data.when((state) {
                               // TODO: check for charge or discharge here
                               color = Colors.white;
-                              current = state.currentCharge;// or discharge. FIXME fix the data model
+                              current = state
+                                  .current; // or discharge. FIXME fix the data model
                             }, error: (error, state) {
                               color = Colors.red;
-                              current = state.currentCharge;
+                              current = state.current;
                             });
                             return Text((current / 100).toStringAsFixed(2),
                                 style: TextStyle(

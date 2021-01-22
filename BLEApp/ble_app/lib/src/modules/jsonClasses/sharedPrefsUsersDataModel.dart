@@ -106,7 +106,7 @@ class DeviceLog {
 
   DeviceLog({this.deviceId, this.deviceLog});
 
-  void addLog(Map<String, dynamic> data) =>
+  addLog(Map<String, dynamic> data) =>
       deviceLog.add(LogModel.fromJson(data));
 
   factory DeviceLog.fromJson(Map<String, dynamic> json) =>

@@ -34,8 +34,8 @@ class NavigationDrawer extends StatelessWidget {
                 icon: Icons.app_settings_alt,
                 text: 'Battery status',
                 // change the icon somehow
-                onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => FullStatusPage($())))),
+                onTap: () => {}), //Navigator.of(context).push(
+            //MaterialPageRoute(builder: (_) => FullStatusPage($())))),
             _createDrawerItem(
                 icon: Icons.assessment, text: 'Statistics', onTap: () => {}),
             Divider(),
@@ -53,7 +53,8 @@ class NavigationDrawer extends StatelessWidget {
                 title: Text('Logout'),
                 onTap: () async => await _onLogout().then((_) async {
                       Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => RootPage($())), // actually use popUntil route.isFirst
+                          MaterialPageRoute(builder: (_) => RootPage($())),
+                          // actually use popUntil route.isFirst
                           (_) => false);
                       _prefsBloc.clearPrefs();
                       _prefsBloc.deleteUserData();
