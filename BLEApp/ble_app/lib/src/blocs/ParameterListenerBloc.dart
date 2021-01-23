@@ -7,6 +7,7 @@ import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/services/Database.dart';
+import 'package:ble_app/src/utils/ADCToTemp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 
@@ -128,10 +129,22 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String>
   }
 
   changeParameter(String command) {
+    // 604
+    String key =
+        '${command[1] + command[2]}'; // TODO: write a goddamn util function to add 0's
+    int keyInt = int.parse(key);
+    if (keyInt >= 23 && keyInt <= 26) {
+      print('LMAOOOOOO:');
+      String value = '${command[3] + command[4] + command[5] + command[6]}';
+      int adcFromTemp = TemperatureConverter().adcFromTemp(int.parse(value));
+      print('ADC FROM TEMP ==> $adcFromTemp');
+      _repository.writeToCharacteristic('W$key' + '0' + '$adcFromTemp\r');
+    } else {
+      _repository.writeToCharacteristic(command);
+    }
     // TODO: in case of temperature change, convert to adc units
     // TODO: write the command pattern here instead of from the UI
     currentCommand = command;
-    _repository.writeToCharacteristic(command);
   }
 
   Stream<DeviceParameters> get parameters => _dbManager.fetchParameters();

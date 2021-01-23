@@ -1,66 +1,82 @@
 //import 'package:kdtree/kdtree.dart';
 
+import 'package:kdtree/kdtree.dart';
+
 class TemperatureConverter {
-  final boundaryValues = {
-    MapEntry<int, double>(2965, 102): -5,
-    MapEntry<int, double>(2455, 86.8): 0,
-    MapEntry<int, double>(2021, 72.8): 5,
-    MapEntry<int, double>(1657, 60.2): 10,
-    MapEntry<int, double>(1356, 49.2): 15,
-    MapEntry<int, double>(1110, 40.2): 20,
-    MapEntry<int, double>(909, 32.8): 25,
-    MapEntry<int, double>(745, 26.4): 30,
-    MapEntry<int, double>(613, 21.4): 35,
-    MapEntry<int, double>(506, 17.6): 40,
-    MapEntry<int, double>(418, 14.2): 45,
-    MapEntry<int, double>(347, 11.4): 50,
-    MapEntry<int, double>(290, 9.6): 55,
-    MapEntry<int, double>(242, 7.6): 60,
-    MapEntry<int, double>(204, 6.4): 65
-  };
+  KDTree kdTree;
+  KDTree kdTree2;
 
-  //final values = [
-  // {'adcValue': 2965, 'adcCoef': 102, 'tempInC': -5},
-  // {'adcValue': 2965, 'adcCoef': 102, 'tempInC': -5},
-  //{'adcValue': 2965, 'adcCoef': 102, 'tempInC': -5},
-  //];
+  final tempScale = 5;
 
-  List<MapEntry<int, double>> get keys => boundaryValues.keys.toList();
-
-  List<int> get adcValues => keys.map((e) => e.key).toList();
-
-  double findCoeffByKey(int value) =>
-      keys.firstWhere((e) => e.key == value).value;
-
-  int findTempValue(int value) =>
-      boundaryValues.entries.firstWhere((e) => e.key.key == value).value;
-
-  int tempFromADC(int measurement) {
-    // 850
-    final orderedList = adcValues.where((v) => v >= measurement).toList()
-      ..sort();
-    final nextGreaterValue = orderedList.first; // 909 in our case
-    final diff = nextGreaterValue - measurement; // 59
-    final int divByCoeff = diff ~/ findCoeffByKey(nextGreaterValue);
-    return findTempValue(nextGreaterValue) + divByCoeff;
-  }
-
-/*
-  var distance = (dynamic value1, dynamic value2) =>
+  final distance = (dynamic value1, dynamic value2) =>
       ((value1['adcValue'] - value2['adcValue']) as int).abs();
 
-  stuff(int adcValue) {
-    // 850
-    var tree = KDTree(values, distance, ['adcValue']);
-    var point = {'adcValue': adcValue}; // the read value
-    var nearest = tree.nearest(point, 1); // 909 // sHOUKD BE 2
+  final distance2 = (dynamic value1, dynamic value2) =>
+      ((value1['tempInC'] - value2['tempInC']) as int).abs();
 
-    dynamic nearestElement = nearest.first;
+  final values = [
+    {'adcValue': 2965, 'tempInC': -5},
+    {'adcValue': 2455, 'tempInC': 0},
+    {'adcValue': 2021, 'tempInC': 5},
+    {'adcValue': 1657, 'tempInC': 10},
+    {'adcValue': 1356, 'tempInC': 15},
+    {'adcValue': 1110, 'tempInC': 20},
+    {'adcValue': 909, 'tempInC': 25},
+    {'adcValue': 745, 'tempInC': 30},
+    {'adcValue': 613, 'tempInC': 35},
+    {'adcValue': 506, 'tempInC': 40},
+    {'adcValue': 418, 'tempInC': 45},
+    {'adcValue': 347, 'tempInC': 50},
+    {'adcValue': 290, 'tempInC': 55},
+    {'adcValue': 242, 'tempInC': 60},
+    {'adcValue': 204, 'tempInC': 65},
+  ];
 
-    final diff = ((nearestElement['adcValue'] - adcValue) as int).abs() ; // 59
-    final int divByCoeff = diff ~/ nearestElement['adcCoef'];
-    final tempInC = nearestElement['tempInC'] + divByCoeff;
-    print(tempInC);
+  TemperatureConverter() {
+    kdTree = KDTree(values, distance, ['adcValue']);
+    kdTree2 = KDTree(values, distance2, ['tempInC']);
   }
-   */
+
+  int tempFromADC(int adcValue) {
+    final twoNearest = kdTree.nearest({'adcValue': adcValue}, 2); // 909 745
+    final nearest = twoNearest.first; // 909
+    final secondNearest = twoNearest.elementAt(1);
+    //print(nearest);
+    final diffCoeff =
+        (((nearest[0]['adcValue'] - secondNearest[0]['adcValue']) as int)
+                .abs() ~/
+            5); // 32.8
+    //final diffAdcValue = ((nearest[0]['adcValue'] - adcValue) as int)
+    //.abs(); // 59 ACTUALLY HAVE THE DISTANCE
+    final divByCoeff = nearest[1] ~/ diffCoeff;
+    if (nearest[0]['adcValue'] > adcValue) {
+      final returnValue = nearest[0]['tempInC'] + divByCoeff;
+      final adcFromTempValue = adcFromTemp(returnValue);
+      print('ADC FROM TEMP: $adcFromTempValue');
+      return returnValue;
+    } else {
+      final returnValue = nearest[0]['tempInC'] - divByCoeff;
+      final adcFromTempValue = adcFromTemp(returnValue);
+      print('ADC FROM TEMP: $adcFromTempValue');
+      return returnValue;
+    }
+  }
+
+  int adcFromTemp(int tempInC) {
+    // 37
+    final twoNearest = kdTree2.nearest({'tempInC': tempInC}, 2); // 35 40
+    final nearest = twoNearest.first; // 35
+    final secondNearest = twoNearest.elementAt(1); // 40
+    print(nearest);
+    final diffCoeff =
+        (((nearest[0]['adcValue'] - secondNearest[0]['adcValue']) as int)
+                .abs() ~/
+            5); // 21.4
+    print(diffCoeff);
+    if (nearest[0]['tempInC'] > tempInC) {
+      return nearest[0]['adcValue'] + (nearest[1] * diffCoeff);
+    } else {
+      return nearest[0]['adcValue'] - (nearest[1] * diffCoeff);
+    }
+  }
 }

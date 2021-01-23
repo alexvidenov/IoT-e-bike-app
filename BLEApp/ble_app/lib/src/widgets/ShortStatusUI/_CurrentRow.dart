@@ -9,6 +9,9 @@ import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.da
 // delta 1 - sredno v pokoi (po malko ot I threshold)
 // delta 2 - sredno kogato e po - golqmo ot idmax2 / 2
 
+// O0\r - off
+// O1\r - off
+
 class CurrentRow extends StatelessWidget {
   final ShortStatusBloc bloc;
 

@@ -214,18 +214,19 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                     () => _presentDialog(context,
                         parameterKey: '24', action: 'Change')),
                 _CardParameter(
-                    16,
-                    'T Min',
-                    snapshot.data.minCutoffTemperature ?? 2480,
-                    'Min temperature cut-off',
-                    '°C',
-                    () => _presentDialog(context,
-                        parameterKey: '25', action: 'Change')),
-                _CardParameter(
                     17,
                     'T MinR',
                     snapshot.data.minTemperatureRecovery ?? 1680,
                     'Min temperature recovery',
+                    '°C',
+                    () => _presentDialog(context,
+                        parameterKey: '25', action: 'Change')),
+                _CardParameter(
+                    // TODO: 16 and 17 are switched
+                    16,
+                    'T Min',
+                    snapshot.data.minCutoffTemperature ?? 2480,
+                    'Min temperature cut-off',
                     '°C',
                     () => _presentDialog(context,
                         parameterKey: '26', action: 'Change')),

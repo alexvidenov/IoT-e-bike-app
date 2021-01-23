@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                               Navigator.of(context).pushNamedAndRemoveUntil(
                                   '/devices', (_) => false));
                         },
-                        child: Text(
+                        child: Text( // TODO: StreamBuilder here
                           'Lock', // StreamBuilder here
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),

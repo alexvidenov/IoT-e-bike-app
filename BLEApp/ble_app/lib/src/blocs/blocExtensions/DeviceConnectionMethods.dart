@@ -13,6 +13,7 @@ extension DeviceConnectionMethods on DeviceBloc {
   }
 
   Future<void> connect() async =>
+      // TODO: actually emit a ble exception state, which will be handled by the UI. Reconnect on user action.
       device.listen((bleDevice) async => await bleDevice.peripheral
           .connect()
           .then((_) => _observeConnectionState())
