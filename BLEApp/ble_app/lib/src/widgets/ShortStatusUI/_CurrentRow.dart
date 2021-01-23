@@ -53,7 +53,7 @@ class CurrentRow extends StatelessWidget {
                   Container(
                     width: MediaQuery.of(context).size.width * 0.2,
                     height: 30,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                         color: Colors.black26,
                         shape: BoxShape.rectangle,
                         boxShadow: [
@@ -83,7 +83,7 @@ class CurrentRow extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  Text("Chg",
+                  const Text("Chg",
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       style: TextStyle(
@@ -111,7 +111,7 @@ class CurrentRow extends StatelessWidget {
                         ]),
                     child: FAProgressBar(
                       currentValue: current < 0
-                          ? current //currentDischarge
+                          ? ((current as num) * -1) //currentDischarge
                               .toInt()
                           : 0,
                       maxValue: bloc
@@ -143,7 +143,8 @@ class CurrentRow extends StatelessWidget {
                               color = Colors.red;
                               current = state.current;
                             });
-                            return Text((current / 100).toStringAsFixed(2),
+                            return Text(
+                                (current / 100).toStringAsFixed(2) + 'A',
                                 style: TextStyle(
                                     color: color,
                                     fontWeight: FontWeight.bold,
@@ -155,7 +156,7 @@ class CurrentRow extends StatelessWidget {
                         },
                       ),
                       const SizedBox(
-                        width: 30,
+                        width: 20,
                       ),
                       const Text(
                         "Dch",

@@ -21,8 +21,8 @@ class _$ShortStatusStateTearOff {
   }
 
 // ignore: unused_element
-  Error error(ErrorState errorState, [ShortStatusModel model]) {
-    return Error(
+  ShortStatusError error(ErrorState errorState, [ShortStatusModel model]) {
+    return ShortStatusError(
       errorState,
       model,
     );
@@ -51,12 +51,12 @@ mixin _$ShortStatusState {
   @optionalTypeArgs
   TResult map<TResult extends Object>(
     TResult $default(Normal value), {
-    @required TResult error(Error value),
+    @required TResult error(ShortStatusError value),
   });
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object>(
     TResult $default(Normal value), {
-    TResult error(Error value),
+    TResult error(ShortStatusError value),
     @required TResult orElse(),
   });
 
@@ -190,7 +190,7 @@ class _$Normal implements Normal {
   @optionalTypeArgs
   TResult map<TResult extends Object>(
     TResult $default(Normal value), {
-    @required TResult error(Error value),
+    @required TResult error(ShortStatusError value),
   }) {
     assert($default != null);
     assert(error != null);
@@ -201,7 +201,7 @@ class _$Normal implements Normal {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object>(
     TResult $default(Normal value), {
-    TResult error(Error value),
+    TResult error(ShortStatusError value),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
@@ -222,9 +222,11 @@ abstract class Normal implements ShortStatusState {
 }
 
 /// @nodoc
-abstract class $ErrorCopyWith<$Res> implements $ShortStatusStateCopyWith<$Res> {
-  factory $ErrorCopyWith(Error value, $Res Function(Error) then) =
-      _$ErrorCopyWithImpl<$Res>;
+abstract class $ShortStatusErrorCopyWith<$Res>
+    implements $ShortStatusStateCopyWith<$Res> {
+  factory $ShortStatusErrorCopyWith(
+          ShortStatusError value, $Res Function(ShortStatusError) then) =
+      _$ShortStatusErrorCopyWithImpl<$Res>;
   @override
   $Res call({ErrorState errorState, ShortStatusModel model});
 
@@ -233,20 +235,22 @@ abstract class $ErrorCopyWith<$Res> implements $ShortStatusStateCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ErrorCopyWithImpl<$Res> extends _$ShortStatusStateCopyWithImpl<$Res>
-    implements $ErrorCopyWith<$Res> {
-  _$ErrorCopyWithImpl(Error _value, $Res Function(Error) _then)
-      : super(_value, (v) => _then(v as Error));
+class _$ShortStatusErrorCopyWithImpl<$Res>
+    extends _$ShortStatusStateCopyWithImpl<$Res>
+    implements $ShortStatusErrorCopyWith<$Res> {
+  _$ShortStatusErrorCopyWithImpl(
+      ShortStatusError _value, $Res Function(ShortStatusError) _then)
+      : super(_value, (v) => _then(v as ShortStatusError));
 
   @override
-  Error get _value => super._value as Error;
+  ShortStatusError get _value => super._value as ShortStatusError;
 
   @override
   $Res call({
     Object errorState = freezed,
     Object model = freezed,
   }) {
-    return _then(Error(
+    return _then(ShortStatusError(
       errorState == freezed ? _value.errorState : errorState as ErrorState,
       model == freezed ? _value.model : model as ShortStatusModel,
     ));
@@ -254,8 +258,9 @@ class _$ErrorCopyWithImpl<$Res> extends _$ShortStatusStateCopyWithImpl<$Res>
 }
 
 /// @nodoc
-class _$Error implements Error {
-  const _$Error(this.errorState, [this.model]) : assert(errorState != null);
+class _$ShortStatusError implements ShortStatusError {
+  const _$ShortStatusError(this.errorState, [this.model])
+      : assert(errorState != null);
 
   @override
   final ErrorState errorState;
@@ -270,7 +275,7 @@ class _$Error implements Error {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is Error &&
+        (other is ShortStatusError &&
             (identical(other.errorState, errorState) ||
                 const DeepCollectionEquality()
                     .equals(other.errorState, errorState)) &&
@@ -285,8 +290,8 @@ class _$Error implements Error {
       const DeepCollectionEquality().hash(model);
 
   @override
-  $ErrorCopyWith<Error> get copyWith =>
-      _$ErrorCopyWithImpl<Error>(this, _$identity);
+  $ShortStatusErrorCopyWith<ShortStatusError> get copyWith =>
+      _$ShortStatusErrorCopyWithImpl<ShortStatusError>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -317,7 +322,7 @@ class _$Error implements Error {
   @optionalTypeArgs
   TResult map<TResult extends Object>(
     TResult $default(Normal value), {
-    @required TResult error(Error value),
+    @required TResult error(ShortStatusError value),
   }) {
     assert($default != null);
     assert(error != null);
@@ -328,7 +333,7 @@ class _$Error implements Error {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object>(
     TResult $default(Normal value), {
-    TResult error(Error value),
+    TResult error(ShortStatusError value),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
@@ -339,13 +344,13 @@ class _$Error implements Error {
   }
 }
 
-abstract class Error implements ShortStatusState {
-  const factory Error(ErrorState errorState, [ShortStatusModel model]) =
-      _$Error;
+abstract class ShortStatusError implements ShortStatusState {
+  const factory ShortStatusError(ErrorState errorState,
+      [ShortStatusModel model]) = _$ShortStatusError;
 
   ErrorState get errorState;
   @override
   ShortStatusModel get model;
   @override
-  $ErrorCopyWith<Error> get copyWith;
+  $ShortStatusErrorCopyWith<ShortStatusError> get copyWith;
 }

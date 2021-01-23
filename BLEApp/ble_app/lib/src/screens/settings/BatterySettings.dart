@@ -216,7 +216,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     16,
                     'T Min',
-                    snapshot.data.minCutoffTemperature?? 2480,
+                    snapshot.data.minCutoffTemperature ?? 2480,
                     'Min temperature cut-off',
                     '°C',
                     () => _presentDialog(context,
@@ -280,7 +280,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                   value = controllerValue;
               }
               print('INPUT FROM SETTINGS IS ' + 'W$parameterKey$value\r');
-              Future.delayed(
+              await Future.delayed(
                   Duration(milliseconds: 150), // works perfectly with 80.
                   () => widget
                       ._parameterListenerBloc // TODO:  After the first symbol, add comma with the bloc

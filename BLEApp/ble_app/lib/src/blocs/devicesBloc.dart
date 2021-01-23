@@ -3,22 +3,23 @@ import 'dart:convert';
 
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/main.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
-import 'package:ble_app/src/modules/jsonClasses/bleCacheModel.dart';
+import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'LocalDatabaseManager.dart';
 
 part 'blocExtensions/BLEScanMethods.dart';
 
 @injectable
 class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   final DeviceRepository _deviceRepository;
-  final SettingsBloc _settingsBloc;
-  final BleManager _bleManager;
+  final LocalDatabaseManager _dbManager;
+  final BleManager _bleManager = BleManager();
 
   final List<BleDevice> bleDevices = <BleDevice>[];
 
@@ -33,10 +34,10 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   Stream<BleDevice> get pickedDevice => _deviceRepository.pickedDevice
       .skipWhile((bleDevice) => bleDevice == null);
 
-  DevicesBloc(this._deviceRepository, this._settingsBloc)
-      : this._bleManager = BleManager();
+  DevicesBloc(this._deviceRepository, this._dbManager);
 
-  _handlePickedDevice(BleDevice bleDevice) => _deviceRepository.pickDevice(bleDevice);
+  _handlePickedDevice(BleDevice bleDevice) =>
+      _deviceRepository.pickDevice(bleDevice);
 
   init() {
     bleDevices.clear();
@@ -53,15 +54,6 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   }
 
   @override
-  dispose() {
-    super.dispose();
-    logger.wtf('Closing stream in DevicesBloc');
-    _visibleDevicesController.close();
-    _scanSubscription?.cancel();
-    _stopScan();
-  }
-
-  @override
   create() => streamSubscription = stream.listen(_handlePickedDevice);
 
   @override
@@ -69,4 +61,13 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
 
   @override
   resume() => init();
+
+  @override
+  dispose() {
+    super.dispose();
+    logger.wtf('Closing stream in DevicesBloc');
+    _visibleDevicesController.close();
+    _scanSubscription?.cancel();
+    _stopScan();
+  }
 }

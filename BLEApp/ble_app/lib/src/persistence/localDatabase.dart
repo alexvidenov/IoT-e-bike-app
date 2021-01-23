@@ -12,7 +12,7 @@ import 'dart:async';
 
 part 'localDatabase.g.dart';
 
-@Database(version: 2, entities: [User, Device, DeviceParameters])
+@Database(version: 4, entities: [User, Device, DeviceParameters])
 @singleton
 abstract class LocalDatabase extends FloorDatabase {
   UserDao get userDao;
@@ -23,9 +23,11 @@ abstract class LocalDatabase extends FloorDatabase {
 
   static final Migration migration2to3 = Migration(2, 3, (_) async => {});
 
+  static final Migration migration3to4 = Migration(3, 4, (_) async => {});
+
   @preResolve
   @factoryMethod
   static Future<LocalDatabase> getInstance() async => await $FloorLocalDatabase
       .databaseBuilder('ble_app_local_database.db')
-      .addMigrations([migration2to3]).build();
+      .addMigrations([migration2to3, migration3to4]).build();
 }

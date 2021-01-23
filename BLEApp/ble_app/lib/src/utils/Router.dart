@@ -57,8 +57,7 @@ abstract class Router {
             builder: (_) => BLEAuthenticationScreen($(), $(), $(), $()));
       case '/fetchParameters':
         return MaterialPageRoute(
-            builder: (_) => ParameterFetchScreen(
-                $(), $(), $(), $<DeviceRepository>().deviceId));
+            builder: (_) => ParameterFetchScreen($(), $()));
       case '/batterySettings':
         return MaterialPageRoute(
             builder: (_) => BatterySettingsScreen($(), $(), $(), $()));
@@ -77,8 +76,7 @@ abstract class Router {
             builder: (_) => BLEAuthenticationScreen($(), $(), $(), $()));
       case '/fetchParameters':
         return MaterialPageRoute(
-            builder: (_) => ParameterFetchScreen(
-                $(), $(), $(), $<DeviceRepository>().deviceId));
+            builder: (_) => ParameterFetchScreen($(), $()));
       case '/home':
         return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $()));
       case '/settings':

@@ -6,13 +6,11 @@ import 'package:ble_app/src/sealedStates/parameterFetchState.dart';
 import 'package:flutter/material.dart';
 
 class ParameterFetchScreen extends RouteAwareWidget<ParameterFetchBloc> {
-  const ParameterFetchScreen(ParameterFetchBloc _deviceParameterBloc,
-      this._deviceBloc, this._localDatabase, this.deviceId)
+  const ParameterFetchScreen(
+      ParameterFetchBloc _deviceParameterBloc, this._deviceBloc)
       : super(bloc: _deviceParameterBloc);
 
   final DeviceBloc _deviceBloc; // remove this in release, not needed
-  final String deviceId;
-  final LocalDatabase _localDatabase;
 
   Future<bool> _onWillPop(context) => showDialog(
       context: context,
@@ -55,8 +53,6 @@ class ParameterFetchScreen extends RouteAwareWidget<ParameterFetchBloc> {
               snapshot.data.when(
                   fetched: (fetched) {
                     super.bloc.setParameters(fetched);
-                    //_localDatabase.deviceDao.updateDeviceParameters(
-                    //deviceId, fetched.parameters.toJson());
                     WidgetsBinding.instance.addPostFrameCallback((_) =>
                         Navigator.of(context).pushReplacementNamed('/home'));
                   },

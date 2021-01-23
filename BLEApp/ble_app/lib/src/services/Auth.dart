@@ -21,7 +21,7 @@ import 'CloudMessaging.dart';
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  LocalDatabase _localDatabase;
+  final LocalDatabase _localDatabase;
 
   UserDao get _userDao => _localDatabase.userDao;
 
@@ -47,8 +47,9 @@ class Auth {
             .signInWithEmailAndPassword(email: email, password: password);
         user = credential?.user;
         if (user != null) {
-          FirestoreDatabase(uid: user.uid)
-              .setUserDeviceToken(token: await $<CloudMessaging>().getToken());
+          FirestoreDatabase(uid: user.uid).setUserDeviceToken(
+              token:
+                  await $<CloudMessaging>().getToken()); // TODO; should update
           return AuthState.authenticated(user.uid);
         }
       } on FirebaseAuthException catch (e) {

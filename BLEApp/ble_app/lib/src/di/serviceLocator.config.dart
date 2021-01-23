@@ -17,6 +17,7 @@ import '../blocs/devicesBloc.dart';
 import '../blocs/entryEndpointBloc.dart';
 import '../blocs/fullStatusBloc.dart';
 import '../persistence/localDatabase.dart';
+import '../blocs/LocalDatabaseManager.dart';
 import '../blocs/locationBloc.dart';
 import '../blocs/navigationBloc.dart';
 import '../blocs/navigationService.dart';
@@ -39,28 +40,29 @@ GetIt $initGetIt(
   gh.lazySingleton<CloudMessaging>(() => CloudMessaging());
   gh.lazySingleton<DeviceRepository>(() => DeviceRepository());
   gh.factory<FullStatusBloc>(() => FullStatusBloc(get<DeviceRepository>()));
+  gh.lazySingleton<LocalDatabaseManager>(
+      () => LocalDatabaseManager(get<LocalDatabase>()));
   gh.factory<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
   gh.lazySingleton<ParameterHolder>(() => ParameterHolder());
   gh.factory<ParameterListenerBloc>(() => ParameterListenerBloc(
         get<DeviceRepository>(),
         get<ParameterHolder>(),
-        get<LocalDatabase>(),
+        get<LocalDatabaseManager>(),
       ));
   gh.lazySingleton<Auth>(() => Auth(get<LocalDatabase>()));
   gh.lazySingleton<AuthBloc>(() => AuthBloc(get<Auth>()));
-  gh.factory<BluetoothAuthBloc>(() => BluetoothAuthBloc(
-        get<DeviceRepository>(),
-        get<LocalDatabase>(),
-        get<Auth>(),
-      ));
+  gh.factory<BluetoothAuthBloc>(() =>
+      BluetoothAuthBloc(get<DeviceRepository>(), get<LocalDatabaseManager>()));
   gh.lazySingleton<DeviceBloc>(() => DeviceBloc(get<DeviceRepository>()));
+  gh.factory<DevicesBloc>(
+      () => DevicesBloc(get<DeviceRepository>(), get<LocalDatabaseManager>()));
   gh.lazySingleton<NavigationBloc>(
       () => NavigationBloc(get<NavigationService>()));
   gh.factory<ParameterFetchBloc>(() => ParameterFetchBloc(
         get<DeviceRepository>(),
         get<ParameterHolder>(),
-        get<LocalDatabase>(),
+        get<LocalDatabaseManager>(),
       ));
   gh.lazySingleton<SettingsBloc>(() => SettingsBloc(get<SharedPrefsService>()));
   gh.factory<ShortStatusBloc>(() => ShortStatusBloc(
@@ -68,8 +70,6 @@ GetIt $initGetIt(
         get<SettingsBloc>(),
         get<Auth>(),
       ));
-  gh.factory<DevicesBloc>(
-      () => DevicesBloc(get<DeviceRepository>(), get<SettingsBloc>()));
   gh.factory<EntryEndpointBloc>(
       () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));
 

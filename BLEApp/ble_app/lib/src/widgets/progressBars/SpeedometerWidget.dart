@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class Speedometer extends StatelessWidget {
-  Speedometer(
+  const Speedometer(
       {@required this.speed, @required this.speedRecord, this.size = 270});
 
   final double speed;

@@ -1,5 +1,7 @@
 import 'dart:collection';
 
+import 'package:ble_app/src/blocs/CurrentContext.dart';
+import 'package:ble_app/src/blocs/LocalDatabaseManager.dart';
 import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
@@ -14,12 +16,13 @@ import 'authBloc.dart';
 import 'bloc.dart';
 
 @injectable
-class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
+class ParameterFetchBloc extends Bloc<ParameterFetchState, String>
+    with CurrentContext {
   final DeviceRepository _repository;
   final ParameterHolder _holder;
-  final LocalDatabase _localDatabase;
+  final LocalDatabaseManager _dbManager;
 
-  ParameterFetchBloc(this._repository, this._holder, this._localDatabase)
+  ParameterFetchBloc(this._repository, this._holder, this._dbManager)
       : super(); // can be const as well
 
   final _parameters = SplayTreeMap<String, double>();
@@ -31,7 +34,7 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
     queryParameters();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       print('PARAMETER EVENT: ' + event);
-      var buffer = StringBuffer();
+      final buffer = StringBuffer();
       for (var i = 3; i < event.length; i++) {
         buffer.write('${event[i]}');
       }
@@ -42,14 +45,10 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
   }
 
   queryParameters() async {
-    for (var i = 0; i < 7; i++)
-      await _querySingleParam('R0$i\r');
-    for (var i = 12; i < 18; i++)
-      await _querySingleParam('R$i\r');
-    for (var i = 23; i < 27; i++)
-      await _querySingleParam('R$i\r');
-    for (var i = 28; i < 30; i++)
-      await _querySingleParam('R$i\r');
+    for (var i = 0; i < 7; i++) await _querySingleParam('R0$i\r');
+    for (var i = 12; i < 18; i++) await _querySingleParam('R$i\r');
+    for (var i = 23; i < 27; i++) await _querySingleParam('R$i\r');
+    for (var i = 28; i < 30; i++) await _querySingleParam('R$i\r');
     print(_parameters.keys.length);
     Future.delayed(Duration(milliseconds: 120), () async {
       // was 100, try to vary that
@@ -57,11 +56,11 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
         //final db = FirestoreDatabase(uid: $<AuthBloc>().user);
         //if (!(await db.parametersExist(deviceId: _repository.deviceId))) {
         if (await ConnectivityManager.isOnline()) {
-          FirestoreDatabase(uid: $<AuthBloc>().user)
-              .setDeviceParameters(_parameters, deviceId: _repository.deviceId);
+          FirestoreDatabase(uid: this.curUserId, deviceId: this.curDeviceId)
+              .setDeviceParameters(_parameters);
         }
         final entity = DeviceParameters(
-            deviceId: _repository.deviceId,
+            id: _repository.deviceId,
             cellCount: _parameters['00'].toInt(),
             maxCellVoltage: _parameters['01'],
             maxRecoveryVoltage: _parameters['02'],
@@ -81,7 +80,6 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
             minCutoffTemperature: _parameters['26'].toInt(),
             motoHoursChargeCounter: _parameters['28'].toInt(),
             motoHoursDischargeCounter: _parameters['29'].toInt());
-        _localDatabase.parametersDao.insertEntity(entity);
         //}
         addEvent(ParameterFetchState.fetched(entity));
       }
@@ -89,13 +87,13 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
     });
   }
 
-  _querySingleParam(String command) async =>
-      await Future.delayed(
-          Duration(milliseconds: 100),
-              () => _repository.writeToCharacteristic(command));
+  _querySingleParam(String command) async => await Future.delayed(
+      Duration(milliseconds: 100),
+      () => _repository.writeToCharacteristic(command));
 
   setParameters(DeviceParameters parameters) {
     print('Device parameters are:' + parameters.toString());
+    _dbManager.insertParameters(parameters);
     _holder.deviceParameters.value = parameters;
   }
 }

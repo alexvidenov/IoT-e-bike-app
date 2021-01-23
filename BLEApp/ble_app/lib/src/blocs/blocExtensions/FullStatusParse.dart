@@ -17,7 +17,7 @@ extension FullStatusParse on FullStatusBloc {
 
     deltaCounter++;
 
-    String status = '${rawData[0]}';
+    final String status = '${rawData[0]}';
 
     switch (status) {
       case '0':
@@ -54,7 +54,7 @@ extension FullStatusParse on FullStatusBloc {
         } else {
           current = splitInner[1] != '0'
               ? double.parse(splitInner[1])
-              : double.parse(splitInner[2]);
+              : (double.parse(splitInner[2]) * -1);
           temperature = double.parse(splitInner[3]);
         }
       }
@@ -68,7 +68,9 @@ extension FullStatusParse on FullStatusBloc {
         final lowestValue = fullStatus
             .reduce((value, element) => value.y < element.y ? value : element);
 
-        delta = maxValue.y - lowestValue.y; // TODO: actually store the values and divide them by 4
+        delta = maxValue.y -
+            lowestValue
+                .y; // TODO: actually store the values and divide them by 4
       }
 
       if (current < getParameters().value.motoHoursCounterCurrentThreshold) {

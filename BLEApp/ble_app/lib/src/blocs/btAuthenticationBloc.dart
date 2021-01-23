@@ -1,20 +1,20 @@
+import 'package:ble_app/src/blocs/LocalDatabaseManager.dart';
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
-import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/sealedStates/btAuthState.dart';
-import 'package:ble_app/src/services/Auth.dart';
 import 'package:injectable/injectable.dart';
+
+import 'CurrentContext.dart';
 
 part 'blocExtensions/BTAuthMethods.dart';
 
 @injectable
-class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
+class BluetoothAuthBloc extends Bloc<BTAuthState, String> with CurrentContext {
   final DeviceRepository _repository;
-  final LocalDatabase _db;
-  final Auth _auth;
+  final LocalDatabaseManager _db;
 
-  BluetoothAuthBloc(this._repository, this._db, this._auth) : super();
+  BluetoothAuthBloc(this._repository, this._db) : super();
 
   @override
   create() => streamSubscription =
@@ -30,10 +30,11 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
           // just for simpler tests
           //addEvent(BTAuthState.bTNotAuthenticated(
           //reason: BTNotAuthenticatedReason.DeviceDoesNotExist));
-          //}
+          //}x
           //else{
           //_db.deviceDao.setMacAddress(_re, int.parse(_repository.deviceId));
-          _repository.deviceSerialNumber = 1234567.toString();
+          _repository.deviceSerialNumber = 1234567
+              .toString(); // TODO: fetch 55 param here (for example)
           addEvent(BTAuthState.btAuthenticated());
           // }
         }

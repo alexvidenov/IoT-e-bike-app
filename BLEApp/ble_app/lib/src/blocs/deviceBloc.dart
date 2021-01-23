@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/listeners/disconnectedListener.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
@@ -11,7 +12,7 @@ part 'blocExtensions/DeviceConnectionMethods.dart';
 
 @lazySingleton
 class DeviceBloc {
-  final BleManager _bleManager;
+  final BleManager _bleManager = BleManager();
   final DeviceRepository _deviceRepository;
 
   BehaviorSubject<bool> _isDeviceReadyController; // TODO: replace with RxObject
@@ -37,7 +38,7 @@ class DeviceBloc {
   Stream<BleDevice> get disconnectedDevice => _deviceRepository.pickedDevice
       .skipWhile((bleDevice) => bleDevice != null);
 
-  DeviceBloc(this._deviceRepository) : this._bleManager = BleManager() {
+  DeviceBloc(this._deviceRepository) {
     final device = _deviceRepository.pickedDevice.value;
     _deviceController = BehaviorSubject<BleDevice>.seeded(device);
 

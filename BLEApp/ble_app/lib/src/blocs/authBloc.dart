@@ -20,7 +20,7 @@ class AuthBloc {
       _auth.signUpWithEmailAndPassword(email, password,
           deviceSerialNumber: deviceId);
 
-  String get user => _auth.getCurrentUserId();
+  String get userId => _auth.getCurrentUserId();
 
   Future<void> logout() async => await _auth.signOut();
 

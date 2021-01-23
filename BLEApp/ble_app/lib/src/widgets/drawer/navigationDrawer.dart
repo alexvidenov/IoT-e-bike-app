@@ -40,29 +40,38 @@ class NavigationDrawer extends StatelessWidget {
                 icon: Icons.assessment, text: 'Statistics', onTap: () => {}),
             Divider(),
             ListTile(
-              title: Text('Disconnect'),
+              title: const Text('Disconnect',
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                      fontFamily: 'Europe_Ext')),
               onTap: () {
                 _deviceBloc.removeListener();
-                _prefsBloc.clearPrefs();
+                _prefsBloc.clearUserPrefs();
                 _deviceBloc.cancel();
                 _deviceBloc.disconnect().then((_) => Navigator.of(context)
                     .pushNamedAndRemoveUntil('/devices', (_) => false));
               },
             ),
             ListTile(
-                title: Text('Logout'),
+                title: const Text('Logout',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                        fontFamily: 'Europe_Ext')),
                 onTap: () async => await _onLogout().then((_) async {
                       Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(builder: (_) => RootPage($())),
                           // actually use popUntil route.isFirst
                           (_) => false);
-                      _prefsBloc.clearPrefs();
-                      _prefsBloc.deleteUserData();
+                      _prefsBloc.clearUserPrefs();
+                      //_prefsBloc.deleteUserData();
                       await _deviceBloc.disconnect();
                     })),
             ListTile(
               title: Text('Version 0.0.1. All rights reserved. '),
-              onTap: () {},
             ),
           ],
         ),
@@ -95,7 +104,14 @@ class NavigationDrawer extends StatelessWidget {
             Icon(icon),
             Padding(
               padding: EdgeInsets.only(left: 8.0),
-              child: Text(text),
+              child: Text(
+                text,
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                    fontFamily: 'Europe_Ext'),
+              ),
             )
           ],
         ),

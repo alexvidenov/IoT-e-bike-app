@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:ble_app/src/model/BleDevice.dart';
 import 'package:ble_app/src/utils/dataParser.dart';
@@ -14,7 +15,11 @@ enum CurrentStatus { ShortStatus, FullStatus }
 @lazySingleton
 class DeviceRepository {
   static BleDevice _bleDevice;
+
   BehaviorSubject<BleDevice> _deviceController;
+
+  ValueStream<BleDevice> get pickedDevice =>
+      _deviceController.stream.shareValueSeeded(_bleDevice);
 
   String _deviceSerialNumber; // will be updated on every call to connect()
 
@@ -28,16 +33,14 @@ class DeviceRepository {
 
   Timer _timer; // timer for the periodic commands¬
 
-  final _characteristicController =
-      PublishSubject<String>(); // packets, emitted from bluetooth
+  final _characteristicRx = RxObject<String>();
 
-  Stream<String> get characteristicValueStream =>
-      _characteristicController.stream;
+  Stream<String> get characteristicValueStream => _characteristicRx.stream;
 
-  Sink<String> get _characteristicValueSink => _characteristicController.sink;
+  //final _characteristicController =
+  //PublishSubject<String>(); // packets, emitted from bluetooth
 
-  ValueStream<BleDevice> get pickedDevice =>
-      _deviceController.stream.shareValueSeeded(_bleDevice);
+  //Sink<String> get _characteristicValueSink => _characteristicController.sink;
 
   bool get hasPickedDevice => _bleDevice != null;
 
@@ -50,7 +53,7 @@ class DeviceRepository {
     _deviceController.add(_bleDevice);
   }
 
-  _addCharacteristicEvent(String event) => _characteristicValueSink.add(event);
+  //_addCharacteristicEvent(String event) => _characteristicValueSink.add(event);
 
   _listenToCharacteristic() {
     _characteristicSubscription = _characteristic?.monitor()?.listen((event) {
@@ -60,7 +63,8 @@ class DeviceRepository {
           for (int i = 0; i < event.length; i++) {
             if (event.elementAt(i) == 10) {
               _value = _curValue;
-              _addCharacteristicEvent(_value);
+              _characteristicRx.addEvent(_value);
+              // _addCharacteristicEvent(_value);
               _curValue = "";
             } else {
               List<int> curList = [event.elementAt(i)];
@@ -137,10 +141,12 @@ class DeviceRepository {
 
   String get deviceId => _deviceSerialNumber;
 
-  set deviceSerialNumber(String id) => _deviceSerialNumber = id;
+  set deviceSerialNumber(String id) =>
+      _deviceSerialNumber = id; // TODO: fix the shit here
 
   dispose() {
     _characteristicSubscription?.cancel();
-    _characteristicController.close();
+    _characteristicRx.dispose();
+    //_characteristicController.close();
   }
 }

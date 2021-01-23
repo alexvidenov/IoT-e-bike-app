@@ -5,8 +5,6 @@ import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
 import 'package:flutter/material.dart';
 
-enum ConnectionSettings { Manual, AutoConnect, AutoPassword }
-
 // ignore: must_be_immutable
 class ConnectionSettingsScreen extends StatelessWidget {
   final DeviceRepository _deviceRepository;
@@ -62,7 +60,7 @@ class ConnectionSettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            Text("Connection Settings: ",
+            const Text("Connection Settings: ",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget with Navigation {
   final DeviceBloc _deviceBloc;
   final DeviceRepository _repository;
 
-  HomeScreen(this._prefsBloc, this._deviceBloc, this._repository);
+  const HomeScreen(this._prefsBloc, this._deviceBloc, this._repository);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                         color: Colors.black,
                         onPressed: () {
                           widget._deviceBloc.removeListener();
-                          widget._prefsBloc.clearPrefs();
+                          widget._prefsBloc.clearUserPrefs();
                           widget._repository.cancel(); // fix that of course
                           widget._deviceBloc.disconnect().then((_) =>
                               Navigator.of(context).pushNamedAndRemoveUntil(

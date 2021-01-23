@@ -13,7 +13,7 @@ part 'blocExtensions/DetermineEndpoint.dart';
 enum Endpoint { Unknown, DevicesScreen, AuthScreen }
 
 @injectable
-class EntryEndpointBloc extends Bloc<Endpoint, Endpoint>{
+class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
   final DevicesBloc _devicesBloc;
   final SettingsBloc _settingsBloc;
 

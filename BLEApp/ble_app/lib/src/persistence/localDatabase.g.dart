@@ -69,7 +69,7 @@ class _$LocalDatabase extends LocalDatabase {
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 2,
+      version: 4,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
       },
@@ -88,7 +88,7 @@ class _$LocalDatabase extends LocalDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `devices` (`user_id` TEXT NOT NULL, `macAddress` TEXT, `name` TEXT, `parametersToChange` TEXT, `id` TEXT, FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `parameters` (`cellCount` INTEGER, `maxCellVoltage` REAL, `maxRecoveryVoltage` REAL, `balanceCellVoltage` REAL, `minCellVoltage` REAL, `minCellRecoveryVoltage` REAL, `ultraLowCellVoltage` REAL, `maxTimeLimitedDischargeCurrent` REAL, `maxCutoffDischargeCurrent` REAL, `maxCurrentTimeLimitPeriod` INTEGER, `maxCutoffChargeCurrent` REAL, `motoHoursCounterCurrentThreshold` INTEGER, `maxCutoffTimePeriod` INTEGER, `currentCutOffTimerPeriod` INTEGER, `maxCutoffTemperature` INTEGER, `maxTemperatureRecovery` INTEGER, `minTemperatureRecovery` INTEGER, `minCutoffTemperature` INTEGER, `motoHoursChargeCounter` INTEGER, `motoHoursDischargeCounter` INTEGER, `id` TEXT, FOREIGN KEY (`id`) REFERENCES `devices` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `parameters` (`cellCount` INTEGER, `maxCellVoltage` REAL, `maxRecoveryVoltage` REAL, `balanceCellVoltage` REAL, `minCellVoltage` REAL, `minCellRecoveryVoltage` REAL, `ultraLowCellVoltage` REAL, `maxTimeLimitedDischargeCurrent` REAL, `maxCutoffDischargeCurrent` REAL, `maxCurrentTimeLimitPeriod` INTEGER, `maxCutoffChargeCurrent` REAL, `motoHoursCounterCurrentThreshold` INTEGER, `currentCutOffTimerPeriod` INTEGER, `maxCutoffTemperature` INTEGER, `maxTemperatureRecovery` INTEGER, `minTemperatureRecovery` INTEGER, `minCutoffTemperature` INTEGER, `motoHoursChargeCounter` INTEGER, `motoHoursDischargeCounter` INTEGER, `id` TEXT, FOREIGN KEY (`id`) REFERENCES `devices` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -306,7 +306,6 @@ class _$ParametersDao extends ParametersDao {
                   'maxCutoffChargeCurrent': item.maxCutoffChargeCurrent,
                   'motoHoursCounterCurrentThreshold':
                       item.motoHoursCounterCurrentThreshold,
-                  'maxCutoffTimePeriod': item.maxCutoffTimePeriod,
                   'currentCutOffTimerPeriod': item.currentCutOffTimerPeriod,
                   'maxCutoffTemperature': item.maxCutoffTemperature,
                   'maxTemperatureRecovery': item.maxTemperatureRecovery,
@@ -336,7 +335,6 @@ class _$ParametersDao extends ParametersDao {
                   'maxCutoffChargeCurrent': item.maxCutoffChargeCurrent,
                   'motoHoursCounterCurrentThreshold':
                       item.motoHoursCounterCurrentThreshold,
-                  'maxCutoffTimePeriod': item.maxCutoffTimePeriod,
                   'currentCutOffTimerPeriod': item.currentCutOffTimerPeriod,
                   'maxCutoffTemperature': item.maxCutoffTemperature,
                   'maxTemperatureRecovery': item.maxTemperatureRecovery,
@@ -366,7 +364,6 @@ class _$ParametersDao extends ParametersDao {
                   'maxCutoffChargeCurrent': item.maxCutoffChargeCurrent,
                   'motoHoursCounterCurrentThreshold':
                       item.motoHoursCounterCurrentThreshold,
-                  'maxCutoffTimePeriod': item.maxCutoffTimePeriod,
                   'currentCutOffTimerPeriod': item.currentCutOffTimerPeriod,
                   'maxCutoffTemperature': item.maxCutoffTemperature,
                   'maxTemperatureRecovery': item.maxTemperatureRecovery,
@@ -397,6 +394,7 @@ class _$ParametersDao extends ParametersDao {
         queryableName: 'parameters',
         isView: false,
         mapper: (Map<String, dynamic> row) => DeviceParameters(
+            id: row['id'] as String,
             cellCount: row['cellCount'] as int,
             maxCellVoltage: row['maxCellVoltage'] as double,
             maxRecoveryVoltage: row['maxRecoveryVoltage'] as double,
@@ -412,7 +410,6 @@ class _$ParametersDao extends ParametersDao {
             maxCutoffChargeCurrent: row['maxCutoffChargeCurrent'] as double,
             motoHoursCounterCurrentThreshold:
                 row['motoHoursCounterCurrentThreshold'] as int,
-            maxCutoffTimePeriod: row['maxCutoffTimePeriod'] as int,
             currentCutOffTimerPeriod: row['currentCutOffTimerPeriod'] as int,
             maxCutoffTemperature: row['maxCutoffTemperature'] as int,
             maxTemperatureRecovery: row['maxTemperatureRecovery'] as int,

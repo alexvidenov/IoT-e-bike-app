@@ -17,5 +17,5 @@ abstract class ShortStatusState with _$ShortStatusState {
   const factory ShortStatusState(ShortStatusModel model) = Normal;
 
   const factory ShortStatusState.error(ErrorState errorState,
-      [ShortStatusModel model]) = Error;
+      [ShortStatusModel model]) = ShortStatusError;
 }

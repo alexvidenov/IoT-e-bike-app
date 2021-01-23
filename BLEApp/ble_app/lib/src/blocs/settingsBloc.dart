@@ -1,23 +1,22 @@
+import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/blocs/sharedPrefsService.dart';
 import 'package:ble_app/src/screens/settings/settingsPage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
+enum ConnectionSettings { Manual, AutoConnect, AutoPassword }
+
 @lazySingleton
 class SettingsBloc {
-  final _passwordController = BehaviorSubject<String>();
+  //final _passwordController = BehaviorSubject<String>();
+  final _passwordRx = RxObject<String>();
+  final _connectionRx = RxObject<ConnectionSettings>();
 
-  final _connectionSettingsController = BehaviorSubject<ConnectionSettings>();
+  //final _connectionSettingsController = BehaviorSubject<ConnectionSettings>();
 
   final SharedPrefsService _preferencesService;
 
   SettingsBloc(this._preferencesService);
-
-  List<String> cachedDevices() =>
-      _preferencesService.getCachedDevices(); // NULLABLE
-
-  addDevice(String deviceName, String macAddress) =>
-      _preferencesService.addCachedDevice(deviceName, macAddress);
 
   String getUserData() => _preferencesService.userData() ?? 'empty';
 
@@ -31,24 +30,24 @@ class SettingsBloc {
 
   clearAllPrefs() async => await _preferencesService.clearAllPrefs();
 
-  clearPrefs() => setManual();
+  clearUserPrefs() => setManual();
 
   setAutoPassword(String deviceId) {
     _saveDevice(deviceId);
     _savePassword(
         password.value); // actually call the internal valuestream here
-    setConnectionSetting(ConnectionSettings.AutoPassword);
+    _connectionRx.addEvent(ConnectionSettings.AutoPassword);
   }
 
   setAutoConnect(String deviceId) {
     _saveDevice(deviceId);
     removePassword();
-    setConnectionSetting(ConnectionSettings.AutoConnect);
+    _connectionRx.addEvent(ConnectionSettings.AutoConnect);
   }
 
   setManual() {
     _removeDeviceId();
-    setConnectionSetting(ConnectionSettings.Manual);
+    _connectionRx.addEvent((ConnectionSettings.Manual));
   }
 
   _saveDevice(String deviceId) => _preferencesService.saveDeviceId(deviceId);
@@ -63,23 +62,15 @@ class SettingsBloc {
 
   String getPassword() => _preferencesService.getOptionalPassword();
 
-  ValueStream<String> get password => _passwordController.stream;
+  ValueStream<String> get password => _passwordRx.stream;
 
   Stream<ConnectionSettings> get connectionSettingsChanged =>
-      _connectionSettingsController.stream;
+      _connectionRx.stream;
 
-  Sink<String> get _changePassword => _passwordController.sink;
-
-  Sink<ConnectionSettings> get _changeConnectionSettings =>
-      _connectionSettingsController.sink;
-
-  Function(String) get setPassword => _changePassword.add;
-
-  Function(ConnectionSettings) get setConnectionSetting =>
-      _changeConnectionSettings.add;
+  Function(String) get setPassword => _passwordRx.addEvent;
 
   dispose() {
-    _passwordController.close();
-    _connectionSettingsController.close();
+    _passwordRx.dispose();
+    _connectionRx.dispose();
   }
 }

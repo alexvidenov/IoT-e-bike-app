@@ -7,7 +7,7 @@ import 'package:location/location.dart';
 class SpeedometerWidget extends StatelessWidget {
   final LocationBloc locationBloc;
 
-  SpeedometerWidget({Key key, @required this.locationBloc}) : super(key: key);
+  const SpeedometerWidget({Key key, @required this.locationBloc}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => StreamBuilder<LocationData>(

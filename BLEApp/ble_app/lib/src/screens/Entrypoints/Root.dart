@@ -31,7 +31,7 @@ class _RootPageState extends State<RootPage> with AuthStateListener {
       return currAuthState.maybeWhen(
           authenticated: (_) => BleApp($()),
           loggedOut: () => AuthenticationWrapper(widget._auth),
-          orElse: () => Container());
+          orElse: () => Center(child: CircularProgressIndicator()));
     } else
       return Container();
   }

@@ -1,15 +1,14 @@
 import 'dart:ui';
 
-import 'package:auto_data/auto_data.dart';
-
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
-part 'fullStatusBarGraphModel.g.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-@data
-class $FullStatusDataModel {
-  int x;
-  double y;
-  Color color;
+part 'fullStatusBarGraphModel.freezed.dart';
+
+@freezed
+abstract class FullStatusDataModel with _$FullStatusDataModel {
+  const factory FullStatusDataModel({int x, double y, Color color}) =
+      _FullStatusDataModel;
 }

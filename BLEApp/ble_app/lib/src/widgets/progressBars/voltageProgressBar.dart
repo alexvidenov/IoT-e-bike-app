@@ -17,23 +17,21 @@ class VoltageProgressBar extends StatelessWidget {
       initialData: ShortStatusState(ShortStatusModel.empty()),
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active) {
-          double voltage;
           Color color = Colors.lightBlueAccent;
-          shortStatus.data.when((model) => voltage = model.totalVoltage,
-              error: (errorState, model) {
-            voltage = model.totalVoltage;
-            if (errorState == ErrorState.HighVoltage) {
-              color = Colors.redAccent;
-            }
-          });
+          final state = shortStatus.data;
+          final voltage = state.model.totalVoltage;
+          if (state is ShortStatusError &&
+              state.errorState == ErrorState.HighVoltage) {
+            color = Colors.redAccent;
+          }
           return Container(
             height: 180,
             width: 20,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 color: Colors.black26,
                 shape: BoxShape.rectangle,
                 boxShadow: [
-                  BoxShadow(
+                  const BoxShadow(
                       color: Colors.white, blurRadius: 7.0, spreadRadius: 8.0),
                 ]),
             child: FAProgressBar(
