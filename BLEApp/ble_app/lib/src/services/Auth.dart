@@ -8,6 +8,7 @@ import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/listeners/authStateListener.dart';
 import 'package:ble_app/src/sealedStates/authState.dart';
 import 'package:ble_app/src/services/Database.dart';
+import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
@@ -81,8 +82,12 @@ class Auth {
         final _db = FirestoreDatabase(uid: _id);
         await _db.updateUserData();
         await _db.setDeviceId(deviceId: deviceSerialNumber);
-        await _userDao.insertEntity(localUser.User(_id, email, password));
-        await _deviceDao.insertEntity(Device(deviceSerialNumber, _id, 'empty'));
+        await _userDao
+            .insertEntity(localUser.User(int.parse(_id), email, password));
+        await _deviceDao.insertEntity(Device(
+            deviceId: int.parse(deviceSerialNumber),
+            userId: _id,
+            name: BluetoothUtils.defaultBluetoothDeviceName));
         //authStateListener.onAuthStateChanged(AuthState.authenticated(user.uid));
         return AuthState.authenticated(user.uid);
       }

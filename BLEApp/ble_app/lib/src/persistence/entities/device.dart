@@ -1,6 +1,8 @@
 import 'package:ble_app/src/persistence/entities/user.dart';
 import 'package:floor/floor.dart';
 
+import 'model.dart';
+
 @Entity(
   tableName: 'devices',
   foreignKeys: [
@@ -11,17 +13,17 @@ import 'package:floor/floor.dart';
     )
   ],
 )
-class Device {
-  @PrimaryKey()
-  final String deviceId;
-
+class Device extends Model {
   @ColumnInfo(name: 'user_id', nullable: false)
-  // include foreign key to that
-  final String userId;
+  final String userId; // TODO: actually make it int here as well
 
-  // these will be changed via FCM
-  final String
-      parametersToChange; // toJson and fromJson required from the calling object
+  final String macAddress;
 
-  Device(this.deviceId, this.userId, this.parametersToChange);
+  String name;
+
+  @ColumnInfo(nullable: true)
+  String parametersToChange; // changed via FCM
+
+  Device({int deviceId, this.userId, this.macAddress, this.name})
+      : super(id: deviceId);
 }

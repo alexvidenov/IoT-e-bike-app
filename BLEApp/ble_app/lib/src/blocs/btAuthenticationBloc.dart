@@ -32,6 +32,7 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
           //reason: BTNotAuthenticatedReason.DeviceDoesNotExist));
           //}
           //else{
+          //_db.deviceDao.setMacAddress(_re, int.parse(_repository.deviceId));
           _repository.deviceSerialNumber = 1234457.toString();
           addEvent(BTAuthState.btAuthenticated());
           // }

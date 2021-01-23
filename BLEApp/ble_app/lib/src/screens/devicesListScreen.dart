@@ -24,7 +24,7 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
   _listenForPickedDevice(BuildContext context) =>
       // TODO instead of this, have one stream with multiple states
       _pickedDevicesSubscription = _devicesBloc.pickedDevice.listen((_) {
-        this.onPause();
+        onPause();
         Navigator.of(context).pushNamed('/auth');
       });
 

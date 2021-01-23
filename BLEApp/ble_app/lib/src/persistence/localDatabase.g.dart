@@ -64,6 +64,8 @@ class _$LocalDatabase extends LocalDatabase {
 
   DeviceDao _deviceDaoInstance;
 
+  ParametersDao _parametersDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -82,9 +84,11 @@ class _$LocalDatabase extends LocalDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `users` (`id` TEXT, `email` TEXT, `password` TEXT, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `users` (`email` TEXT, `password` TEXT, `id` INTEGER, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `devices` (`deviceId` TEXT, `user_id` TEXT NOT NULL, `parametersToChange` TEXT, FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, PRIMARY KEY (`deviceId`))');
+            'CREATE TABLE IF NOT EXISTS `devices` (`user_id` TEXT NOT NULL, `macAddress` TEXT, `name` TEXT, `parametersToChange` TEXT, `id` INTEGER, FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, PRIMARY KEY (`id`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `parameters` (`cellCount` INTEGER, `maxCellVoltage` REAL, `maxRecoveryVoltage` REAL, `balanceCellVoltage` REAL, `minCellVoltage` REAL, `minCellRecoveryVoltage` REAL, `ultraLowCellVoltage` REAL, `maxTimeLimitedDischargeCurrent` REAL, `maxCutoffDischargeCurrent` REAL, `maxCurrentTimeLimitPeriod` INTEGER, `maxCutoffChargeCurrent` REAL, `motoHoursCounterCurrentThreshold` INTEGER, `currentCutOffTimerPeriod` INTEGER, `maxCutoffTemperature` INTEGER, `maxTemperatureRecovery` INTEGER, `minTemperatureRecovery` INTEGER, `minCutoffTemperature` INTEGER, `motoHoursChargeCounter` INTEGER, `motoHoursDischargeCounter` INTEGER, `id` INTEGER, FOREIGN KEY (`id`) REFERENCES `devices` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -101,6 +105,11 @@ class _$LocalDatabase extends LocalDatabase {
   DeviceDao get deviceDao {
     return _deviceDaoInstance ??= _$DeviceDao(database, changeListener);
   }
+
+  @override
+  ParametersDao get parametersDao {
+    return _parametersDaoInstance ??= _$ParametersDao(database, changeListener);
+  }
 }
 
 class _$UserDao extends UserDao {
@@ -110,9 +119,27 @@ class _$UserDao extends UserDao {
             database,
             'users',
             (User item) => <String, dynamic>{
-                  'id': item.id,
                   'email': item.email,
-                  'password': item.password
+                  'password': item.password,
+                  'id': item.id
+                }),
+        _userUpdateAdapter = UpdateAdapter(
+            database,
+            'users',
+            ['id'],
+            (User item) => <String, dynamic>{
+                  'email': item.email,
+                  'password': item.password,
+                  'id': item.id
+                }),
+        _userDeletionAdapter = DeletionAdapter(
+            database,
+            'users',
+            ['id'],
+            (User item) => <String, dynamic>{
+                  'email': item.email,
+                  'password': item.password,
+                  'id': item.id
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -123,10 +150,14 @@ class _$UserDao extends UserDao {
 
   final InsertionAdapter<User> _userInsertionAdapter;
 
+  final UpdateAdapter<User> _userUpdateAdapter;
+
+  final DeletionAdapter<User> _userDeletionAdapter;
+
   @override
   Future<List<User>> fetchUsers() async {
     return _queryAdapter.queryList('SELECT * FROM users',
-        mapper: (Map<String, dynamic> row) => User(row['id'] as String,
+        mapper: (Map<String, dynamic> row) => User(row['id'] as int,
             row['email'] as String, row['password'] as String));
   }
 
@@ -134,13 +165,23 @@ class _$UserDao extends UserDao {
   Future<User> fetchUser(String email) async {
     return _queryAdapter.query('SELECT * FROM users WHERE email = ?',
         arguments: <dynamic>[email],
-        mapper: (Map<String, dynamic> row) => User(row['id'] as String,
+        mapper: (Map<String, dynamic> row) => User(row['id'] as int,
             row['email'] as String, row['password'] as String));
   }
 
   @override
   Future<void> insertEntity(User entity) async {
     await _userInsertionAdapter.insert(entity, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> updateEntity(User entity) async {
+    await _userUpdateAdapter.update(entity, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteEntity(User entity) async {
+    await _userDeletionAdapter.delete(entity);
   }
 }
 
@@ -151,9 +192,33 @@ class _$DeviceDao extends DeviceDao {
             database,
             'devices',
             (Device item) => <String, dynamic>{
-                  'deviceId': item.deviceId,
                   'user_id': item.userId,
-                  'parametersToChange': item.parametersToChange
+                  'macAddress': item.macAddress,
+                  'name': item.name,
+                  'parametersToChange': item.parametersToChange,
+                  'id': item.id
+                }),
+        _deviceUpdateAdapter = UpdateAdapter(
+            database,
+            'devices',
+            ['id'],
+            (Device item) => <String, dynamic>{
+                  'user_id': item.userId,
+                  'macAddress': item.macAddress,
+                  'name': item.name,
+                  'parametersToChange': item.parametersToChange,
+                  'id': item.id
+                }),
+        _deviceDeletionAdapter = DeletionAdapter(
+            database,
+            'devices',
+            ['id'],
+            (Device item) => <String, dynamic>{
+                  'user_id': item.userId,
+                  'macAddress': item.macAddress,
+                  'name': item.name,
+                  'parametersToChange': item.parametersToChange,
+                  'id': item.id
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -164,32 +229,205 @@ class _$DeviceDao extends DeviceDao {
 
   final InsertionAdapter<Device> _deviceInsertionAdapter;
 
+  final UpdateAdapter<Device> _deviceUpdateAdapter;
+
+  final DeletionAdapter<Device> _deviceDeletionAdapter;
+
   @override
-  Future<List<Device>> fetchDevices() async {
-    return _queryAdapter.queryList('SELECT * FROM devices',
-        mapper: (Map<String, dynamic> row) => Device(row['deviceId'] as String,
-            row['user_id'] as String, row['parametersToChange'] as String));
+  Future<List<Device>> fetchDevices(String userId) async {
+    return _queryAdapter.queryList('SELECT * FROM devices WHERE user_id = ?',
+        arguments: <dynamic>[userId],
+        mapper: (Map<String, dynamic> row) => Device(
+            userId: row['user_id'] as String,
+            macAddress: row['macAddress'] as String,
+            name: row['name'] as String));
   }
 
   @override
   Future<Device> fetchDevice(String deviceId, String userId) async {
     return _queryAdapter.query(
-        'SELECT * FROM devices WHERE deviceId = ? AND userId = ?',
+        'SELECT * FROM devices WHERE id = ? AND user_id = ?',
         arguments: <dynamic>[deviceId, userId],
-        mapper: (Map<String, dynamic> row) => Device(row['deviceId'] as String,
-            row['user_id'] as String, row['parametersToChange'] as String));
+        mapper: (Map<String, dynamic> row) => Device(
+            userId: row['user_id'] as String,
+            macAddress: row['macAddress'] as String,
+            name: row['name'] as String));
   }
 
   @override
   Future<void> updateParametersToChange(
       String parameters, String deviceId) async {
     await _queryAdapter.queryNoReturn(
-        'UPDATE devices SET parametersToChange = ? WHERE deviceId = ?',
+        'UPDATE devices SET parametersToChange = ? WHERE id = ?',
         arguments: <dynamic>[parameters, deviceId]);
+  }
+
+  @override
+  Future<void> setMacAddress(String macAddress, int deviceId) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE devices SET macAddress = ? WHERE id = ?',
+        arguments: <dynamic>[macAddress, deviceId]);
   }
 
   @override
   Future<void> insertEntity(Device entity) async {
     await _deviceInsertionAdapter.insert(entity, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> updateEntity(Device entity) async {
+    await _deviceUpdateAdapter.update(entity, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteEntity(Device entity) async {
+    await _deviceDeletionAdapter.delete(entity);
+  }
+}
+
+class _$ParametersDao extends ParametersDao {
+  _$ParametersDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _deviceParametersInsertionAdapter = InsertionAdapter(
+            database,
+            'parameters',
+            (DeviceParameters item) => <String, dynamic>{
+                  'cellCount': item.cellCount,
+                  'maxCellVoltage': item.maxCellVoltage,
+                  'maxRecoveryVoltage': item.maxRecoveryVoltage,
+                  'balanceCellVoltage': item.balanceCellVoltage,
+                  'minCellVoltage': item.minCellVoltage,
+                  'minCellRecoveryVoltage': item.minCellRecoveryVoltage,
+                  'ultraLowCellVoltage': item.ultraLowCellVoltage,
+                  'maxTimeLimitedDischargeCurrent':
+                      item.maxTimeLimitedDischargeCurrent,
+                  'maxCutoffDischargeCurrent': item.maxCutoffDischargeCurrent,
+                  'maxCurrentTimeLimitPeriod': item.maxCurrentTimeLimitPeriod,
+                  'maxCutoffChargeCurrent': item.maxCutoffChargeCurrent,
+                  'motoHoursCounterCurrentThreshold':
+                      item.motoHoursCounterCurrentThreshold,
+                  'currentCutOffTimerPeriod': item.currentCutOffTimerPeriod,
+                  'maxCutoffTemperature': item.maxCutoffTemperature,
+                  'maxTemperatureRecovery': item.maxTemperatureRecovery,
+                  'minTemperatureRecovery': item.minTemperatureRecovery,
+                  'minCutoffTemperature': item.minCutoffTemperature,
+                  'motoHoursChargeCounter': item.motoHoursChargeCounter,
+                  'motoHoursDischargeCounter': item.motoHoursDischargeCounter,
+                  'id': item.id
+                },
+            changeListener),
+        _deviceParametersUpdateAdapter = UpdateAdapter(
+            database,
+            'parameters',
+            ['id'],
+            (DeviceParameters item) => <String, dynamic>{
+                  'cellCount': item.cellCount,
+                  'maxCellVoltage': item.maxCellVoltage,
+                  'maxRecoveryVoltage': item.maxRecoveryVoltage,
+                  'balanceCellVoltage': item.balanceCellVoltage,
+                  'minCellVoltage': item.minCellVoltage,
+                  'minCellRecoveryVoltage': item.minCellRecoveryVoltage,
+                  'ultraLowCellVoltage': item.ultraLowCellVoltage,
+                  'maxTimeLimitedDischargeCurrent':
+                      item.maxTimeLimitedDischargeCurrent,
+                  'maxCutoffDischargeCurrent': item.maxCutoffDischargeCurrent,
+                  'maxCurrentTimeLimitPeriod': item.maxCurrentTimeLimitPeriod,
+                  'maxCutoffChargeCurrent': item.maxCutoffChargeCurrent,
+                  'motoHoursCounterCurrentThreshold':
+                      item.motoHoursCounterCurrentThreshold,
+                  'currentCutOffTimerPeriod': item.currentCutOffTimerPeriod,
+                  'maxCutoffTemperature': item.maxCutoffTemperature,
+                  'maxTemperatureRecovery': item.maxTemperatureRecovery,
+                  'minTemperatureRecovery': item.minTemperatureRecovery,
+                  'minCutoffTemperature': item.minCutoffTemperature,
+                  'motoHoursChargeCounter': item.motoHoursChargeCounter,
+                  'motoHoursDischargeCounter': item.motoHoursDischargeCounter,
+                  'id': item.id
+                },
+            changeListener),
+        _deviceParametersDeletionAdapter = DeletionAdapter(
+            database,
+            'parameters',
+            ['id'],
+            (DeviceParameters item) => <String, dynamic>{
+                  'cellCount': item.cellCount,
+                  'maxCellVoltage': item.maxCellVoltage,
+                  'maxRecoveryVoltage': item.maxRecoveryVoltage,
+                  'balanceCellVoltage': item.balanceCellVoltage,
+                  'minCellVoltage': item.minCellVoltage,
+                  'minCellRecoveryVoltage': item.minCellRecoveryVoltage,
+                  'ultraLowCellVoltage': item.ultraLowCellVoltage,
+                  'maxTimeLimitedDischargeCurrent':
+                      item.maxTimeLimitedDischargeCurrent,
+                  'maxCutoffDischargeCurrent': item.maxCutoffDischargeCurrent,
+                  'maxCurrentTimeLimitPeriod': item.maxCurrentTimeLimitPeriod,
+                  'maxCutoffChargeCurrent': item.maxCutoffChargeCurrent,
+                  'motoHoursCounterCurrentThreshold':
+                      item.motoHoursCounterCurrentThreshold,
+                  'currentCutOffTimerPeriod': item.currentCutOffTimerPeriod,
+                  'maxCutoffTemperature': item.maxCutoffTemperature,
+                  'maxTemperatureRecovery': item.maxTemperatureRecovery,
+                  'minTemperatureRecovery': item.minTemperatureRecovery,
+                  'minCutoffTemperature': item.minCutoffTemperature,
+                  'motoHoursChargeCounter': item.motoHoursChargeCounter,
+                  'motoHoursDischargeCounter': item.motoHoursDischargeCounter,
+                  'id': item.id
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<DeviceParameters> _deviceParametersInsertionAdapter;
+
+  final UpdateAdapter<DeviceParameters> _deviceParametersUpdateAdapter;
+
+  final DeletionAdapter<DeviceParameters> _deviceParametersDeletionAdapter;
+
+  @override
+  Stream<DeviceParameters> fetchDeviceParameters(String deviceId) {
+    return _queryAdapter.queryStream('SELECT * FROM parameters WHERE id = ?',
+        arguments: <dynamic>[deviceId],
+        queryableName: 'parameters',
+        isView: false,
+        mapper: (Map<String, dynamic> row) => DeviceParameters(
+            row['cellCount'] as int,
+            row['maxCellVoltage'] as double,
+            row['maxRecoveryVoltage'] as double,
+            row['balanceCellVoltage'] as double,
+            row['minCellVoltage'] as double,
+            row['minCellRecoveryVoltage'] as double,
+            row['ultraLowCellVoltage'] as double,
+            row['maxTimeLimitedDischargeCurrent'] as double,
+            row['maxCutoffDischargeCurrent'] as double,
+            row['maxCurrentTimeLimitPeriod'] as int,
+            row['maxCutoffChargeCurrent'] as double,
+            row['motoHoursCounterCurrentThreshold'] as int,
+            row['currentCutOffTimerPeriod'] as int,
+            row['maxCutoffTemperature'] as int,
+            row['maxTemperatureRecovery'] as int,
+            row['minTemperatureRecovery'] as int,
+            row['motoHoursChargeCounter'] as int,
+            row['motoHoursDischargeCounter'] as int));
+  }
+
+  @override
+  Future<void> insertEntity(DeviceParameters entity) async {
+    await _deviceParametersInsertionAdapter.insert(
+        entity, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> updateEntity(DeviceParameters entity) async {
+    await _deviceParametersUpdateAdapter.update(
+        entity, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteEntity(DeviceParameters entity) async {
+    await _deviceParametersDeletionAdapter.delete(entity);
   }
 }

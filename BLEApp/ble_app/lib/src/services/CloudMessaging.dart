@@ -9,8 +9,8 @@ Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
   if (message.containsKey('data')) {
     final String data =
         message['data']['01'].toString(); // later on do stuff with that
-    localDatabase.deviceDao
-        .insertEntity(Device('Id', 'FROM FCM IN THE BACKGROUND', data));
+    //localDatabase.deviceDao
+      //  .insertEntity(Device('Id', 'FROM FCM IN THE BACKGROUND', data, ""));
   }
 }
 

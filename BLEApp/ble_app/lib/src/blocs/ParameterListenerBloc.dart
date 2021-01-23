@@ -34,11 +34,11 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String> {
         String value =
             '${currentCommand[3] + currentCommand[4] + currentCommand[5] + currentCommand[6]}';
         DeviceParametersModel newModel;
-        switch(key){
+        switch (key) {
           case '01':
-        newModel = _parameterHolder.deviceParameters.value
-            .copyWith(maxCellVoltage: double.parse(value));
-        break;
+            newModel = _parameterHolder.deviceParameters.value
+                .copyWith(maxCellVoltage: double.parse(value));
+            break;
           case '03':
             newModel = _parameterHolder.deviceParameters.value
                 .copyWith(balanceCellVoltage: double.parse(value));
@@ -50,8 +50,8 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String> {
         }
         num numValue = num.parse(value);
         _firestoreDatabase.setIndividualParameter(key, numValue);
-        if(newModel != null) _parameterHolder.deviceParameters.value =
-            newModel;
+        if (newModel != null)
+          _parameterHolder.deviceParameters.value = newModel;
         // TODO; add method in the data class to parse stuff and return
         // enum with the available parameters (?). actually needed only for specific stuff
       }
