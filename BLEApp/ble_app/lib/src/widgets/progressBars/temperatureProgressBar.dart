@@ -5,17 +5,18 @@ import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.da
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 
 class TemperatureProgressBar extends StatelessWidget {
-  final ShortStatusBloc bloc;
+  final ShortStatusBloc
+      bloc; // TODO: actually pass only the necessary stream here
 
   const TemperatureProgressBar({@required this.bloc});
 
   @override
   Widget build(BuildContext context) => StreamBuilder<ShortStatusState>(
       stream: bloc.stream,
-      initialData: ShortStatusState(ShortStatusModel.empty()),
+      initialData: ShortStatusState(ShortStatusModel()),
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active) {
-          double temperature;
+          int temperature;
           Color color = Colors.greenAccent;
           shortStatus.data.when((normal) => temperature = normal.temperature,
               error: (errorState, model) {
@@ -42,9 +43,8 @@ class TemperatureProgressBar extends StatelessWidget {
                       color: Colors.white, blurRadius: 7.0, spreadRadius: 8.0),
                 ]),
             child: FAProgressBar(
-              currentValue: temperature.toInt(),
-              // here use the holder
-              maxValue: 2000,
+              currentValue: temperature,
+              maxValue: 65,
               animatedDuration: const Duration(milliseconds: 300),
               direction: Axis.vertical,
               verticalDirection: VerticalDirection.up,

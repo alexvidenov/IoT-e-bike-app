@@ -239,6 +239,7 @@ class _$DeviceDao extends DeviceDao {
         arguments: <dynamic>[userId],
         mapper: (Map<String, dynamic> row) => Device(
             userId: row['user_id'] as String,
+            parametersToChange: row['parametersToChange'] as String,
             macAddress: row['macAddress'] as String,
             name: row['name'] as String));
   }
@@ -250,6 +251,7 @@ class _$DeviceDao extends DeviceDao {
         arguments: <dynamic>[deviceId, userId],
         mapper: (Map<String, dynamic> row) => Device(
             userId: row['user_id'] as String,
+            parametersToChange: row['parametersToChange'] as String,
             macAddress: row['macAddress'] as String,
             name: row['name'] as String));
   }

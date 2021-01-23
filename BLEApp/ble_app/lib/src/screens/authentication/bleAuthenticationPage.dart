@@ -8,6 +8,9 @@ import 'package:ble_app/src/screens/parameterFetchScreen.dart';
 import 'package:ble_app/src/sealedStates/btAuthState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:passcode_screen/circle.dart';
+import 'package:passcode_screen/keyboard.dart';
+import 'package:passcode_screen/passcode_screen.dart';
 
 class BLEAuthenticationScreen extends StatefulWidget {
   final DeviceBloc _deviceBloc;
@@ -29,6 +32,9 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   StreamSubscription<PeripheralConnectionState> _streamSubscriptionState;
   StreamSubscription<BTAuthState> _streamSubscriptionAuth;
 
+  final StreamController<bool> _verificationNotifier =
+      StreamController<bool>.broadcast();
+
   bool _isAuthenticated = false;
 
   bool _connected = false;
@@ -36,7 +42,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   @override
   didChangeDependencies() {
     super.didChangeDependencies();
-    widget._deviceBloc.init();
+    widget._deviceBloc.stopScan();
     widget._authBloc.create();
     widget._deviceBloc.connect().then((_) => _init());
     //_handleBLEError();
@@ -53,7 +59,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   // });
 
   @override
-  void dispose() {
+  dispose() {
     super.dispose();
     widget._deviceBloc.dispose();
     _streamSubscriptionState.cancel();
@@ -67,13 +73,24 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
           if (widget._settingsBloc.isPasswordRemembered() == true) {
             widget._deviceBloc.deviceReady.listen((event) {
               if (event == true) {
-                widget._authBloc
-                    .authenticate(widget._settingsBloc.getPassword());
+                final password = widget._settingsBloc.getPassword();
+                print('Password is $password');
+                widget._authBloc.authenticate(password);
               }
             });
           } else
-            _presentDialog(context,
-                message: 'Enter your password', action: 'Send');
+            _showLockScreen(
+              context,
+              title: 'Enter your pin',
+              opaque: true,
+              cancelButton: Text(
+                'Cancel',
+                style: const TextStyle(fontSize: 16, color: Colors.white),
+                semanticsLabel: 'Cancel',
+              ),
+            );
+          //_presentDialog(context,
+          //message: 'Enter your password', action: 'Send');
         }
       });
 
@@ -81,6 +98,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
       _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
         event.when(
             btAuthenticated: () {
+              this._verificationNotifier.add(true);
               widget._dbManager.setMacAddress(
                   widget._deviceBloc.device.value.id); // device Id is inferred
               _isAuthenticated = true;
@@ -92,11 +110,60 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
       });
 
 // this retry will be in the bloc
-  _retry() => Future.delayed(Duration(seconds: 4), () {
+  _retry() => Future.delayed(Duration(seconds: 1), () {
         if (_isAuthenticated == false)
-          _presentDialog(context,
-              message: 'Wrong password', action: 'Try again');
+          _showLockScreen(
+            context,
+            title: 'Wrong pin',
+            opaque: true,
+            cancelButton: Text(
+              'Cancel',
+              style: const TextStyle(fontSize: 16, color: Colors.white),
+              semanticsLabel: 'Cancel',
+            ),
+          );
+        //_presentDialog(context,
+        //message: 'Wrong password', action: 'Try again');
       });
+
+  _showLockScreen(BuildContext context,
+      {String title,
+      bool opaque,
+      CircleUIConfig circleUIConfig,
+      KeyboardUIConfig keyboardUIConfig,
+      Widget cancelButton,
+      List<String> digits}) {
+    Navigator.of(context).push(PageRouteBuilder(
+      opaque: opaque,
+      pageBuilder: (context, animation, secondaryAnimation) => PasscodeScreen(
+        title: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white, fontSize: 28),
+        ),
+        circleUIConfig: circleUIConfig,
+        keyboardUIConfig: keyboardUIConfig,
+        passwordEnteredCallback: (pin) {
+          _verificationNotifier.add(true);
+          widget._settingsBloc.setPassword(pin);
+          widget._authBloc.authenticate(pin);
+          _retry();
+          //Navigator.of(context, rootNavigator: true).pop();
+        },
+        cancelButton: cancelButton,
+        deleteButton: Text(
+          'Delete',
+          style: const TextStyle(fontSize: 16, color: Colors.white),
+          semanticsLabel: 'Delete',
+        ),
+        backgroundColor: Colors.black.withOpacity(0.8),
+        cancelCallback: () => {},
+        digits: digits,
+        passwordDigits: 4,
+        shouldTriggerVerification: _verificationNotifier.stream,
+      ),
+    ));
+  }
 
   Future<void> _presentDialog(BuildContext widgetContext,
       {String message, String action}) async {

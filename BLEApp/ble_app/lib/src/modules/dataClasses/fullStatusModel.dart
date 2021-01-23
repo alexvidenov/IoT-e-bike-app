@@ -16,7 +16,7 @@ abstract class FullStatusModel with _$FullStatusModel {
       List<FullStatusDataModel> fullStatus,
       double totalVoltage,
       double current,
-      double temperature,
+      int temperature,
       int rIn,
       BattStatus status) = _FullStatus;
 }

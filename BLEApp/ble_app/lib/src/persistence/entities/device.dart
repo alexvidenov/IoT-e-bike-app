@@ -21,14 +21,15 @@ class Device extends Model {
 
   final String macAddress;
 
-  String name;
+  final String name;
 
   @ColumnInfo(nullable: true)
-  String parametersToChange; // changed via FCM
+  final String parametersToChange; // changed via FCM
 
-  Device(
+  const Device(
       {@required String deviceId,
       @required this.userId,
+      this.parametersToChange,
       this.macAddress,
       this.name})
       : super(id: deviceId);

@@ -1,5 +1,5 @@
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/screens/parameterFetchScreen.dart';
 import 'package:ble_app/src/screens/authentication/bleAuthenticationPage.dart';
 import 'package:ble_app/src/screens/devicesListScreen.dart';

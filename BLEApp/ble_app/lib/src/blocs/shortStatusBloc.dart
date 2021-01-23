@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/main.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/repositories/DeviceRepository.dart';
 
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
 import 'package:ble_app/src/sealedStates/shortStatusState.dart';
 import 'package:ble_app/src/services/Auth.dart';
+import 'package:ble_app/src/utils/ADCToTemp.dart';
 import 'package:injectable/injectable.dart';
 
 part 'blocExtensions/ShortStatusParse.dart';
@@ -18,6 +19,8 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
   final DeviceRepository _repository;
   final SettingsBloc _settingsBloc;
   final Auth _auth;
+
+  final tempConverter = TemperatureConverter();
 
   int _uploadTimer = 0;
 

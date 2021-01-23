@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
-import 'package:ble_app/src/model/BleDevice.dart';
+import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:ble_app/src/utils/dataParser.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
@@ -31,7 +31,7 @@ class DeviceRepository {
   String _value = ""; // will be updated every packet
   String _curValue = ""; // will be appended to
 
-  Timer _timer; // timer for the periodic commands¬
+  Timer _timer; // timer for the periodic commands. TODO: extract
 
   final _characteristicRx = RxObject<String>();
 
@@ -67,8 +67,7 @@ class DeviceRepository {
               // _addCharacteristicEvent(_value);
               _curValue = "";
             } else {
-              List<int> curList = [event.elementAt(i)];
-              _curValue += DataParser.parseList(curList);
+              _curValue += DataParser.parseList([event.elementAt(i)]);
             }
           }
         } else {
@@ -142,7 +141,7 @@ class DeviceRepository {
   String get deviceId => _deviceSerialNumber;
 
   set deviceSerialNumber(String id) =>
-      _deviceSerialNumber = id; // TODO: fix the shit here
+      _deviceSerialNumber = id; // TODO: fix the shitty naming here here
 
   dispose() {
     _characteristicSubscription?.cancel();

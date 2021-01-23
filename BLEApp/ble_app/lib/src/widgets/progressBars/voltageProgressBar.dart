@@ -14,7 +14,7 @@ class VoltageProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) => StreamBuilder<ShortStatusState>(
       stream: bloc.stream,
-      initialData: ShortStatusState(ShortStatusModel.empty()),
+      initialData: ShortStatusState(ShortStatusModel()),
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active) {
           Color color = Colors.lightBlueAccent;

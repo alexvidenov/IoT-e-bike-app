@@ -1,7 +1,7 @@
 import 'package:ble_app/src/blocs/LocalDatabaseManager.dart';
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/main.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/sealedStates/btAuthState.dart';
 import 'package:injectable/injectable.dart';
 

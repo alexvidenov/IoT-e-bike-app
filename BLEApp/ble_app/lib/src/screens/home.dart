@@ -1,7 +1,6 @@
-import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/listeners/disconnectedListener.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/services/Auth.dart';
@@ -80,13 +79,11 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                       Function _onPressed;
                       switch (snapshot.data) {
                         case CurrentPage.ShortStatus:
-                          _onPressed =
-                              () => widget.navigationBloc.to('/full');
+                          _onPressed = () => widget.navigationBloc.to('/full');
                           _title = 'Main status';
                           break;
                         case CurrentPage.Controller:
-                          _onPressed =
-                              () => widget.navigationBloc.to('/map');
+                          _onPressed = () => widget.navigationBloc.to('/map');
                           _title = 'Bat. status';
                           break;
                         case CurrentPage.Map:
@@ -143,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                   labelColor: Colors.lightBlueAccent,
                   unselectedLabelColor: Colors.white,
                   indicatorSize: TabBarIndicatorSize.tab,
-                  indicator: BoxDecoration(
+                  indicator: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10)),
@@ -161,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                         break;
                     }
                   },
-                  tabs: [
+                  tabs: const [
                     Tab(
                       text: "Short Status",
                       icon: Icon(Icons.home),
@@ -190,6 +187,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   @override
   onDisconnected() {
     if (mounted) {
+      widget._repository.cancel();
       _hasDisconnected = true;
       _scaffoldKey.currentState.showBottomSheet((_) => InkWell(
             child: Center(
@@ -201,13 +199,19 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
     }
   }
 
+  authenticate(String password) => // TODO: remove that from here
+      widget._repository.writeToCharacteristic('P$password\r');
+
   @override
-  onReconnected() {
+  onReconnected() async {
+    // FIXME: this fails
     if (_hasDisconnected && mounted) {
-      widget._deviceBloc.writeToBLE(widget._prefsBloc.getPassword() ??
-          widget._prefsBloc.password
-              .value); // initiates another session. FIXME this is wrong lmao
-      Navigator.of(context).pop();
+      // TODO: fix the h u g e mess here
+      await Future.delayed(Duration(seconds: 3), () async {
+        authenticate(widget._prefsBloc.password.value);
+        await Future.delayed(
+            Duration(milliseconds: 200), () => widget._repository.resume());
+      }).then((_) => Navigator.of(context).pop());
     }
   }
 }

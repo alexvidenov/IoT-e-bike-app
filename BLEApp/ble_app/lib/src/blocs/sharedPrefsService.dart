@@ -13,12 +13,14 @@ class SharedPrefsService {
 
   @factoryMethod
   static Future<SharedPrefsService> getInstance() async {
-    if (_instance == null) {
-      _instance = SharedPrefsService();
-    }
-    if (_preferences == null) {
-      _preferences = await SharedPreferences.getInstance();
-    }
+    _instance = _instance ?? SharedPrefsService();
+    //if (_instance == null) {
+    //_instance = SharedPrefsService();
+    //}
+    _preferences = _preferences ?? await SharedPreferences.getInstance();
+    //if (_preferences == null) {
+    //_preferences = await SharedPreferences.getInstance();
+    //}
     return _instance;
   }
 
@@ -73,8 +75,9 @@ class SharedPrefsService {
     removePasswordRemembrance();
   }
 
-  removePasswordRemembrance() => _removePrefs(PrefsKeys.PASSWORD)
-      .then((value) => _setPasswordRemembered(false));
+  removePasswordRemembrance() =>
+      _removePrefs(PrefsKeys.PASSWORD)
+          .then((value) => _setPasswordRemembered(false));
 
   String getOptionalDevice() => _getPrefs(PrefsKeys.DEVICE_ID) ?? 'empty';
 

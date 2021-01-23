@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
-import 'package:ble_app/src/model/BleDevice.dart';
+import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 
@@ -21,7 +21,7 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
 
   EntryEndpointBloc(this._devicesBloc, this._settingsBloc);
 
-  _listen() =>
+  _listenForPickedDevice() =>
       _devicePickedSubscription = _devicesBloc.pickedDevice.listen((_) {
         this.pause();
         _devicesBloc.pause();

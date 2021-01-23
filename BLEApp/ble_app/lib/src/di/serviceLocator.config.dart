@@ -12,7 +12,7 @@ import '../blocs/authBloc.dart';
 import '../blocs/btAuthenticationBloc.dart';
 import '../services/CloudMessaging.dart';
 import '../blocs/deviceBloc.dart';
-import '../model/DeviceRepository.dart';
+import '../repositories/DeviceRepository.dart';
 import '../blocs/devicesBloc.dart';
 import '../blocs/entryEndpointBloc.dart';
 import '../blocs/fullStatusBloc.dart';

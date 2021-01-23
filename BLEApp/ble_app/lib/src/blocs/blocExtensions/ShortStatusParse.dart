@@ -6,13 +6,9 @@ extension ShortStatusParse on ShortStatusBloc {
     final voltage = double.parse(splitObject[1]);
     final currentCharge = double.parse(splitObject[2]);
     final currentDischarge = double.parse(splitObject[3]);
-    double current;
-    if (currentCharge != 0) {
-      current = currentCharge;
-    } else {
-      current = -currentDischarge;
-    }
-    final temperature = double.parse(splitObject[4]);
-    return ShortStatusModel(voltage, current, temperature);
+    final current = currentCharge != 0 ? currentCharge : currentDischarge;
+    final temperature = tempConverter.tempFromADC(int.parse(splitObject[4]));
+    return ShortStatusModel(
+        totalVoltage: voltage, current: current, temperature: temperature);
   }
 }

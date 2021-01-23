@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 class RxObject<T> {
   BehaviorSubject<T> behaviourSubject = BehaviorSubject<T>(); // todo: should be private
 
-  Stream<T> get stream => behaviourSubject.stream;
+  ValueStream<T> get stream => behaviourSubject.stream;
 
   Sink<T> get _sink => behaviourSubject.sink;
 

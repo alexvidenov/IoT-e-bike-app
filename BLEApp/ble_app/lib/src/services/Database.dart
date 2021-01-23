@@ -9,6 +9,9 @@ class FirestoreDatabase {
 
   CollectionReference get _users => _firestore.collection('users');
 
+  DocumentReference get _device =>
+      _users.doc(uid).collection('devices').doc(deviceId);
+
   DocumentReference get _parameters => _users
       .doc(uid)
       .collection('devices')
@@ -18,8 +21,7 @@ class FirestoreDatabase {
 
   const FirestoreDatabase({this.uid, this.deviceId});
 
-  Future<void> updateUserData() async =>
-      await _users.doc(uid).set({'id': this.uid});
+  Future<void> setUserId() => _users.doc(uid).set({'id': this.uid});
 
   Future<void> setUserDeviceToken({@required String token}) =>
       _users.doc(uid).update({
@@ -27,7 +29,10 @@ class FirestoreDatabase {
       }); // make it array of tokens cuz user can have more than one device
 
   Future<void> setDeviceId({@required String deviceId}) =>
-      _users.doc(uid).collection('devices').doc(deviceId).set({'id': deviceId});
+      _device.set({'id': deviceId});
+
+  Future<void> setDeviceMacAddress({@required String mac}) =>
+      _device.update({'MAC': mac});
 
   Future<bool> parametersExist({@required String deviceId}) async {
     final parameterDoc = await _parameters.get();
@@ -39,6 +44,4 @@ class FirestoreDatabase {
 
   Future<void> setIndividualParameter(String key, dynamic value) =>
       _parameters.update({key: value});
-
-  Stream<DocumentSnapshot> get deviceParameters => _parameters.snapshots();
 }

@@ -8,10 +8,7 @@ part 'shortStatusModel.freezed.dart';
 @freezed
 abstract class ShortStatusModel with _$ShortStatusModel {
   const factory ShortStatusModel(
-      double totalVoltage, double current, double temperature) = _ShortStatus;
-
-  const factory ShortStatusModel.empty(
-      [@Default(0) double totalVoltage,
+      {@Default(0) double totalVoltage,
       @Default(0) double current,
-      @Default(0) double temperature]) = _EmptyShortStatus;
+      @Default(0) int temperature}) = _ShortStatus;
 }

@@ -57,15 +57,13 @@ main() async {
   await Firebase.initializeApp();
   configureDependencies();
   BleManager().createClient(restoreStateIdentifier: "com.parakatowski.ble_app");
-  if (Platform.isAndroid) {
-    await BackgroundFetch.configure(
-        BackgroundFetchConfig(
-            minimumFetchInterval: 1,
-            stopOnTerminate: false,
-            enableHeadless: true,
-            forceAlarmManager: true),
-        onBackgroundFetch);
-  } else if (Platform.isIOS) {}
+  await BackgroundFetch.configure(
+      BackgroundFetchConfig(
+          minimumFetchInterval: 1,
+          stopOnTerminate: false,
+          enableHeadless: true,
+          forceAlarmManager: Platform.isAndroid),
+      onBackgroundFetch);
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
   BackgroundFetch.scheduleTask(TaskConfig(
       taskId: storageUpload,

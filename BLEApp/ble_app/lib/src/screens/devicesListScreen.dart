@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/devicesBloc.dart';
-import 'package:ble_app/src/model/BleDevice.dart';
+import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
 import 'package:location_permissions/location_permissions.dart' as locationPerm;

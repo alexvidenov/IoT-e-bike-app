@@ -1,5 +1,5 @@
 import 'package:ble_app/src/blocs/CurrentContext.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/dao/deviceDao.dart';
 import 'package:ble_app/src/persistence/dao/parametersDao.dart';
 import 'package:ble_app/src/persistence/dao/userDao.dart';

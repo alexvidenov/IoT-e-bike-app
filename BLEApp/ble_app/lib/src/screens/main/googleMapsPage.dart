@@ -8,10 +8,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class MapPage extends RouteAwareWidget<LocationBloc>
-    with Navigation, KeepSession<LocationBloc> {
+    with RouteUtils, KeepSession {
   final LocationBloc _locationBloc;
 
-  const MapPage(LocationBloc locationBloc)
+  MapPage(LocationBloc locationBloc)
       : this._locationBloc = locationBloc,
         super(bloc: locationBloc);
 
@@ -24,15 +24,14 @@ class MapPage extends RouteAwareWidget<LocationBloc>
           final circle = _locationBloc.generateNewCircle(snapshot.data);
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onLongPress: () => navigationBloc.returnToFirstRoute(),
+            onLongPress: toFirst,
             child: GoogleMap(
               mapType: MapType.normal,
               initialCameraPosition: _locationBloc.initialLocation,
               markers: Set.of((marker != null) ? [marker] : []),
               circles: Set.of((circle != null) ? [circle] : []),
-              onMapCreated: (GoogleMapController controller) {
-                _locationBloc.controller = controller;
-              },
+              onMapCreated: (controller) =>
+                  _locationBloc.controller = controller,
             ),
           );
         } else
@@ -41,8 +40,10 @@ class MapPage extends RouteAwareWidget<LocationBloc>
 
   @override
   onResume() {
-    super.onResume();
     keepSession(); // necessary for the hardware timers to not pass out after three seconds
-    navigationBloc.addEvent(CurrentPage.Map);
+    notifyForRoute(CurrentPage.Map);
   }
+
+  @override
+  onPause() => pause();
 }

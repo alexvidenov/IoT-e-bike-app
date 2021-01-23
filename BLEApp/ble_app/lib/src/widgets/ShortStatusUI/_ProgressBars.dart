@@ -1,4 +1,3 @@
-import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
@@ -34,12 +33,22 @@ class ProgressColumns extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Column(
                       children: <Widget>[
-                        Text(
-                          "20", // StreamBuilder
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 28,
-                              color: Colors.white),
+                        StreamBuilder<ShortStatusState>(
+                          stream: shortStatusBloc.stream,
+                          builder: (_, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.active) {
+                              return Text(
+                                  snapshot.data.model.temperature
+                                      .toInt()
+                                      .toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 28,
+                                      color: Colors.white));
+                            } else
+                              return Container();
+                          },
                         ),
                         Text(
                           "C",
@@ -88,7 +97,7 @@ class ProgressColumns extends StatelessWidget {
                         StreamBuilder<ShortStatusState>(
                           stream: shortStatusBloc.stream,
                           initialData:
-                              ShortStatusState(ShortStatusModel.empty()),
+                              ShortStatusState(ShortStatusModel()),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.active) {
@@ -148,4 +157,3 @@ class ProgressColumns extends StatelessWidget {
         ],
       );
 }
-

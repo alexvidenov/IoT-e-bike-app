@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/main.dart';
-import 'package:ble_app/src/model/BleDevice.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/modules/BleDevice.dart';
+import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
@@ -19,6 +19,7 @@ part 'blocExtensions/BLEScanMethods.dart';
 class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   final DeviceRepository _deviceRepository;
   final LocalDatabaseManager _dbManager;
+
   final BleManager _bleManager = BleManager();
 
   final List<BleDevice> bleDevices = <BleDevice>[];

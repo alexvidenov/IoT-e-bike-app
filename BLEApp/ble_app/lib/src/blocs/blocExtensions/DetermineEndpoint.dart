@@ -6,7 +6,7 @@ extension DetermineEndpoint on EntryEndpointBloc {
     if (_deviceId != 'empty') {
       BleDevice device =
           BleDevice(peripheral: BleManager().createUnsafePeripheral(_deviceId));
-      _listen();
+      _listenForPickedDevice();
       _devicesBloc.init();
       _devicesBloc.create();
       _devicesBloc.addEvent(device);

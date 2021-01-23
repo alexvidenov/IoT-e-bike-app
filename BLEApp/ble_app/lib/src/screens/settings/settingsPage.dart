@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable

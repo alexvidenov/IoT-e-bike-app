@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/listeners/disconnectedListener.dart';
 import 'package:ble_app/main.dart';
-import 'package:ble_app/src/model/BleDevice.dart';
-import 'package:ble_app/src/model/DeviceRepository.dart';
+import 'package:ble_app/src/modules/BleDevice.dart';
+import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
@@ -55,17 +55,20 @@ class DeviceBloc {
 
   cancel() => _deviceRepository.cancel();
 
-  init() => _bleManager.stopPeripheralScan();
+  stopScan() => _bleManager.stopPeripheralScan();
 
   _observeConnectionState() => device.listen((bleDevice) => bleDevice.peripheral
           .observeConnectionState(
-              emitCurrentValue: true, completeOnDisconnect: true)
+              emitCurrentValue: true,
+              completeOnDisconnect:
+                  false) // was true and it's better off to stay false (i think?)
           .listen((connectionState) {
         _connectionEvent.add(connectionState);
         if (connectionState == PeripheralConnectionState.connected)
           _disconnectedListener?.onReconnected();
         else if (connectionState == PeripheralConnectionState.disconnected)
-          _disconnectedListener?.onDisconnected();
+          _setDeviceReady.add(false); //
+        _disconnectedListener?.onDisconnected();
       }));
 
   dispose() async {

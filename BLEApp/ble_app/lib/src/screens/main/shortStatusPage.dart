@@ -7,13 +7,14 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
-class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
+class DeviceScreen extends RouteAwareWidget<ShortStatusBloc>
+    with RouteUtils {
   const DeviceScreen(ShortStatusBloc shortStatusBloc)
       : super(bloc: shortStatusBloc);
 
   @override
   Widget buildWidget(BuildContext context) => InkWell(
-        onTap: () => navigationBloc.to('/full'),
+        onTap: () => to('/full'),
         child: Container(
           child: ShortStatusUI(super.bloc, $()),
         ),
@@ -43,6 +44,6 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with Navigation {
           });
     });
      */
-    navigationBloc.addEvent(CurrentPage.ShortStatus);
+    notifyForRoute(CurrentPage.ShortStatus);
   }
 }

@@ -15,7 +15,7 @@ class _$FullStatusModelTearOff {
 
 // ignore: unused_element
   _FullStatus call(List<FullStatusDataModel> fullStatus, double totalVoltage,
-      double current, double temperature, int rIn, BattStatus status) {
+      double current, int temperature, int rIn, BattStatus status) {
     return _FullStatus(
       fullStatus,
       totalVoltage,
@@ -36,7 +36,7 @@ mixin _$FullStatusModel {
   List<FullStatusDataModel> get fullStatus;
   double get totalVoltage;
   double get current;
-  double get temperature;
+  int get temperature;
   int get rIn;
   BattStatus get status;
 
@@ -52,7 +52,7 @@ abstract class $FullStatusModelCopyWith<$Res> {
       {List<FullStatusDataModel> fullStatus,
       double totalVoltage,
       double current,
-      double temperature,
+      int temperature,
       int rIn,
       BattStatus status});
 }
@@ -84,7 +84,7 @@ class _$FullStatusModelCopyWithImpl<$Res>
           : totalVoltage as double,
       current: current == freezed ? _value.current : current as double,
       temperature:
-          temperature == freezed ? _value.temperature : temperature as double,
+          temperature == freezed ? _value.temperature : temperature as int,
       rIn: rIn == freezed ? _value.rIn : rIn as int,
       status: status == freezed ? _value.status : status as BattStatus,
     ));
@@ -102,7 +102,7 @@ abstract class _$FullStatusCopyWith<$Res>
       {List<FullStatusDataModel> fullStatus,
       double totalVoltage,
       double current,
-      double temperature,
+      int temperature,
       int rIn,
       BattStatus status});
 }
@@ -133,7 +133,7 @@ class __$FullStatusCopyWithImpl<$Res>
           : fullStatus as List<FullStatusDataModel>,
       totalVoltage == freezed ? _value.totalVoltage : totalVoltage as double,
       current == freezed ? _value.current : current as double,
-      temperature == freezed ? _value.temperature : temperature as double,
+      temperature == freezed ? _value.temperature : temperature as int,
       rIn == freezed ? _value.rIn : rIn as int,
       status == freezed ? _value.status : status as BattStatus,
     ));
@@ -158,7 +158,7 @@ class _$_FullStatus implements _FullStatus {
   @override
   final double current;
   @override
-  final double temperature;
+  final int temperature;
   @override
   final int rIn;
   @override
@@ -211,7 +211,7 @@ abstract class _FullStatus implements FullStatusModel {
       List<FullStatusDataModel> fullStatus,
       double totalVoltage,
       double current,
-      double temperature,
+      int temperature,
       int rIn,
       BattStatus status) = _$_FullStatus;
 
@@ -222,7 +222,7 @@ abstract class _FullStatus implements FullStatusModel {
   @override
   double get current;
   @override
-  double get temperature;
+  int get temperature;
   @override
   int get rIn;
   @override

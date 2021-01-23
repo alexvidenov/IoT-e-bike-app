@@ -79,7 +79,7 @@ class Auth {
       if (user != null) {
         final _id = user.uid;
         final _db = FirestoreDatabase(uid: _id);
-        await _db.updateUserData();
+        await _db.setUserId();
         await _db.setDeviceId(deviceId: deviceSerialNumber);
         await _userDao.insertEntity(localUser.User(_id, email, password));
         await _deviceDao.insertEntity(Device(

@@ -4,7 +4,7 @@ extension BLEScanMethods on DevicesBloc {
   _startScan() async {
     await _loadDevicesFromCache();
     _scanSubscription = _bleManager.startPeripheralScan(
-        uuids: [BluetoothUtils.SERVICE_UUID]).listen((ScanResult scanResult) {
+        uuids: [BluetoothUtils.SERVICE_UUID]).listen((scanResult) {
       final bleDevice = BleDevice(peripheral: scanResult.peripheral);
       if (scanResult.advertisementData.localName != null &&
           !bleDevices.contains(bleDevice)) {

@@ -9,7 +9,7 @@ extension FullStatusParse on FullStatusBloc {
     double totalVoltage = 0;
     double current;
 
-    double temperature;
+    int temperature;
 
     double delta;
 
@@ -55,7 +55,7 @@ extension FullStatusParse on FullStatusBloc {
           current = splitInner[1] != '0'
               ? double.parse(splitInner[1])
               : (double.parse(splitInner[2]) * -1);
-          temperature = double.parse(splitInner[3]);
+          temperature = tempConverter.tempFromADC(int.parse(splitInner[3]));
         }
       }
     }
