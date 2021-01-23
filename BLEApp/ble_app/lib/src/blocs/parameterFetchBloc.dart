@@ -7,6 +7,7 @@ import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:ble_app/src/sealedStates/parameterFetchState.dart';
 import 'package:ble_app/src/services/Database.dart';
+import 'package:ble_app/src/utils/ADCToTemp.dart';
 import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:injectable/injectable.dart';
 
@@ -18,6 +19,8 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String>
   final DeviceRepository _repository;
   final ParameterHolder _holder;
   final LocalDatabaseManager _dbManager;
+
+  final tempConverter = TemperatureConverter();
 
   ParameterFetchBloc(this._repository, this._holder, this._dbManager)
       : super(); // can be const as well
@@ -79,10 +82,14 @@ extension FetchParams on ParameterFetchBloc {
             maxCutoffChargeCurrent: _parameters['15'],
             motoHoursCounterCurrentThreshold: _parameters['16'].toInt(),
             currentCutOffTimerPeriod: _parameters['17'].toInt(),
-            maxCutoffTemperature: _parameters['23'].toInt(),
-            maxTemperatureRecovery: _parameters['24'].toInt(),
-            minTemperatureRecovery: _parameters['25'].toInt(),
-            minCutoffTemperature: _parameters['26'].toInt(),
+            maxCutoffTemperature:
+                tempConverter.tempFromADC(_parameters['23'].toInt()),
+            maxTemperatureRecovery:
+                tempConverter.tempFromADC(_parameters['24'].toInt()),
+            minTemperatureRecovery:
+                tempConverter.tempFromADC(_parameters['25'].toInt()),
+            minCutoffTemperature:
+                tempConverter.tempFromADC(_parameters['26'].toInt()),
             motoHoursChargeCounter: _parameters['28'].toInt(),
             motoHoursDischargeCounter: _parameters['29'].toInt());
         //}

@@ -51,6 +51,7 @@ dependencies:
   connectivity: ^2.0.0
   freezed: ^0.12.2
   freezed_annotation: ^0.12.0
+  kdtree: ^0.1.0
   logger: ^0.9.4
 
   # The following adds the Cupertino Icons font to your application.

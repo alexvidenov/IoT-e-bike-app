@@ -128,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                                   '/devices', (_) => false));
                         },
                         child: Text(
-                          'Disc.',
+                          'Lock', // StreamBuilder here
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
                       ),

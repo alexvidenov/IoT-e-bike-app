@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-import 'dart:convert';
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'shortStatusModel.freezed.dart';

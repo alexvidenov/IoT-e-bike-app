@@ -13,15 +13,12 @@ extension DeviceConnectionMethods on DeviceBloc {
   }
 
   Future<void> connect() async =>
-      device.listen((bleDevice) async => _runWithErrorHandling(() async {
-            await bleDevice.peripheral
-                .connect()
-                .then((_) => _observeConnectionState())
-                .then((_) =>
-                    _deviceRepository.discoverServicesAndStartMonitoring())
-                .then((_) => _setDeviceReady.add(true));
-          }));
-
+      device.listen((bleDevice) async => await bleDevice.peripheral
+          .connect()
+          .then((_) => _observeConnectionState())
+          .then((_) => _deviceRepository.discoverServicesAndStartMonitoring())
+          .then((_) => _setDeviceReady.add(true)));
+/*
   Future<void> _runWithErrorHandling(AsyncFunction asyncFunction) async {
     // todo: extract in handler object
     try {
@@ -30,4 +27,5 @@ extension DeviceConnectionMethods on DeviceBloc {
       asyncFunction();
     }
   }
+   */
 }

@@ -7,6 +7,8 @@ class _Credentials {
   String email = '';
   String password = '';
   String deviceSerialNumber = '';
+  String superUserPasscode = '';
+  bool isSuperUser = false;
 }
 
 class Register extends StatelessWidget {
@@ -26,7 +28,7 @@ class RegisterScreen extends StatelessWidget {
   final AuthBloc _auth;
   final Function toggleView;
 
-  const RegisterScreen(this._auth, {this.toggleView});
+  RegisterScreen(this._auth, {this.toggleView});
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -56,7 +58,7 @@ class RegisterScreen extends StatelessWidget {
                           color: Colors.white,
                           letterSpacing: 2,
                           fontFamily: 'Europe_Ext'))),
-              Icon(Icons.arrow_forward)
+              const Icon(Icons.arrow_forward)
             ],
           )
         ],
@@ -86,6 +88,8 @@ class _StepperBodyState extends State<StepperBody> {
   final data = _Credentials();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
+  bool _shouldEnterSuperUser = false;
+
   @override
   initState() {
     super.initState();
@@ -108,7 +112,7 @@ class _StepperBodyState extends State<StepperBody> {
                   fontWeight: FontWeight.bold,
                   fontSize: 19.0)),
           isActive: currStep >= 1,
-          state: StepState.indexed,
+          state: currStep == 0 ? StepState.editing : StepState.indexed,
           content: TextFormField(
               focusNode: _focusNode,
               keyboardType: TextInputType.text,
@@ -117,12 +121,6 @@ class _StepperBodyState extends State<StepperBody> {
                 data.userName = value;
               },
               maxLines: 1,
-              // ignore: missing_return
-              validator: (value) {
-                if (value.isEmpty || value.length < 1) {
-                  return 'Please enter valid username';
-                }
-              },
               decoration: InputDecoration(
                   labelText: 'Enter your username',
                   icon: const Icon(Icons.person, color: Colors.white),
@@ -138,7 +136,7 @@ class _StepperBodyState extends State<StepperBody> {
                     fontWeight: FontWeight.bold,
                     fontSize: 19.0)),
             isActive: currStep >= 2,
-            state: StepState.indexed,
+            state: currStep == 1 ? StepState.editing : StepState.indexed,
             content: TextFormField(
               focusNode: _focusNodeLastName,
               keyboardType: TextInputType.text,
@@ -147,12 +145,6 @@ class _StepperBodyState extends State<StepperBody> {
                 data.email = value;
               },
               maxLines: 1,
-              // ignore: missing_return
-              validator: (value) {
-                if (value.isEmpty || !value.contains('@')) {
-                  return 'Invalid email';
-                }
-              },
               decoration: InputDecoration(
                   labelText: 'Enter your email',
                   icon: const Icon(Icons.person, color: Colors.white),
@@ -166,24 +158,17 @@ class _StepperBodyState extends State<StepperBody> {
                     fontWeight: FontWeight.bold,
                     fontSize: 19.0)),
             isActive: currStep >= 3,
-            state: StepState.indexed,
+            state: currStep == 2 ? StepState.editing : StepState.indexed,
             content: TextFormField(
               keyboardType: TextInputType.visiblePassword,
               autocorrect: false,
-              // ignore: missing_return
-              validator: (value) {
-                if (value.isEmpty || value.length < 10) {
-                  return 'Password must be 10 or more characters';
-                }
-                return null;
-              },
               onSaved: (String value) {
                 data.password = value;
               },
               maxLines: 1,
               decoration: InputDecoration(
                   labelText: 'Enter your password',
-                  icon: const Icon(Icons.phone, color: Colors.white),
+                  icon: const Icon(Icons.security, color: Colors.white),
                   labelStyle: TextStyle(
                       decorationStyle: TextDecorationStyle.solid,
                       color: Colors.white,
@@ -196,17 +181,11 @@ class _StepperBodyState extends State<StepperBody> {
                   fontWeight: FontWeight.bold,
                   fontSize: 19.0)),
           isActive: currStep >= 4,
-          state: StepState.indexed,
+          state: currStep == 3 ? StepState.editing : StepState.indexed,
           content: TextFormField(
               keyboardType: TextInputType.number,
               style: TextStyle(color: Colors.white),
               autocorrect: false,
-              validator: (value) {
-                if (value.isEmpty || value.length < 3) {
-                  return 'Please enter valid serial number';
-                }
-                return null;
-              },
               onSaved: (String value) {
                 data.deviceSerialNumber = value;
               },
@@ -219,7 +198,46 @@ class _StepperBodyState extends State<StepperBody> {
                       decorationStyle: TextDecorationStyle.solid,
                       color: Colors.white,
                       fontSize: 16.0))),
-        )
+        ),
+        Step(
+            title: const Text('Superuser?',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 19.0)),
+            isActive: currStep >= 5,
+            state: currStep == 4 ? StepState.editing : StepState.indexed,
+            content: Card(
+              color: Colors.lightBlueAccent,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SwitchListTile(
+                    activeColor: Colors.redAccent,
+                    title: const Text('Are you a superuser?'),
+                    value: _shouldEnterSuperUser,
+                    onChanged: (value) =>
+                        setState(() => _shouldEnterSuperUser = value),
+                  ),
+                  _shouldEnterSuperUser
+                      ? TextFormField(
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(color: Colors.white),
+                          autocorrect: false,
+                          onSaved: (value) => data.superUserPasscode = value,
+                          maxLines: 1,
+                          decoration: new InputDecoration(
+                              labelText: 'Enter passcode',
+                              icon: const Icon(Icons.confirmation_number,
+                                  color: Colors.white),
+                              labelStyle: new TextStyle(
+                                  decorationStyle: TextDecorationStyle.solid,
+                                  color: Colors.white,
+                                  fontSize: 16.0)))
+                      : Container(),
+                ],
+              ),
+            )),
       ];
 
   showSnackBarMessage(String message) =>
@@ -227,15 +245,15 @@ class _StepperBodyState extends State<StepperBody> {
 
   _submitDetails() {
     final FormState formState = _formKey.currentState;
-    if (!formState.validate()) {
-      showSnackBarMessage('Invalid credentials');
-    } else {
-      formState.save();
-      widget._authBloc.signUpWithEmailAndPassword(
-          email: data.email,
-          password: data.password,
-          deviceId: data.deviceSerialNumber);
-    }
+    //if (!formState.validate()) {
+    //showSnackBarMessage('Invalid credentials');
+    //} else {
+    formState.save();
+    widget._authBloc.signUpWithEmailAndPassword(
+        email: data.email,
+        password: data.password,
+        deviceId: data.deviceSerialNumber);
+    //}
   }
 
   @override
@@ -257,6 +275,7 @@ class _StepperBodyState extends State<StepperBody> {
         key: _formKey,
         child: ListView(children: <Widget>[
           Stepper(
+            physics: ClampingScrollPhysics(),
             steps: _steps(),
             type: StepperType.vertical,
             currentStep: this.currStep,
@@ -279,9 +298,7 @@ class _StepperBodyState extends State<StepperBody> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0)),
                 onPressed: _submitDetails,
-              )
-              //  Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new ProfileStep1()));
-              ),
+              )),
         ]),
       ));
 }

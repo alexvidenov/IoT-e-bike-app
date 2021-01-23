@@ -21,7 +21,7 @@ class VoltageProgressBar extends StatelessWidget {
           final state = shortStatus.data;
           final voltage = state.model.totalVoltage;
           if (state is ShortStatusError &&
-              state.errorState == ErrorState.HighVoltage) {
+              state.errorState == ShortStatusErrorState.HighVoltage) {
             color = Colors.redAccent;
           }
           return Container(

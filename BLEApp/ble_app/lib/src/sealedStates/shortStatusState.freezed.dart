@@ -21,7 +21,8 @@ class _$ShortStatusStateTearOff {
   }
 
 // ignore: unused_element
-  ShortStatusError error(ErrorState errorState, [ShortStatusModel model]) {
+  ShortStatusError error(ShortStatusErrorState errorState,
+      [ShortStatusModel model]) {
     return ShortStatusError(
       errorState,
       model,
@@ -40,12 +41,13 @@ mixin _$ShortStatusState {
   @optionalTypeArgs
   TResult when<TResult extends Object>(
     TResult $default(ShortStatusModel model), {
-    @required TResult error(ErrorState errorState, ShortStatusModel model),
+    @required
+        TResult error(ShortStatusErrorState errorState, ShortStatusModel model),
   });
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>(
     TResult $default(ShortStatusModel model), {
-    TResult error(ErrorState errorState, ShortStatusModel model),
+    TResult error(ShortStatusErrorState errorState, ShortStatusModel model),
     @required TResult orElse(),
   });
   @optionalTypeArgs
@@ -165,7 +167,8 @@ class _$Normal implements Normal {
   @optionalTypeArgs
   TResult when<TResult extends Object>(
     TResult $default(ShortStatusModel model), {
-    @required TResult error(ErrorState errorState, ShortStatusModel model),
+    @required
+        TResult error(ShortStatusErrorState errorState, ShortStatusModel model),
   }) {
     assert($default != null);
     assert(error != null);
@@ -176,7 +179,7 @@ class _$Normal implements Normal {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>(
     TResult $default(ShortStatusModel model), {
-    TResult error(ErrorState errorState, ShortStatusModel model),
+    TResult error(ShortStatusErrorState errorState, ShortStatusModel model),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
@@ -228,7 +231,7 @@ abstract class $ShortStatusErrorCopyWith<$Res>
           ShortStatusError value, $Res Function(ShortStatusError) then) =
       _$ShortStatusErrorCopyWithImpl<$Res>;
   @override
-  $Res call({ErrorState errorState, ShortStatusModel model});
+  $Res call({ShortStatusErrorState errorState, ShortStatusModel model});
 
   @override
   $ShortStatusModelCopyWith<$Res> get model;
@@ -251,7 +254,9 @@ class _$ShortStatusErrorCopyWithImpl<$Res>
     Object model = freezed,
   }) {
     return _then(ShortStatusError(
-      errorState == freezed ? _value.errorState : errorState as ErrorState,
+      errorState == freezed
+          ? _value.errorState
+          : errorState as ShortStatusErrorState,
       model == freezed ? _value.model : model as ShortStatusModel,
     ));
   }
@@ -263,7 +268,7 @@ class _$ShortStatusError implements ShortStatusError {
       : assert(errorState != null);
 
   @override
-  final ErrorState errorState;
+  final ShortStatusErrorState errorState;
   @override
   final ShortStatusModel model;
 
@@ -297,7 +302,8 @@ class _$ShortStatusError implements ShortStatusError {
   @optionalTypeArgs
   TResult when<TResult extends Object>(
     TResult $default(ShortStatusModel model), {
-    @required TResult error(ErrorState errorState, ShortStatusModel model),
+    @required
+        TResult error(ShortStatusErrorState errorState, ShortStatusModel model),
   }) {
     assert($default != null);
     assert(error != null);
@@ -308,7 +314,7 @@ class _$ShortStatusError implements ShortStatusError {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>(
     TResult $default(ShortStatusModel model), {
-    TResult error(ErrorState errorState, ShortStatusModel model),
+    TResult error(ShortStatusErrorState errorState, ShortStatusModel model),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
@@ -345,10 +351,10 @@ class _$ShortStatusError implements ShortStatusError {
 }
 
 abstract class ShortStatusError implements ShortStatusState {
-  const factory ShortStatusError(ErrorState errorState,
+  const factory ShortStatusError(ShortStatusErrorState errorState,
       [ShortStatusModel model]) = _$ShortStatusError;
 
-  ErrorState get errorState;
+  ShortStatusErrorState get errorState;
   @override
   ShortStatusModel get model;
   @override

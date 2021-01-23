@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
+import 'package:ble_app/src/blocs/mixins/DeltaHolder.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
@@ -15,7 +16,8 @@ import 'package:injectable/injectable.dart';
 part 'blocExtensions/ShortStatusParse.dart';
 
 @injectable
-class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
+class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String>
+    with DeltaCalculation {
   final DeviceRepository _repository;
   final SettingsBloc _settingsBloc;
   final Auth _auth;
@@ -46,19 +48,19 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
     _initData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       logger.wtf('SHORT STATUS EVENT: $event');
-      ShortStatusModel _model = _generateShortStatus(
+      ShortStatusState _model = _generateShortStatus(
           event); // TODO: add method checking for abnormalities.
-      addEvent(ShortStatusState(_model));
+      addEvent(_generateShortStatus(event));
       //addEvent(ShortStatusState.error(, errorState))
       _uploadTimer++;
       if (_uploadTimer == 10) {
-        // TODO: extract data logging process in a separate manager
+        // TODO: extract data logging process in a separate manager (mixin) just like the delta calculation
         _appData.addCurrentRecord({
           'timeStamp': DateTime.now().toString(),
           'stats': {
-            'voltage': _model.totalVoltage,
-            'temp': _model.temperature,
-            'current': _model.current
+            'voltage': _model.model.totalVoltage,
+            'temp': _model.model.temperature,
+            'current': _model.model.current
             // TODO: add the delta here
           }
         });
@@ -70,9 +72,9 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String> {
   }
 
   _initData() {
-    String data = _settingsBloc.getUserData();
-    String userId = _auth.getCurrentUserId();
-    String deviceId = _repository.deviceId;
+    final data = _settingsBloc.getUserData();
+    final userId = _auth.getCurrentUserId();
+    final deviceId = _repository.deviceId;
     data != 'empty'
         ? _appData = AppData.fromJson(jsonDecode(data),
             userId: userId, deviceSerialNumber: deviceId)

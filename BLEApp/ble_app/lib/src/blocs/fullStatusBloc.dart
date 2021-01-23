@@ -1,6 +1,7 @@
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/main.dart';
+import 'package:ble_app/src/blocs/mixins/DeltaHolder.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusModel.dart';
@@ -11,15 +12,11 @@ import 'package:injectable/injectable.dart';
 part 'blocExtensions/FullStatusParse.dart';
 
 @injectable
-class FullStatusBloc extends ParameterAwareBloc<FullStatusModel, String> {
+class FullStatusBloc extends ParameterAwareBloc<FullStatusModel, String>
+    with DeltaCalculation {
   final DeviceRepository _repository;
 
-  final delta1Holder = RxObject<double>();
-  final delta2Holder = RxObject<double>();
-
   final tempConverter = TemperatureConverter();
-
-  int deltaCounter = 0;
 
   FullStatusBloc(this._repository) : super();
 

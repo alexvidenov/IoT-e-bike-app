@@ -1,3 +1,5 @@
+//import 'package:kdtree/kdtree.dart';
+
 class TemperatureConverter {
   final boundaryValues = {
     MapEntry<int, double>(2965, 102): -5,
@@ -16,6 +18,12 @@ class TemperatureConverter {
     MapEntry<int, double>(242, 7.6): 60,
     MapEntry<int, double>(204, 6.4): 65
   };
+
+  //final values = [
+  // {'adcValue': 2965, 'adcCoef': 102, 'tempInC': -5},
+  // {'adcValue': 2965, 'adcCoef': 102, 'tempInC': -5},
+  //{'adcValue': 2965, 'adcCoef': 102, 'tempInC': -5},
+  //];
 
   List<MapEntry<int, double>> get keys => boundaryValues.keys.toList();
 
@@ -36,4 +44,23 @@ class TemperatureConverter {
     final int divByCoeff = diff ~/ findCoeffByKey(nextGreaterValue);
     return findTempValue(nextGreaterValue) + divByCoeff;
   }
+
+/*
+  var distance = (dynamic value1, dynamic value2) =>
+      ((value1['adcValue'] - value2['adcValue']) as int).abs();
+
+  stuff(int adcValue) {
+    // 850
+    var tree = KDTree(values, distance, ['adcValue']);
+    var point = {'adcValue': adcValue}; // the read value
+    var nearest = tree.nearest(point, 1); // 909 // sHOUKD BE 2
+
+    dynamic nearestElement = nearest.first;
+
+    final diff = ((nearestElement['adcValue'] - adcValue) as int).abs() ; // 59
+    final int divByCoeff = diff ~/ nearestElement['adcCoef'];
+    final tempInC = nearestElement['tempInC'] + divByCoeff;
+    print(tempInC);
+  }
+   */
 }

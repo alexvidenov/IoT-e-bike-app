@@ -128,6 +128,7 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String>
   }
 
   changeParameter(String command) {
+    // TODO: in case of temperature change, convert to adc units
     // TODO: write the command pattern here instead of from the UI
     currentCommand = command;
     _repository.writeToCharacteristic(command);

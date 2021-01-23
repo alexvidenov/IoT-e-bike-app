@@ -18,8 +18,8 @@ Map<String, dynamic> _$_BatteryStatusModelToJson(
         _BatteryStatusModel instance) =>
     <String, dynamic>{
       'voltage': instance.voltage,
-      'temp': instance.temp,
       'current': instance.current,
+      'temp': instance.temp,
     };
 
 LogModel _$LogModelFromJson(Map<String, dynamic> json) {

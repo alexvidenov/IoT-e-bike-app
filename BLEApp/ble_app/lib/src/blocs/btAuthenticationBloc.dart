@@ -5,12 +5,10 @@ import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/sealedStates/btAuthState.dart';
 import 'package:injectable/injectable.dart';
 
-import 'CurrentContext.dart';
-
 part 'blocExtensions/BTAuthMethods.dart';
 
 @injectable
-class BluetoothAuthBloc extends Bloc<BTAuthState, String> with CurrentContext {
+class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
   final DeviceRepository _repository;
   final LocalDatabaseManager _db;
 
@@ -33,8 +31,8 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> with CurrentContext {
           //}x
           //else{
           //_db.deviceDao.setMacAddress(_re, int.parse(_repository.deviceId));
-          _repository.deviceSerialNumber = 1234567
-              .toString(); // TODO: fetch 55 param here (for example)
+          _repository.deviceSerialNumber =
+              1234567.toString(); // TODO: fetch 55 param here (for example)
           addEvent(BTAuthState.btAuthenticated());
           // }
         }

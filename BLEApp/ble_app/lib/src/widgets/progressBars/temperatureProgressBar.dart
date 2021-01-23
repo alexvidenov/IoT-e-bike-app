@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 
+// < min -> blue
+// > max -> red
+// otherwise -> green
+
 class TemperatureProgressBar extends StatelessWidget {
   final ShortStatusBloc
       bloc; // TODO: actually pass only the necessary stream here
@@ -16,35 +20,36 @@ class TemperatureProgressBar extends StatelessWidget {
       initialData: ShortStatusState(ShortStatusModel()),
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active) {
-          int temperature;
-          Color color = Colors.greenAccent;
-          shortStatus.data.when((normal) => temperature = normal.temperature,
-              error: (errorState, model) {
-            switch (errorState) {
-              case ErrorState.HighTemp:
-                color = Colors.red;
-                break;
-              case ErrorState.LowTemp:
+          final temperature = shortStatus.data.model.temperature;
+          var color = Colors.greenAccent;
+          final state = shortStatus.data;
+          if (state is ShortStatusError) {
+            print('RECEIVED ERROR STATE IN TEMP. PROG BAR');
+            switch (state.errorState) {
+              case ShortStatusErrorState.LowTemp:
                 color = Colors.lightBlueAccent;
+                break;
+              case ShortStatusErrorState.HighTemp:
+                color = Colors.redAccent;
                 break;
               default:
                 break;
             }
-            temperature = model.temperature;
-          });
+          }
           return Container(
             height: 180,
             width: 20,
             decoration: BoxDecoration(
                 color: Colors.black26,
                 shape: BoxShape.rectangle,
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                       color: Colors.white, blurRadius: 7.0, spreadRadius: 8.0),
                 ]),
             child: FAProgressBar(
               currentValue: temperature,
               maxValue: 65,
+              // should be FIXED
               animatedDuration: const Duration(milliseconds: 300),
               direction: Axis.vertical,
               verticalDirection: VerticalDirection.up,

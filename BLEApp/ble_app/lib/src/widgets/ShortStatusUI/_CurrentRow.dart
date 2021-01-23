@@ -16,6 +16,7 @@ class CurrentRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => StreamBuilder<ShortStatusState>(
+      // TODO: optimize the builder not to rerender the row and everything
       stream: bloc.stream,
       initialData: ShortStatusState(ShortStatusModel()),
       builder: (_, shortStatus) {
@@ -27,10 +28,10 @@ class CurrentRow extends StatelessWidget {
             current = model.current;
           }, error: (error, model) {
             switch (error) {
-              case ErrorState.Overcharge:
+              case ShortStatusErrorState.Overcharge:
                 CCColor = Colors.red;
                 break;
-              case ErrorState.OverDischarge:
+              case ShortStatusErrorState.OverDischarge:
                 DCColor = Colors.red;
                 break;
               default:
@@ -56,7 +57,7 @@ class CurrentRow extends StatelessWidget {
                     decoration: const BoxDecoration(
                         color: Colors.black26,
                         shape: BoxShape.rectangle,
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                               color: Colors.white,
                               blurRadius: 5.0,
@@ -120,6 +121,11 @@ class CurrentRow extends StatelessWidget {
                           .maxCutoffDischargeCurrent
                           .toInt(),
                       backgroundColor: Colors.black,
+                      changeColorValue: bloc
+                          .getParameters()
+                          .value
+                          .maxTimeLimitedDischargeCurrent
+                          .toInt(),
                       progressColor: DCColor,
                       animatedDuration: const Duration(milliseconds: 700),
                       direction: Axis.horizontal,
@@ -140,7 +146,7 @@ class CurrentRow extends StatelessWidget {
                               current = state
                                   .current; // or discharge. FIXME fix the data model
                             }, error: (error, state) {
-                              color = Colors.red;
+                              color = Colors.white;
                               current = state.current;
                             });
                             return Text(

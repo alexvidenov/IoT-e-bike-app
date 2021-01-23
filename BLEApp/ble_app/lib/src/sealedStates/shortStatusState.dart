@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'shortStatusState.freezed.dart';
 
-enum ErrorState {
+enum ShortStatusErrorState {
   HighVoltage,
   Overcharge,
   OverDischarge,
@@ -16,6 +16,6 @@ enum ErrorState {
 abstract class ShortStatusState with _$ShortStatusState {
   const factory ShortStatusState(ShortStatusModel model) = Normal;
 
-  const factory ShortStatusState.error(ErrorState errorState,
+  const factory ShortStatusState.error(ShortStatusErrorState errorState,
       [ShortStatusModel model]) = ShortStatusError;
 }

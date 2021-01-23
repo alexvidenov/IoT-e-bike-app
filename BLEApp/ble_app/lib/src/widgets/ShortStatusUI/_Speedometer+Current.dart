@@ -36,20 +36,19 @@ class SpeedometerWithCurrent extends StatelessWidget {
                         builder: (context, snapshot) {
                           String _speedInKMH = '0.0';
                           if (snapshot.data != null) {
-                            _speedInKMH = (snapshot.data.speed * 3.6)
-                                .toStringAsPrecision(1);
+                            _speedInKMH =
+                                (snapshot.data.speed * 3.6).toStringAsFixed(1);
                           }
-                          String text =
+                          return Text(
                               snapshot.connectionState == ConnectionState.active
                                   ? _speedInKMH
-                                  : '0';
-                          return Text(text,
+                                  : '0',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 56));
                         }),
-                    Text('km/h',
+                    const Text('km/h',
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w300,
