@@ -14,7 +14,7 @@ class _$ParameterFetchStateTearOff {
   const _$ParameterFetchStateTearOff();
 
 // ignore: unused_element
-  _Fetched fetched(DeviceParametersModel model) {
+  _Fetched fetched(DeviceParameters model) {
     return _Fetched(
       model,
     );
@@ -34,12 +34,12 @@ const $ParameterFetchState = _$ParameterFetchStateTearOff();
 mixin _$ParameterFetchState {
   @optionalTypeArgs
   TResult when<TResult extends Object>({
-    @required TResult fetched(DeviceParametersModel model),
+    @required TResult fetched(DeviceParameters model),
     @required TResult fetching(),
   });
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>({
-    TResult fetched(DeviceParametersModel model),
+    TResult fetched(DeviceParameters model),
     TResult fetching(),
     @required TResult orElse(),
   });
@@ -77,7 +77,7 @@ class _$ParameterFetchStateCopyWithImpl<$Res>
 abstract class _$FetchedCopyWith<$Res> {
   factory _$FetchedCopyWith(_Fetched value, $Res Function(_Fetched) then) =
       __$FetchedCopyWithImpl<$Res>;
-  $Res call({DeviceParametersModel model});
+  $Res call({DeviceParameters model});
 }
 
 /// @nodoc
@@ -95,7 +95,7 @@ class __$FetchedCopyWithImpl<$Res>
     Object model = freezed,
   }) {
     return _then(_Fetched(
-      model == freezed ? _value.model : model as DeviceParametersModel,
+      model == freezed ? _value.model : model as DeviceParameters,
     ));
   }
 }
@@ -105,7 +105,7 @@ class _$_Fetched implements _Fetched {
   const _$_Fetched(this.model) : assert(model != null);
 
   @override
-  final DeviceParametersModel model;
+  final DeviceParameters model;
 
   @override
   String toString() {
@@ -131,7 +131,7 @@ class _$_Fetched implements _Fetched {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object>({
-    @required TResult fetched(DeviceParametersModel model),
+    @required TResult fetched(DeviceParameters model),
     @required TResult fetching(),
   }) {
     assert(fetched != null);
@@ -142,7 +142,7 @@ class _$_Fetched implements _Fetched {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>({
-    TResult fetched(DeviceParametersModel model),
+    TResult fetched(DeviceParameters model),
     TResult fetching(),
     @required TResult orElse(),
   }) {
@@ -180,9 +180,9 @@ class _$_Fetched implements _Fetched {
 }
 
 abstract class _Fetched implements ParameterFetchState {
-  const factory _Fetched(DeviceParametersModel model) = _$_Fetched;
+  const factory _Fetched(DeviceParameters model) = _$_Fetched;
 
-  DeviceParametersModel get model;
+  DeviceParameters get model;
   _$FetchedCopyWith<_Fetched> get copyWith;
 }
 
@@ -223,7 +223,7 @@ class _$_Fetching implements _Fetching {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object>({
-    @required TResult fetched(DeviceParametersModel model),
+    @required TResult fetched(DeviceParameters model),
     @required TResult fetching(),
   }) {
     assert(fetched != null);
@@ -234,7 +234,7 @@ class _$_Fetching implements _Fetching {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>({
-    TResult fetched(DeviceParametersModel model),
+    TResult fetched(DeviceParameters model),
     TResult fetching(),
     @required TResult orElse(),
   }) {

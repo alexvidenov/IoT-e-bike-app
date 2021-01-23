@@ -1,8 +1,8 @@
-import 'package:ble_app/src/blocs/ParameterListenerBloc.dart';
+import 'package:ble_app/src/blocs/parameterListenerBloc.dart';
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:flutter/material.dart';
 
 // P0000 - OK
@@ -60,7 +60,7 @@ class BatterySettingsScreen extends StatefulWidget {
       _authBloc; // FIXME try to abstract the bloc with only the necessary part
   final DeviceRepository _repository;
 
-  BatterySettingsScreen(this._parameterListenerBloc, this._settingsBloc,
+  const BatterySettingsScreen(this._parameterListenerBloc, this._settingsBloc,
       this._authBloc, this._repository);
 
   @override
@@ -81,11 +81,11 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
   Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         brightness: Brightness.dark,
-        title: Text('Battery Settings'),
+        title: const Text('Battery Settings'),
         backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
-          child: StreamBuilder<DocumentSnapshot>(
+          child: StreamBuilder<DeviceParameters>(
         stream: widget._parameterListenerBloc.parameters,
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
@@ -95,7 +95,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     0,
                     'Cell Num',
-                    ((snapshot.data['00'] as num).toInt()) ?? 4,
+                    snapshot.data.cellCount ?? 4,
                     'Number of active cells',
                     '',
                     () => _presentDialog(context,
@@ -103,7 +103,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     1,
                     'V Max',
-                    (snapshot.data['01'] / 100) ?? 4.28,
+                    (snapshot.data.maxCellVoltage / 100) ?? 4.28,
                     'Max cell voltage',
                     'V',
                     () => _presentDialog(context,
@@ -111,7 +111,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     2,
                     'V MaxR',
-                    (snapshot.data['02'] / 100) ?? 4.15,
+                    (snapshot.data.maxRecoveryVoltage / 100) ?? 4.15,
                     'Max recovery voltage',
                     'V',
                     () => _presentDialog(context,
@@ -119,7 +119,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     3,
                     'V Bal',
-                    (snapshot.data['03'] / 100) ?? 4.20,
+                    (snapshot.data.balanceCellVoltage / 100) ?? 4.20,
                     'Balance cell voltage',
                     'V',
                     () => _presentDialog(context,
@@ -127,7 +127,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     4,
                     'VMin',
-                    (snapshot.data['04'] / 100) ?? 2.80,
+                    (snapshot.data.minCellVoltage / 100) ?? 2.80,
                     'Min cell voltage',
                     'V',
                     () => _presentDialog(context,
@@ -135,7 +135,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     5,
                     'VMinR',
-                    (snapshot.data['05'] / 100) ?? 3.10,
+                    (snapshot.data.minCellRecoveryVoltage / 100) ?? 3.10,
                     'Min cell recovery voltage',
                     'V',
                     () => _presentDialog(context,
@@ -143,7 +143,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     6,
                     'VULOW',
-                    (snapshot.data['06'] / 100) ?? 2,
+                    (snapshot.data.ultraLowCellVoltage / 100) ?? 2,
                     'Ultra low cell voltage',
                     'V',
                     () => _presentDialog(context,
@@ -151,7 +151,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     7,
                     'IDMax1',
-                    (snapshot.data['12'] / 100) ?? 20,
+                    (snapshot.data.maxTimeLimitedDischargeCurrent / 100) ?? 20,
                     'Max limited discharge current',
                     'A',
                     () => _presentDialog(context,
@@ -159,7 +159,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     8,
                     'IDMax2',
-                    (snapshot.data['13'] / 100) ?? 25,
+                    (snapshot.data.maxCutoffDischargeCurrent / 100) ?? 25,
                     'Max cut-off discharge current',
                     'A',
                     () => _presentDialog(context,
@@ -167,7 +167,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     9,
                     'Id max 1 time',
-                    ((snapshot.data['14'] as num).toInt()) ?? 10,
+                    snapshot.data.maxCurrentTimeLimitPeriod ?? 10,
                     'Max current time-limit period',
                     's',
                     () => _presentDialog(context,
@@ -175,7 +175,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     10,
                     'ICMax',
-                    (snapshot.data['15'] / 100) ?? 8,
+                    (snapshot.data.maxCutoffChargeCurrent / 100) ?? 8,
                     'Max cut-off charge current',
                     'A',
                     () => _presentDialog(context,
@@ -183,7 +183,8 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     11,
                     'I Thr Count',
-                    (snapshot.data['16'] / 100) ?? 40,
+                    (snapshot.data.motoHoursCounterCurrentThreshold / 100) ??
+                        40,
                     'Moto-hours current threshold',
                     'A',
                     () => _presentDialog(context,
@@ -191,7 +192,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     12,
                     'I Max c-off Time ',
-                    ((snapshot.data['17'] as num).toInt()) ?? 5,
+                    snapshot.data.currentCutOffTimerPeriod ?? 5,
                     'Max cut-off time period',
                     's',
                     () => _presentDialog(context,
@@ -199,7 +200,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     13,
                     'T Max',
-                    (snapshot.data['23']) ?? 240,
+                    (snapshot.data.maxCutoffTemperature) ?? 240,
                     'Max temperature cut-off',
                     '°C',
                     () => _presentDialog(context,
@@ -207,7 +208,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     15,
                     'T MaxR',
-                    snapshot.data['24'] ?? 530,
+                    snapshot.data.maxTemperatureRecovery ?? 530,
                     'Max temperature recovery ',
                     '°C',
                     () => _presentDialog(context,
@@ -215,7 +216,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     16,
                     'T Min',
-                    snapshot.data['25'] ?? 2480,
+                    snapshot.data.minCutoffTemperature?? 2480,
                     'Min temperature cut-off',
                     '°C',
                     () => _presentDialog(context,
@@ -223,7 +224,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 _CardParameter(
                     17,
                     'T MinR',
-                    snapshot.data['26'] ?? 1680,
+                    snapshot.data.minTemperatureRecovery ?? 1680,
                     'Min temperature recovery',
                     '°C',
                     () => _presentDialog(context,

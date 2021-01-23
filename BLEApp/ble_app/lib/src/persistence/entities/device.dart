@@ -1,5 +1,6 @@
 import 'package:ble_app/src/persistence/entities/user.dart';
 import 'package:floor/floor.dart';
+import 'package:flutter/material.dart';
 
 import 'model.dart';
 
@@ -7,15 +8,16 @@ import 'model.dart';
   tableName: 'devices',
   foreignKeys: [
     ForeignKey(
-      childColumns: ['user_id'],
-      parentColumns: ['id'],
-      entity: User,
-    )
+        childColumns: ['user_id'],
+        parentColumns: ['id'],
+        entity: User,
+        onUpdate: ForeignKeyAction.cascade,
+        onDelete: ForeignKeyAction.cascade)
   ],
 )
 class Device extends Model {
   @ColumnInfo(name: 'user_id', nullable: false)
-  final String userId; // TODO: actually make it int here as well
+  final String userId;
 
   final String macAddress;
 
@@ -24,6 +26,10 @@ class Device extends Model {
   @ColumnInfo(nullable: true)
   String parametersToChange; // changed via FCM
 
-  Device({int deviceId, this.userId, this.macAddress, this.name})
+  Device(
+      {@required String deviceId,
+      @required this.userId,
+      this.macAddress,
+      this.name})
       : super(id: deviceId);
 }

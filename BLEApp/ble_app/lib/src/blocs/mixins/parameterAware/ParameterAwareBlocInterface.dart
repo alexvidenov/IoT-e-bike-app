@@ -1,6 +1,6 @@
-import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
+import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:flutter/material.dart';
 
 abstract class ParameterAwareInterface {
-  ValueNotifier<DeviceParametersModel> getParameters();
+  ValueNotifier<DeviceParameters> getParameters();
 }

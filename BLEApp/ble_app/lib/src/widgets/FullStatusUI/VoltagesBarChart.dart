@@ -1,9 +1,6 @@
 import 'package:ble_app/src/blocs/fullStatusBloc.dart';
-import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusModel.dart';
-import 'package:flutter/foundation.dart';
+import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
@@ -17,7 +14,7 @@ class VoltagesBarChart extends StatelessWidget {
   VoltagesBarChart(this._fullStatusBloc);
 
   List<FullStatusDataModel>
-      _chartData; // extract that in  a  separate  widget in order to  make  this immutable
+      _chartData; // extract that in a separate  widget in order to  make this immutable
 
   SfCartesianChart getBarChart() => SfCartesianChart(
         plotAreaBorderWidth: 0,
@@ -99,7 +96,7 @@ class VoltagesBarChart extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                ValueListenableBuilder<DeviceParametersModel>(
+                ValueListenableBuilder<DeviceParameters>(
                   // extract
                   valueListenable: _fullStatusBloc.getParameters(),
                   builder: (context, value, _) => ProgressText(
@@ -117,7 +114,7 @@ class VoltagesBarChart extends StatelessWidget {
                             )
                           : Container(),
                 ),
-                ValueListenableBuilder<DeviceParametersModel>(
+                ValueListenableBuilder<DeviceParameters>(
                   valueListenable: _fullStatusBloc.getParameters(),
                   builder: (context, value, _) => ProgressText(
                     title: 'Dch. time',

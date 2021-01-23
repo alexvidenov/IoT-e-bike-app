@@ -35,7 +35,7 @@ const $FullStatusModel = _$FullStatusModelTearOff();
 mixin _$FullStatusModel {
   List<FullStatusDataModel> get fullStatus;
   double get totalVoltage;
-  double get current; // extract into its own holder class (or enum)
+  double get current;
   double get temperature;
   int get rIn;
   BattStatus get status;
@@ -157,7 +157,7 @@ class _$_FullStatus implements _FullStatus {
   final double totalVoltage;
   @override
   final double current;
-  @override // extract into its own holder class (or enum)
+  @override
   final double temperature;
   @override
   final int rIn;
@@ -221,7 +221,7 @@ abstract class _FullStatus implements FullStatusModel {
   double get totalVoltage;
   @override
   double get current;
-  @override // extract into its own holder class (or enum)
+  @override
   double get temperature;
   @override
   int get rIn;

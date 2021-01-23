@@ -1,3 +1,4 @@
+import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
@@ -5,17 +6,15 @@ import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusModel.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
-import 'bloc.dart';
 
 part 'blocExtensions/FullStatusParse.dart';
 
 @injectable
-class FullStatusBloc
-    extends ParameterAwareBloc<FullStatusModel, String> {
+class FullStatusBloc extends ParameterAwareBloc<FullStatusModel, String> {
   final DeviceRepository _repository;
 
-  final delta1Holder = StreamHolder<double>();
-  final delta2Holder = StreamHolder<double>();
+  final delta1Holder = RxObject<double>();
+  final delta2Holder = RxObject<double>();
 
   int deltaCounter = 0;
 
@@ -23,8 +22,7 @@ class FullStatusBloc
 
   @override
   create() => streamSubscription = _repository.characteristicValueStream
-      .listen((event) =>
-          addEvent(_generateFullStatus(event)));
+      .listen((e) => addEvent(_generateFullStatus(e)));
 
   @override
   pause() {

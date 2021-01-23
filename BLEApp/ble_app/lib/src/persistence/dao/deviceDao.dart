@@ -15,5 +15,5 @@ abstract class DeviceDao extends Dao<Device> {
   Future<void> updateParametersToChange(String parameters, String deviceId);
 
   @Query('UPDATE devices SET macAddress = :macAddress WHERE id = :deviceId')
-  Future<void> setMacAddress(String macAddress, int deviceId);
+  Future<void> setMacAddress(String macAddress, String deviceId);
 }

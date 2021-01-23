@@ -84,11 +84,11 @@ class _$LocalDatabase extends LocalDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `users` (`email` TEXT, `password` TEXT, `id` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `users` (`email` TEXT, `password` TEXT, `id` TEXT, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `devices` (`user_id` TEXT NOT NULL, `macAddress` TEXT, `name` TEXT, `parametersToChange` TEXT, `id` INTEGER, FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `devices` (`user_id` TEXT NOT NULL, `macAddress` TEXT, `name` TEXT, `parametersToChange` TEXT, `id` TEXT, FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `parameters` (`cellCount` INTEGER, `maxCellVoltage` REAL, `maxRecoveryVoltage` REAL, `balanceCellVoltage` REAL, `minCellVoltage` REAL, `minCellRecoveryVoltage` REAL, `ultraLowCellVoltage` REAL, `maxTimeLimitedDischargeCurrent` REAL, `maxCutoffDischargeCurrent` REAL, `maxCurrentTimeLimitPeriod` INTEGER, `maxCutoffChargeCurrent` REAL, `motoHoursCounterCurrentThreshold` INTEGER, `currentCutOffTimerPeriod` INTEGER, `maxCutoffTemperature` INTEGER, `maxTemperatureRecovery` INTEGER, `minTemperatureRecovery` INTEGER, `minCutoffTemperature` INTEGER, `motoHoursChargeCounter` INTEGER, `motoHoursDischargeCounter` INTEGER, `id` INTEGER, FOREIGN KEY (`id`) REFERENCES `devices` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `parameters` (`cellCount` INTEGER, `maxCellVoltage` REAL, `maxRecoveryVoltage` REAL, `balanceCellVoltage` REAL, `minCellVoltage` REAL, `minCellRecoveryVoltage` REAL, `ultraLowCellVoltage` REAL, `maxTimeLimitedDischargeCurrent` REAL, `maxCutoffDischargeCurrent` REAL, `maxCurrentTimeLimitPeriod` INTEGER, `maxCutoffChargeCurrent` REAL, `motoHoursCounterCurrentThreshold` INTEGER, `maxCutoffTimePeriod` INTEGER, `currentCutOffTimerPeriod` INTEGER, `maxCutoffTemperature` INTEGER, `maxTemperatureRecovery` INTEGER, `minTemperatureRecovery` INTEGER, `minCutoffTemperature` INTEGER, `motoHoursChargeCounter` INTEGER, `motoHoursDischargeCounter` INTEGER, `id` TEXT, FOREIGN KEY (`id`) REFERENCES `devices` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -157,7 +157,7 @@ class _$UserDao extends UserDao {
   @override
   Future<List<User>> fetchUsers() async {
     return _queryAdapter.queryList('SELECT * FROM users',
-        mapper: (Map<String, dynamic> row) => User(row['id'] as int,
+        mapper: (Map<String, dynamic> row) => User(row['id'] as String,
             row['email'] as String, row['password'] as String));
   }
 
@@ -165,7 +165,7 @@ class _$UserDao extends UserDao {
   Future<User> fetchUser(String email) async {
     return _queryAdapter.query('SELECT * FROM users WHERE email = ?',
         arguments: <dynamic>[email],
-        mapper: (Map<String, dynamic> row) => User(row['id'] as int,
+        mapper: (Map<String, dynamic> row) => User(row['id'] as String,
             row['email'] as String, row['password'] as String));
   }
 
@@ -263,7 +263,7 @@ class _$DeviceDao extends DeviceDao {
   }
 
   @override
-  Future<void> setMacAddress(String macAddress, int deviceId) async {
+  Future<void> setMacAddress(String macAddress, String deviceId) async {
     await _queryAdapter.queryNoReturn(
         'UPDATE devices SET macAddress = ? WHERE id = ?',
         arguments: <dynamic>[macAddress, deviceId]);
@@ -306,6 +306,7 @@ class _$ParametersDao extends ParametersDao {
                   'maxCutoffChargeCurrent': item.maxCutoffChargeCurrent,
                   'motoHoursCounterCurrentThreshold':
                       item.motoHoursCounterCurrentThreshold,
+                  'maxCutoffTimePeriod': item.maxCutoffTimePeriod,
                   'currentCutOffTimerPeriod': item.currentCutOffTimerPeriod,
                   'maxCutoffTemperature': item.maxCutoffTemperature,
                   'maxTemperatureRecovery': item.maxTemperatureRecovery,
@@ -335,6 +336,7 @@ class _$ParametersDao extends ParametersDao {
                   'maxCutoffChargeCurrent': item.maxCutoffChargeCurrent,
                   'motoHoursCounterCurrentThreshold':
                       item.motoHoursCounterCurrentThreshold,
+                  'maxCutoffTimePeriod': item.maxCutoffTimePeriod,
                   'currentCutOffTimerPeriod': item.currentCutOffTimerPeriod,
                   'maxCutoffTemperature': item.maxCutoffTemperature,
                   'maxTemperatureRecovery': item.maxTemperatureRecovery,
@@ -364,6 +366,7 @@ class _$ParametersDao extends ParametersDao {
                   'maxCutoffChargeCurrent': item.maxCutoffChargeCurrent,
                   'motoHoursCounterCurrentThreshold':
                       item.motoHoursCounterCurrentThreshold,
+                  'maxCutoffTimePeriod': item.maxCutoffTimePeriod,
                   'currentCutOffTimerPeriod': item.currentCutOffTimerPeriod,
                   'maxCutoffTemperature': item.maxCutoffTemperature,
                   'maxTemperatureRecovery': item.maxTemperatureRecovery,
@@ -394,24 +397,30 @@ class _$ParametersDao extends ParametersDao {
         queryableName: 'parameters',
         isView: false,
         mapper: (Map<String, dynamic> row) => DeviceParameters(
-            row['cellCount'] as int,
-            row['maxCellVoltage'] as double,
-            row['maxRecoveryVoltage'] as double,
-            row['balanceCellVoltage'] as double,
-            row['minCellVoltage'] as double,
-            row['minCellRecoveryVoltage'] as double,
-            row['ultraLowCellVoltage'] as double,
-            row['maxTimeLimitedDischargeCurrent'] as double,
-            row['maxCutoffDischargeCurrent'] as double,
-            row['maxCurrentTimeLimitPeriod'] as int,
-            row['maxCutoffChargeCurrent'] as double,
-            row['motoHoursCounterCurrentThreshold'] as int,
-            row['currentCutOffTimerPeriod'] as int,
-            row['maxCutoffTemperature'] as int,
-            row['maxTemperatureRecovery'] as int,
-            row['minTemperatureRecovery'] as int,
-            row['motoHoursChargeCounter'] as int,
-            row['motoHoursDischargeCounter'] as int));
+            cellCount: row['cellCount'] as int,
+            maxCellVoltage: row['maxCellVoltage'] as double,
+            maxRecoveryVoltage: row['maxRecoveryVoltage'] as double,
+            balanceCellVoltage: row['balanceCellVoltage'] as double,
+            minCellVoltage: row['minCellVoltage'] as double,
+            minCellRecoveryVoltage: row['minCellRecoveryVoltage'] as double,
+            ultraLowCellVoltage: row['ultraLowCellVoltage'] as double,
+            maxTimeLimitedDischargeCurrent:
+                row['maxTimeLimitedDischargeCurrent'] as double,
+            maxCutoffDischargeCurrent:
+                row['maxCutoffDischargeCurrent'] as double,
+            maxCurrentTimeLimitPeriod: row['maxCurrentTimeLimitPeriod'] as int,
+            maxCutoffChargeCurrent: row['maxCutoffChargeCurrent'] as double,
+            motoHoursCounterCurrentThreshold:
+                row['motoHoursCounterCurrentThreshold'] as int,
+            maxCutoffTimePeriod: row['maxCutoffTimePeriod'] as int,
+            currentCutOffTimerPeriod: row['currentCutOffTimerPeriod'] as int,
+            maxCutoffTemperature: row['maxCutoffTemperature'] as int,
+            maxTemperatureRecovery: row['maxTemperatureRecovery'] as int,
+            minTemperatureRecovery: row['minTemperatureRecovery'] as int,
+            minCutoffTemperature: row['minCutoffTemperature'] as int,
+            motoHoursChargeCounter: row['motoHoursChargeCounter'] as int,
+            motoHoursDischargeCounter:
+                row['motoHoursDischargeCounter'] as int));
   }
 
   @override

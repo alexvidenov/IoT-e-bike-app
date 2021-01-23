@@ -20,7 +20,7 @@ class _PathError extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Center(
-          child: Text('Error'),
+          child: Text('Error in routing'),
         ),
       );
 }
@@ -43,7 +43,7 @@ abstract class Router {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => BLEAuthenticationScreen($(), $(), $()));
+            builder: (_) => BLEAuthenticationScreen($(), $(), $(), $()));
       case '/home':
         return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $()));
       case '/settings':
@@ -54,7 +54,7 @@ abstract class Router {
             builder: (_) => DevicesListScreen($(), $<Auth>().signOut));
       case '/auth':
         return MaterialPageRoute(
-            builder: (_) => BLEAuthenticationScreen($(), $(), $()));
+            builder: (_) => BLEAuthenticationScreen($(), $(), $(), $()));
       case '/fetchParameters':
         return MaterialPageRoute(
             builder: (_) => ParameterFetchScreen(
@@ -74,7 +74,7 @@ abstract class Router {
             builder: (_) => DevicesListScreen($(), $<Auth>().signOut));
       case '/auth':
         return MaterialPageRoute(
-            builder: (_) => BLEAuthenticationScreen($(), $(), $()));
+            builder: (_) => BLEAuthenticationScreen($(), $(), $(), $()));
       case '/fetchParameters':
         return MaterialPageRoute(
             builder: (_) => ParameterFetchScreen(

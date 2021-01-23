@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/dao/deviceDao.dart';
 import 'package:ble_app/src/persistence/dao/userDao.dart';
@@ -21,23 +21,21 @@ import 'CloudMessaging.dart';
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  AuthStateListener authStateListener;
-
   LocalDatabase _localDatabase;
-
-  final localStream = StreamHolder<AuthState>();
 
   UserDao get _userDao => _localDatabase.userDao;
 
   DeviceDao get _deviceDao => _localDatabase.deviceDao;
 
-  Auth({LocalDatabase localDatabase}) {
-    this._localDatabase = localDatabase;
-  }
+  AuthStateListener authStateListener;
+
+  final localStream = RxObject<AuthState>();
+
+  Auth([this._localDatabase]);
 
   setListenerAndDetermineState(AuthStateListener listener) {
     this.authStateListener = listener;
-    combinedStream.listen(this.authStateListener.onAuthStateChanged);
+    auth.listen(this.authStateListener.onAuthStateChanged);
   }
 
   Future<AuthState> signInWithEmailAndPassword(
@@ -82,10 +80,9 @@ class Auth {
         final _db = FirestoreDatabase(uid: _id);
         await _db.updateUserData();
         await _db.setDeviceId(deviceId: deviceSerialNumber);
-        await _userDao
-            .insertEntity(localUser.User(int.parse(_id), email, password));
+        await _userDao.insertEntity(localUser.User(_id, email, password));
         await _deviceDao.insertEntity(Device(
-            deviceId: int.parse(deviceSerialNumber),
+            deviceId: deviceSerialNumber,
             userId: _id,
             name: BluetoothUtils.defaultBluetoothDeviceName));
         //authStateListener.onAuthStateChanged(AuthState.authenticated(user.uid));
@@ -114,7 +111,7 @@ extension UserStatus on Auth {
 
   Stream<AuthState> get _onLocalAuthStateChanged => localStream.stream;
 
-  Stream<AuthState> get combinedStream =>
+  Stream<AuthState> get auth =>
       Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]);
 
   String getCurrentUserId() => _auth.currentUser?.uid;

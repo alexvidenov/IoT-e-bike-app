@@ -68,7 +68,7 @@ extension FullStatusParse on FullStatusBloc {
         final lowestValue = fullStatus
             .reduce((value, element) => value.y < element.y ? value : element);
 
-        delta = maxValue.y - lowestValue.y;
+        delta = maxValue.y - lowestValue.y; // TODO: actually store the values and divide them by 4
       }
 
       if (current < getParameters().value.motoHoursCounterCurrentThreshold) {

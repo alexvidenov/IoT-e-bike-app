@@ -2,7 +2,7 @@ import 'package:floor/floor.dart';
 
 class Model {
   @PrimaryKey()
-  final int id;
+  final String id;
 
   const Model({this.id});
 }

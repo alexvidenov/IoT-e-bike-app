@@ -15,7 +15,7 @@ abstract class FullStatusModel with _$FullStatusModel {
   const factory FullStatusModel(
       List<FullStatusDataModel> fullStatus,
       double totalVoltage,
-      double current, // extract into its own holder class (or enum)
+      double current,
       double temperature,
       int rIn,
       BattStatus status) = _FullStatus;

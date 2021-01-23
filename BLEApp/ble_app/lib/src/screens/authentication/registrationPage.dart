@@ -87,7 +87,7 @@ class _StepperBodyState extends State<StepperBody> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   @override
-  void initState() {
+  initState() {
     super.initState();
     _focusNode.addListener(() => setState(() => {}));
     _focusNodeLastName.addListener(() => setState(() => {}));
@@ -175,6 +175,7 @@ class _StepperBodyState extends State<StepperBody> {
                 if (value.isEmpty || value.length < 10) {
                   return 'Password must be 10 or more characters';
                 }
+                return null;
               },
               onSaved: (String value) {
                 data.password = value;

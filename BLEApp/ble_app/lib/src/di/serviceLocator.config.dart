@@ -22,7 +22,7 @@ import '../blocs/navigationBloc.dart';
 import '../blocs/navigationService.dart';
 import '../blocs/parameterFetchBloc.dart';
 import '../blocs/mixins/parameterAware/ParameterHolder.dart';
-import '../blocs/ParameterListenerBloc.dart';
+import '../blocs/parameterListenerBloc.dart';
 import '../blocs/settingsBloc.dart';
 import '../blocs/sharedPrefsService.dart';
 import '../blocs/shortStatusBloc.dart';
@@ -42,9 +42,12 @@ GetIt $initGetIt(
   gh.factory<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
   gh.lazySingleton<ParameterHolder>(() => ParameterHolder());
-  gh.factory<ParameterListenerBloc>(() =>
-      ParameterListenerBloc(get<DeviceRepository>(), get<ParameterHolder>()));
-  gh.lazySingleton<Auth>(() => Auth(localDatabase: get<LocalDatabase>()));
+  gh.factory<ParameterListenerBloc>(() => ParameterListenerBloc(
+        get<DeviceRepository>(),
+        get<ParameterHolder>(),
+        get<LocalDatabase>(),
+      ));
+  gh.lazySingleton<Auth>(() => Auth(get<LocalDatabase>()));
   gh.lazySingleton<AuthBloc>(() => AuthBloc(get<Auth>()));
   gh.factory<BluetoothAuthBloc>(() => BluetoothAuthBloc(
         get<DeviceRepository>(),
@@ -54,8 +57,11 @@ GetIt $initGetIt(
   gh.lazySingleton<DeviceBloc>(() => DeviceBloc(get<DeviceRepository>()));
   gh.lazySingleton<NavigationBloc>(
       () => NavigationBloc(get<NavigationService>()));
-  gh.factory<ParameterFetchBloc>(() =>
-      ParameterFetchBloc(get<DeviceRepository>(), get<ParameterHolder>()));
+  gh.factory<ParameterFetchBloc>(() => ParameterFetchBloc(
+        get<DeviceRepository>(),
+        get<ParameterHolder>(),
+        get<LocalDatabase>(),
+      ));
   gh.lazySingleton<SettingsBloc>(() => SettingsBloc(get<SharedPrefsService>()));
   gh.factory<ShortStatusBloc>(() => ShortStatusBloc(
         get<DeviceRepository>(),

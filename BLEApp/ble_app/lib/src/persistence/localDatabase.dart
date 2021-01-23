@@ -21,9 +21,11 @@ abstract class LocalDatabase extends FloorDatabase {
 
   ParametersDao get parametersDao;
 
+  static final Migration migration2to3 = Migration(2, 3, (_) async => {});
+
   @preResolve
   @factoryMethod
   static Future<LocalDatabase> getInstance() async => await $FloorLocalDatabase
       .databaseBuilder('ble_app_local_database.db')
-      .build();
+      .addMigrations([migration2to3]).build();
 }

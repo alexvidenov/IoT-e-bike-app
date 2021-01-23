@@ -7,5 +7,5 @@ abstract class DeviceParameterConstants {
   static const double ICM_CONST = 5;
   static const double TMAX_CONST = 240;
   static const double TMIN_CONST = 2480;
-  static const String PINC_CONST = '0000';
+  static const String PIN_CONST = '0000';
 }

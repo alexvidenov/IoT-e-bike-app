@@ -50,6 +50,7 @@ dependencies:
   freezed: ^0.12.2
   freezed_annotation: ^0.12.0
   super_enum: ^0.5.0
+  copy_with_extension: ^1.4.0
   logger: ^0.9.4
 
   # The following adds the Cupertino Icons font to your application.
@@ -63,6 +64,7 @@ dev_dependencies:
   floor_generator: ^0.17.0
   auto_data_generator: ^0.0.3
   super_enum_generator: ^0.6.0
+  copy_with_extension_gen: ^1.4.0
   build_runner: ^1.10.3
 
 dependency_overrides:

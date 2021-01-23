@@ -6,5 +6,5 @@ class User extends Model {
   final String email;
   final String password; // TODO: needs to be hashed
 
-  const User(int id, this.email, this.password) : super(id: id);
+  const User(String id, this.email, this.password) : super(id: id);
 }

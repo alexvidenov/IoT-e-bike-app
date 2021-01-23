@@ -8,8 +8,7 @@ class _BatteryStatusModel {
   final double temp;
   final double current;
 
-  const _BatteryStatusModel(
-      {this.voltage, this.temp, this.current});
+  const _BatteryStatusModel({this.voltage, this.temp, this.current});
 
   factory _BatteryStatusModel.fromJson(Map<String, dynamic> json) =>
       _$_BatteryStatusModelFromJson(json);
@@ -20,7 +19,7 @@ class _BatteryStatusModel {
 @JsonSerializable(nullable: false)
 class LogModel {
   final String timeStamp;
-  
+
   @JsonKey(name: 'stats')
   final _BatteryStatusModel model;
 

@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'bleCacheModel.g.dart';
 
 @JsonSerializable()
-class BLECacheModel{
+class BLECacheModel {
   @JsonKey(name: 'name')
   final String deviceName;
 
@@ -12,7 +12,8 @@ class BLECacheModel{
 
   const BLECacheModel({this.deviceName, this.macAddress});
 
-  factory BLECacheModel.fromJson(Map<String, dynamic> json) => _$BLECacheModelFromJson(json);
+  factory BLECacheModel.fromJson(Map<String, dynamic> json) =>
+      _$BLECacheModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$BLECacheModelToJson(this);
 }

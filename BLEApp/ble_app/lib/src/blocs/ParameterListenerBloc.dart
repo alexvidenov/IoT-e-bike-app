@@ -1,10 +1,10 @@
 import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
-import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
+import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
+import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/services/Database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 
 import 'bloc.dart';
@@ -16,8 +16,10 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String> {
   final DeviceRepository _repository;
   final ParameterHolder _parameterHolder;
   final FirestoreDatabase _firestoreDatabase;
+  final LocalDatabase _localDatabase;
 
-  ParameterListenerBloc(this._repository, this._parameterHolder)
+  ParameterListenerBloc(
+      this._repository, this._parameterHolder, this._localDatabase)
       : this._firestoreDatabase = FirestoreDatabase(
             uid: $<Auth>().getCurrentUserId(), deviceId: _repository.deviceId);
 
@@ -33,11 +35,11 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String> {
         String key = '${currentCommand[1] + currentCommand[2]}';
         String value =
             '${currentCommand[3] + currentCommand[4] + currentCommand[5] + currentCommand[6]}';
-        DeviceParametersModel newModel;
+        DeviceParameters newModel;
         switch (key) {
           case '01':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(maxCellVoltage: double.parse(value));
+            newModel = _parameterHolder.deviceParameters.value.copyWith(
+                maxCellVoltage: double.parse(value), maxCutoffTimePeriod: 4);
             break;
           case '03':
             newModel = _parameterHolder.deviceParameters.value
@@ -49,7 +51,10 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String> {
             break;
         }
         num numValue = num.parse(value);
-        _firestoreDatabase.setIndividualParameter(key, numValue);
+        print(newModel.maxTemperatureRecovery);
+        //_firestoreDatabase.setIndividualParameter(
+        // key, numValue); // this will stay here
+        _localDatabase.parametersDao.updateEntity(newModel);
         if (newModel != null)
           _parameterHolder.deviceParameters.value = newModel;
         // TODO; add method in the data class to parse stuff and return
@@ -63,6 +68,6 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String> {
     _repository.writeToCharacteristic(command);
   }
 
-  Stream<DocumentSnapshot> get parameters =>
-      _firestoreDatabase.deviceParameters;
+  Stream<DeviceParameters> get parameters =>
+      _localDatabase.parametersDao.fetchDeviceParameters(_repository.deviceId);
 }

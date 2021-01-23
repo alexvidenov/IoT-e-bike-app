@@ -14,7 +14,7 @@ class DeviceBloc {
   final BleManager _bleManager;
   final DeviceRepository _deviceRepository;
 
-  BehaviorSubject<bool> _isDeviceReadyController; // TODO: replace with StreamHolder
+  BehaviorSubject<bool> _isDeviceReadyController; // TODO: replace with RxObject
 
   DisconnectedListener _disconnectedListener;
 

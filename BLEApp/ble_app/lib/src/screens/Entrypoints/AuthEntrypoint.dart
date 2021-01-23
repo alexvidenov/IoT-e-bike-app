@@ -6,5 +6,6 @@ class AuthEntryPoint extends EntryPoint {
   AuthEntryPoint({Key key})
       : super(
             key: key,
-            onGenerateRoute: router.Router.generateRouteMainNavigatorStartsWithAuth);
+            onGenerateRoute:
+                router.Router.generateRouteMainNavigatorStartsWithAuth);
 }

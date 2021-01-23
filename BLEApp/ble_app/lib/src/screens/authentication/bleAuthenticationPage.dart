@@ -4,6 +4,8 @@ import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/model/BleDevice.dart';
+import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/parameterFetchScreen.dart';
 import 'package:ble_app/src/sealedStates/btAuthState.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +15,10 @@ class BLEAuthenticationScreen extends StatefulWidget {
   final DeviceBloc _deviceBloc;
   final BluetoothAuthBloc _authBloc;
   final SettingsBloc _settingsBloc;
+  final LocalDatabase _localDatabase;
 
-  const BLEAuthenticationScreen(
-      this._deviceBloc, this._authBloc, this._settingsBloc);
+  const BLEAuthenticationScreen(this._deviceBloc, this._authBloc,
+      this._settingsBloc, this._localDatabase);
 
   @override
   _BLEAuthenticationScreenState createState() =>
@@ -80,6 +83,9 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
       _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
         event.when(
             btAuthenticated: () {
+              BleDevice device = widget._deviceBloc.device.value;
+              widget._localDatabase.deviceDao
+                  .setMacAddress(device.id, '1234567');
               _isAuthenticated = true;
               //Navigator.of(context).pushReplacementNamed('/home');
               Navigator.of(context).pushReplacementNamed('/fetchParameters');

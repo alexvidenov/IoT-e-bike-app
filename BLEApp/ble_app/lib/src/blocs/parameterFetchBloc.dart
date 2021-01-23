@@ -3,7 +3,8 @@ import 'dart:collection';
 import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/model/DeviceRepository.dart';
-import 'package:ble_app/src/modules/dataClasses/deviceParametersModel.dart';
+import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
+import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/sealedStates/parameterFetchState.dart';
 import 'package:ble_app/src/services/Database.dart';
 import 'package:ble_app/src/utils/connectivityManager.dart';
@@ -16,8 +17,10 @@ import 'bloc.dart';
 class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
   final DeviceRepository _repository;
   final ParameterHolder _holder;
+  final LocalDatabase _localDatabase;
 
-  ParameterFetchBloc(this._repository, this._holder) : super();
+  ParameterFetchBloc(this._repository, this._holder, this._localDatabase)
+      : super(); // can be const as well
 
   final _parameters = SplayTreeMap<String, double>();
 
@@ -39,10 +42,14 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
   }
 
   queryParameters() async {
-    for (var i = 0; i < 7; i++) await _querySingleParam('R0$i\r');
-    for (var i = 12; i < 18; i++) await _querySingleParam('R$i\r');
-    for (var i = 23; i < 27; i++) await _querySingleParam('R$i\r');
-    for (var i = 28; i < 30; i++) await _querySingleParam('R$i\r');
+    for (var i = 0; i < 7; i++)
+      await _querySingleParam('R0$i\r');
+    for (var i = 12; i < 18; i++)
+      await _querySingleParam('R$i\r');
+    for (var i = 23; i < 27; i++)
+      await _querySingleParam('R$i\r');
+    for (var i = 28; i < 30; i++)
+      await _querySingleParam('R$i\r');
     print(_parameters.keys.length);
     Future.delayed(Duration(milliseconds: 120), () async {
       // was 100, try to vary that
@@ -53,8 +60,8 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
           FirestoreDatabase(uid: $<AuthBloc>().user)
               .setDeviceParameters(_parameters, deviceId: _repository.deviceId);
         }
-        //}
-        addEvent(ParameterFetchState.fetched(DeviceParametersModel(
+        final entity = DeviceParameters(
+            deviceId: _repository.deviceId,
             cellCount: _parameters['00'].toInt(),
             maxCellVoltage: _parameters['01'],
             maxRecoveryVoltage: _parameters['02'],
@@ -73,17 +80,21 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String> {
             minTemperatureRecovery: _parameters['25'].toInt(),
             minCutoffTemperature: _parameters['26'].toInt(),
             motoHoursChargeCounter: _parameters['28'].toInt(),
-            motoHoursDischargeCounter: _parameters['29'].toInt())));
+            motoHoursDischargeCounter: _parameters['29'].toInt());
+        _localDatabase.parametersDao.insertEntity(entity);
+        //}
+        addEvent(ParameterFetchState.fetched(entity));
       }
       //queryParameters();
     });
   }
 
-  _querySingleParam(String command) async => await Future.delayed(
-      Duration(milliseconds: 100), // 100
-      () => _repository.writeToCharacteristic(command));
+  _querySingleParam(String command) async =>
+      await Future.delayed(
+          Duration(milliseconds: 100),
+              () => _repository.writeToCharacteristic(command));
 
-  setParameters(DeviceParametersModel parameters) {
+  setParameters(DeviceParameters parameters) {
     print('Device parameters are:' + parameters.toString());
     _holder.deviceParameters.value = parameters;
   }
