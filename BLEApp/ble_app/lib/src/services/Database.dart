@@ -28,8 +28,7 @@ class FirestoreDatabase {
         'token': token
       }); // make it array of tokens cuz user can have more than one device
 
-  Future<void> setDeviceId({@required String deviceId}) =>
-      _device.set({'id': deviceId});
+  Future<void> setDeviceId() => _device.set({'id': this.deviceId});
 
   Future<void> setDeviceMacAddress({@required String mac}) =>
       _device.update({'MAC': mac});

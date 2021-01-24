@@ -5,7 +5,6 @@ import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 
-//import 'package:ble_app/src/screens/parameterFetchScreen.dart';
 import 'package:ble_app/src/sealedStates/btAuthState.dart';
 import 'package:ble_app/src/sealedStates/deviceConnectionState.dart';
 import 'package:flutter/material.dart';

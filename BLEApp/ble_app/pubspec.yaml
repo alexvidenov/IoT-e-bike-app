@@ -52,11 +52,18 @@ dependencies:
   freezed: ^0.12.2
   freezed_annotation: ^0.12.0
   kdtree: ^0.1.0
+  flutter_launcher_icons: ^0.8.1
   logger: ^0.9.4
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
+
+flutter_icons:
+  image_path_android: "assets/images/app_logo.png"
+  image_path_ios: "assets/images/app_logo.png"
+  android: true
+  ios: true
 
 dev_dependencies:
   flutter_test:
@@ -112,6 +119,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+
 
   assets:
     - assets/googleImage.jpg

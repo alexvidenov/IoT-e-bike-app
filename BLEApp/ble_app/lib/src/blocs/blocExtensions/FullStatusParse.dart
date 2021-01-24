@@ -87,6 +87,6 @@ extension FullStatusParse on FullStatusBloc {
     }
 
     return FullStatusModel(
-        fullStatus, totalVoltage, current, temperature, 0, battStatus);
+        fullStatus, totalVoltage / 100, current / 100, temperature, 0, battStatus);
   }
 }

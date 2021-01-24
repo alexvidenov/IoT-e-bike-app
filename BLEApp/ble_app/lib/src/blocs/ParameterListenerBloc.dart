@@ -139,6 +139,9 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String>
 extension ParseParameterString on ParameterListenerBloc {
   String _generateCommandString(String key, String value) {
     final keyInt = int.parse(key);
+    if (keyInt >= 1 && keyInt <= 16 && keyInt != 14) {
+      value = (double.parse(value) * 100).toInt().toString();
+    }
     if (keyInt >= 23 && keyInt <= 26) {
       value = TemperatureConverter().adcFromTemp(int.parse(value)).toString();
     }
@@ -151,6 +154,8 @@ extension ParseParameterString on ParameterListenerBloc {
         break;
       case 3:
         value = '0$value';
+        break;
+      default:
         break;
     }
     return 'W$key$value\r';

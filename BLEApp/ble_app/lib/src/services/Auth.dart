@@ -79,9 +79,9 @@ class Auth {
       user = credential?.user;
       if (user != null) {
         final _id = user.uid;
-        final _db = FirestoreDatabase(uid: _id);
+        final _db = FirestoreDatabase(uid: _id, deviceId: deviceSerialNumber);
         await _db.setUserId();
-        await _db.setDeviceId(deviceId: deviceSerialNumber);
+        await _db.setDeviceId();
         await _userDao.insertEntity(localUser.User(_id, email, password));
         await _deviceDao.insertEntity(Device(
             deviceId: deviceSerialNumber,

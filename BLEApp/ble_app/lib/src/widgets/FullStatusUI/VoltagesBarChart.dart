@@ -27,13 +27,12 @@ class VoltagesBarChart extends StatelessWidget {
           majorGridLines: MajorGridLines(width: 0),
         ),
         primaryYAxis: NumericAxis(
-          axisLine: AxisLine(width: 0),
-          majorTickLines: MajorTickLines(size: 0),
-          isVisible: true,
-          title: AxisTitle(text: ''),
-          minimum: _fullStatusBloc.getParameters().value.minCellVoltage / 100,
-          maximum: _fullStatusBloc.getParameters().value.maxCellVoltage / 100,
-        ),
+            axisLine: AxisLine(width: 0),
+            majorTickLines: MajorTickLines(size: 0),
+            isVisible: true,
+            title: AxisTitle(text: ''),
+            minimum: _fullStatusBloc.getParameters().value.minCellVoltage,
+            maximum: _fullStatusBloc.getParameters().value.maxCellVoltage),
         series: getBarSeries(),
       );
 
@@ -72,18 +71,15 @@ class VoltagesBarChart extends StatelessWidget {
                   children: <Widget>[
                     ProgressText(
                       title: 'Utot.',
-                      content:
-                          (model.data.totalVoltage / 100).toStringAsFixed(2) +
-                              'V',
+                      content: model.data.totalVoltage.toStringAsFixed(2) + 'V',
                     ),
                     ProgressText(
                       title: 'Current',
-                      content:
-                          (model.data.current / 100).toStringAsFixed(2) + 'A',
+                      content: model.data.current.toStringAsFixed(2) + 'A',
                     ),
                     ProgressText(
                       title: 'Temp.',
-                      content: (model.data.temperature).toString() + '°C',
+                      content: model.data.temperature.toString() + '°C',
                     ),
                   ],
                 );
@@ -97,7 +93,7 @@ class VoltagesBarChart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 ValueListenableBuilder<DeviceParameters>(
-                  // extract
+                  // TODO: extract
                   valueListenable: _fullStatusBloc.getParameters(),
                   builder: (context, value, _) => ProgressText(
                     title: 'Chg. time',

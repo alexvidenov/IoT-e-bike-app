@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (snapshot.connectionState == ConnectionState.active) {
                         Text text = snapshot.data == OutputsState.On
                             ? Text('Off',
-                                style: TextStyle(
+                            style: TextStyle(
                                     color: Colors.white, fontSize: 20))
                             : Text('On',
                                 style: TextStyle(
@@ -176,7 +176,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 ],
                 bottom: TabBar(
-                  // TODO: add self as controller here, and update the index
                   labelColor: Colors.lightBlueAccent,
                   unselectedLabelColor: Colors.white,
                   indicatorSize: TabBarIndicatorSize.tab,

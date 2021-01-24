@@ -1,6 +1,5 @@
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/parameterFetchBloc.dart';
-import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/sealedStates/parameterFetchState.dart';
 import 'package:flutter/material.dart';

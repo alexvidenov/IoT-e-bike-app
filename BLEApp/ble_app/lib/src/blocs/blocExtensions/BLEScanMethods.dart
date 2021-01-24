@@ -21,7 +21,7 @@ extension BLEScanMethods on DevicesBloc {
           .map((d) => BleDevice(
               peripheral: BleManager()
                   .createUnsafePeripheral(d.macAddress, name: d.name)))
-          .where((e) => e != null)
+          .where((e) => e.id != null)
           .toList();
       bleDevices.addAll(cachedDevices);
       _visibleDevicesController.add(bleDevices.sublist(0));

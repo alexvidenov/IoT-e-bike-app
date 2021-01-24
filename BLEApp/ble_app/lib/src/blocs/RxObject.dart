@@ -10,8 +10,6 @@ class RxObject<T> {
 
   Function(T) get addEvent => _sink.add;
 
-  //Function(T) get addError => behaviourSubject.addError;
-
   @mustCallSuper
   dispose() => behaviourSubject.close();
 }
