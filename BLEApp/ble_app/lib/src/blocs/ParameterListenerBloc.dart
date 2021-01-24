@@ -25,7 +25,8 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String>
   ParameterListenerBloc(
       this._repository, this._parameterHolder, this._dbManager);
 
-  String currentCommand; // updated every time a parameter is changed
+  String currentKey; // TODO: extract in an object
+  String value;
 
   @override
   create() {
@@ -34,11 +35,8 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String>
       if (event.startsWith('OK')) {
         addEvent(ChangeStatus
             .Successful); // in the UI, wait 1 second if not successful
-        String key = '${currentCommand[1] + currentCommand[2]}';
-        String value =
-            '${currentCommand[3] + currentCommand[4] + currentCommand[5] + currentCommand[6]}';
         DeviceParameters newModel;
-        switch (key) {
+        switch (currentKey) {
           case '01':
             newModel = _parameterHolder.deviceParameters.value
                 .copyWith(maxCellVoltage: double.parse(value));
@@ -118,7 +116,6 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String>
         // .setIndividualParameter(key, numValue);
         //_firestoreDatabase.setIndividualParameter(
         // key, numValue); // this will stay here
-        print(newModel.id);
         _dbManager.updateParameter(newModel);
         if (newModel != null)
           _parameterHolder.deviceParameters.value = newModel;
@@ -128,26 +125,34 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String>
     });
   }
 
-  changeParameter(String command) {
-    // 604
-    String key =
-        '${command[1] + command[2]}'; // TODO: write a goddamn util function to add 0's
-    int keyInt = int.parse(key);
-    if (keyInt >= 23 && keyInt <= 26) {
-      print('LMAOOOOOO:');
-      String value = '${command[3] + command[4] + command[5] + command[6]}';
-      int adcFromTemp = TemperatureConverter().adcFromTemp(int.parse(value));
-      print('ADC FROM TEMP ==> $adcFromTemp');
-      _repository.writeToCharacteristic('W$key' + '0' + '$adcFromTemp\r');
-    } else {
-      _repository.writeToCharacteristic(command);
-    }
-    // TODO: in case of temperature change, convert to adc units
-    // TODO: write the command pattern here instead of from the UI
-    currentCommand = command;
+  changeParameter(String key, String value) {
+    final String command = _generateCommandString(key, value);
+    print('EXECUTING COMMANd => $command');
+    _repository.writeToCharacteristic(command);
+    currentKey = key;
+    this.value = value;
   }
 
   Stream<DeviceParameters> get parameters => _dbManager.fetchParameters();
 }
 
-extension ParseParameterString on ParameterListenerBloc {}
+extension ParseParameterString on ParameterListenerBloc {
+  String _generateCommandString(String key, String value) {
+    final keyInt = int.parse(key);
+    if (keyInt >= 23 && keyInt <= 26) {
+      value = TemperatureConverter().adcFromTemp(int.parse(value)).toString();
+    }
+    switch (value.length) {
+      case 1:
+        value = '000$value';
+        break;
+      case 2:
+        value = '00$value';
+        break;
+      case 3:
+        value = '0$value';
+        break;
+    }
+    return 'W$key$value\r';
+  }
+}

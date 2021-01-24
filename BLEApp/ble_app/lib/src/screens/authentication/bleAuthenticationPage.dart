@@ -7,6 +7,7 @@ import 'package:ble_app/src/blocs/settingsBloc.dart';
 
 //import 'package:ble_app/src/screens/parameterFetchScreen.dart';
 import 'package:ble_app/src/sealedStates/btAuthState.dart';
+import 'package:ble_app/src/sealedStates/deviceConnectionState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:passcode_screen/circle.dart';
@@ -30,7 +31,6 @@ class BLEAuthenticationScreen extends StatefulWidget {
 class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   final _writeController = TextEditingController();
 
-  StreamSubscription<PeripheralConnectionState> _streamSubscriptionState;
   StreamSubscription<BTAuthState> _streamSubscriptionAuth;
 
   final StreamController<bool> _verificationNotifier =
@@ -51,7 +51,6 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
 
   _init() {
     _listenToAuthBloc();
-    _listenToConnectBloc();
   }
 
   _handleBLEError() => Future.delayed(Duration(seconds: 6), () {
@@ -63,37 +62,8 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   dispose() {
     super.dispose();
     widget._deviceBloc.dispose();
-    _streamSubscriptionState.cancel();
     _streamSubscriptionAuth.cancel();
   }
-
-  _listenToConnectBloc() => _streamSubscriptionState =
-          widget._deviceBloc.connectionState.listen((state) {
-        if (state == PeripheralConnectionState.connected) {
-          _connected = true;
-          if (widget._settingsBloc.isPasswordRemembered() == true) {
-            widget._deviceBloc.deviceReady.listen((event) {
-              if (event == true) {
-                final password = widget._settingsBloc.getPassword();
-                print('Password is $password');
-                widget._authBloc.authenticate(password);
-              }
-            });
-          } else
-            _showLockScreen(
-              context,
-              title: 'Enter your pin',
-              opaque: true,
-              cancelButton: Text(
-                'Cancel',
-                style: const TextStyle(fontSize: 16, color: Colors.white),
-                semanticsLabel: 'Cancel',
-              ),
-            );
-          //_presentDialog(context,
-          //message: 'Enter your password', action: 'Send');
-        }
-      });
 
   _listenToAuthBloc() =>
       _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
@@ -148,7 +118,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
         circleUIConfig: circleUIConfig,
         keyboardUIConfig: keyboardUIConfig,
         passwordEnteredCallback: (pin) {
-          _verificationNotifier.add(true);
+          //_verificationNotifier.add(true);
           widget._settingsBloc.setPassword(pin);
           widget._authBloc.authenticate(pin);
           _retry();
@@ -206,24 +176,58 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   Widget build(BuildContext context) => Scaffold(
         body: Container(
           color: Colors.black,
-          child: StreamBuilder<PeripheralConnectionState>(
+          child: StreamBuilder<DeviceConnectionState>(
             stream: widget._deviceBloc.connectionState,
-            initialData: PeripheralConnectionState.disconnected,
+            initialData: DeviceConnectionState.normalBTState(
+                state: PeripheralConnectionState.disconnected),
             builder: (_, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
-                switch (snapshot.data) {
-                  case PeripheralConnectionState.connected:
-                    return _generateMessageWidget('Connected');
-                  case PeripheralConnectionState.connecting:
-                    return Center(child: CircularProgressIndicator());
-                  case PeripheralConnectionState.disconnected:
-                    return _generateMessageWidget('disconnected');
-                  case PeripheralConnectionState.disconnecting:
-                    return _generateMessageWidget('disconnecting');
-                }
+                return snapshot.data.when(normalBTState: (state) {
+                  switch (state) {
+                    case PeripheralConnectionState.connected:
+                      _connected = true;
+                      if (widget._settingsBloc.isPasswordRemembered() == true) {
+                        widget._deviceBloc.deviceReady.listen((event) {
+                          if (event == true) {
+                            final password = widget._settingsBloc.getPassword();
+                            print('Password is $password');
+                            widget._authBloc.authenticate(password);
+                          }
+                        });
+                        return Container();
+                      } else
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((_) => _showLockScreen(
+                                  context,
+                                  title: 'Enter your pin',
+                                  opaque: true,
+                                  cancelButton: Text(
+                                    'Cancel',
+                                    style: const TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                    semanticsLabel: 'Cancel',
+                                  ),
+                                ));
+                      return Container();
+                      break;
+                    case PeripheralConnectionState.connecting:
+                      print('CONNECTING IN BLE');
+                      return Center(child: CircularProgressIndicator());
+                    case PeripheralConnectionState.disconnected:
+                      return _generateMessageWidget('disconnected');
+                    default:
+                      return Container();
+                  }
+                }, bleException: (_) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _presentDialog(context,
+                        message: 'BLE exception', action: 'Retry');
+                  });
+                  return Container();
+                  // TODO: show dialog which says "try again". Should call .connect()
+                });
               } else
                 return Center(child: CircularProgressIndicator());
-              return Container();
             },
           ),
         ),

@@ -59,11 +59,12 @@ class Auth {
     } else {
       localUser.User user;
       user = await _userDao.fetchUser(email); // TODO: and password
-      authStateListener.onAuthStateChanged(AuthState.authenticated(user.id));
-      return user != null
-          ? AuthState.authenticated(user.id)
-          : AuthState.failedToAuthenticate(
-              reason: NotAuthenticatedReason.userNotFound);
+      if (user != null) {
+        localStream.addEvent(AuthState.authenticated(user.id));
+        return AuthState.authenticated(user.id);
+      } else
+        return AuthState.failedToAuthenticate(
+            reason: NotAuthenticatedReason.userNotFound);
     }
     return AuthState.failedToAuthenticate(
         reason: NotAuthenticatedReason.undefined);

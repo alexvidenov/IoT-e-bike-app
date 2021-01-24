@@ -264,30 +264,16 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
           FlatButton(
             child: Text(action),
             onPressed: () async {
-              String value;
-              String controllerValue = _writeController.value.text;
               widget._repository.cancel();
-              switch (controllerValue.length) {
-                case 1:
-                  value = '000$controllerValue';
-                  break;
-                case 2:
-                  value = '00$controllerValue';
-                  break;
-                case 3:
-                  value = '0$controllerValue';
-                  break;
-                case 4:
-                  value = controllerValue;
-              }
-              print('INPUT FROM SETTINGS IS ' + 'W$parameterKey$value\r');
               await Future.delayed(
                   Duration(milliseconds: 150), // works perfectly with 80.
                   () => widget
                       ._parameterListenerBloc // TODO:  After the first symbol, add comma with the bloc
-                      .changeParameter('W$parameterKey$value\r'));
+                      .changeParameter(
+                          parameterKey, _writeController.value.text));
               Future.delayed(Duration(milliseconds: 80),
                   () => widget._repository.resume());
+              _writeController.clear();
               Navigator.of(context).pop();
             },
           ),

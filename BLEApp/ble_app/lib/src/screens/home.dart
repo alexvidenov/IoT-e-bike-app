@@ -10,6 +10,7 @@ import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/utils/Router.dart' as router;
 import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
+import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
@@ -22,10 +23,11 @@ class HomeScreen extends StatefulWidget with Navigation {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
+class _HomeScreenState extends State<HomeScreen> {
   bool _hasDisconnected = false;
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  PersistentBottomSheetController _bottomSheetController;
 
   _instantiateObserver() => routeObserver = RouteObserver<PageRoute>();
 
@@ -55,7 +57,24 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
   @override
   initState() {
     super.initState();
-    widget._deviceBloc.setDisconnectedListener(this);
+    //widget._deviceBloc.setDisconnectedListener(this);
+    widget._deviceBloc.connectionState.listen((event) {
+      event.when(
+          normalBTState: (state) {
+            switch (state) {
+              case PeripheralConnectionState.connected:
+                this.onReconnected();
+                break;
+              case PeripheralConnectionState.disconnected:
+                this.onDisconnected();
+                break;
+              default:
+                break;
+            }
+          },
+          bleException: (e) => {});
+      print(event);
+    });
   }
 
   @override
@@ -127,7 +146,8 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
                               Navigator.of(context).pushNamedAndRemoveUntil(
                                   '/devices', (_) => false));
                         },
-                        child: Text( // TODO: StreamBuilder here
+                        child: Text(
+                          // TODO: StreamBuilder here
                           'Lock', // StreamBuilder here
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
@@ -184,34 +204,43 @@ class _HomeScreenState extends State<HomeScreen> with DisconnectedListener {
         ));
   }
 
-  @override
+  //@override
   onDisconnected() {
     if (mounted) {
       widget._repository.cancel();
       _hasDisconnected = true;
-      _scaffoldKey.currentState.showBottomSheet((_) => InkWell(
-            child: Center(
-              child: Text('Reconnect',
-                  style: TextStyle(fontSize: 28, letterSpacing: 1.5)),
-            ),
-            onTap: () async => await widget._deviceBloc.connect(),
-          ));
+      _bottomSheetController =
+          _scaffoldKey.currentState.showBottomSheet((_) => InkWell(
+                child: Center(
+                  child: Text('Reconnect',
+                      style: TextStyle(fontSize: 28, letterSpacing: 1.5)),
+                ),
+                onTap: () async => await widget._deviceBloc.connect(),
+              ));
     }
   }
 
   authenticate(String password) => // TODO: remove that from here
       widget._repository.writeToCharacteristic('P$password\r');
 
-  @override
+  //@override
   onReconnected() async {
     // FIXME: this fails
     if (_hasDisconnected && mounted) {
-      // TODO: fix the h u g e mess here
-      await Future.delayed(Duration(seconds: 3), () async {
-        authenticate(widget._prefsBloc.password.value);
+      print('RECONNECTED');
+      _bottomSheetController?.close();
+      String password = widget._prefsBloc.password.value;
+      await Future.delayed(Duration(milliseconds: 1000), () async {
+        authenticate(password);
+        print('Password is $password');
         await Future.delayed(
-            Duration(milliseconds: 200), () => widget._repository.resume());
-      }).then((_) => Navigator.of(context).pop());
+            Duration(milliseconds: 100), () => widget._repository.resume());
+      });
     }
+  }
+
+  //@override
+  onReadyToAuthenticate() {
+    print('READY TO AUTTH');
   }
 }

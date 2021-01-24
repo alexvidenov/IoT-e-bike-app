@@ -4,11 +4,14 @@ import 'package:ble_app/src/listeners/disconnectedListener.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
+import 'package:ble_app/src/sealedStates/deviceConnectionState.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
 part 'blocExtensions/DeviceConnectionMethods.dart';
+
+enum OutputsState { On, Off }
 
 @lazySingleton
 class DeviceBloc {
@@ -19,7 +22,10 @@ class DeviceBloc {
 
   DisconnectedListener _disconnectedListener;
 
-  Stream<bool> get deviceReady => _isDeviceReadyController.stream;
+  Stream<bool> get deviceReady =>
+      _isDeviceReadyController.stream.doOnData((event) {
+        if (event == true) _disconnectedListener?.onReadyToAuthenticate();
+      });
 
   Sink<bool> get _setDeviceReady => _isDeviceReadyController.sink;
 
@@ -27,12 +33,14 @@ class DeviceBloc {
 
   ValueStream<BleDevice> get device => _deviceController.stream;
 
-  BehaviorSubject<PeripheralConnectionState> _connectionStateController;
+  BehaviorSubject<DeviceConnectionState> _connectionStateController;
 
-  Stream<PeripheralConnectionState> get connectionState =>
+  final _lockedRx = RxObject<OutputsState>();
+
+  Stream<DeviceConnectionState> get connectionState =>
       _connectionStateController.stream;
 
-  Sink<PeripheralConnectionState> get _connectionEvent =>
+  Sink<DeviceConnectionState> get _connectionEvent =>
       _connectionStateController.sink;
 
   Stream<BleDevice> get disconnectedDevice => _deviceRepository.pickedDevice
@@ -42,7 +50,7 @@ class DeviceBloc {
     final device = _deviceRepository.pickedDevice.value;
     _deviceController = BehaviorSubject<BleDevice>.seeded(device);
 
-    _connectionStateController = BehaviorSubject<PeripheralConnectionState>();
+    _connectionStateController = BehaviorSubject<DeviceConnectionState>();
     _isDeviceReadyController = BehaviorSubject<bool>.seeded(false);
   }
 
@@ -57,18 +65,18 @@ class DeviceBloc {
 
   stopScan() => _bleManager.stopPeripheralScan();
 
+  on() => _lockedRx.addEvent(OutputsState.On);
+
+  off() => _lockedRx.addEvent(OutputsState.Off);
+
   _observeConnectionState() => device.listen((bleDevice) => bleDevice.peripheral
           .observeConnectionState(
               emitCurrentValue: true,
               completeOnDisconnect:
                   false) // was true and it's better off to stay false (i think?)
-          .listen((connectionState) {
-        _connectionEvent.add(connectionState);
-        if (connectionState == PeripheralConnectionState.connected)
-          _disconnectedListener?.onReconnected();
-        else if (connectionState == PeripheralConnectionState.disconnected)
-          _setDeviceReady.add(false); //
-        _disconnectedListener?.onDisconnected();
+          .listen((state) {
+        print('STATE CHANGING TO $state');
+        _connectionEvent.add(DeviceConnectionState.normalBTState(state: state));
       }));
 
   dispose() async {

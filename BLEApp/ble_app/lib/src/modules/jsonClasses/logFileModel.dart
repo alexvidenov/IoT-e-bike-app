@@ -7,9 +7,7 @@ class _BatteryStatusModel {
   final double voltage;
   final double current;
   final double temp;
-
-  //final int lowDelta;
-  //final int highDelta;
+  //final double delta;
 
   const _BatteryStatusModel({this.voltage, this.temp, this.current});
 

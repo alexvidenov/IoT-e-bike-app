@@ -12,21 +12,20 @@ extension DeviceConnectionMethods on DeviceBloc {
           .disconnectOrCancelConnection();
   }
 
-  Future<void> connect() async =>
-      // TODO: actually emit a ble exception state, which will be handled by the UI. Reconnect on user action.
-      device.listen((bleDevice) async => await bleDevice.peripheral
-          .connect()
-          .then((_) => _observeConnectionState())
-          .then((_) => _deviceRepository.discoverServicesAndStartMonitoring())
-          .then((_) => _setDeviceReady.add(true)));
-/*
+  Future<void> connect() async => _runWithErrorHandling(() async {
+        device.listen((bleDevice) async => await bleDevice.peripheral
+            .connect()
+            .then((_) => _observeConnectionState())
+            .then((_) => _deviceRepository.discoverServicesAndStartMonitoring())
+            .then((_) => _setDeviceReady.add(true)));
+      });
+
   Future<void> _runWithErrorHandling(AsyncFunction asyncFunction) async {
     // todo: extract in handler object
     try {
       await asyncFunction();
-    } on BleError catch (_) {
-      asyncFunction();
+    } on BleError catch (e) {
+      _connectionEvent.add(DeviceConnectionState.bleException(e: e));
     }
   }
-   */
 }

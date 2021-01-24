@@ -96,7 +96,6 @@ extension FetchParams on ParameterFetchBloc {
         addEvent(ParameterFetchState.fetched(entity));
       } else
         queryParameters();
-      //queryParameters();
     });
   }
 

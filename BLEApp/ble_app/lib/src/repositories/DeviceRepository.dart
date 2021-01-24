@@ -37,11 +37,6 @@ class DeviceRepository {
 
   Stream<String> get characteristicValueStream => _characteristicRx.stream;
 
-  //final _characteristicController =
-  //PublishSubject<String>(); // packets, emitted from bluetooth
-
-  //Sink<String> get _characteristicValueSink => _characteristicController.sink;
-
   bool get hasPickedDevice => _bleDevice != null;
 
   DeviceRepository() {
