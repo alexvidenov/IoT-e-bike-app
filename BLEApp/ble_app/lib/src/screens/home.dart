@@ -1,5 +1,5 @@
+import 'package:ble_app/src/blocs/OutputControlBloc.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
-import 'package:ble_app/src/listeners/disconnectedListener.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
@@ -16,8 +16,10 @@ class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
   final DeviceRepository _repository;
+  final OutputControlBloc _controlBloc;
 
-  const HomeScreen(this._prefsBloc, this._deviceBloc, this._repository);
+  const HomeScreen(
+      this._prefsBloc, this._deviceBloc, this._repository, this._controlBloc);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -57,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   initState() {
     super.initState();
-    //widget._deviceBloc.setDisconnectedListener(this);
+    widget._controlBloc.create();
     widget._deviceBloc.connectionState.listen((event) {
       event.when(
           normalBTState: (state) {
@@ -72,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 break;
             }
           },
-          bleException: (e) => {});
+          bleException: (_) => {});
       print(event);
     });
   }
@@ -133,26 +135,44 @@ class _HomeScreenState extends State<HomeScreen> {
                     }),
                 centerTitle: false,
                 actions: <Widget>[
-                  Row(
-                    children: [
-                      Icon(Icons.bluetooth_disabled_outlined),
-                      RaisedButton(
-                        color: Colors.black,
-                        onPressed: () {
-                          widget._deviceBloc.removeListener();
-                          widget._prefsBloc.clearUserPrefs();
-                          widget._repository.cancel(); // fix that of course
-                          widget._deviceBloc.disconnect().then((_) =>
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                  '/devices', (_) => false));
-                        },
-                        child: Text(
-                          // TODO: StreamBuilder here
-                          'Lock', // StreamBuilder here
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
-                      ),
-                    ],
+                  StreamBuilder<OutputsState>(
+                    stream: widget._controlBloc.stream,
+                    initialData: OutputsState.On,
+                    builder: (_, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.active) {
+                        Text text = snapshot.data == OutputsState.On
+                            ? Text('Off',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20))
+                            : Text('On',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20));
+                        Icon icon = snapshot.data == OutputsState.On
+                            ? Icon(Icons.lock)
+                            : Icon(Icons.lock_open);
+                        final function = (func) async {
+                          widget._repository.cancel();
+                          await Future.delayed(
+                              Duration(milliseconds: 150), () => func());
+                          Future.delayed(Duration(milliseconds: 80),
+                              () => widget._repository.resume());
+                        };
+                        final funcToPass = snapshot.data == OutputsState.On
+                            ? () => widget._controlBloc.off()
+                            : () => widget._controlBloc.on();
+                        return Row(
+                          children: <Widget>[
+                            icon,
+                            RaisedButton(
+                              color: Colors.deepPurple,
+                              onPressed: () => function(funcToPass),
+                              child: text,
+                            ),
+                          ],
+                        );
+                      } else
+                        return Container();
+                    },
                   )
                 ],
                 bottom: TabBar(

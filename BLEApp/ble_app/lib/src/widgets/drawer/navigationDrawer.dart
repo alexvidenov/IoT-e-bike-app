@@ -27,7 +27,7 @@ class NavigationDrawer extends StatelessWidget {
                 onTap: () => Navigator.of(context).pushNamed('/settings')),
             _createDrawerItem(
                 icon: Icons.devices,
-                text: 'Device Settings',
+                text: 'Battery Settings',
                 onTap: () =>
                     Navigator.of(context).pushNamed('/batterySettings')),
             _createDrawerItem(

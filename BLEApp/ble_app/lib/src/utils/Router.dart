@@ -44,7 +44,8 @@ abstract class Router {
         return MaterialPageRoute(
             builder: (_) => BLEAuthenticationScreen($(), $(), $(), $()));
       case '/home':
-        return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $()));
+        return MaterialPageRoute(
+            builder: (_) => HomeScreen($(), $(), $(), $()));
       case '/settings':
         return MaterialPageRoute(
             builder: (_) => ConnectionSettingsScreen($(), $(), $()));
@@ -77,7 +78,8 @@ abstract class Router {
         return MaterialPageRoute(
             builder: (_) => ParameterFetchScreen($(), $()));
       case '/home':
-        return MaterialPageRoute(builder: (_) => HomeScreen($(), $(), $()));
+        return MaterialPageRoute(
+            builder: (_) => HomeScreen($(), $(), $(), $()));
       case '/settings':
         return MaterialPageRoute(
             builder: (_) => ConnectionSettingsScreen($(), $(), $()));

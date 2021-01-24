@@ -8,11 +8,8 @@ enum ConnectionSettings { Manual, AutoConnect, AutoPassword }
 
 @lazySingleton
 class SettingsBloc {
-  //final _passwordController = BehaviorSubject<String>();
   final _passwordRx = RxObject<String>();
   final _connectionRx = RxObject<ConnectionSettings>();
-
-  //final _connectionSettingsController = BehaviorSubject<ConnectionSettings>();
 
   final SharedPrefsService _preferencesService;
 

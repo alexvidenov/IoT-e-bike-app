@@ -11,8 +11,6 @@ import 'package:rxdart/rxdart.dart';
 
 part 'blocExtensions/DeviceConnectionMethods.dart';
 
-enum OutputsState { On, Off }
-
 @lazySingleton
 class DeviceBloc {
   final BleManager _bleManager = BleManager();
@@ -34,8 +32,6 @@ class DeviceBloc {
   ValueStream<BleDevice> get device => _deviceController.stream;
 
   BehaviorSubject<DeviceConnectionState> _connectionStateController;
-
-  final _lockedRx = RxObject<OutputsState>();
 
   Stream<DeviceConnectionState> get connectionState =>
       _connectionStateController.stream;
@@ -64,10 +60,6 @@ class DeviceBloc {
   cancel() => _deviceRepository.cancel();
 
   stopScan() => _bleManager.stopPeripheralScan();
-
-  on() => _lockedRx.addEvent(OutputsState.On);
-
-  off() => _lockedRx.addEvent(OutputsState.Off);
 
   _observeConnectionState() => device.listen((bleDevice) => bleDevice.peripheral
           .observeConnectionState(

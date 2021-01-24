@@ -21,6 +21,7 @@ import '../blocs/LocalDatabaseManager.dart';
 import '../blocs/locationBloc.dart';
 import '../blocs/navigationBloc.dart';
 import '../blocs/navigationService.dart';
+import '../blocs/OutputControlBloc.dart';
 import '../blocs/parameterFetchBloc.dart';
 import '../blocs/mixins/parameterAware/ParameterHolder.dart';
 import '../blocs/parameterListenerBloc.dart';
@@ -44,6 +45,8 @@ GetIt $initGetIt(
       () => LocalDatabaseManager(get<LocalDatabase>()));
   gh.factory<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
+  gh.factory<OutputControlBloc>(
+      () => OutputControlBloc(get<DeviceRepository>()));
   gh.lazySingleton<ParameterHolder>(() => ParameterHolder());
   gh.factory<ParameterListenerBloc>(() => ParameterListenerBloc(
         get<DeviceRepository>(),
