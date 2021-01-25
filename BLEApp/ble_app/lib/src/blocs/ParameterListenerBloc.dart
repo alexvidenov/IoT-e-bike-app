@@ -13,10 +13,10 @@ import 'package:injectable/injectable.dart';
 
 import 'bloc.dart';
 
-enum ChangeStatus { Successful, Unsuccessful }
+enum ParameterChangeStatus { Successful, Unsuccessful }
 
 @injectable
-class ParameterListenerBloc extends Bloc<ChangeStatus, String>
+class ParameterListenerBloc extends Bloc<ParameterChangeStatus, String>
     with CurrentContext {
   final DeviceRepository _repository;
   final ParameterHolder _parameterHolder;
@@ -28,12 +28,15 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String>
   String currentKey; // TODO: extract in an object
   String value;
 
+  bool _successful = false;
+
   @override
   create() {
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       print('RESPONSE FROM PARAM LISTENER: $event');
       if (event.startsWith('OK')) {
-        addEvent(ChangeStatus
+        _successful = true;
+        addEvent(ParameterChangeStatus
             .Successful); // in the UI, wait 1 second if not successful
         DeviceParameters newModel;
         switch (currentKey) {
@@ -128,9 +131,20 @@ class ParameterListenerBloc extends Bloc<ChangeStatus, String>
   changeParameter(String key, String value) {
     final String command = _generateCommandString(key, value);
     print('EXECUTING COMMANd => $command');
+    _successful = false;
+    _timeout();
     _repository.writeToCharacteristic(command);
     currentKey = key;
     this.value = value;
+  }
+
+  _timeout() => Future.delayed(Duration(milliseconds: 500), () {
+        if (!_successful) addEvent(ParameterChangeStatus.Unsuccessful);
+      });
+
+  retry() {
+    final String command = _generateCommandString(this.currentKey, value);
+    _repository.writeToCharacteristic(command);
   }
 
   Stream<DeviceParameters> get parameters => _dbManager.fetchParameters();

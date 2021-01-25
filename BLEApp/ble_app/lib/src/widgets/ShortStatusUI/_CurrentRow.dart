@@ -152,8 +152,7 @@ class CurrentRow extends StatelessWidget {
                               color = Colors.white;
                               current = state.current;
                             });
-                            return Text(
-                                (current / 100).toStringAsFixed(2) + 'A',
+                            return Text((current).toStringAsFixed(2) + 'A',
                                 style: TextStyle(
                                     color: color,
                                     fontWeight: FontWeight.bold,

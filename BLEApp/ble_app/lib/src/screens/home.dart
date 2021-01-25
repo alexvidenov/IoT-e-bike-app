@@ -12,6 +12,14 @@ import 'package:ble_app/src/utils/Router.dart' as router;
 import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
+// Offline - ONLY
+// Online - optional
+
+// V nachaloto da ima landing page, v koito da ima dve opcii:
+// go online with registration, or go completely offline without shit ton of features. If you choose the latter, you can still back off
+// ..if statements
+// in a settings page, have an option "register", which deletes the "phantom" user and starts everything anew.
+
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
@@ -79,6 +87,13 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  function(func) async {
+    widget._repository.cancel();
+    await Future.delayed(Duration(milliseconds: 150), () => func());
+    Future.delayed(
+        Duration(milliseconds: 80), () => widget._repository.resume());
+  }
+
   @override
   Widget build(BuildContext context) {
     _instantiateObserver();
@@ -139,39 +154,36 @@ class _HomeScreenState extends State<HomeScreen> {
                     stream: widget._controlBloc.stream,
                     initialData: OutputsState.On,
                     builder: (_, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.active) {
-                        Text text = snapshot.data == OutputsState.On
-                            ? Text('Off',
-                            style: TextStyle(
-                                    color: Colors.white, fontSize: 20))
-                            : Text('On',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20));
-                        Icon icon = snapshot.data == OutputsState.On
-                            ? Icon(Icons.lock)
-                            : Icon(Icons.lock_open);
-                        final function = (func) async {
-                          widget._repository.cancel();
-                          await Future.delayed(
-                              Duration(milliseconds: 150), () => func());
-                          Future.delayed(Duration(milliseconds: 80),
-                              () => widget._repository.resume());
-                        };
-                        final funcToPass = snapshot.data == OutputsState.On
-                            ? () => widget._controlBloc.off()
-                            : () => widget._controlBloc.on();
-                        return Row(
-                          children: <Widget>[
-                            icon,
-                            RaisedButton(
-                              color: Colors.deepPurple,
-                              onPressed: () => function(funcToPass),
-                              child: text,
-                            ),
-                          ],
-                        );
-                      } else
-                        return Container();
+                      Text text = snapshot.data == OutputsState.On
+                          ? Text('Off',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20))
+                          : Text('On',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20));
+                      Icon icon = snapshot.data == OutputsState.On
+                          ? Icon(Icons.lock)
+                          : Icon(Icons.lock_open);
+                      final function = (func) async {
+                        widget._repository.cancel();
+                        await Future.delayed(
+                            Duration(milliseconds: 150), () => func());
+                        Future.delayed(Duration(milliseconds: 80),
+                            () => widget._repository.resume());
+                      };
+                      final funcToPass = snapshot.data == OutputsState.On
+                          ? () => widget._controlBloc.off()
+                          : () => widget._controlBloc.on();
+                      return Row(
+                        children: <Widget>[
+                          icon,
+                          RaisedButton(
+                            color: Colors.deepPurple,
+                            onPressed: () => function(funcToPass),
+                            child: text,
+                          ),
+                        ],
+                      );
                     },
                   )
                 ],

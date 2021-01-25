@@ -15,7 +15,6 @@ class OutputControlBloc extends Bloc<OutputsState, String> {
 
   @override
   create() {
-    addEvent(OutputsState.Off);
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       if (event.startsWith('OK')) {
         if (curOutputsState != null) addEvent(curOutputsState);

@@ -12,13 +12,12 @@ extension DeviceConnectionMethods on DeviceBloc {
           .disconnectOrCancelConnection();
   }
 
-  Future<void> connect() async => _runWithErrorHandling(() async {
-        device.listen((bleDevice) async => await bleDevice.peripheral
-            .connect()
-            .then((_) => _observeConnectionState())
-            .then((_) => _deviceRepository.discoverServicesAndStartMonitoring())
-            .then((_) => _setDeviceReady.add(true)));
-      });
+  Future<void> connect() async => _runWithErrorHandling(() async =>
+      device.listen((bleDevice) async => await bleDevice.peripheral
+          .connect()
+          .then((_) => _observeConnectionState())
+          .then((_) => _deviceRepository.discoverServicesAndStartMonitoring())
+          .then((_) => _setDeviceReady.add(true))));
 
   Future<void> _runWithErrorHandling(AsyncFunction asyncFunction) async {
     // todo: extract in handler object

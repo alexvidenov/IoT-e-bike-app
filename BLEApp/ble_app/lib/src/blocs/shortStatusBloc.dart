@@ -1,7 +1,8 @@
 import 'dart:convert';
 
+import 'package:ble_app/src/blocs/CurrentContext.dart';
+import 'package:ble_app/src/blocs/DataCachingManager.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
-import 'package:ble_app/src/blocs/mixins/DeltaHolder.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
@@ -17,7 +18,7 @@ part 'blocExtensions/ShortStatusParse.dart';
 
 @injectable
 class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String>
-    with DeltaCalculation {
+    with CurrentContext, DataCachingManager {
   final DeviceRepository _repository;
   final SettingsBloc _settingsBloc;
   final Auth _auth;

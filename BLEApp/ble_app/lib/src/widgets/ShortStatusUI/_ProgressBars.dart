@@ -72,7 +72,7 @@ class ProgressColumns extends StatelessWidget {
                     fontSize: 20.0,
                     fontFamily: 'Europe_Ext'),
               ),
-              Text(
+              const Text(
                 "Cell",
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -96,18 +96,17 @@ class ProgressColumns extends StatelessWidget {
                       children: <Widget>[
                         StreamBuilder<ShortStatusState>(
                           stream: shortStatusBloc.stream,
-                          initialData:
-                              ShortStatusState(ShortStatusModel()),
+                          initialData: ShortStatusState(ShortStatusModel()),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.active) {
                               String voltageText;
                               snapshot.data.when((model) {
-                                voltageText = (model.totalVoltage / 100)
-                                    .toStringAsFixed(1);
+                                voltageText =
+                                    (model.totalVoltage).toStringAsFixed(1);
                               }, error: (error, model) {
-                                voltageText = (model.totalVoltage / 100)
-                                    .toStringAsFixed(1);
+                                voltageText =
+                                    (model.totalVoltage).toStringAsFixed(1);
                               });
                               return Text(
                                 voltageText,
@@ -120,7 +119,7 @@ class ProgressColumns extends StatelessWidget {
                               return Container();
                           },
                         ),
-                        Text(
+                        const Text(
                           "V",
                           style: TextStyle(
                               fontWeight: FontWeight.normal,
@@ -134,7 +133,7 @@ class ProgressColumns extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              Text(
+              const Text(
                 "Batt",
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -144,6 +143,7 @@ class ProgressColumns extends StatelessWidget {
                     fontFamily: 'Europe_Ext'),
               ),
               Text(
+                // TODO: calculate that too
                 "65 %",
                 textAlign: TextAlign.center,
                 style: TextStyle(

@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:ble_app/src/blocs/parameterListenerBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
@@ -12,16 +13,17 @@ import 'package:flutter/material.dart';
 // W0001 - first node (first to get info from master) if(ostatuk == 1) else substract a from the  second
 // W0002 - second node
 
-typedef ChangeParameterCallback = Future<void> Function(String, String);
+typedef EditedParameterCallback = Future<void> Function(String, String);
 
 class _CardParameter extends StatelessWidget {
+  // Should keep the last value. If it doesnt program correctly, rturn the old value
   final int _showcaseIndex;
   final String _tableIndex;
   final String _parameterName;
   final num _parameterValue;
   final String _measureUnit;
   final String _description;
-  final ChangeParameterCallback _onTap;
+  final EditedParameterCallback _onEdit;
 
   const _CardParameter(
       this._showcaseIndex,
@@ -30,7 +32,9 @@ class _CardParameter extends StatelessWidget {
       this._parameterValue,
       this._description,
       this._measureUnit,
-      this._onTap);
+      this._onEdit);
+
+  // Have a callback here, which will get called into the other page (for success and error)
 
   @override
   Widget build(BuildContext context) => Card(
@@ -55,21 +59,17 @@ class _CardParameter extends StatelessWidget {
                           controller: TextEditingController.fromValue(
                               // instantiate a controller here i guess?
                               TextEditingValue(text: '$_parameterValue')),
-                          onFieldSubmitted: (value) {
-                            _onTap(_tableIndex,
-                                value); // ADD SUCCESSFUL ALERT TO THE UI
-                          },
-                          onChanged: (value) => print('Changed to $value'),
+                          onFieldSubmitted: (value) =>
+                              _onEdit(_tableIndex, value),
                         ),
                       ),
                       Text(
                         '$_measureUnit',
                         style: TextStyle(fontSize: 20, color: Colors.black),
                       ),
-                      // here check with smt like: prefs.maxCellVoltage ?? 24.
                     ]),
                 subtitle: Text(_description),
-                trailing: Icon(Icons.keyboard_arrow_right)),
+                trailing: const Icon(Icons.keyboard_arrow_right)),
           ],
         ),
       );
@@ -92,8 +92,40 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
     Future.delayed(Duration(milliseconds: 80), () => _repository.resume());
   }
 
+  Future<void> _showDialog(context) async {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.SUCCES,
+      headerAnimationLoop: false,
+      animType: AnimType.TOPSLIDE,
+      title: 'Successful',
+      desc: 'Parameter changed',
+      autoHide: Duration(seconds: 2),
+    ).show();
+  }
+
+  _monitorChangeState(context) => _parameterListenerBloc.stream.listen((event) {
+        switch (event) {
+          case ParameterChangeStatus.Successful:
+            _showDialog(context);
+            break;
+          case ParameterChangeStatus.Unsuccessful:
+            AwesomeDialog(
+                context: context,
+                dialogType: DialogType.ERROR,
+                animType: AnimType.SCALE,
+                title: 'Failed',
+                desc: 'Parameter change failed. Retry?',
+                btnOkText: 'Yes',
+                btnOkOnPress: () => _parameterListenerBloc.retry(),
+                btnCancelText: 'Cancel',
+                btnCancelOnPress: () => this.buildWidget(context)).show(); // FIXME: definitely fix that
+        }
+      });
+
   @override
   Widget buildWidget(BuildContext context) {
+    _monitorChangeState(context);
     return Scaffold(
         appBar: AppBar(
           brightness: Brightness.dark,

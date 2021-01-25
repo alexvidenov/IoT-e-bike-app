@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:ble_app/src/blocs/RxObject.dart';
-import 'package:ble_app/src/listeners/disconnectedListener.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
@@ -18,12 +16,8 @@ class DeviceBloc {
 
   BehaviorSubject<bool> _isDeviceReadyController; // TODO: replace with RxObject
 
-  DisconnectedListener _disconnectedListener;
-
   Stream<bool> get deviceReady =>
-      _isDeviceReadyController.stream.doOnData((event) {
-        if (event == true) _disconnectedListener?.onReadyToAuthenticate();
-      });
+      _isDeviceReadyController.stream;
 
   Sink<bool> get _setDeviceReady => _isDeviceReadyController.sink;
 
@@ -49,11 +43,6 @@ class DeviceBloc {
     _connectionStateController = BehaviorSubject<DeviceConnectionState>();
     _isDeviceReadyController = BehaviorSubject<bool>.seeded(false);
   }
-
-  setDisconnectedListener(DisconnectedListener listener) =>
-      _disconnectedListener = listener;
-
-  removeListener() => _disconnectedListener = null;
 
   writeToBLE(String data) => _deviceRepository.writeToCharacteristic(data);
 

@@ -53,7 +53,6 @@ class ParameterFetchScreen extends RouteAwareWidget<ParameterFetchBloc> {
             builder: (_, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
                 snapshot.data.when(
-                    // ignore: missing_return
                     fetched: (fetched) {
                       super.bloc.cacheParameters(fetched);
                       dialog.dismiss();

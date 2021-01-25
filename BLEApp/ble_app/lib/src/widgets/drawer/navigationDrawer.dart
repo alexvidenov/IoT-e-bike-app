@@ -47,7 +47,6 @@ class NavigationDrawer extends StatelessWidget {
                       letterSpacing: 1.5,
                       fontFamily: 'Europe_Ext')),
               onTap: () {
-                _deviceBloc.removeListener();
                 _prefsBloc.clearUserPrefs();
                 _deviceBloc.cancel();
                 _deviceBloc.disconnect().then((_) => Navigator.of(context)

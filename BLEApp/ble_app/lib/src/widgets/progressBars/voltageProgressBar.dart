@@ -35,7 +35,7 @@ class VoltageProgressBar extends StatelessWidget {
                       color: Colors.white, blurRadius: 7.0, spreadRadius: 8.0),
                 ]),
             child: FAProgressBar(
-              currentValue: voltage ~/ 100,
+              currentValue: voltage.toInt(),
               maxValue: 60,
               // ((bloc.getParameters().maxRecoveryVoltage) ~/ 100),
               // remove this logic from here
