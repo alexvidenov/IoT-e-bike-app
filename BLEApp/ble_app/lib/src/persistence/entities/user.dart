@@ -3,6 +3,7 @@ import 'package:floor/floor.dart';
 
 @Entity(tableName: 'users')
 class User extends Model {
+  // TODO: add username
   final String email;
   final String password; // TODO: needs to be hashed
 

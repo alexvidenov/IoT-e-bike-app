@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/LocalDatabaseManager.dart';
+import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';

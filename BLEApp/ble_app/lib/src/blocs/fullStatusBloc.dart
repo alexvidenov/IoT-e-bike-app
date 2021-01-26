@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/RxObject.dart';
+import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/mixins/DeltaHolder.dart';
@@ -9,20 +9,34 @@ import 'package:ble_app/src/utils/ADCToTemp.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
+import 'DataCachingManager.dart';
+
 part 'blocExtensions/FullStatusParse.dart';
 
 @injectable
 class FullStatusBloc extends ParameterAwareBloc<FullStatusModel, String>
-    with DeltaCalculation {
+    with DeltaCalculation, CurrentContext, DataCachingManager {
   final DeviceRepository _repository;
 
   final tempConverter = TemperatureConverter();
 
+  int _uploadTimer = 0;
+
   FullStatusBloc(this._repository) : super();
 
   @override
-  create() => streamSubscription = _repository.characteristicValueStream
-      .listen((e) => addEvent(_generateFullStatus(e)));
+  create() {
+    loadData();
+    streamSubscription = _repository.characteristicValueStream.listen((e) {
+      //final _model = _generateFullStatus(e);
+      addEvent(_generateFullStatus(e));
+      _uploadTimer++;
+      if (_uploadTimer == 10) {
+        _uploadTimer = 0;
+        //addData(_model);
+      }
+    });
+  }
 
   @override
   pause() {

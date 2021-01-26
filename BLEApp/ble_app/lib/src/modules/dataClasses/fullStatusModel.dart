@@ -1,3 +1,4 @@
+import 'package:ble_app/src/modules/dataClasses/BaseStatus.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'fullStatusBarGraphModel.dart';

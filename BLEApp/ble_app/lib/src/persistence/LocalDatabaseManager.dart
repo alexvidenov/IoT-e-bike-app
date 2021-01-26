@@ -21,6 +21,8 @@ class LocalDatabaseManager with CurrentContext {
 
   const LocalDatabaseManager(this._localDatabase);
 
+  //fetchUser*
+
   insertUser(User user) => _userDao.insertEntity(user);
 
   insertDevice(Device device) => _deviceDao.insertEntity(device);
@@ -31,17 +33,22 @@ class LocalDatabaseManager with CurrentContext {
   Future<Device> fetchDevice() async =>
       await _deviceDao.fetchDevice(this.curDeviceId, this.curUserId);
 
-  Future<List<Device>> fetchDevices() async =>
-      await _deviceDao.fetchDevices(this.curUserId);
+  Future<List<Device>> fetchDevices() async => await _deviceDao
+      .fetchDevices(isAnonymous ? this.anonymousDeviceId : this.curUserId); // check for anonymous here again
 
   Stream<DeviceParameters> fetchParameters() =>
-      _parametersDao.fetchDeviceParameters(this.curDeviceId);
+      _parametersDao.fetchDeviceParameters(
+          isAnonymous ? this.anonymousDeviceId : this.curDeviceId);
 
   updateParameter(DeviceParameters parameters) =>
       _parametersDao.updateEntity(parameters);
 
-  setMacAddress(String mac) => _deviceDao.setMacAddress(mac, this.curDeviceId);
+  setMacAddress(String mac) => _deviceDao.setMacAddress(
+      mac, isAnonymous ? anonymousDeviceId : curDeviceId);
 
   updateChangedParameters(String parameters) =>
       _deviceDao.updateParametersToChange(parameters, this.curDeviceId);
+
+  addPhantomUser() =>
+      _userDao.insertEntity(User('0000', 'phantomUser@gmail.com', 'password'));
 }

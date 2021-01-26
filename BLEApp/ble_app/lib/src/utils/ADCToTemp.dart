@@ -1,5 +1,3 @@
-//import 'package:kdtree/kdtree.dart';
-
 import 'package:kdtree/kdtree.dart';
 
 class TemperatureConverter {
@@ -46,18 +44,12 @@ class TemperatureConverter {
         (((nearest[0]['adcValue'] - secondNearest[0]['adcValue']) as int)
                 .abs() ~/
             5); // 32.8
-    //final diffAdcValue = ((nearest[0]['adcValue'] - adcValue) as int)
-    //.abs(); // 59 ACTUALLY HAVE THE DISTANCE
     final divByCoeff = nearest[1] ~/ diffCoeff;
     if (nearest[0]['adcValue'] > adcValue) {
       final returnValue = nearest[0]['tempInC'] + divByCoeff;
-      final adcFromTempValue = adcFromTemp(returnValue);
-      print('ADC FROM TEMP: $adcFromTempValue');
       return returnValue;
     } else {
       final returnValue = nearest[0]['tempInC'] - divByCoeff;
-      final adcFromTempValue = adcFromTemp(returnValue);
-      print('ADC FROM TEMP: $adcFromTempValue');
       return returnValue;
     }
   }

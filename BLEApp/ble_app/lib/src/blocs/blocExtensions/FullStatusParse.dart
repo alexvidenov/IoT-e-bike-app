@@ -66,8 +66,9 @@ extension FullStatusParse on FullStatusBloc {
           .reduce((value, element) => value.y < element.y ? value : element);
 
       final diff = maxValue.y - lowestValue.y;
-
-      if (current < getParameters().value.motoHoursCounterCurrentThreshold) {
+      current = current / 100;
+      final threshold = getParameters().value.motoHoursCounterCurrentThreshold;
+      if (current < threshold) {
         delta1 += diff;
         if (deltaCounter == 4) {
           delta1Holder
@@ -75,7 +76,7 @@ extension FullStatusParse on FullStatusBloc {
           delta1 = 0;
           deltaCounter = 0;
         }
-      } else if (current >
+      } else if (current / 100 >
           (getParameters().value.maxTimeLimitedDischargeCurrent / 2)) {
         delta2 += diff;
         if (deltaCounter == 4) {
@@ -86,7 +87,7 @@ extension FullStatusParse on FullStatusBloc {
       }
     }
 
-    return FullStatusModel(
-        fullStatus, totalVoltage / 100, current / 100, temperature, 0, battStatus);
+    return FullStatusModel(fullStatus, totalVoltage / 100, current / 100,
+        temperature, 0, battStatus);
   }
 }

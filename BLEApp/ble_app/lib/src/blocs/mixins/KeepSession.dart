@@ -15,7 +15,6 @@ mixin KeepSession<T extends Bloc<dynamic, dynamic>> on RouteAwareWidget<T> {
   final ShortStatusBloc shortStatusBloc = $<ShortStatusBloc>();
 
   _KeepSessionCallback get keepSession => () {
-        final bloc = $<ShortStatusBloc>();
         shortStatusBloc.create();
         shortStatusBloc.resume();
       };

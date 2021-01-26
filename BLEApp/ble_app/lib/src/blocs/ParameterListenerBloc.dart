@@ -1,5 +1,5 @@
 import 'package:ble_app/src/blocs/CurrentContext.dart';
-import 'package:ble_app/src/blocs/LocalDatabaseManager.dart';
+import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';

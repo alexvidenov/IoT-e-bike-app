@@ -14,17 +14,11 @@ class SharedPrefsService {
   @factoryMethod
   static Future<SharedPrefsService> getInstance() async {
     _instance = _instance ?? SharedPrefsService();
-    //if (_instance == null) {
-    //_instance = SharedPrefsService();
-    //}
     _preferences = _preferences ?? await SharedPreferences.getInstance();
-    //if (_preferences == null) {
-    //_preferences = await SharedPreferences.getInstance();
-    //}
     return _instance;
   }
 
-  dynamic _getPrefs(String key) => _preferences.get(key);
+  _getPrefs(String key) => _preferences.get(key);
 
   Future _removePrefs(String key) async => await _preferences.remove(key);
 
@@ -44,6 +38,16 @@ class SharedPrefsService {
       await _preferences.setDouble(key, value);
     }
   }
+
+  setIsFirstTime(bool value) => _savePrefs(PrefsKeys.IS_FIRST_TIME, value);
+
+  isFirstTime() => _getPrefs(PrefsKeys.IS_FIRST_TIME);
+
+  bool anonymousUserExists() => _getPrefs(PrefsKeys.ANONYMOUS_USER) ?? false;
+
+  setAnonymousUser() => _savePrefs(PrefsKeys.ANONYMOUS_USER, true);
+
+  removeAnonymousUser() => _removePrefs(PrefsKeys.ANONYMOUS_USER);
 
   String userData() => _getPrefs(PrefsKeys.USER_DATA);
 
@@ -75,9 +79,8 @@ class SharedPrefsService {
     removePasswordRemembrance();
   }
 
-  removePasswordRemembrance() =>
-      _removePrefs(PrefsKeys.PASSWORD)
-          .then((value) => _setPasswordRemembered(false));
+  removePasswordRemembrance() => _removePrefs(PrefsKeys.PASSWORD)
+      .then((value) => _setPasswordRemembered(false));
 
   String getOptionalDevice() => _getPrefs(PrefsKeys.DEVICE_ID) ?? 'empty';
 

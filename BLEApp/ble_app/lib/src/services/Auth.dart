@@ -1,4 +1,6 @@
+import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/blocs/RxObject.dart';
+import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/dao/deviceDao.dart';
 import 'package:ble_app/src/persistence/dao/userDao.dart';
@@ -33,9 +35,39 @@ class Auth {
 
   Auth([this._localDatabase]);
 
-  setListenerAndDetermineState(AuthStateListener listener) {
+  setListenerAndDetermineState(AuthStateListener listener) async {
     this.authStateListener = listener;
     auth.listen(this.authStateListener.onAuthStateChanged);
+    await this.isSignedInAnonymously();
+  }
+
+  Future<bool> isSignedInAnonymously() async {
+    localUser.User user = await _userDao.isUserSignedInAnonymously('anonymous');
+    if (user != null) {
+      localStream.addEvent(AuthState.authenticated(user.id));
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> isAnonymous() async {
+    localUser.User user = await _userDao.isUserSignedInAnonymously('anonymous');
+    if (user != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<AuthState> signInAnonymously() {
+    _userDao.insertEntity(localUser.User('0000', 'anonymous', 'password'));
+    _deviceDao.insertEntity(Device(
+        deviceId: '1234', // TODO: extract in a separate object these constants
+        userId: '0000',
+        name: BluetoothUtils.defaultBluetoothDeviceName));
+    localStream.addEvent(AuthState.authenticated('0000'));
+    return Future.value(AuthState.authenticated('0000'));
   }
 
   Future<AuthState> signInWithEmailAndPassword(
@@ -98,16 +130,25 @@ class Auth {
         reason: NotAuthenticatedReason.undefined);
   }
 
-  Future<void> signOut() async => await _auth.signOut().then((_) {
-        // check if we're offline
-        localStream.addEvent(AuthState.loggedOut());
-        authStateListener.onAuthStateChanged(AuthState.loggedOut());
-      });
+  Future<void> signOut() async {
+    await _auth.signOut().then((_) async {
+      if (await isAnonymous()) {
+        this
+            ._userDao
+            .deleteEntity(localUser.User('0000', 'anonymous', 'password'));
+        $<SettingsBloc>()
+            .deleteAnonymousUser(); // TODO: actually abandon sharedPrefs for that functionality
+      }
+      // check if we're offline
+      localStream.addEvent(AuthState.loggedOut());
+      authStateListener.onAuthStateChanged(AuthState.loggedOut());
+    });
+  }
 }
 
 extension UserStatus on Auth {
   Stream<AuthState> get _onAuthStateChanged =>
-      _auth.userChanges().map((User user) => user != null
+      _auth.authStateChanges().map((User user) => user != null
           ? AuthState.authenticated(user.uid)
           : AuthState.loggedOut());
 

@@ -1,6 +1,5 @@
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/blocs/sharedPrefsService.dart';
-import 'package:ble_app/src/screens/settings/settingsPage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -16,6 +15,23 @@ class SettingsBloc {
   SettingsBloc(this._preferencesService);
 
   String getUserData() => _preferencesService.userData() ?? 'empty';
+
+  bool isFirstTime() {
+    final isFirstTime = _preferencesService.isFirstTime();
+    if (isFirstTime != null && !isFirstTime) {
+      _preferencesService.setIsFirstTime(false);
+      return false;
+    } else {
+      _preferencesService.setIsFirstTime(false);
+      return true;
+    }
+  }
+
+  bool isAnonymous() => _preferencesService.anonymousUserExists();
+
+  setAnonymousUser() => _preferencesService.setAnonymousUser();
+
+  deleteAnonymousUser() => _preferencesService.removeAnonymousUser();
 
   setUserData(String json) => _preferencesService.setUserData(json);
 

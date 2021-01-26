@@ -1,8 +1,7 @@
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/screens/Entrypoints/Root.dart';
-import 'package:ble_app/src/screens/main/fullStatusPage.dart';
+import 'package:ble_app/src/screens/entrypoints/Root.dart';
 import 'package:flutter/material.dart';
 
 typedef _LogOutListener = Future<void> Function();
@@ -62,7 +61,7 @@ class NavigationDrawer extends StatelessWidget {
                         fontFamily: 'Europe_Ext')),
                 onTap: () async => await _onLogout().then((_) async {
                       Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => RootPage($())),
+                          MaterialPageRoute(builder: (_) => RootPage($(), $())),
                           // actually use popUntil route.isFirst
                           (_) => false);
                       _prefsBloc.clearUserPrefs();

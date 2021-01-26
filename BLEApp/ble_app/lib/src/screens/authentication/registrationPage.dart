@@ -120,6 +120,7 @@ class _StepperBodyState extends State<StepperBody> {
               onSaved: (String value) {
                 data.userName = value;
               },
+              // onFieldSubmitted: () => set the currStep from here for convenience ,
               maxLines: 1,
               decoration: InputDecoration(
                   labelText: 'Enter your username',

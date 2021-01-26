@@ -20,6 +20,8 @@ class AuthBloc {
       _auth.signUpWithEmailAndPassword(email, password,
           deviceSerialNumber: deviceId);
 
+  Future<AuthState> signInAnonymously() => _auth.signInAnonymously();
+
   String get userId => _auth.getCurrentUserId();
 
   Future<void> logout() async => await _auth.signOut();

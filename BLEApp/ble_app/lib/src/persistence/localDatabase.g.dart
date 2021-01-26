@@ -170,6 +170,14 @@ class _$UserDao extends UserDao {
   }
 
   @override
+  Future<User> isUserSignedInAnonymously(String email) async {
+    return _queryAdapter.query('SELECT * FROM users WHERE email = ?',
+        arguments: <dynamic>[email],
+        mapper: (Map<String, dynamic> row) => User(row['id'] as String,
+            row['email'] as String, row['password'] as String));
+  }
+
+  @override
   Future<void> insertEntity(User entity) async {
     await _userInsertionAdapter.insert(entity, OnConflictStrategy.replace);
   }

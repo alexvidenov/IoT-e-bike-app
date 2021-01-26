@@ -17,7 +17,7 @@ import '../blocs/devicesBloc.dart';
 import '../blocs/entryEndpointBloc.dart';
 import '../blocs/fullStatusBloc.dart';
 import '../persistence/localDatabase.dart';
-import '../blocs/LocalDatabaseManager.dart';
+import '../persistence/LocalDatabaseManager.dart';
 import '../blocs/locationBloc.dart';
 import '../blocs/navigationBloc.dart';
 import '../blocs/navigationService.dart';
@@ -53,6 +53,7 @@ GetIt $initGetIt(
         get<ParameterHolder>(),
         get<LocalDatabaseManager>(),
       ));
+  gh.factory<ShortStatusBloc>(() => ShortStatusBloc(get<DeviceRepository>()));
   gh.lazySingleton<Auth>(() => Auth(get<LocalDatabase>()));
   gh.lazySingleton<AuthBloc>(() => AuthBloc(get<Auth>()));
   gh.factory<BluetoothAuthBloc>(() =>
@@ -68,11 +69,6 @@ GetIt $initGetIt(
         get<LocalDatabaseManager>(),
       ));
   gh.lazySingleton<SettingsBloc>(() => SettingsBloc(get<SharedPrefsService>()));
-  gh.factory<ShortStatusBloc>(() => ShortStatusBloc(
-        get<DeviceRepository>(),
-        get<SettingsBloc>(),
-        get<Auth>(),
-      ));
   gh.factory<EntryEndpointBloc>(
       () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));
 

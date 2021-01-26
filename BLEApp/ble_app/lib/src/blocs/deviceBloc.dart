@@ -16,8 +16,7 @@ class DeviceBloc {
 
   BehaviorSubject<bool> _isDeviceReadyController; // TODO: replace with RxObject
 
-  Stream<bool> get deviceReady =>
-      _isDeviceReadyController.stream;
+  Stream<bool> get deviceReady => _isDeviceReadyController.stream;
 
   Sink<bool> get _setDeviceReady => _isDeviceReadyController.sink;
 
@@ -51,14 +50,10 @@ class DeviceBloc {
   stopScan() => _bleManager.stopPeripheralScan();
 
   _observeConnectionState() => device.listen((bleDevice) => bleDevice.peripheral
-          .observeConnectionState(
-              emitCurrentValue: true,
-              completeOnDisconnect:
-                  false) // was true and it's better off to stay false (i think?)
-          .listen((state) {
-        print('STATE CHANGING TO $state');
-        _connectionEvent.add(DeviceConnectionState.normalBTState(state: state));
-      }));
+      .observeConnectionState(
+          emitCurrentValue: true, completeOnDisconnect: false)
+      .listen((state) => _connectionEvent
+          .add(DeviceConnectionState.normalBTState(state: state))));
 
   dispose() async {
     logger.wtf('Closing stream in DeviceBloc');

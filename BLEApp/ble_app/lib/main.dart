@@ -5,9 +5,9 @@ import 'package:background_fetch/background_fetch.dart';
 import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
-import 'package:ble_app/src/screens/Entrypoints/AuthEntrypoint.dart';
-import 'package:ble_app/src/screens/Entrypoints/DevicesEntrypoint.dart';
-import 'package:ble_app/src/screens/Entrypoints/Root.dart';
+import 'package:ble_app/src/screens/entrypoints/AuthEntrypoint.dart';
+import 'package:ble_app/src/screens/entrypoints/DevicesEntrypoint.dart';
+import 'package:ble_app/src/screens/entrypoints/Root.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/services/CloudMessaging.dart';
@@ -52,6 +52,8 @@ onBackgroundFetch(String taskId) async {
   }
 }
 
+void bruh() => 1;
+
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -74,7 +76,7 @@ main() async {
       enableHeadless: true,
       forceAlarmManager: true));
   $<CloudMessaging>().init();
-  $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
+  $.isReady<LocalDatabase>().then((_) => runApp(RootPage($(), $())));
 }
 
 class BleApp extends RouteAwareWidget<EntryEndpointBloc> {

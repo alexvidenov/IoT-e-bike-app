@@ -7,8 +7,7 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
-class DeviceScreen extends RouteAwareWidget<ShortStatusBloc>
-    with RouteUtils {
+class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with RouteUtils {
   const DeviceScreen(ShortStatusBloc shortStatusBloc)
       : super(bloc: shortStatusBloc);
 
@@ -45,5 +44,6 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc>
     });
      */
     notifyForRoute(CurrentPage.ShortStatus);
+    // TODO; optional => add an event for the outputs state
   }
 }
