@@ -5,8 +5,7 @@ import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/widgets/FullStatusUI/VoltagesBarChart.dart';
 import 'package:flutter/material.dart';
 
-class FullStatusPage extends RouteAwareWidget<FullStatusBloc>
-    with RouteUtils {
+class FullStatusPage extends RouteAwareWidget<FullStatusBloc> with RouteUtils {
   const FullStatusPage(FullStatusBloc fullStatusBloc)
       : super(bloc: fullStatusBloc);
 
@@ -17,6 +16,6 @@ class FullStatusPage extends RouteAwareWidget<FullStatusBloc>
   @override
   onResume() {
     super.onResume();
-    notifyForRoute(CurrentPage.Controller);
+    notifyForRoute(CurrentPage.FullStatus);
   }
 }

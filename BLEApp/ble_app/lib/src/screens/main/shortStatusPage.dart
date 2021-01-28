@@ -8,6 +8,7 @@ import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
 class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with RouteUtils {
+  // TODO: make this an extension of routeaware widgets
   const DeviceScreen(ShortStatusBloc shortStatusBloc)
       : super(bloc: shortStatusBloc);
 

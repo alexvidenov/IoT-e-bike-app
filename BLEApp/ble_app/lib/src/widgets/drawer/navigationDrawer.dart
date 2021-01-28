@@ -30,12 +30,6 @@ class NavigationDrawer extends StatelessWidget {
                 onTap: () =>
                     Navigator.of(context).pushNamed('/batterySettings')),
             _createDrawerItem(
-                icon: Icons.app_settings_alt,
-                text: 'Battery status',
-                // change the icon somehow
-                onTap: () => {}), //Navigator.of(context).push(
-            //MaterialPageRoute(builder: (_) => FullStatusPage($())))),
-            _createDrawerItem(
                 icon: Icons.assessment, text: 'Statistics', onTap: () => {}),
             Divider(),
             ListTile(

@@ -4,4 +4,6 @@ abstract class BaseStatus {
   double get current;
 
   int get temperature;
+
+// add optional here
 }

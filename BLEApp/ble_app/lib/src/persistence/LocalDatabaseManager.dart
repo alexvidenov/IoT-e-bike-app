@@ -49,8 +49,13 @@ class LocalDatabaseManager with CurrentContext {
   updateChangedParameters(String parameters) =>
       _deviceDao.updateParametersToChange(parameters, this.curDeviceId);
 
-  Future<bool> isAnonymous() async =>
-      await _userDao.fetchUser('anonymous') != null;
+  Future<bool> isAnonymous() async {
+    final user = await _userDao.fetchUser('anonymous');
+    if (user != null)
+      return true;
+    else
+      return false;
+  }
 
   insertAnonymousUser() =>
       _userDao.insertEntity(User('0000', 'anonymous', 'password'));

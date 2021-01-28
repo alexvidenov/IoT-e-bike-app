@@ -11,6 +11,7 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/utils/Router.dart' as router;
 import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 
 // Offline - ONLY
 // Online - optional
@@ -103,9 +104,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: DefaultTabController(
           length: 3,
           child: Scaffold(
-            key: _scaffoldKey,
-            backgroundColor: Colors.black,
-            appBar: AppBar(
+              key: _scaffoldKey,
+              backgroundColor: Colors.black,
+              appBar: AppBar(
                 backgroundColor: Colors.black,
                 title: StreamBuilder<CurrentPage>(
                     stream: widget.navigationBloc.stream,
@@ -118,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           _onPressed = () => widget.navigationBloc.to('/full');
                           _title = 'Main status';
                           break;
-                        case CurrentPage.Controller:
+                        case CurrentPage.FullStatus:
                           _onPressed = () => widget.navigationBloc.to('/map');
                           _title = 'Bat. status';
                           break;
@@ -187,51 +188,110 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   )
                 ],
-                bottom: TabBar(
-                  labelColor: Colors.lightBlueAccent,
-                  unselectedLabelColor: Colors.white,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicator: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
-                      color: Colors.black),
-                  onTap: (index) {
-                    switch (index) {
-                      case 0:
-                        widget.navigationBloc.returnToFirstRoute();
-                        break;
-                      case 1:
-                        widget.navigationBloc.to('/full');
-                        break;
-                      case 2:
-                        widget.navigationBloc.to('/map');
-                        break;
-                    }
-                  },
-                  tabs: const [
-                    Tab(
-                      text: "Short Status",
-                      icon: Icon(Icons.home),
+              ),
+              drawer: NavigationDrawer($(), $(), $<Auth>().signOut),
+              body: Navigator(
+                initialRoute: '/',
+                key: widget.navigationBloc.navigatorKey,
+                onGenerateRoute: router.Router.generateRouteSecondNavigator,
+                observers: [routeObserver],
+              ),
+              bottomNavigationBar: SafeArea(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(100)),
+                      boxShadow: [
+                        BoxShadow(
+                            spreadRadius: -10,
+                            blurRadius: 60,
+                            color: Colors.black.withOpacity(.4),
+                            offset: Offset(0, 25))
+                      ]),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 3.0, vertical: 3),
+                    child: StreamBuilder<CurrentPage>(
+                      stream: widget.navigationBloc.stream,
+                      initialData: CurrentPage.ShortStatus,
+                      builder: (_, snapshot) {
+                        int _index;
+                        switch (snapshot.data) {
+                          case CurrentPage.ShortStatus:
+                            _index = 0;
+                            break;
+                          case CurrentPage.FullStatus:
+                            _index = 1;
+                            break;
+                          case CurrentPage.Map:
+                            _index = 2;
+                            break;
+                        }
+                        return GNav(
+                            gap: 8,
+                            activeColor: Colors.white30,
+                            iconSize: 24,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 5),
+                            duration: Duration(milliseconds: 800),
+                            curve: Curves.easeOutExpo,
+                            tabBackgroundColor: Colors.lightBlue,
+                            tabs: [
+                              GButton(
+                                gap: 8,
+                                icon: Icons.home,
+                                iconActiveColor: Colors.redAccent,
+                                iconColor: Colors.black,
+                                textColor: Colors.redAccent,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 18, vertical: 5),
+                                backgroundColor: Colors.purple.withOpacity(.2),
+                                text: 'Home',
+                              ),
+                              GButton(
+                                gap: 8,
+                                icon: Icons.dashboard,
+                                text: 'Bat. status',
+                                iconActiveColor: Colors.redAccent,
+                                iconColor: Colors.black,
+                                textColor: Colors.redAccent,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 18, vertical: 5),
+                                backgroundColor: Colors.teal.withOpacity(.2),
+                              ),
+                              GButton(
+                                gap: 8,
+                                icon: Icons.zoom_out_map,
+                                iconActiveColor: Colors.redAccent,
+                                iconColor: Colors.black,
+                                textColor: Colors.redAccent,
+                                backgroundColor:
+                                    Colors.amber[600].withOpacity(.2),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 18, vertical: 5),
+                                text: 'Map',
+                              ),
+                            ],
+                            selectedIndex: _index,
+                            onTabChange: (index) {
+                              switch (index) {
+                                case 0:
+                                  widget.navigationBloc.returnToFirstRoute();
+                                  break;
+                                case 1:
+                                  widget.navigationBloc.to('/full');
+                                  break;
+                                case 2:
+                                  widget.navigationBloc.to('/map');
+                                  break;
+                              }
+                            });
+                      },
                     ),
-                    Tab(
-                      text: "Full Status",
-                      icon: Icon(Icons.dashboard),
-                    ),
-                    Tab(
-                      text: "Map",
-                      icon: Icon(Icons.zoom_out_map),
-                    )
-                  ],
-                )),
-            drawer: NavigationDrawer($(), $(), $<Auth>().signOut),
-            body: Navigator(
-              initialRoute: '/',
-              key: widget.navigationBloc.navigatorKey,
-              onGenerateRoute: router.Router.generateRouteSecondNavigator,
-              observers: [routeObserver],
-            ),
-          ),
+                  ),
+                ),
+              )),
         ));
   }
 

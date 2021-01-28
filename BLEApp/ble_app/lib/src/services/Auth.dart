@@ -32,12 +32,12 @@ class Auth {
 
   void setListenerAndDetermineState(AuthStateListener listener) async {
     this.authStateListener = listener;
-    auth.listen(this.authStateListener.onAuthStateChanged);
+    auth.listen(this.authStateListener.onAuthStateChanged); // this
     await this.isSignedInAnonymously();
   }
 
   Future<bool> isSignedInAnonymously() async {
-    if (await _dbManager.isAnonymous() != null) {
+    if (await _dbManager.isAnonymous() == true) {
       _localAuthState.addEvent(
           AuthState.authenticated('0000')); // FIXME fix that flying string
       _isAnonymous = true;
@@ -120,9 +120,7 @@ class Auth {
       _dbManager.deleteAnonymousUser();
       _localAuthState.addEvent(AuthState.loggedOut());
     } else {
-      await _auth.signOut().then((_) async {
-        // check if we're offline
-      });
+      await _auth.signOut();
     }
   }
 }
@@ -136,7 +134,7 @@ extension UserStatus on Auth {
   Stream<AuthState> get _onLocalAuthStateChanged => _localAuthState.stream;
 
   Stream<AuthState> get auth =>
-      Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]);
+      Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]); // refactor this Rx
 
   String getCurrentUserId() => _isAnonymous
       ? '0000'

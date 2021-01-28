@@ -5,7 +5,7 @@ import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/dataClasses/BaseStatus.dart';
 import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 mixin DataCachingManager on CurrentContext {
   final SettingsBloc _settingsBloc = $<SettingsBloc>();

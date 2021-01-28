@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wakelock/wakelock.dart';
 
 final logger = Logger();
 
@@ -53,11 +54,10 @@ onBackgroundFetch(String taskId) async {
   }
 }
 
-void bruh() => 1;
-
-main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  Wakelock.enable();
   configureDependencies();
   BleManager().createClient(restoreStateIdentifier: "com.parakatowski.ble_app");
   await BackgroundFetch.configure(

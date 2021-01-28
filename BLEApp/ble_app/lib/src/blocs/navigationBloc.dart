@@ -4,7 +4,7 @@ import 'package:ble_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
-enum CurrentPage { ShortStatus, Controller, Map }
+enum CurrentPage { ShortStatus, FullStatus, Map }
 
 @lazySingleton
 class NavigationBloc extends Bloc<CurrentPage, CurrentPage> {

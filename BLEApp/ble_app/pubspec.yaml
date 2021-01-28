@@ -54,6 +54,8 @@ dependencies:
   freezed_annotation: ^0.12.0
   kdtree: ^0.1.0
   flutter_launcher_icons: ^0.8.1
+  google_nav_bar: ^3.1.0
+  wakelock: ^0.2.1+1
   logger: ^0.9.4
 
   # The following adds the Cupertino Icons font to your application.
@@ -124,5 +126,4 @@ flutter:
 
 
   assets:
-    - assets/googleImage.jpg
-    - assets/facebookLogo.jpg
+    - assets/images/app_logo.png

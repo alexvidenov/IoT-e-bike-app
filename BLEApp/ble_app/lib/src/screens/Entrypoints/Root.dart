@@ -62,6 +62,9 @@ class _RootPageState extends State<RootPage> with AuthStateListener {
   }
 
   @override
-  onAuthStateChanged(AuthState authState) =>
-      setState(() => currAuthState = authState);
+  onAuthStateChanged(AuthState authState) {
+    print('STATE IS $authState');
+    setState(() => currAuthState = authState);
+  }
+
 }

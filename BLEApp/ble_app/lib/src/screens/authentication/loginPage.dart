@@ -1,8 +1,110 @@
 import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:ble_app/src/sealedStates/authState.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:ble_app/src/utils/constants.dart';
+
+const String title = "Zecotec";
+const String noAccount = "Don't have an account?";
+const Color kMainColor = Color(0xffFFFFFF);
+const Color kSecondyColor = Colors.lightBlueAccent;
+
+class CustomAppBar extends StatelessWidget {
+  final String screenName;
+  final Function onPressed;
+
+  CustomAppBar({this.onPressed, this.screenName});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Material(
+          color: Colors.transparent,
+          child: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: kMainColor,
+              ),
+              onPressed: onPressed),
+        ),
+        Spacer(),
+        Padding(
+          padding: const EdgeInsets.only(right: 30),
+          child: GestureDetector(
+            onTap: () => {}, // pass toggleView here,
+            child: Text(
+              screenName,
+              style: TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold, color: kMainColor),
+            ),
+          ),
+        ),
+        Container(
+          height: 40,
+          width: 4,
+          decoration: BoxDecoration(
+              color: kMainColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                bottomLeft: Radius.circular(30),
+              )),
+        )
+      ],
+    );
+  }
+}
+
+Padding inputWidget(
+    {String hintText,
+    IconData primaryIcon,
+    bool endIcon = false,
+    IconData sufixIconData,
+    void Function(String) onChanged}) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: TextField(
+      decoration: InputDecoration(
+        suffixIcon: endIcon
+            ? Icon(
+                sufixIconData,
+                color: kMainColor,
+              )
+            : null,
+        hintText: hintText,
+        hintStyle: TextStyle(color: kMainColor),
+        icon: Icon(
+          primaryIcon,
+          color: kMainColor,
+        ),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: kMainColor.withOpacity(0.8), width: 1),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: kMainColor, width: 1.5),
+        ),
+      ),
+      onChanged: onChanged,
+    ),
+  );
+}
+
+Widget mainButton(IconData iconName, Function onPressed) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 20.0),
+    child: SizedBox(
+      width: 180,
+      height: 45,
+      child: FlatButton(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          color: kSecondyColor,
+          onPressed: onPressed,
+          child: Icon(
+            iconName,
+            color: kMainColor,
+          )),
+    ),
+  );
+}
 
 class Login extends StatelessWidget {
   final AuthBloc _auth;
@@ -28,8 +130,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _rememberMe = false;
-
   final formKey = GlobalKey<FormState>();
 
   String _email;
@@ -77,330 +177,99 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildEmailTF() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Email',
-          style: kLabelStyle,
-        ),
-        SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 60.0,
-          child: TextFormField(
-            key: Key('Email'),
-            onChanged: (value) => _email = value,
-            keyboardType: TextInputType.emailAddress,
-            style: TextStyle(
-              color: Colors.white,
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.email,
-                color: Colors.white,
-              ),
-              hintText: 'Enter your Email',
-              hintStyle: kHintTextStyle,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPasswordTF() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Password',
-          style: kLabelStyle,
-        ),
-        SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 60.0,
-          child: TextFormField(
-            key: Key('password'),
-            onChanged: (password) => _password = password,
-            obscureText: true,
-            style: TextStyle(
-              color: Colors.white,
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.lock,
-                color: Colors.white,
-              ),
-              hintText: 'Enter your Password',
-              hintStyle: kHintTextStyle,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildForgotPasswordBtn() {
-    return Container(
-      alignment: Alignment.centerRight,
-      child: FlatButton(
-        onPressed: () => print('Forgot Password Button Pressed'),
-        padding: EdgeInsets.only(right: 0.0),
-        child: Text(
-          'Forgot Password?',
-          style: kLabelStyle,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRememberMeCheckbox() {
-    return Container(
-      height: 20.0,
-      child: Row(
-        children: <Widget>[
-          Theme(
-            data: ThemeData(unselectedWidgetColor: Colors.white),
-            child: Checkbox(
-              value: _rememberMe,
-              checkColor: Colors.green,
-              activeColor: Colors.white,
-              onChanged: (value) {
-                setState(() {
-                  _rememberMe = value;
-                });
-              },
-            ),
-          ),
-          Text(
-            'Remember me',
-            style: kLabelStyle,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLoginBtn() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: RaisedButton(
-        elevation: 5.0,
-        onPressed: validateAndSubmit,
-        padding: EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: Colors.white,
-        child: Text(
-          'LOGIN',
-          style: TextStyle(
-            color: Color(0xFF527DAA),
-            letterSpacing: 1.5,
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'OpenSans',
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSignInWithText() {
-    return Column(
-      children: <Widget>[
-        Text(
-          '- OR -',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        SizedBox(height: 20.0),
-        Text(
-          'Sign in with',
-          style: kLabelStyle,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSocialBtn(Function onTap, AssetImage logo) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 60.0,
-        width: 60.0,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0, 2),
-              blurRadius: 6.0,
-            ),
-          ],
-          image: DecorationImage(
-            image: logo,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSocialBtnRow() {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 30.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          _buildSocialBtn(
-            () => print('Login with Google'),
-            AssetImage(
-              'assets/googleImage.jpg',
-            ),
-          ),
-          _buildSocialBtn(
-            () => print('Login with Google'),
-            AssetImage(
-              'assets/facebookLogo.jpg',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSignUpBtn() {
-    return GestureDetector(
-      onTap: () => widget.toggleView(),
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: 'Don\'t have an Account? ',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18.0,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            TextSpan(
-              text: 'Sign Up',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.lightBlue,
-          title: Text(
-            'Login',
-            style: TextStyle(fontSize: 23),
-          ),
-          leading: Icon(Icons.account_circle),
-          actions: [
-            Row(
-              children: [
-                RaisedButton(
-                    color: Colors.lightBlue,
-                    onPressed: widget.toggleView,
-                    child: Text('REGISTER',
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            letterSpacing: 2,
-                            fontFamily: 'Europe_Ext'))),
-                Icon(Icons.arrow_forward)
-              ],
+  Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    return SafeArea(
+      child: Scaffold(
+        body: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            Image.network(
+              "https://cdn.mos.cms.futurecdn.net/62L9uRGHNzpjYzvMEseSYH.jpg",
+              fit: BoxFit.fill,
+            ),
+            //Image.asset("assets/images/someimage.jpg", fit: BoxFit.fill),
+            Container(
+              color: kSecondyColor.withOpacity(0.5),
+            ),
+            SingleChildScrollView(
+              child: Form(
+                key: this.formKey,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: height * 0.1,
+                      width: width,
+                      child: CustomAppBar(
+                        screenName: "Register",
+                        onPressed: () {},
+                      ),
+                    ),
+                    Container(
+                        height: height * 0.4,
+                        alignment: Alignment.center,
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                              text: 'Z',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 35,
+                                  fontFamily: 'Europe_Ext'),
+                              children: [
+                                TextSpan(
+                                  text: 'ec',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 30,
+                                      fontFamily: 'Europe_Ext'),
+                                ),
+                                TextSpan(
+                                  text: 'otec',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 30,
+                                      fontFamily: 'Europe_Ext'),
+                                ),
+                              ]),
+                        )),
+                    inputWidget(
+                        hintText: "Email",
+                        primaryIcon: Icons.person_outline,
+                        onChanged: (value) => this._email = value),
+                    inputWidget(
+                        hintText: "Password",
+                        primaryIcon: Icons.vpn_key,
+                        endIcon: true,
+                        sufixIconData: Icons.help_outline,
+                        onChanged: (value) => this._password = value),
+                    mainButton(Icons.exit_to_app, () => validateAndSubmit()),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(noAccount,
+                              style:
+                                  TextStyle(color: kMainColor, fontSize: 16)),
+                          FlatButton(
+                              onPressed: () => widget.toggleView(),
+                              child: Text(
+                                "SignUp",
+                                style: TextStyle(color: kMainColor),
+                              ))
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
             )
           ],
         ),
-        body: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.light,
-          child: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  height: double.infinity,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFF73AEF5),
-                        Color(0xFF61A4F1),
-                        Color(0xFF478DE0),
-                        Color(0xFF398AE5),
-                      ],
-                      stops: [0.1, 0.4, 0.7, 0.9],
-                    ),
-                  ),
-                ),
-                Container(
-                  height: double.infinity,
-                  child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 40.0,
-                        vertical: 50.0,
-                      ),
-                      child: Form(
-                        key: formKey,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              'Sign in',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Europe_Ext',
-                                fontSize: 27.0,
-                                letterSpacing: 2,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 30.0),
-                            _buildEmailTF(),
-                            const SizedBox(
-                              height: 30.0,
-                            ),
-                            _buildPasswordTF(),
-                            _buildForgotPasswordBtn(),
-                            _buildRememberMeCheckbox(),
-                            _buildLoginBtn(),
-                            _buildSignInWithText(),
-                            _buildSocialBtnRow(),
-                            _buildSignUpBtn(),
-                          ],
-                        ),
-                      )),
-                )
-              ],
-            ),
-          ),
-        ),
-      );
+      ),
+    );
+  }
 }
