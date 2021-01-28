@@ -1,12 +1,9 @@
-import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/persistence/dao/deviceDao.dart';
-import 'package:ble_app/src/persistence/dao/userDao.dart';
+import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/persistence/entities/user.dart' as localUser;
-import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/listeners/authStateListener.dart';
 import 'package:ble_app/src/sealedStates/authState.dart';
 import 'package:ble_app/src/services/Database.dart';
@@ -23,50 +20,38 @@ import 'CloudMessaging.dart';
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  final LocalDatabase _localDatabase;
-
-  UserDao get _userDao => _localDatabase.userDao;
-
-  DeviceDao get _deviceDao => _localDatabase.deviceDao;
+  final LocalDatabaseManager _dbManager;
 
   AuthStateListener authStateListener;
 
-  final localStream = RxObject<AuthState>();
+  final _localAuthState = RxObject<AuthState>();
 
-  Auth([this._localDatabase]);
+  bool _isAnonymous;
 
-  setListenerAndDetermineState(AuthStateListener listener) async {
+  Auth([this._dbManager]);
+
+  void setListenerAndDetermineState(AuthStateListener listener) async {
     this.authStateListener = listener;
     auth.listen(this.authStateListener.onAuthStateChanged);
     await this.isSignedInAnonymously();
   }
 
   Future<bool> isSignedInAnonymously() async {
-    localUser.User user = await _userDao.isUserSignedInAnonymously('anonymous');
-    if (user != null) {
-      localStream.addEvent(AuthState.authenticated(user.id));
+    if (await _dbManager.isAnonymous() != null) {
+      _localAuthState.addEvent(
+          AuthState.authenticated('0000')); // FIXME fix that flying string
+      _isAnonymous = true;
       return true;
     } else {
-      return false;
-    }
-  }
-
-  Future<bool> isAnonymous() async {
-    localUser.User user = await _userDao.isUserSignedInAnonymously('anonymous');
-    if (user != null) {
-      return true;
-    } else {
+      _isAnonymous = false;
       return false;
     }
   }
 
   Future<AuthState> signInAnonymously() {
-    _userDao.insertEntity(localUser.User('0000', 'anonymous', 'password'));
-    _deviceDao.insertEntity(Device(
-        deviceId: '1234', // TODO: extract in a separate object these constants
-        userId: '0000',
-        name: BluetoothUtils.defaultBluetoothDeviceName));
-    localStream.addEvent(AuthState.authenticated('0000'));
+    _dbManager.insertAnonymousUser();
+    _dbManager.insertAnonymousDevice();
+    _localAuthState.addEvent(AuthState.authenticated('0000'));
     return Future.value(AuthState.authenticated('0000'));
   }
 
@@ -90,9 +75,9 @@ class Auth {
       }
     } else {
       localUser.User user;
-      user = await _userDao.fetchUser(email); // TODO: and password
+      user = await _dbManager.fetchUser(email); // TODO: and password
       if (user != null) {
-        localStream.addEvent(AuthState.authenticated(user.id));
+        _localAuthState.addEvent(AuthState.authenticated(user.id));
         return AuthState.authenticated(user.id);
       } else
         return AuthState.failedToAuthenticate(
@@ -114,12 +99,11 @@ class Auth {
         final _db = FirestoreDatabase(uid: _id, deviceId: deviceSerialNumber);
         await _db.setUserId();
         await _db.setDeviceId();
-        await _userDao.insertEntity(localUser.User(_id, email, password));
-        await _deviceDao.insertEntity(Device(
+        await _dbManager.insertUser(localUser.User(_id, email, password));
+        await _dbManager.insertDevice(Device(
             deviceId: deviceSerialNumber,
             userId: _id,
             name: BluetoothUtils.defaultBluetoothDeviceName));
-        //authStateListener.onAuthStateChanged(AuthState.authenticated(user.uid));
         return AuthState.authenticated(user.uid);
       }
     } on FirebaseAuthException catch (e) {
@@ -131,33 +115,32 @@ class Auth {
   }
 
   Future<void> signOut() async {
-    await _auth.signOut().then((_) async {
-      if (await isAnonymous()) {
-        this
-            ._userDao
-            .deleteEntity(localUser.User('0000', 'anonymous', 'password'));
-        $<SettingsBloc>()
-            .deleteAnonymousUser(); // TODO: actually abandon sharedPrefs for that functionality
-      }
-      // check if we're offline
-      localStream.addEvent(AuthState.loggedOut());
-      authStateListener.onAuthStateChanged(AuthState.loggedOut());
-    });
+    if (_isAnonymous) {
+      _isAnonymous = false;
+      _dbManager.deleteAnonymousUser();
+      _localAuthState.addEvent(AuthState.loggedOut());
+    } else {
+      await _auth.signOut().then((_) async {
+        // check if we're offline
+      });
+    }
   }
 }
 
 extension UserStatus on Auth {
   Stream<AuthState> get _onAuthStateChanged =>
-      _auth.authStateChanges().map((User user) => user != null
+      _auth.authStateChanges().map((user) => user != null
           ? AuthState.authenticated(user.uid)
           : AuthState.loggedOut());
 
-  Stream<AuthState> get _onLocalAuthStateChanged => localStream.stream;
+  Stream<AuthState> get _onLocalAuthStateChanged => _localAuthState.stream;
 
   Stream<AuthState> get auth =>
       Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]);
 
-  String getCurrentUserId() => _auth.currentUser?.uid;
+  String getCurrentUserId() => _isAnonymous
+      ? '0000'
+      : _auth.currentUser?.uid; // aacgtually have the ternary here
 }
 
 extension AuthExceptionHandler on Auth {

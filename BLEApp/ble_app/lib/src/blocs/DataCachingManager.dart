@@ -22,7 +22,6 @@ mixin DataCachingManager on CurrentContext {
             userId: this.curUserId, deviceSerialNumber: this.curDeviceId);
   }
 
-  /*
   @optionalTypeArgs
   addData<T extends BaseStatus>(T _model) {
     _appData.addCurrentRecord({
@@ -36,5 +35,4 @@ mixin DataCachingManager on CurrentContext {
     _settingsBloc
         .setUserData(jsonEncode(_appData.toJson())); // list of userData
   }
-   */
 }

@@ -7,8 +7,4 @@ mixin CurrentContext {
   String get curUserId => $<AuthBloc>().userId;
 
   String get curDeviceId => $<DeviceRepository>().deviceId;
-
-  bool get isAnonymous => $<SettingsBloc>().isAnonymous();
-
-  String get anonymousDeviceId => '1234';
 }

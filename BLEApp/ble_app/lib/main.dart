@@ -31,7 +31,8 @@ Future<void> firebaseStorageUpload() async {
   final String jsonString = prefs.get(PrefsKeys.USER_DATA);
   if (jsonString != null) {
     print('NOT NULL DATA');
-    print('User Id: ' + Auth().getCurrentUserId());
+    print('User Id: ' +
+        Auth().getCurrentUserId()); // FIXME fix that cuz its an isolate
     await prefs.remove(PrefsKeys.USER_DATA);
     await Storage(uid: Auth().getCurrentUserId())
         .upload(jsonDecode(jsonString));

@@ -2,7 +2,7 @@ part of '../devicesBloc.dart';
 
 extension BLEScanMethods on DevicesBloc {
   _startScan() async {
-    if (!isAnonymous) await _loadDevicesFromCache(); // actually won't be that way
+    await _loadDevicesFromCache();
     _scanSubscription = _bleManager.startPeripheralScan(
         uuids: [BluetoothUtils.SERVICE_UUID]).listen((scanResult) {
       final bleDevice = BleDevice(peripheral: scanResult.peripheral);

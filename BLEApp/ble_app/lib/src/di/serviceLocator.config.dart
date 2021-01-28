@@ -54,7 +54,7 @@ GetIt $initGetIt(
         get<LocalDatabaseManager>(),
       ));
   gh.factory<ShortStatusBloc>(() => ShortStatusBloc(get<DeviceRepository>()));
-  gh.lazySingleton<Auth>(() => Auth(get<LocalDatabase>()));
+  gh.lazySingleton<Auth>(() => Auth(get<LocalDatabaseManager>()));
   gh.lazySingleton<AuthBloc>(() => AuthBloc(get<Auth>()));
   gh.factory<BluetoothAuthBloc>(() =>
       BluetoothAuthBloc(get<DeviceRepository>(), get<LocalDatabaseManager>()));

@@ -6,9 +6,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 class Storage {
   final String uid; // user id
 
-  Storage({this.uid});
+  final Reference _root = FirebaseStorage.instance.ref();
 
-  final StorageReference _root = FirebaseStorage.instance.ref();
+  Storage({this.uid});
 
   Future<void> upload(List<dynamic> data) async {
     final appData = AppData.fromJson(data);
@@ -40,9 +40,20 @@ class Storage {
 
     print('UPLOADING ON $uid/$deviceSerialNumber/$fileName');
 
-    StorageReference fireRef =
+    Reference fileRef =
         _root.child('/users/$uid/$deviceSerialNumber/$fileName');
 
-    await fireRef.putData(uploadData).onComplete;
+    await fileRef.putData(uploadData).whenComplete(() => {});
+  }
+
+  Future<String> download(String deviceNumber) async {
+    final Reference ref = _root.child('/users/$uid/$deviceNumber');
+    final files = await ref.listAll();
+    Uint8List uint8list = await files.items.elementAt(0).getData();
+    return String.fromCharCodes(uint8list);
+    //files.items.forEach((ref) {
+    // return ref.getData();
+    //ref.getDownloadURL();
+    //});
   }
 }

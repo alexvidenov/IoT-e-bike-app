@@ -72,10 +72,8 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
               widget._dbManager.setMacAddress(
                   widget._deviceBloc.device.value.id); // device Id is inferred
               _isAuthenticated = true;
-              //Navigator.of(context).pushReplacementNamed('/home');
               Navigator.of(context)
                   .pushNamedAndRemoveUntil('/fetchParameters', (_) => false);
-              //Navigator.of(context).pushReplacementNamed('/fetchParameters');
             },
             failedToBTAuthenticate: (reason) => _presentDialog(context,
                 message: reason.toString(), action: 'TRY AGAIN'));

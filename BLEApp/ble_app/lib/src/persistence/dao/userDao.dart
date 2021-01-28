@@ -10,6 +10,6 @@ abstract class UserDao extends Dao<User> {
   @Query('SELECT * FROM users WHERE email = :email')
   Future<User> fetchUser(String email);
 
-  @Query('SELECT * FROM users WHERE email = :email')
-  Future<User> isUserSignedInAnonymously(String email);
+  @Query('DELETE FROM users WHERE email = :email')
+  Future<void> deleteUser(String email);
 }

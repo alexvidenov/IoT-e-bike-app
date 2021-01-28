@@ -27,12 +27,6 @@ class SettingsBloc {
     }
   }
 
-  bool isAnonymous() => _preferencesService.anonymousUserExists();
-
-  setAnonymousUser() => _preferencesService.setAnonymousUser();
-
-  deleteAnonymousUser() => _preferencesService.removeAnonymousUser();
-
   setUserData(String json) => _preferencesService.setUserData(json);
 
   deleteUserData() => _preferencesService.deleteUserData();
@@ -47,8 +41,7 @@ class SettingsBloc {
 
   setAutoPassword(String deviceId) {
     _saveDevice(deviceId);
-    _savePassword(
-        password.value); // actually call the internal valuestream here
+    _savePassword(password.value);
     _connectionRx.addEvent(ConnectionSettings.AutoPassword);
   }
 

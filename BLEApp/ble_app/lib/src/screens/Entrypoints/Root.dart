@@ -36,11 +36,11 @@ class _RootPageState extends State<RootPage> with AuthStateListener {
     if (mode == Mode.Account)
       setState(() {
         isFirstTime = false;
-        currAuthState = AuthState.loggedOut();
+        currAuthState =
+            AuthState.loggedOut(); // TODO: fix this even tho it works
       });
     else if (mode == Mode.Incognito) {
       isFirstTime = false;
-      widget._settingsBloc.setAnonymousUser();
       widget._auth.signInAnonymously();
     }
   }

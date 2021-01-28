@@ -68,7 +68,7 @@ extension FetchParams on ParameterFetchBloc {
               .setDeviceParameters(_parameters);
         }
         final entity = DeviceParameters(
-            id: isAnonymous ? anonymousDeviceId : curDeviceId,
+            id: curDeviceId,
             cellCount: _parameters['00'].toInt(),
             maxCellVoltage: _parameters['01'] / 100,
             maxRecoveryVoltage: _parameters['02'] / 100,

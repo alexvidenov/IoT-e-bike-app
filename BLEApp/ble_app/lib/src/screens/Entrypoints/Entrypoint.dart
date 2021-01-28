@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 abstract class EntryPoint extends StatelessWidget {
+  // TODO: make other routes entrypoints as well because of the MediaQueryz
   final Route<dynamic> Function(RouteSettings) onGenerateRoute;
 
   const EntryPoint({

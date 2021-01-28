@@ -43,12 +43,6 @@ class SharedPrefsService {
 
   isFirstTime() => _getPrefs(PrefsKeys.IS_FIRST_TIME);
 
-  bool anonymousUserExists() => _getPrefs(PrefsKeys.ANONYMOUS_USER) ?? false;
-
-  setAnonymousUser() => _savePrefs(PrefsKeys.ANONYMOUS_USER, true);
-
-  removeAnonymousUser() => _removePrefs(PrefsKeys.ANONYMOUS_USER);
-
   String userData() => _getPrefs(PrefsKeys.USER_DATA);
 
   setUserData(String json) => _savePrefs(PrefsKeys.USER_DATA, json);

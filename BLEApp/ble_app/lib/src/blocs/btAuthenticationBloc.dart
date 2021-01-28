@@ -31,8 +31,13 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
           //}x
           //else{
           //_db.deviceDao.setMacAddress(_re, int.parse(_repository.deviceId));
-          _repository.deviceSerialNumber =
-              1234567.toString(); // TODO: fetch 55 param here (for example)
+          if (await _db.isAnonymous()) {
+            // not the right method tho
+            _repository.deviceSerialNumber = '1234';
+          } else {
+            _repository.deviceSerialNumber =
+                1234567.toString(); // TODO: fetch 55 param here (for example)
+          }
           addEvent(BTAuthState.btAuthenticated());
           // }
         }

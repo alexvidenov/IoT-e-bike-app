@@ -133,7 +133,8 @@ class DeviceRepository {
     return c;
   }
 
-  String get deviceId => _deviceSerialNumber;
+  String get deviceId =>
+      _deviceSerialNumber;
 
   set deviceSerialNumber(String id) =>
       _deviceSerialNumber = id; // TODO: fix the shitty naming here here

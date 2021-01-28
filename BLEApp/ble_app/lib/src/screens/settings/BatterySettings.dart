@@ -84,7 +84,7 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
       : this._parameterListenerBloc = parameterListenerBloc,
         super(bloc: parameterListenerBloc);
 
-  Future<void> completion(String key, String value) async { // TODO: actually write a typedef for that one
+  Future<void> completion(String key, String value) async { // TODO: actually write a typedef for that one and move it in the bloc
     _repository.cancel();
     await Future.delayed(
         Duration(milliseconds: 150), // works perfectly with 80.

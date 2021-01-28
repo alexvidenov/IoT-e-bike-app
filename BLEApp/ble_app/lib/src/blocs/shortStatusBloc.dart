@@ -3,13 +3,11 @@ import 'dart:convert';
 import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/blocs/DataCachingManager.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:ble_app/src/sealedStates/shortStatusState.dart';
-import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/utils/ADCToTemp.dart';
 import 'package:injectable/injectable.dart';
 
@@ -50,7 +48,7 @@ class ShortStatusBloc extends ParameterAwareBloc<ShortStatusState, String>
       _uploadTimer++;
       if (_uploadTimer == 10) {
         _uploadTimer = 0;
-        //addData(_model.model);
+        addData<ShortStatus>(_model.model);
       }
     });
   }

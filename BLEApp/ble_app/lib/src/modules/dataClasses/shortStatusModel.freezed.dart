@@ -14,9 +14,9 @@ class _$ShortStatusModelTearOff {
   const _$ShortStatusModelTearOff();
 
 // ignore: unused_element
-  _ShortStatus call(
+  ShortStatus call(
       {double totalVoltage = 0, double current = 0, int temperature = 0}) {
-    return _ShortStatus(
+    return ShortStatus(
       totalVoltage: totalVoltage,
       current: current,
       temperature: temperature,
@@ -72,25 +72,25 @@ class _$ShortStatusModelCopyWithImpl<$Res>
 }
 
 /// @nodoc
-abstract class _$ShortStatusCopyWith<$Res>
+abstract class $ShortStatusCopyWith<$Res>
     implements $ShortStatusModelCopyWith<$Res> {
-  factory _$ShortStatusCopyWith(
-          _ShortStatus value, $Res Function(_ShortStatus) then) =
-      __$ShortStatusCopyWithImpl<$Res>;
+  factory $ShortStatusCopyWith(
+          ShortStatus value, $Res Function(ShortStatus) then) =
+      _$ShortStatusCopyWithImpl<$Res>;
   @override
   $Res call({double totalVoltage, double current, int temperature});
 }
 
 /// @nodoc
-class __$ShortStatusCopyWithImpl<$Res>
+class _$ShortStatusCopyWithImpl<$Res>
     extends _$ShortStatusModelCopyWithImpl<$Res>
-    implements _$ShortStatusCopyWith<$Res> {
-  __$ShortStatusCopyWithImpl(
-      _ShortStatus _value, $Res Function(_ShortStatus) _then)
-      : super(_value, (v) => _then(v as _ShortStatus));
+    implements $ShortStatusCopyWith<$Res> {
+  _$ShortStatusCopyWithImpl(
+      ShortStatus _value, $Res Function(ShortStatus) _then)
+      : super(_value, (v) => _then(v as ShortStatus));
 
   @override
-  _ShortStatus get _value => super._value as _ShortStatus;
+  ShortStatus get _value => super._value as ShortStatus;
 
   @override
   $Res call({
@@ -98,7 +98,7 @@ class __$ShortStatusCopyWithImpl<$Res>
     Object current = freezed,
     Object temperature = freezed,
   }) {
-    return _then(_ShortStatus(
+    return _then(ShortStatus(
       totalVoltage: totalVoltage == freezed
           ? _value.totalVoltage
           : totalVoltage as double,
@@ -109,9 +109,11 @@ class __$ShortStatusCopyWithImpl<$Res>
   }
 }
 
+@Implements(BaseStatus)
+
 /// @nodoc
-class _$_ShortStatus implements _ShortStatus {
-  const _$_ShortStatus(
+class _$ShortStatus implements ShortStatus {
+  const _$ShortStatus(
       {this.totalVoltage = 0, this.current = 0, this.temperature = 0})
       : assert(totalVoltage != null),
         assert(current != null),
@@ -135,7 +137,7 @@ class _$_ShortStatus implements _ShortStatus {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _ShortStatus &&
+        (other is ShortStatus &&
             (identical(other.totalVoltage, totalVoltage) ||
                 const DeepCollectionEquality()
                     .equals(other.totalVoltage, totalVoltage)) &&
@@ -155,13 +157,13 @@ class _$_ShortStatus implements _ShortStatus {
       const DeepCollectionEquality().hash(temperature);
 
   @override
-  _$ShortStatusCopyWith<_ShortStatus> get copyWith =>
-      __$ShortStatusCopyWithImpl<_ShortStatus>(this, _$identity);
+  $ShortStatusCopyWith<ShortStatus> get copyWith =>
+      _$ShortStatusCopyWithImpl<ShortStatus>(this, _$identity);
 }
 
-abstract class _ShortStatus implements ShortStatusModel {
-  const factory _ShortStatus(
-      {double totalVoltage, double current, int temperature}) = _$_ShortStatus;
+abstract class ShortStatus implements ShortStatusModel, BaseStatus {
+  const factory ShortStatus(
+      {double totalVoltage, double current, int temperature}) = _$ShortStatus;
 
   @override
   double get totalVoltage;
@@ -170,5 +172,5 @@ abstract class _ShortStatus implements ShortStatusModel {
   @override
   int get temperature;
   @override
-  _$ShortStatusCopyWith<_ShortStatus> get copyWith;
+  $ShortStatusCopyWith<ShortStatus> get copyWith;
 }
