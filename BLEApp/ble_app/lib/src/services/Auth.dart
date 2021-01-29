@@ -37,7 +37,7 @@ class Auth {
   }
 
   Future<bool> isSignedInAnonymously() async {
-    if (await _dbManager.isAnonymous() == true) {
+    if (await _dbManager.isAnonymous()) {
       _localAuthState.addEvent(
           AuthState.authenticated('0000')); // FIXME fix that flying string
       _isAnonymous = true;
@@ -51,6 +51,7 @@ class Auth {
   Future<AuthState> signInAnonymously() {
     _dbManager.insertAnonymousUser();
     _dbManager.insertAnonymousDevice();
+    _isAnonymous = true;
     _localAuthState.addEvent(AuthState.authenticated('0000'));
     return Future.value(AuthState.authenticated('0000'));
   }
@@ -63,8 +64,16 @@ class Auth {
         final UserCredential credential = await _auth
             .signInWithEmailAndPassword(email: email, password: password);
         user = credential?.user;
+        final _firestore = FirestoreDatabase(uid: user.uid);
+        /*
+        if (!(await _dbManager.userExists(user.email))) {
+          await _dbManager.insertUser(localUser.User(user.uid, user.email, password));
+          await _dbManager.insertDevices(await _firestore.fetchUserDevices());
+          await _dbManager.insertParameters();
+        }
+         */
         if (user != null) {
-          FirestoreDatabase(uid: user.uid).setUserDeviceToken(
+          _firestore.setUserDeviceToken(
               token:
                   await $<CloudMessaging>().getToken()); // TODO; should update
           return AuthState.authenticated(user.uid);
@@ -133,8 +142,8 @@ extension UserStatus on Auth {
 
   Stream<AuthState> get _onLocalAuthStateChanged => _localAuthState.stream;
 
-  Stream<AuthState> get auth =>
-      Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]); // refactor this Rx
+  Stream<AuthState> get auth => Rx.merge(
+      [_onAuthStateChanged, _onLocalAuthStateChanged]); // refactor this Rx
 
   String getCurrentUserId() => _isAnonymous
       ? '0000'

@@ -48,8 +48,6 @@ class DeviceRepository {
     _deviceController.add(_bleDevice);
   }
 
-  //_addCharacteristicEvent(String event) => _characteristicValueSink.add(event);
-
   _listenToCharacteristic() {
     _characteristicSubscription = _characteristic?.monitor()?.listen((event) {
       print('DATA EVENT: ' + event.toString());
@@ -59,7 +57,6 @@ class DeviceRepository {
             if (event.elementAt(i) == 10) {
               _value = _curValue;
               _characteristicRx.addEvent(_value);
-              // _addCharacteristicEvent(_value);
               _curValue = "";
             } else {
               _curValue += DataParser.parseList([event.elementAt(i)]);
@@ -141,7 +138,6 @@ class DeviceRepository {
 
   dispose() {
     _characteristicSubscription?.cancel();
-    _characteristicRx.dispose();
-    //_characteristicController.close();
+    _characteristicRx.dispose();;
   }
 }

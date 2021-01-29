@@ -33,7 +33,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-
+          height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(5)),
               boxShadow: [

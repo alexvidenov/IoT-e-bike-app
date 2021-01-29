@@ -52,7 +52,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
     _listenToAuthBloc();
   }
 
-  _handleBLEError() => Future.delayed(Duration(seconds: 6), () {
+  _handleBLEError() => Future.delayed(Duration(seconds: 7), () {
         //TODO:extract in some handlers object
         if (!_connected) widget._deviceBloc.connect();
       });

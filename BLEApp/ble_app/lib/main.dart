@@ -33,7 +33,8 @@ Future<void> firebaseStorageUpload() async {
   if (jsonString != null) {
     print('NOT NULL DATA');
     print('User Id: ' +
-        Auth().getCurrentUserId()); // FIXME fix that cuz its an isolate
+        Auth()
+            .getCurrentUserId()); // FIXME fix the null bool cuz its an isolate
     await prefs.remove(PrefsKeys.USER_DATA);
     await Storage(uid: Auth().getCurrentUserId())
         .upload(jsonDecode(jsonString));
@@ -75,7 +76,7 @@ void main() async {
       periodic: true,
       delay: 60000,
       enableHeadless: true,
-      forceAlarmManager: true));
+      forceAlarmManager: Platform.isAndroid));
   $<CloudMessaging>().init();
   $.isReady<LocalDatabase>().then((_) => runApp(RootPage($(), $())));
 }

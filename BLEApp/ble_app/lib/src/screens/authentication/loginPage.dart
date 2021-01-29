@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 const String title = "Zecotec";
 const String noAccount = "Don't have an account?";
 const Color kMainColor = Color(0xffFFFFFF);
-const Color kSecondyColor = Colors.lightBlueAccent;
+const Color kSecondaryColor = Colors.lightBlueAccent;
 
 class CustomAppBar extends StatelessWidget {
   final String screenName;
@@ -24,13 +24,13 @@ class CustomAppBar extends StatelessWidget {
                 Icons.arrow_back_ios,
                 color: kMainColor,
               ),
-              onPressed: onPressed),
+              onPressed: () => {}),
         ),
         Spacer(),
         Padding(
           padding: const EdgeInsets.only(right: 30),
           child: GestureDetector(
-            onTap: () => {}, // pass toggleView here,
+            onTap: onPressed, // pass toggleView here,
             child: Text(
               screenName,
               style: TextStyle(
@@ -96,7 +96,7 @@ Widget mainButton(IconData iconName, Function onPressed) {
       child: FlatButton(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          color: kSecondyColor,
+          color: kSecondaryColor,
           onPressed: onPressed,
           child: Icon(
             iconName,
@@ -188,11 +188,12 @@ class _LoginScreenState extends State<LoginScreen> {
           children: <Widget>[
             Image.network(
               "https://cdn.mos.cms.futurecdn.net/62L9uRGHNzpjYzvMEseSYH.jpg",
+              // TODO: replace with some other image, this is test
               fit: BoxFit.fill,
             ),
             //Image.asset("assets/images/someimage.jpg", fit: BoxFit.fill),
             Container(
-              color: kSecondyColor.withOpacity(0.5),
+              color: kSecondaryColor.withOpacity(0.6),
             ),
             SingleChildScrollView(
               child: Form(
@@ -204,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: width,
                       child: CustomAppBar(
                         screenName: "Register",
-                        onPressed: () {},
+                        onPressed: () => widget.toggleView(),
                       ),
                     ),
                     Container(

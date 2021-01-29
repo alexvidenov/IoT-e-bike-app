@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 actions: <Widget>[
                   StreamBuilder<OutputsState>(
                     stream: widget._controlBloc.stream,
-                    initialData: OutputsState.On,
+                    initialData: OutputsState.Off,
                     builder: (_, snapshot) {
                       Text text = snapshot.data == OutputsState.On
                           ? Text('Off',

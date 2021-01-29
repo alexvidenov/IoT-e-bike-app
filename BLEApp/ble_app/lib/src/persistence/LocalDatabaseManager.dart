@@ -27,8 +27,13 @@ class LocalDatabaseManager with CurrentContext {
 
   insertDevice(Device device) => _deviceDao.insertEntity(device);
 
+  insertDevices(List<Device> devices) => _deviceDao.insertList(devices);
+
   insertParameters(DeviceParameters parameters) =>
       _parametersDao.insertEntity(parameters);
+
+  insertListParameters(List<DeviceParameters> parameters) =>
+      _parametersDao.insertList(parameters);
 
   Future<User> fetchUser(String email) async => await _userDao.fetchUser(email);
 
@@ -49,13 +54,11 @@ class LocalDatabaseManager with CurrentContext {
   updateChangedParameters(String parameters) =>
       _deviceDao.updateParametersToChange(parameters, this.curDeviceId);
 
-  Future<bool> isAnonymous() async {
-    final user = await _userDao.fetchUser('anonymous');
-    if (user != null)
-      return true;
-    else
-      return false;
-  }
+  Future<bool> userExists(String email) async =>
+      await _userDao.fetchUser(email) != null;
+
+  Future<bool> isAnonymous() async =>
+      await _userDao.fetchUser('anonymous') != null;
 
   insertAnonymousUser() =>
       _userDao.insertEntity(User('0000', 'anonymous', 'password'));

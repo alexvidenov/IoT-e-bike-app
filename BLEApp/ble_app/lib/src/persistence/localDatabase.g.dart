@@ -181,6 +181,12 @@ class _$UserDao extends UserDao {
   }
 
   @override
+  Future<void> insertList(List<User> entities) async {
+    await _userInsertionAdapter.insertList(
+        entities, OnConflictStrategy.replace);
+  }
+
+  @override
   Future<void> updateEntity(User entity) async {
     await _userUpdateAdapter.update(entity, OnConflictStrategy.abort);
   }
@@ -287,6 +293,12 @@ class _$DeviceDao extends DeviceDao {
   @override
   Future<void> insertEntity(Device entity) async {
     await _deviceInsertionAdapter.insert(entity, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> insertList(List<Device> entities) async {
+    await _deviceInsertionAdapter.insertList(
+        entities, OnConflictStrategy.replace);
   }
 
   @override
@@ -439,6 +451,12 @@ class _$ParametersDao extends ParametersDao {
   Future<void> insertEntity(DeviceParameters entity) async {
     await _deviceParametersInsertionAdapter.insert(
         entity, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> insertList(List<DeviceParameters> entities) async {
+    await _deviceParametersInsertionAdapter.insertList(
+        entities, OnConflictStrategy.replace);
   }
 
   @override
