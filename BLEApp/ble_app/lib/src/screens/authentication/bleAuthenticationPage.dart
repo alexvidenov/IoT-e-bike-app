@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 
 import 'package:ble_app/src/sealedStates/btAuthState.dart';
 import 'package:ble_app/src/sealedStates/deviceConnectionState.dart';
@@ -38,9 +40,9 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   bool _connected = false;
 
   @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-    widget._deviceBloc.stopScan();
+  void initState() {
+    super.initState();
+    widget._deviceBloc.stopScan(); // this is not needed for sure
     widget._authBloc.create();
     widget._deviceBloc.connect().then((_) => _init());
     _handleBLEError();
@@ -67,8 +69,10 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
             btAuthenticated: () {
               this._verificationNotifier.add(true); // TODO: bro..
               _isAuthenticated = true;
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/fetchParameters', (_) => false);
+              widget._authBloc.pause();
+              widget._authBloc.setMacAddressIfNull(
+                  widget._deviceBloc.device.value.id); // device Id is inferred
+              $<PageManager>().openParameters();
             },
             failedToBTAuthenticate: (reason) => _presentDialog(context,
                 message: reason.toString(), action: 'TRY AGAIN'));
@@ -177,8 +181,6 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
                   switch (state) {
                     case PeripheralConnectionState.connected:
                       _connected = true;
-                      widget._authBloc.setMacAddressIfNull(widget._deviceBloc
-                          .device.value.id); // device Id is inferred
                       if (widget._settingsBloc.isPasswordRemembered() == true) {
                         widget._deviceBloc.deviceReady.listen((event) {
                           if (event == true) {

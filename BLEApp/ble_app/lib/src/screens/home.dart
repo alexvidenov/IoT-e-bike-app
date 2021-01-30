@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:ble_app/src/blocs/OutputControlBloc.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
+import 'package:ble_app/src/sealedStates/deviceConnectionState.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
@@ -40,6 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   PersistentBottomSheetController _bottomSheetController;
 
+  StreamSubscription<DeviceConnectionState> _stateSubscription;
+
   _instantiateObserver() => routeObserver = RouteObserver<PageRoute>();
 
   Future<bool> _onWillPop() => showDialog(
@@ -69,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
   initState() {
     super.initState();
     widget._controlBloc.create();
-    widget._deviceBloc.connectionState.listen((event) {
+    _stateSubscription = widget._deviceBloc.connectionState.listen((event) {
       event.when(
           normalBTState: (state) {
             switch (state) {
@@ -293,6 +298,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               )),
         ));
+  }
+
+  @override
+  void dispose() {
+    print('DISPOSING HOME');
+    this._stateSubscription.cancel();
+    super.dispose();
   }
 
   //@override

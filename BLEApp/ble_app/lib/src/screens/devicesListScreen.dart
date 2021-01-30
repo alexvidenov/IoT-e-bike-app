@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
@@ -21,15 +23,19 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
       : this._devicesBloc = devicesBloc,
         super(bloc: devicesBloc);
 
-  _listenForPickedDevice(BuildContext context) =>
-      // TODO instead of this, have one stream with multiple states
-      _pickedDevicesSubscription = _devicesBloc.pickedDevice.listen((_) {
-        onPause();
-        Navigator.of(context).pushNamed('/auth');
+  _listenForPickedDevice() =>
+      // TODO instead of this, have one stream with multiple states. Extract in bloc
+      _pickedDevicesSubscription = _devicesBloc.pickedDevice.listen((device) {
+        if (device != null) {
+          onPause();
+          print('BRO, device is $device');
+          $<PageManager>().openBleAuth();
+        }
       });
 
   @override
-  onCreate() async {
+  onCreate([_]) async {
+    print('CREATING DEVICES');
     super.onCreate();
     locationPerm.PermissionStatus permissionStatus =
         await locationPerm.LocationPermissions().checkPermissionStatus();
@@ -38,11 +44,11 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
     } else if (!await Location().serviceEnabled()) {
       Location().requestService();
     }
+    _listenForPickedDevice();
   }
 
   @override
   Widget buildWidget(BuildContext context) {
-    _listenForPickedDevice(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Bluetooth devices'),
@@ -80,7 +86,19 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
   @override
   onPause() {
     super.onPause();
-    _pickedDevicesSubscription.cancel();
+    _pickedDevicesSubscription.pause();
+  }
+
+  @override
+  onResume() {
+    super.onResume();
+    _pickedDevicesSubscription?.resume();
+  }
+
+  @override
+  onDestroy() {
+    _pickedDevicesSubscription?.cancel();
+    super.onDestroy();
   }
 }
 
@@ -98,8 +116,7 @@ class _DevicesList extends ListView {
 
   static _DeviceTapListener _createTapListener(
           DevicesBloc devicesBloc, BleDevice bleDevice) =>
-      () => devicesBloc.addEvent(
-          bleDevice); // TODO: addEvent(DevicesListEvent.device(bleDevice)
+      () => devicesBloc.addEvent(bleDevice);
 
   static Widget _buildAvatar(BuildContext context, BleDevice device) =>
       CircleAvatar(

@@ -11,19 +11,6 @@ class _Credentials {
   bool isSuperUser = false;
 }
 
-class Register extends StatelessWidget {
-  final AuthBloc _auth;
-  final Function toggleView;
-
-  const Register(this._auth, {this.toggleView});
-
-  @override
-  Widget build(BuildContext context) => MaterialApp(
-      color: Colors.lightBlue,
-      theme: ThemeData(fontFamily: 'Europe_Ext'),
-      home: RegisterScreen(_auth, toggleView: toggleView));
-}
-
 class RegisterScreen extends StatelessWidget {
   final AuthBloc _auth;
   final Function toggleView;

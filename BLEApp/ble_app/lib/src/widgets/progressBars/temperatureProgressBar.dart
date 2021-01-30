@@ -24,7 +24,6 @@ class TemperatureProgressBar extends StatelessWidget {
           var color = Colors.greenAccent;
           final state = shortStatus.data;
           if (state is ShortStatusError) {
-            print('RECEIVED ERROR STATE IN TEMP. PROG BAR');
             switch (state.errorState) {
               case ShortStatusErrorState.LowTemp:
                 color = Colors.lightBlueAccent;
@@ -49,7 +48,6 @@ class TemperatureProgressBar extends StatelessWidget {
             child: FAProgressBar(
               currentValue: temperature,
               maxValue: 65,
-              // should be FIXED
               animatedDuration: const Duration(milliseconds: 300),
               direction: Axis.vertical,
               verticalDirection: VerticalDirection.up,

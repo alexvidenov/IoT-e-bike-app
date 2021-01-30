@@ -1,3 +1,4 @@
+import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
@@ -23,12 +24,11 @@ class NavigationDrawer extends StatelessWidget {
             _createDrawerItem(
                 icon: Icons.bluetooth,
                 text: 'Connection Settings',
-                onTap: () => Navigator.of(context).pushNamed('/settings')),
+                onTap: () => $<PageManager>().openConnectionSettings()),
             _createDrawerItem(
                 icon: Icons.devices,
                 text: 'Battery Settings',
-                onTap: () =>
-                    Navigator.of(context).pushNamed('/batterySettings')),
+                onTap: () => $<PageManager>().openDeviceSettings()),
             _createDrawerItem(
                 icon: Icons.assessment, text: 'Statistics', onTap: () => {}),
             Divider(),
@@ -42,8 +42,9 @@ class NavigationDrawer extends StatelessWidget {
               onTap: () {
                 _prefsBloc.clearUserPrefs();
                 _deviceBloc.cancel();
-                _deviceBloc.disconnect().then((_) => Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/devices', (_) => false));
+                _deviceBloc
+                    .disconnect()
+                    .then((_) => Navigator.of(context).pop());
               },
             ),
             ListTile(
@@ -55,7 +56,7 @@ class NavigationDrawer extends StatelessWidget {
                         fontFamily: 'Europe_Ext')),
                 onTap: () async => await _onLogout().then((_) async {
                       Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => RootPage($(), $())),
+                          MaterialPageRoute(builder: (_) => RootPage($())),
                           // actually use popUntil route.isFirst
                           (_) => false);
                       _prefsBloc.clearUserPrefs();

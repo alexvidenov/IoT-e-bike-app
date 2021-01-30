@@ -60,7 +60,7 @@ extension FetchParams on ParameterFetchBloc {
     await _querySingleParam('R29\r');
     Future.delayed(Duration(milliseconds: 150), () async {
       // was 100, try to vary that
-      if (_parameters.keys.length == 19) {
+      if (_parameters.keys.length >= 19) {
         //final db = FirestoreDatabase(uid: $<AuthBloc>().user);
         //if (!(await db.parametersExist(deviceId: _repository.deviceId))) {
         if (await ConnectivityManager.isOnline()) {

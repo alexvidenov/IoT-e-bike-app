@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:background_fetch/background_fetch.dart';
+import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
@@ -78,26 +79,33 @@ void main() async {
       enableHeadless: true,
       forceAlarmManager: Platform.isAndroid));
   $<CloudMessaging>().init();
-  $.isReady<LocalDatabase>().then((_) => runApp(RootPage($(), $())));
+  $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
 }
 
 class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
   const BleApp(EntryEndpointBloc endpointBloc) : super(bloc: endpointBloc);
 
   @override
-  Widget buildWidget(BuildContext context) => StreamBuilder(
-        stream: super.bloc.stream,
-        initialData: Endpoint.Unknown,
-        builder: (_, snapshot) {
-          switch (snapshot.data) {
-            case Endpoint.Unknown:
-              return Center(child: CircularProgressIndicator());
-            case Endpoint.AuthScreen:
-              return AuthEntryPoint();
-            case Endpoint.DevicesScreen:
-              return DevicesEntryPoint();
-          }
-          return Container();
-        },
-      );
+  onCreate([context]) {
+    super.onCreate();
+    print('CREATONG');
+    super.bloc.stream.listen((event) {
+      print('EVENT IS $event');
+      switch (event) {
+        case Endpoint.AuthScreen:
+          $<PageManager>().openBleAuth();
+          break;
+        case Endpoint.DevicesScreen:
+          print('OPENING DEVICES LIST');
+          $<PageManager>().openDevicesListScreen();
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
+  @override
+  Widget buildWidget(BuildContext context) =>
+      Center(child: CircularProgressIndicator());
 }

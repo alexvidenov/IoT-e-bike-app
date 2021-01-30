@@ -9,12 +9,11 @@ class Welcome extends StatelessWidget {
   const Welcome({this.func});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-      color: Colors.lightBlue,
-      theme: ThemeData(fontFamily: 'Europe_Ext'),
-      home: WelcomeScreen(
-        func: this.func,
-      ));
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: WelcomeScreen(func: this.func),
+    );
+  }
 }
 
 class WelcomeScreen extends StatefulWidget {
@@ -29,43 +28,41 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-              boxShadow: [
-                BoxShadow(
-                    color: Colors.grey.shade200,
-                    offset: Offset(2, 4),
-                    blurRadius: 5,
-                    spreadRadius: 2)
-              ],
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xfffbb448), Color(0xffe46b10)])),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildTitle(),
-              const SizedBox(
-                height: 80,
-              ),
-              _createAccountButton(),
-              const SizedBox(
-                height: 20,
-              ),
-              _goOffline(),
-              const SizedBox(
-                height: 20,
-              ),
-              _description(),
+    return SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.grey.shade200,
+                  offset: Offset(2, 4),
+                  blurRadius: 5,
+                  spreadRadius: 2)
             ],
-          ),
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xfffbb448), Color(0xffe46b10)])),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildTitle(),
+            const SizedBox(
+              height: 80,
+            ),
+            _createAccountButton(),
+            const SizedBox(
+              height: 20,
+            ),
+            _goOffline(),
+            const SizedBox(
+              height: 20,
+            ),
+            _description(),
+          ],
         ),
       ),
     );
@@ -120,19 +117,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   Widget _goOffline() {
     return InkWell(
-      onTap: () {
-        AwesomeDialog(
-          context: context,
-          buttonsBorderRadius: BorderRadius.all(Radius.circular(2)),
-          headerAnimationLoop: false,
-          animType: AnimType.BOTTOMSLIDE,
-          title: 'Are you sure?',
-          desc: 'Description',
-          showCloseIcon: true,
-          btnCancelOnPress: () {},
-          btnOkOnPress: () => widget.func(Mode.Incognito),
-        )..show();
-      },
+      onTap: () async => await AwesomeDialog(
+              context: context,
+              useRootNavigator: true,
+              buttonsBorderRadius: BorderRadius.all(Radius.circular(2)),
+              headerAnimationLoop: false,
+              animType: AnimType.BOTTOMSLIDE,
+              title: 'Are you sure?',
+              desc: 'Description',
+              showCloseIcon: true,
+              btnCancelOnPress: () {},
+              btnOkOnPress: () => widget.func(Mode.Incognito),
+              dismissOnBackKeyPress: true)
+          .show(),
       child: Container(
         width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.symmetric(vertical: 13),

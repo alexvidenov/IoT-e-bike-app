@@ -32,7 +32,7 @@ class Auth {
 
   void setListenerAndDetermineState(AuthStateListener listener) async {
     this.authStateListener = listener;
-    auth.listen(this.authStateListener.onAuthStateChanged); // this
+    auth.listen(this.authStateListener.onAuthStateChanged);
     await this.isSignedInAnonymously();
   }
 
@@ -110,8 +110,10 @@ class Auth {
         await _db.setDeviceId();
         await _db.setDeviceName(
             name: BluetoothUtils.defaultBluetoothDeviceName);
-        await _dbManager
-            .insertUser(localUser.User(_id, email, password, false));
+        await _db.setUserDeviceToken(
+            token: await $<CloudMessaging>().getToken());
+        await _dbManager.insertUser(localUser.User(
+            _id, email, password, false)); // TODO: hash password here
         await _dbManager.insertDevice(Device(
             deviceId: deviceSerialNumber,
             userId: _id,
@@ -148,9 +150,7 @@ extension UserStatus on Auth {
   Stream<AuthState> get auth => Rx.merge(
       [_onAuthStateChanged, _onLocalAuthStateChanged]); // refactor this Rx
 
-  String getCurrentUserId() => _isAnonymous
-      ? '0000'
-      : _auth.currentUser?.uid; // aacgtually have the ternary here
+  String getCurrentUserId() => _isAnonymous ? '0000' : _auth.currentUser?.uid;
 }
 
 extension AuthExceptionHandler on Auth {

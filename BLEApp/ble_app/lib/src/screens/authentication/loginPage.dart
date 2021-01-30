@@ -106,19 +106,6 @@ Widget mainButton(IconData iconName, Function onPressed) {
   );
 }
 
-class Login extends StatelessWidget {
-  final AuthBloc _auth;
-  final Function toggleView;
-
-  const Login(this._auth, {this.toggleView});
-
-  @override
-  Widget build(BuildContext context) => MaterialApp(
-      color: Colors.lightBlue,
-      theme: ThemeData(fontFamily: 'Europe_Ext'),
-      home: LoginScreen(_auth, toggleView: toggleView));
-}
-
 class LoginScreen extends StatefulWidget {
   final AuthBloc _auth;
   final Function toggleView;

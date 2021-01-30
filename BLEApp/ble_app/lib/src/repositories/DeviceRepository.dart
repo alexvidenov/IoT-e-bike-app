@@ -49,26 +49,25 @@ class DeviceRepository {
     _deviceController.add(_bleDevice);
   }
 
-  _listenToCharacteristic() {
-    _characteristicSubscription = _characteristic?.monitor()?.listen((event) {
-      print('DATA EVENT: ' + event.toString());
-      if (event.length != 0) {
-        if (event.contains(10)) {
-          for (int i = 0; i < event.length; i++) {
-            if (event.elementAt(i) == 10) {
-              _value = _curValue;
-              _characteristicRx.addEvent(_value);
-              _curValue = "";
-            } else {
-              _curValue += DataParser.parseList([event.elementAt(i)]);
+  _listenToCharacteristic() =>
+      _characteristicSubscription = _characteristic?.monitor()?.listen((event) {
+        print('DATA EVENT: ' + event.toString());
+        if (event.length != 0) {
+          if (event.contains(10)) {
+            for (int i = 0; i < event.length; i++) {
+              if (event.elementAt(i) == 10) {
+                _value = _curValue;
+                _characteristicRx.addEvent(_value);
+                _curValue = "";
+              } else {
+                _curValue += DataParser.parseList([event.elementAt(i)]);
+              }
             }
+          } else {
+            _curValue += DataParser.parseList(event);
           }
-        } else {
-          _curValue += DataParser.parseList(event);
         }
-      }
-    });
-  }
+      });
 
   _writeData(String data) {
     List<int> bytes = utf8.encode(data);

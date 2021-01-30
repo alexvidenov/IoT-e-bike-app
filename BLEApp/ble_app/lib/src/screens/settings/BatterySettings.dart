@@ -96,9 +96,10 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
   }
 
   Future<void> serialNumberCompletion(String key, String value) async {
-    _repository.cancel();
+    // only for superusers
     final dateTime = DateTime.now();
     final year = dateTime.year.toString();
+    _repository.cancel();
     await _write(key, '${year[2]}' + '${year[3]}' + dateTime.month.toString());
     await _write(
         (int.parse(key) + 1).toString(), dateTime.day.toString() + value);
@@ -112,6 +113,7 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
   Future<void> _showDialog(context) async {
     AwesomeDialog(
       context: context,
+      useRootNavigator: true,
       dialogType: DialogType.SUCCES,
       headerAnimationLoop: false,
       animType: AnimType.TOPSLIDE,
@@ -129,6 +131,7 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
           case ParameterChangeStatus.Unsuccessful:
             AwesomeDialog(
                     context: context,
+                    useRootNavigator: true,
                     dialogType: DialogType.ERROR,
                     animType: AnimType.SCALE,
                     title: 'Failed',
@@ -138,16 +141,22 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
                     btnCancelText: 'Cancel',
                     btnCancelOnPress: () => this.buildWidget(context))
                 .show(); // FIXME: definitely fix that
+            break;
         }
       });
 
-  testRead1() => this._repository.writeToCharacteristic('R55\r');
+  testRead1() => this._repository.writeToCharacteristic('R44\r');
 
-  testRead2() => this._repository.writeToCharacteristic('R56\r');
+  testRead2() => this._repository.writeToCharacteristic('R45\r');
+
+  @override
+  onCreate([context]) {
+    super.onCreate(context);
+    _monitorChangeState(context);
+  }
 
   @override
   Widget buildWidget(BuildContext context) {
-    _monitorChangeState(context);
     return Scaffold(
         appBar: AppBar(
           brightness: Brightness.dark,
@@ -313,7 +322,7 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
                       'Min temperature cut-off',
                       '°C',
                       completion),
-                  _CardParameter(17, '55', 'Serial number', 0000, '', '',
+                  _CardParameter(17, '44', 'Serial number', 0000, '', '',
                       serialNumberCompletion),
                 ],
               );

@@ -9,7 +9,7 @@ abstract class RouteAwareWidget<T extends Bloc> extends StatefulWidget {
 
   final T bloc;
 
-  onCreate() {}
+  onCreate([context]) {}
 
   onPause() {}
 
@@ -28,6 +28,7 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   initState() {
     super.initState();
     widget.bloc.create();
+    widget.onCreate(context);
   }
 
   @override
@@ -36,7 +37,6 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
     final route = ModalRoute.of(context);
     // null check needed for the entry screen when we don't have Modal route context.
     if (route != null) routeObserver.subscribe(this, route);
-    widget.onCreate();
   }
 
   @override
