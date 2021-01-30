@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class FirestoreDatabase {
-  final String uid; // user id
+  final String uid;
   final String deviceId;
 
   get _firestore => FirebaseFirestore.instance;

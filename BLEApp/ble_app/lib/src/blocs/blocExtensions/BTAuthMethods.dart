@@ -7,6 +7,6 @@ extension BTAuthMethods on BluetoothAuthBloc {
   changePassword(String newPassword) =>
       _repository.writeToCharacteristic('W27$newPassword\r');
 
-  Future<bool> checkUserExistsWithDevice() async =>
+  Future<bool> checkUserExistsWithDevice(String curDeviceId) async =>
       await _db.fetchDevice() != null;
 }

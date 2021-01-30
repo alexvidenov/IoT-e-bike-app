@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:ble_app/src/blocs/parameterListenerBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
@@ -84,13 +86,28 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
       : this._parameterListenerBloc = parameterListenerBloc,
         super(bloc: parameterListenerBloc);
 
-  Future<void> completion(String key, String value) async { // TODO: actually write a typedef for that one and move it in the bloc
+  Future<void> completion(String key, String value) async {
+    // TODO: actually write a typedef for that one and move it in the bloc
     _repository.cancel();
     await Future.delayed(
         Duration(milliseconds: 150), // works perfectly with 80.
         () => _parameterListenerBloc.changeParameter(key, value));
     Future.delayed(Duration(milliseconds: 80), () => _repository.resume());
   }
+
+  Future<void> serialNumberCompletion(String key, String value) async {
+    _repository.cancel();
+    final dateTime = DateTime.now();
+    final year = dateTime.year.toString();
+    await _write(key, '${year[2]}' + '${year[3]}' + dateTime.month.toString());
+    await _write(
+        (int.parse(key) + 1).toString(), dateTime.day.toString() + value);
+    Future.delayed(Duration(milliseconds: 80), () => _repository.resume());
+  }
+
+  Future<void> _write(String key, String value) async => await Future.delayed(
+      Duration(milliseconds: 100),
+      () => _parameterListenerBloc.changeParameter(key, value));
 
   Future<void> _showDialog(context) async {
     AwesomeDialog(
@@ -111,17 +128,22 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
             break;
           case ParameterChangeStatus.Unsuccessful:
             AwesomeDialog(
-                context: context,
-                dialogType: DialogType.ERROR,
-                animType: AnimType.SCALE,
-                title: 'Failed',
-                desc: 'Parameter change failed. Retry?',
-                btnOkText: 'Yes',
-                btnOkOnPress: () => _parameterListenerBloc.retry(),
-                btnCancelText: 'Cancel',
-                btnCancelOnPress: () => this.buildWidget(context)).show(); // FIXME: definitely fix that
+                    context: context,
+                    dialogType: DialogType.ERROR,
+                    animType: AnimType.SCALE,
+                    title: 'Failed',
+                    desc: 'Parameter change failed. Retry?',
+                    btnOkText: 'Yes',
+                    btnOkOnPress: () => _parameterListenerBloc.retry(),
+                    btnCancelText: 'Cancel',
+                    btnCancelOnPress: () => this.buildWidget(context))
+                .show(); // FIXME: definitely fix that
         }
       });
+
+  testRead1() => this._repository.writeToCharacteristic('R55\r');
+
+  testRead2() => this._repository.writeToCharacteristic('R56\r');
 
   @override
   Widget buildWidget(BuildContext context) {
@@ -131,6 +153,21 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
           brightness: Brightness.dark,
           title: const Text('Battery Settings'),
           backgroundColor: Colors.transparent,
+          actions: [
+            RaisedButton(
+              color: Colors.black,
+              child: Text('Write'),
+              onPressed: () async {
+                _repository.cancel();
+                await Future.delayed(Duration(milliseconds: 100), () async {
+                  testRead1();
+                  await Future.delayed(
+                      Duration(milliseconds: 100), () => testRead2());
+                });
+                _repository.resume();
+              },
+            )
+          ],
         ),
         body: SingleChildScrollView(
             child: StreamBuilder<DeviceParameters>(
@@ -276,6 +313,8 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
                       'Min temperature cut-off',
                       '°C',
                       completion),
+                  _CardParameter(17, '55', 'Serial number', 0000, '', '',
+                      serialNumberCompletion),
                 ],
               );
             } else

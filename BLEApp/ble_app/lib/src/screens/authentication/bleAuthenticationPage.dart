@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
@@ -17,10 +16,9 @@ class BLEAuthenticationScreen extends StatefulWidget {
   final DeviceBloc _deviceBloc;
   final BluetoothAuthBloc _authBloc;
   final SettingsBloc _settingsBloc;
-  final LocalDatabaseManager _dbManager;
 
   const BLEAuthenticationScreen(
-      this._deviceBloc, this._authBloc, this._settingsBloc, this._dbManager);
+      this._deviceBloc, this._authBloc, this._settingsBloc);
 
   @override
   _BLEAuthenticationScreenState createState() =>
@@ -53,7 +51,6 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   }
 
   _handleBLEError() => Future.delayed(Duration(seconds: 7), () {
-        //TODO:extract in some handlers object
         if (!_connected) widget._deviceBloc.connect();
       });
 
@@ -69,8 +66,6 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
         event.when(
             btAuthenticated: () {
               this._verificationNotifier.add(true); // TODO: bro..
-              widget._dbManager.setMacAddress(
-                  widget._deviceBloc.device.value.id); // device Id is inferred
               _isAuthenticated = true;
               Navigator.of(context)
                   .pushNamedAndRemoveUntil('/fetchParameters', (_) => false);
@@ -81,7 +76,6 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
 
 // this retry will be in the bloc
   _retry() => Future.delayed(Duration(seconds: 1), () {
-        // CALL maybe pop here or somethingx
         if (_isAuthenticated == false)
           _showLockScreen(
             context,
@@ -183,6 +177,8 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
                   switch (state) {
                     case PeripheralConnectionState.connected:
                       _connected = true;
+                      widget._authBloc.setMacAddressIfNull(widget._deviceBloc
+                          .device.value.id); // device Id is inferred
                       if (widget._settingsBloc.isPasswordRemembered() == true) {
                         widget._deviceBloc.deviceReady.listen((event) {
                           if (event == true) {

@@ -108,7 +108,10 @@ class Auth {
         final _db = FirestoreDatabase(uid: _id, deviceId: deviceSerialNumber);
         await _db.setUserId();
         await _db.setDeviceId();
-        await _dbManager.insertUser(localUser.User(_id, email, password));
+        await _db.setDeviceName(
+            name: BluetoothUtils.defaultBluetoothDeviceName);
+        await _dbManager
+            .insertUser(localUser.User(_id, email, password, false));
         await _dbManager.insertDevice(Device(
             deviceId: deviceSerialNumber,
             userId: _id,

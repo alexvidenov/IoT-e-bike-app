@@ -21,7 +21,8 @@ class DeviceRepository {
   ValueStream<BleDevice> get pickedDevice =>
       _deviceController.stream.shareValueSeeded(_bleDevice);
 
-  String _deviceSerialNumber; // will be updated on every call to connect()
+  String deviceSerialNumber; // will be updated on every call to connect()
+  String deviceMacAddress;
 
   Characteristic _characteristic;
   StreamSubscription<Uint8List> _characteristicSubscription;
@@ -73,6 +74,8 @@ class DeviceRepository {
     List<int> bytes = utf8.encode(data);
     _characteristic?.write(bytes, false);
   }
+
+  writeUint8List(List<int> bytes) => _characteristic?.write(bytes, false);
 
   writeToCharacteristic(String data) => _writeData(data);
 
@@ -130,14 +133,9 @@ class DeviceRepository {
     return c;
   }
 
-  String get deviceId =>
-      _deviceSerialNumber;
-
-  set deviceSerialNumber(String id) =>
-      _deviceSerialNumber = id; // TODO: fix the shitty naming here here
-
   dispose() {
     _characteristicSubscription?.cancel();
-    _characteristicRx.dispose();;
+    _characteristicRx.dispose();
+    ;
   }
 }

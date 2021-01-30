@@ -23,25 +23,23 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
           //List<String> objects = event.split(' ');
           //String deviceId = objects.elementAt(1);
           // later on change to what the actual parameter name will be
-          //final userId = _auth.getCurrentUserId();
-          //if (!await checkUserExistsWithDevice('1234457', userId)) {
-          // just for simpler tests
-          //addEvent(BTAuthState.bTNotAuthenticated(
-          //reason: BTNotAuthenticatedReason.DeviceDoesNotExist));
-          //}x
-          //else{
-          //_db.deviceDao.setMacAddress(_re, int.parse(_repository.deviceId));
-          if (await _db.isAnonymous()) {
-            // not the right method tho
-            _repository.deviceSerialNumber = '1234';
+          if (!await checkUserExistsWithDevice(_db.curDeviceId)) {
+            addEvent(BTAuthState.failedToBTAuthenticate(
+                reason: BTNotAuthenticatedReason.DeviceIsNotRegistered));
           } else {
-            _repository.deviceSerialNumber =
-                1234567.toString(); // TODO: fetch 55 param here (for example)
+            _db.setMacAddress(_repository.deviceMacAddress);
+            if (await _db.isAnonymous()) {
+              _repository.deviceSerialNumber = '1234';
+            } else {
+              _repository.deviceSerialNumber =
+                  1234567.toString(); // TODO: fetch 55 param here (for example)
+            }
+            addEvent(BTAuthState.btAuthenticated());
           }
-          addEvent(BTAuthState.btAuthenticated());
-          // }
         }
       });
+
+  setMacAddressIfNull(String mac) => _repository.deviceMacAddress = mac;
 
   @override
   dispose() {
