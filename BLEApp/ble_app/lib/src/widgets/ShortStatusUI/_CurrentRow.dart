@@ -81,7 +81,7 @@ class CurrentRow extends StatelessWidget {
                             .toInt(),
                         backgroundColor: Colors.black,
                         progressColor: CCColor,
-                        animatedDuration: const Duration(milliseconds: 700),
+                        animatedDuration: const Duration(milliseconds: 300),
                         direction: Axis.horizontal,
                       ),
                     ),
@@ -130,7 +130,8 @@ class CurrentRow extends StatelessWidget {
                           .maxTimeLimitedDischargeCurrent
                           .toInt(),
                       progressColor: DCColor,
-                      animatedDuration: const Duration(milliseconds: 700),
+                      changeProgressColor: Colors.redAccent,
+                      animatedDuration: const Duration(milliseconds: 300),
                       direction: Axis.horizontal,
                     ),
                   ),

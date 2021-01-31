@@ -7,6 +7,7 @@ import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/sealedStates/deviceConnectionState.dart';
 import 'package:ble_app/src/services/Auth.dart';
+import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
@@ -30,7 +31,9 @@ class HomeScreen extends StatefulWidget with Navigation {
   final DeviceRepository _repository;
   final OutputControlBloc _controlBloc;
 
-  const HomeScreen(
+  StreamSubscription<DeviceConnectionState> _stateSubscription;
+
+  HomeScreen(
       this._prefsBloc, this._deviceBloc, this._repository, this._controlBloc);
 
   @override
@@ -42,8 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   PersistentBottomSheetController _bottomSheetController;
-
-  StreamSubscription<DeviceConnectionState> _stateSubscription;
 
   _instantiateObserver() => routeObserver = RouteObserver<PageRoute>();
 
@@ -74,23 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
   initState() {
     super.initState();
     widget._controlBloc.create();
-    _stateSubscription = widget._deviceBloc.connectionState.listen((event) {
-      event.when(
-          normalBTState: (state) {
-            switch (state) {
-              case PeripheralConnectionState.connected:
-                this.onReconnected();
-                break;
-              case PeripheralConnectionState.disconnected:
-                this.onDisconnected();
-                break;
-              default:
-                break;
-            }
-          },
-          bleException: (_) => {});
-      print(event);
-    });
   }
 
   function(func) async {
@@ -195,11 +179,30 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               drawer: NavigationDrawer($(), $(), $<Auth>().signOut),
-              body: Navigator(
-                initialRoute: '/',
-                key: widget.navigationBloc.navigatorKey,
-                onGenerateRoute: router.Router.generateRouteSecondNavigator,
-                observers: [routeObserver],
+              body: StreamListener(
+                stream: widget._deviceBloc.connectionState,
+                onData: (state) {
+                  state.when(
+                      normalBTState: (state) {
+                        switch (state) {
+                          case PeripheralConnectionState.connected:
+                            this.onReconnected();
+                            break;
+                          case PeripheralConnectionState.disconnected:
+                            this.onDisconnected();
+                            break;
+                          default:
+                            break;
+                        }
+                      },
+                      bleException: (_) => {});
+                },
+                child: Navigator(
+                  initialRoute: '/',
+                  key: widget.navigationBloc.navigatorKey,
+                  onGenerateRoute: router.Router.generateRouteSecondNavigator,
+                  observers: [routeObserver],
+                ),
               ),
               bottomNavigationBar: SafeArea(
                 child: Container(
@@ -298,13 +301,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               )),
         ));
-  }
-
-  @override
-  void dispose() {
-    print('DISPOSING HOME');
-    this._stateSubscription.cancel();
-    super.dispose();
   }
 
   //@override
