@@ -16,6 +16,7 @@ import '../repositories/DeviceRepository.dart';
 import '../blocs/devicesBloc.dart';
 import '../blocs/entryEndpointBloc.dart';
 import '../blocs/fullStatusBloc.dart';
+import '../blocs/InnerPageManager.dart';
 import '../persistence/localDatabase.dart';
 import '../persistence/LocalDatabaseManager.dart';
 import '../blocs/locationBloc.dart';
@@ -42,6 +43,7 @@ GetIt $initGetIt(
   gh.lazySingleton<CloudMessaging>(() => CloudMessaging());
   gh.lazySingleton<DeviceRepository>(() => DeviceRepository());
   gh.factory<FullStatusBloc>(() => FullStatusBloc(get<DeviceRepository>()));
+  gh.lazySingleton<InnerPageManager>(() => InnerPageManager());
   gh.lazySingleton<LocalDatabaseManager>(
       () => LocalDatabaseManager(get<LocalDatabase>()));
   gh.factory<LocationBloc>(() => LocationBloc());

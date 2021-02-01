@@ -11,6 +11,7 @@ import 'package:ble_app/src/screens/main/shortStatusPage.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:flutter/material.dart';
 
+/*
 class _PathError extends StatelessWidget {
   const _PathError({
     Key key,
@@ -93,3 +94,4 @@ abstract class Router {
     return MaterialPageRoute(builder: (_) => _PathError());
   }
 }
+ */

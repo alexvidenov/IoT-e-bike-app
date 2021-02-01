@@ -43,8 +43,6 @@ class DeviceBloc {
     _isDeviceReadyController = BehaviorSubject<bool>.seeded(false);
   }
 
-  writeToBLE(String data) => _deviceRepository.writeToCharacteristic(data);
-
   cancel() => _deviceRepository.cancel();
 
   stopScan() => _bleManager.stopPeripheralScan();

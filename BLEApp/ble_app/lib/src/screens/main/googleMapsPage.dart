@@ -1,6 +1,8 @@
+import 'package:ble_app/src/blocs/InnerPageManager.dart';
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/mixins/KeepSession.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +26,7 @@ class MapPage extends RouteAwareWidget<LocationBloc>
           final circle = _locationBloc.generateNewCircle(snapshot.data);
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onLongPress: toFirst,
+            onLongPress: () => $<InnerPageManager>().openShortStatus(),
             child: GoogleMap(
               mapType: MapType.normal,
               initialCameraPosition: _locationBloc.initialLocation,

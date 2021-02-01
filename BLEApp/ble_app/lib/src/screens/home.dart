@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ble_app/src/blocs/InnerPageManager.dart';
 import 'package:ble_app/src/blocs/OutputControlBloc.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/utils/Router.dart' as router;
 import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -30,11 +30,10 @@ class HomeScreen extends StatefulWidget with Navigation {
   final DeviceBloc _deviceBloc;
   final DeviceRepository _repository;
   final OutputControlBloc _controlBloc;
+  final InnerPageManager _pageManager;
 
-  StreamSubscription<DeviceConnectionState> _stateSubscription;
-
-  HomeScreen(
-      this._prefsBloc, this._deviceBloc, this._repository, this._controlBloc);
+  HomeScreen(this._prefsBloc, this._deviceBloc, this._repository,
+      this._controlBloc, this._pageManager);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -64,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
               FlatButton(
                   onPressed: () {
                     widget._deviceBloc.disconnect();
-                    Navigator.of(context).pop(true);
+                    Navigator.of(context, rootNavigator: true).pop(true);
                   },
                   child: Text('Yes')),
             ],
@@ -75,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
   initState() {
     super.initState();
     widget._controlBloc.create();
+    $<InnerPageManager>().openShortStatus();
   }
 
   function(func) async {
@@ -87,7 +87,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     _instantiateObserver();
-    widget.navigationBloc.generateGlobalKey();
     return WillPopScope(
         onWillPop: _onWillPop,
         child: DefaultTabController(
@@ -180,30 +179,38 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               drawer: NavigationDrawer($(), $(), $<Auth>().signOut),
               body: StreamListener(
-                stream: widget._deviceBloc.connectionState,
-                onData: (state) {
-                  state.when(
-                      normalBTState: (state) {
-                        switch (state) {
-                          case PeripheralConnectionState.connected:
-                            this.onReconnected();
-                            break;
-                          case PeripheralConnectionState.disconnected:
-                            this.onDisconnected();
-                            break;
-                          default:
-                            break;
-                        }
-                      },
-                      bleException: (_) => {});
-                },
-                child: Navigator(
-                  initialRoute: '/',
-                  key: widget.navigationBloc.navigatorKey,
-                  onGenerateRoute: router.Router.generateRouteSecondNavigator,
-                  observers: [routeObserver],
-                ),
-              ),
+                  stream: widget._deviceBloc.connectionState,
+                  onData: (state) {
+                    state.when(
+                        normalBTState: (state) {
+                          switch (state) {
+                            case PeripheralConnectionState.connected:
+                              this.onReconnected();
+                              break;
+                            case PeripheralConnectionState.disconnected:
+                              this.onDisconnected();
+                              break;
+                            default:
+                              break;
+                          }
+                        },
+                        bleException: (_) => {});
+                  },
+                  child: StreamBuilder<List<Page>>(
+                    stream: widget._pageManager.pages.stream,
+                    builder: (_, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.active) {
+                        print('BUILDIGN NAVIGATOR WITH PAGES =>');
+                        print(snapshot.data);
+                        return Navigator(
+                            key: widget._pageManager.navigatorKey,
+                            pages: snapshot.data,
+                            onPopPage: (route, result) =>
+                                _onPopPage(route, result, widget._pageManager));
+                      } else
+                        return Container();
+                    },
+                  )),
               bottomNavigationBar: SafeArea(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -285,13 +292,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             onTabChange: (index) {
                               switch (index) {
                                 case 0:
-                                  widget.navigationBloc.returnToFirstRoute();
+                                  $<InnerPageManager>().openShortStatus();
                                   break;
                                 case 1:
-                                  widget.navigationBloc.to('/full');
+                                  $<InnerPageManager>().openFullStatus();
                                   break;
                                 case 2:
-                                  widget.navigationBloc.to('/map');
+                                  $<InnerPageManager>().openMap();
                                   break;
                               }
                             });
@@ -301,6 +308,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               )),
         ));
+  }
+
+  bool _onPopPage(
+      Route<dynamic> route, dynamic result, InnerPageManager pageManager) {
+    print('POPPING =>');
+    print(route.settings);
+    pageManager.didPop(route.settings, result);
+    return route.didPop(result);
   }
 
   //@override

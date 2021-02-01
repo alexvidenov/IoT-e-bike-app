@@ -1,7 +1,7 @@
 import 'package:ble_app/src/screens/entrypoints/Entrypoint.dart';
 import 'package:ble_app/src/utils/Router.dart' as router;
 import 'package:flutter/material.dart';
-
+/*
 class AuthEntryPoint extends EntryPoint {
   AuthEntryPoint({Key key})
       : super(
@@ -9,3 +9,4 @@ class AuthEntryPoint extends EntryPoint {
             onGenerateRoute:
                 router.Router.generateRouteMainNavigatorStartsWithAuth);
 }
+ */
