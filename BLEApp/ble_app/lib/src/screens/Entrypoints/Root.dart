@@ -53,8 +53,10 @@ class MainNavigatorEntryPoint extends StatelessWidget {
           print('BUILDIGN NAVIGATOR WITH PAGES =>');
           print(snapshot.data);
           return WillPopScope(
-              onWillPop: () async =>
-                  !await _pageManager.navigatorKey.currentState.maybePop(),
+              onWillPop: () async {
+                print('UPPER WILLPOPSCOE');
+                return !await _pageManager.navigatorKey.currentState.maybePop();
+              },
               child: Navigator(
                   key: _pageManager.navigatorKey,
                   pages: snapshot.data,

@@ -25,6 +25,8 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 // ..if statements
 // in a settings page, have an option "register", which deletes the "phantom" user and starts everything anew.
 
+// Add + symbol in the current
+
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
@@ -63,7 +65,9 @@ class _HomeScreenState extends State<HomeScreen> {
               FlatButton(
                   onPressed: () {
                     widget._deviceBloc.disconnect();
-                    Navigator.of(context, rootNavigator: true).pop(true);
+                    widget._prefsBloc.clearUserPrefs();
+                    widget._deviceBloc.cancel();
+                    Navigator.of(context).pop(true);
                   },
                   child: Text('Yes')),
             ],
@@ -178,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               drawer: NavigationDrawer($(), $(), $<Auth>().signOut),
-              body: StreamListener(
+              body: StreamListener<DeviceConnectionState>(
                   stream: widget._deviceBloc.connectionState,
                   onData: (state) {
                     state.when(
@@ -200,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     stream: widget._pageManager.pages.stream,
                     builder: (_, snapshot) {
                       if (snapshot.connectionState == ConnectionState.active) {
-                        print('BUILDIGN NAVIGATOR WITH PAGES =>');
+                        print('BUILDIGN INNER NAVIGATOR WITH PAGES =>');
                         print(snapshot.data);
                         return Navigator(
                             key: widget._pageManager.navigatorKey,

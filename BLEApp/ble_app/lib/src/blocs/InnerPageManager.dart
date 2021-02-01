@@ -15,7 +15,7 @@ class InnerPageManager {
   GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
 
   InnerPageManager() {
-    pages.addEvent(_pages);
+    pages.addEvent(_pagesList);
   }
 
   final pages = RxObject<List<Page>>();
@@ -52,6 +52,6 @@ class InnerPageManager {
 
   void didPop(Page page, dynamic result) {
     _pages.remove(page);
-    pages.addEvent(_pages);
+    pages.addEvent(_pagesList);
   }
 }

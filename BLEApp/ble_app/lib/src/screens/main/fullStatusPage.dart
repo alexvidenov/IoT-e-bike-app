@@ -25,7 +25,7 @@ class FullStatusPage extends Page {
             child: child,
           );
         },
-        transitionDuration: const Duration(seconds: 1));
+        transitionDuration: const Duration(milliseconds: 500));
   }
 }
 

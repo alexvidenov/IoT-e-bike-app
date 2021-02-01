@@ -28,7 +28,6 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
       _pickedDevicesSubscription = _devicesBloc.pickedDevice.listen((device) {
         if (device != null) {
           onPause();
-          print('BRO, device is $device');
           $<PageManager>().openBleAuth();
         }
       });

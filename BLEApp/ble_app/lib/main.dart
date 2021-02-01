@@ -14,6 +14,7 @@ import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/services/CloudMessaging.dart';
 import 'package:ble_app/src/services/Storage.dart';
 import 'package:ble_app/src/utils/PrefsKeys.dart';
+import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
@@ -86,26 +87,22 @@ class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
   const BleApp(EntryEndpointBloc endpointBloc) : super(bloc: endpointBloc);
 
   @override
-  onCreate([context]) {
-    super.onCreate();
-    print('CREATONG');
-    super.bloc.stream.listen((event) {
-      print('EVENT IS $event');
-      switch (event) {
-        case Endpoint.AuthScreen:
-          $<PageManager>().openBleAuth();
-          break;
-        case Endpoint.DevicesScreen:
-          print('OPENING DEVICES LIST');
-          $<PageManager>().openDevicesListScreen();
-          break;
-        default:
-          break;
-      }
-    });
-  }
-
-  @override
-  Widget buildWidget(BuildContext context) =>
-      Center(child: CircularProgressIndicator());
+  Widget buildWidget(BuildContext context) => StreamListener<Endpoint>(
+      stream: super.bloc.stream,
+      onData: (endpoint) {
+        switch (endpoint) {
+          case Endpoint.AuthScreen:
+            $<PageManager>().openBleAuth();
+            break;
+          case Endpoint.DevicesScreen:
+            print('OPENING DEVICES LIST');
+            $<PageManager>().openDevicesListScreen();
+            break;
+          default:
+            break;
+        }
+      },
+      child: Center(
+        child: CircularProgressIndicator(),
+      ));
 }

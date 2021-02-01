@@ -57,6 +57,13 @@ class PageManager {
   void openBleAuth() {
     _pages.add(MaterialPage(
         child: BLEAuthenticationScreen($(), $(), $()), key: Key('Ble auth')));
+    if (!_pages.any((page) => page.key == const Key('DevicesListScreen'))) {
+      _pages.insert(
+          _pages.length - 1,
+          MaterialPage(
+              child: DevicesListScreen($(), $<Auth>().signOut),
+              key: Key('DevicesListScreen')));
+    }
     pages.addEvent(_pagesList);
   }
 
@@ -108,6 +115,6 @@ class PageManager {
 
   void didPop(Page page, dynamic result) {
     _pages.remove(page);
-    pages.addEvent(_pages);
+    pages.addEvent(_pagesList);
   }
 }

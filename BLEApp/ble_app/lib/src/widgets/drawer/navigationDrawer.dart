@@ -2,7 +2,6 @@ import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/screens/entrypoints/Root.dart';
 import 'package:flutter/material.dart';
 
 typedef _LogOutListener = Future<void> Function();
@@ -39,13 +38,8 @@ class NavigationDrawer extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
                       fontFamily: 'Europe_Ext')),
-              onTap: () {
-                _prefsBloc.clearUserPrefs();
-                _deviceBloc.cancel();
-                _deviceBloc
-                    .disconnect()
-                    .then((_) => Navigator.of(context).pop());
-              },
+              onTap: () =>
+                  Navigator.of(context, rootNavigator: true).maybePop(),
             ),
             ListTile(
                 title: const Text('Logout',
@@ -54,14 +48,10 @@ class NavigationDrawer extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.5,
                         fontFamily: 'Europe_Ext')),
-                onTap: () async => await _onLogout().then((_) async {
-                      Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => RootPage($())),
-                          // actually use popUntil route.isFirst
-                          (_) => false);
+                onTap: () => _onLogout().then((_) async {
                       _prefsBloc.clearUserPrefs();
-                      //_prefsBloc.deleteUserData();
-                      await _deviceBloc.disconnect();
+                      _prefsBloc.deleteUserData();
+                      _deviceBloc.disconnect();
                     })),
             ListTile(
               title: Text('Version 0.0.1. All rights reserved. '),
