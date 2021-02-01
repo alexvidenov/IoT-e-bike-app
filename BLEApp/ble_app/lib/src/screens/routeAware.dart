@@ -9,7 +9,7 @@ abstract class RouteAwareWidget<T extends Bloc> extends StatefulWidget {
 
   final T bloc;
 
-  onCreate([context]) {}
+  onCreate() {}
 
   onPause() {}
 
@@ -28,7 +28,7 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   initState() {
     super.initState();
     widget.bloc.create();
-    widget.onCreate(context);
+    widget.onCreate();
   }
 
   @override
@@ -68,10 +68,10 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
 
   @override
   dispose() {
-    super.dispose();
     routeObserver.unsubscribe(this);
     widget.bloc.dispose();
     widget.onDestroy();
+    super.dispose();
   }
 
   @override

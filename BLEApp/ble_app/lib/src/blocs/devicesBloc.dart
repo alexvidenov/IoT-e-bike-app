@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/main.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/entities/device.dart';
@@ -13,6 +14,7 @@ import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../persistence/LocalDatabaseManager.dart';
+import 'PageManager.dart';
 
 part 'blocExtensions/BLEScanMethods.dart';
 
@@ -29,6 +31,8 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> with CurrentContext {
       BehaviorSubject<List<BleDevice>>.seeded(<BleDevice>[]);
 
   StreamSubscription<ScanResult> _scanSubscription;
+
+  StreamSubscription<BleDevice> _pickedDevicesSubscription;
 
   ValueStream<List<BleDevice>> get visibleDevices =>
       _visibleDevicesController.stream;
@@ -56,18 +60,33 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> with CurrentContext {
   }
 
   @override
-  create() => streamSubscription = stream.listen(_handlePickedDevice);
+  create() {
+    streamSubscription = stream.listen(_handlePickedDevice);
+    _pickedDevicesSubscription = this.pickedDevice.listen((device) {
+      if (device != null) {
+        //onPause();
+        $<PageManager>().openBleAuth();
+      }
+    });
+  }
 
   @override
-  pause() => _stopScan();
+  pause() {
+    _pickedDevicesSubscription.pause();
+    _stopScan();
+  }
 
   @override
-  resume() => init();
+  resume() {
+    init();
+    _pickedDevicesSubscription?.resume();
+  }
 
   @override
   dispose() {
     super.dispose();
     logger.wtf('Closing stream in DevicesBloc');
+    _pickedDevicesSubscription?.cancel();
     _visibleDevicesController.close();
     _scanSubscription?.cancel();
     _stopScan();

@@ -13,27 +13,16 @@ typedef _DeviceTapListener = void Function();
 
 typedef _LogOutListener = Future<void> Function();
 
-// ignore: must_be_immutable
 class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
   final DevicesBloc _devicesBloc;
   final _LogOutListener _onLogout;
-  StreamSubscription _pickedDevicesSubscription;
 
-  DevicesListScreen(DevicesBloc devicesBloc, this._onLogout)
+  const DevicesListScreen(DevicesBloc devicesBloc, this._onLogout)
       : this._devicesBloc = devicesBloc,
         super(bloc: devicesBloc);
 
-  _listenForPickedDevice() =>
-      // TODO instead of this, have one stream with multiple states. Extract in bloc
-      _pickedDevicesSubscription = _devicesBloc.pickedDevice.listen((device) {
-        if (device != null) {
-          onPause();
-          $<PageManager>().openBleAuth();
-        }
-      });
-
   @override
-  onCreate([_]) async {
+  onCreate() async {
     print('CREATING DEVICES');
     super.onCreate();
     locationPerm.PermissionStatus permissionStatus =
@@ -43,7 +32,6 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
     } else if (!await Location().serviceEnabled()) {
       Location().requestService();
     }
-    _listenForPickedDevice();
   }
 
   @override
@@ -80,24 +68,6 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
         onPressed: () => _devicesBloc.refresh(),
       ),
     );
-  }
-
-  @override
-  onPause() {
-    super.onPause();
-    _pickedDevicesSubscription.pause();
-  }
-
-  @override
-  onResume() {
-    super.onResume();
-    _pickedDevicesSubscription?.resume();
-  }
-
-  @override
-  onDestroy() {
-    _pickedDevicesSubscription?.cancel();
-    super.onDestroy();
   }
 }
 
