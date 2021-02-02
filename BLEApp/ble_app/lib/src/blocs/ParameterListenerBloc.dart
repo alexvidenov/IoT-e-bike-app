@@ -113,12 +113,9 @@ class ParameterListenerBloc extends Bloc<ParameterChangeStatus, String>
                 .copyWith(motoHoursDischargeCounter: int.parse(value));
             break;
         }
-        //num numValue = num.parse(value);
-        //print(newModel.maxTemperatureRecovery);
-        //FirestoreDatabase(uid: this.curUserId, deviceId: this.curDeviceId)
-        // .setIndividualParameter(key, numValue);
-        //_firestoreDatabase.setIndividualParameter(
-        // key, numValue); // this will stay here
+        num numValue = num.parse(value);
+        FirestoreDatabase(uid: this.curUserId, deviceId: this.curDeviceId)
+            .setIndividualParameter(currentKey, numValue);
         _dbManager.updateParameter(newModel);
         if (newModel != null)
           _parameterHolder.deviceParameters.value = newModel;

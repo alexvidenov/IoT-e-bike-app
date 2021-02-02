@@ -37,8 +37,6 @@ class _CardParameter extends StatelessWidget {
       this._measureUnit,
       this._onEdit);
 
-  // Have a callback here, which will get called into the other page (for success and error)
-
   @override
   Widget build(BuildContext context) => Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

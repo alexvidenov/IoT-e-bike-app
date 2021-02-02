@@ -67,7 +67,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
       _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
         event.when(
             btAuthenticated: () {
-              this._verificationNotifier.add(true); // TODO: bro..
+              this._verificationNotifier.add(true);
               _isAuthenticated = true;
               widget._authBloc.pause();
               widget._authBloc.setMacAddressIfNull(

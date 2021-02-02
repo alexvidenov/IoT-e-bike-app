@@ -3,12 +3,9 @@ import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/sealedStates/authState.dart';
-import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
-import '../../../main.dart';
-import '../authentication/authenticationWrapper.dart';
 import '../../listeners/authStateListener.dart';
 import 'Mode.dart';
 
@@ -105,8 +102,7 @@ class _DetermineEndpointWidgetState extends State<DetermineEndpointWidget>
     if (mode == Mode.Account)
       setState(() {
         isFirstTime = false;
-        currAuthState =
-            AuthState.loggedOut(); // TODO: fix this even tho it works
+        currAuthState = AuthState.loggedOut();
       });
     else if (mode == Mode.Incognito) {
       isFirstTime = false;
@@ -128,13 +124,10 @@ class _DetermineEndpointWidgetState extends State<DetermineEndpointWidget>
     if (!isFirstTime) {
       if (currAuthState != null) {
         currAuthState.maybeWhen(
-            authenticated: (_) =>
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  $<PageManager>().openBleApp();
-                }),
-            loggedOut: () => WidgetsBinding.instance.addPostFrameCallback((_) {
-                  $<PageManager>().openAuthWrapper(this._chosen);
-                }),
+            authenticated: (_) => WidgetsBinding.instance
+                .addPostFrameCallback((_) => $<PageManager>().openBleApp()),
+            loggedOut: () => WidgetsBinding.instance.addPostFrameCallback(
+                (_) => $<PageManager>().openAuthWrapper(this._chosen)),
             orElse: () => {});
         return Center(child: CircularProgressIndicator());
       } else

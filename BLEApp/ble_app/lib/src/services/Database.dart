@@ -14,10 +14,10 @@ class FirestoreDatabase {
   DocumentReference get _device =>
       _users.doc(uid).collection('devices').doc(deviceId);
 
-  DocumentReference get _parameters => _users
+  DocumentReference _parameters([String id]) => _users
       .doc(uid)
       .collection('devices')
-      .doc(deviceId)
+      .doc(id ?? this.deviceId)
       .collection('parameters')
       .doc('parameters');
 
@@ -32,17 +32,49 @@ class FirestoreDatabase {
 
   Future<void> setDeviceId() => _device.set({'id': this.deviceId});
 
-  Future<List<Device>> fetchUserDevices() async {
-    var _devices = List<Device>();
+  Future<List<MapEntry<Device, DeviceParameters>>>
+      fetchUserDevicesWithParams() async {
+    final _devices = List<MapEntry<Device, DeviceParameters>>();
     final devices = await _users.doc(uid).collection('devices').get();
-    devices.docs.forEach((device) {
-      _devices.add(Device(
-          deviceId: device.get('id'), // or just .id
-          userId: this.uid,
-          name: device.get('name'),
-          macAddress: device.get('MAC')));
+    await Future.forEach(devices.docs, (device) async {
+      final id = device.get('id');
+      print('ID IS $id');
+      final params = await this.fetchDeviceParameters(id);
+      print('PARAMS ARE $params');
+      _devices.add(MapEntry(
+          Device(
+              deviceId: id,
+              userId: this.uid,
+              name: device.get('name'),
+              macAddress: device.get('MAC')),
+          params));
     });
     return _devices;
+  }
+
+  Future<DeviceParameters> fetchDeviceParameters(String id) async {
+    final _params = await _parameters(id).get();
+    return DeviceParameters(
+        id: id,
+        cellCount: (_params.get('00') as double).toInt(),
+        maxCellVoltage: _params.get('01'),
+        maxRecoveryVoltage: _params.get('02'),
+        balanceCellVoltage: _params.get('03'),
+        minCellVoltage: _params.get('04'),
+        minCellRecoveryVoltage: _params.get('05'),
+        ultraLowCellVoltage: _params.get('06'),
+        maxTimeLimitedDischargeCurrent: _params.get('12'),
+        maxCutoffDischargeCurrent: _params.get('13'),
+        maxCurrentTimeLimitPeriod: (_params.get('14') as double).toInt(),
+        maxCutoffChargeCurrent: _params.get('15'),
+        motoHoursCounterCurrentThreshold: (_params.get('16') as double).toInt(),
+        currentCutOffTimerPeriod: (_params.get('17') as double).toInt(),
+        maxCutoffTemperature: (_params.get('23') as double).toInt(),
+        maxTemperatureRecovery: (_params.get('24') as double).toInt(),
+        minTemperatureRecovery: (_params.get('25') as double).toInt(),
+        minCutoffTemperature: (_params.get('26') as double).toInt(),
+        motoHoursChargeCounter: (_params.get('28') as double).toInt(),
+        motoHoursDischargeCounter: (_params.get('29') as double).toInt());
   }
 
   Future<void> setDeviceMacAddress({@required String mac}) =>
@@ -52,19 +84,13 @@ class FirestoreDatabase {
       _device.update({'name': name});
 
   Future<bool> parametersExist({@required String deviceId}) async {
-    final parameterDoc = await _parameters.get();
+    final parameterDoc = await _parameters().get();
     return parameterDoc.exists;
   }
 
   Future<void> setDeviceParameters(Map<String, dynamic> parameters) =>
-      _parameters.set(parameters);
-
-  // ignore: missing_return
-  Future<DeviceParameters> fetchDeviceParameters(String id) async {
-    final _params = await _parameters.get();
-    // TODO: return DeviceParameters(id: this.deviceId, cellCount: _params.get('00'), maxCellVoltage: _params, maxRecoveryVoltage: null, balanceCellVoltage: null, minCellVoltage: null, minCellRecoveryVoltage: null, ultraLowCellVoltage: null, maxTimeLimitedDischargeCurrent: null, maxCutoffDischargeCurrent: null, maxCurrentTimeLimitPeriod: null, maxCutoffChargeCurrent: null, motoHoursCounterCurrentThreshold: null, currentCutOffTimerPeriod: null, maxCutoffTemperature: null, maxTemperatureRecovery: null, minTemperatureRecovery: null, minCutoffTemperature: null, motoHoursChargeCounter: null, motoHoursDischargeCounter: null)
-  }
+      _parameters().set(parameters);
 
   Future<void> setIndividualParameter(String key, dynamic value) =>
-      _parameters.update({key: value});
+      _parameters().update({key: value});
 }

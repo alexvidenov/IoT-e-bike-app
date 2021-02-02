@@ -64,7 +64,6 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> with CurrentContext {
     streamSubscription = stream.listen(_handlePickedDevice);
     _pickedDevicesSubscription = this.pickedDevice.listen((device) {
       if (device != null) {
-        //onPause();
         $<PageManager>().openBleAuth();
       }
     });

@@ -15,7 +15,6 @@ import 'package:rxdart/rxdart.dart';
 
 import 'CloudMessaging.dart';
 
-// implementation platform('com.google.firebase:firebase-bom:26.0.0')
 @lazySingleton
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -64,20 +63,24 @@ class Auth {
         final UserCredential credential = await _auth
             .signInWithEmailAndPassword(email: email, password: password);
         user = credential?.user;
-        final _firestore = FirestoreDatabase(uid: user.uid);
-        /*
+        final id = user.uid;
+        print('USER ID IS $id');
+        final _firestore = FirestoreDatabase(uid: id);
         if (!(await _dbManager.userExists(user.email))) {
-          await _dbManager.insertUser(localUser.User(user.uid, user.email, password));
-          await _dbManager.insertDevices(await _firestore.fetchUserDevices());
-          await _dbManager.insertParameters();
+          await _dbManager.insertUser(
+              localUser.User(user.uid, user.email, password, false));
+          final userDevicesWithParameters =
+              await _firestore.fetchUserDevicesWithParams();
+          print('USER DEVICES WITH PARAMETERS ARE $userDevicesWithParameters');
+          await Future.forEach(userDevicesWithParameters, (element) async {
+            print('ELEMENT FETCHED $element');
+            await _dbManager.insertDevice(element.key);
+            await _dbManager.insertParameters(element.value);
+          });
         }
-         */
-        if (user != null) {
-          _firestore.setUserDeviceToken(
-              token:
-                  await $<CloudMessaging>().getToken()); // TODO; should update
-          return AuthState.authenticated(user.uid);
-        }
+        _firestore.setUserDeviceToken(
+            token: await $<CloudMessaging>().getToken()); // TODO; should update
+        return AuthState.authenticated(user.uid);
       } on FirebaseAuthException catch (e) {
         return AuthState.failedToAuthenticate(
             reason: AuthExceptionHandler.handleException(e));
@@ -92,8 +95,6 @@ class Auth {
         return AuthState.failedToAuthenticate(
             reason: NotAuthenticatedReason.userNotFound);
     }
-    return AuthState.failedToAuthenticate(
-        reason: NotAuthenticatedReason.undefined);
   }
 
   Future<AuthState> signUpWithEmailAndPassword(String email, String password,
