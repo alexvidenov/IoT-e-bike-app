@@ -434,11 +434,43 @@ class _$ParametersDao extends ParametersDao {
   final DeletionAdapter<DeviceParameters> _deviceParametersDeletionAdapter;
 
   @override
-  Stream<DeviceParameters> fetchDeviceParameters(String deviceId) {
+  Stream<DeviceParameters> fetchDeviceParametersAsStream(String deviceId) {
     return _queryAdapter.queryStream('SELECT * FROM parameters WHERE id = ?',
         arguments: <dynamic>[deviceId],
         queryableName: 'parameters',
         isView: false,
+        mapper: (Map<String, dynamic> row) => DeviceParameters(
+            id: row['id'] as String,
+            cellCount: row['cellCount'] as int,
+            maxCellVoltage: row['maxCellVoltage'] as double,
+            maxRecoveryVoltage: row['maxRecoveryVoltage'] as double,
+            balanceCellVoltage: row['balanceCellVoltage'] as double,
+            minCellVoltage: row['minCellVoltage'] as double,
+            minCellRecoveryVoltage: row['minCellRecoveryVoltage'] as double,
+            ultraLowCellVoltage: row['ultraLowCellVoltage'] as double,
+            maxTimeLimitedDischargeCurrent:
+                row['maxTimeLimitedDischargeCurrent'] as double,
+            maxCutoffDischargeCurrent:
+                row['maxCutoffDischargeCurrent'] as double,
+            maxCurrentTimeLimitPeriod: row['maxCurrentTimeLimitPeriod'] as int,
+            maxCutoffChargeCurrent: row['maxCutoffChargeCurrent'] as double,
+            motoHoursCounterCurrentThreshold:
+                row['motoHoursCounterCurrentThreshold'] as int,
+            currentCutOffTimerPeriod: row['currentCutOffTimerPeriod'] as int,
+            maxCutoffTemperature: row['maxCutoffTemperature'] as int,
+            maxTemperatureRecovery: row['maxTemperatureRecovery'] as int,
+            minTemperatureRecovery: row['minTemperatureRecovery'] as int,
+            minCutoffTemperature: row['minCutoffTemperature'] as int,
+            motoHoursChargeCounter: row['motoHoursChargeCounter'] as int,
+            motoHoursDischargeCounter:
+                row['motoHoursDischargeCounter'] as int));
+  }
+
+  @override
+  Future<DeviceParameters> fetchDeviceParametersAsFuture(
+      String deviceId) async {
+    return _queryAdapter.query('SELECT * FROM parameters WHERE id = ?',
+        arguments: <dynamic>[deviceId],
         mapper: (Map<String, dynamic> row) => DeviceParameters(
             id: row['id'] as String,
             cellCount: row['cellCount'] as int,

@@ -44,7 +44,10 @@ class LocalDatabaseManager with CurrentContext {
       await _deviceDao.fetchDevices(curUserId);
 
   Stream<DeviceParameters> fetchParameters() =>
-      _parametersDao.fetchDeviceParameters(this.curDeviceId);
+      _parametersDao.fetchDeviceParametersAsStream(this.curDeviceId);
+
+  Future<DeviceParameters> fetchParametersAsFuture() async =>
+      await _parametersDao.fetchDeviceParametersAsFuture(curDeviceId);
 
   updateParameter(DeviceParameters parameters) =>
       _parametersDao.updateEntity(parameters);

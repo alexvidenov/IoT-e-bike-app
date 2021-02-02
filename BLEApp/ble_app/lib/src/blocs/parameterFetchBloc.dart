@@ -30,25 +30,32 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String>
   @override
   create() async {
     super.create();
-    addEvent(ParameterFetchState.fetching());
-    queryParameters();
-    streamSubscription = _repository.characteristicValueStream.listen((event) {
-      print('PARAMETER EVENT: ' + event);
-      final buffer = StringBuffer();
-      for (var i = 3; i < event.length; i++) {
-        buffer.write('${event[i]}');
-      }
-      final value = double.parse(buffer.toString());
-      print('Parameter: ' + value.toString());
-      _parameters['${event[1]}' + '${event[2]}'] = value;
-    });
+    final params = await _dbManager.fetchParametersAsFuture();
+    if (params != null) {
+      addEvent(ParameterFetchState.fetched(params));
+    } else {
+      addEvent(ParameterFetchState.fetching());
+      queryParameters();
+      streamSubscription =
+          _repository.characteristicValueStream.listen((event) {
+        print('PARAMETER EVENT: ' + event);
+        final buffer = StringBuffer();
+        for (var i = 3; i < event.length; i++) {
+          buffer.write('${event[i]}');
+        }
+        final value = double.parse(buffer.toString());
+        print('Parameter: ' + value.toString());
+        _parameters['${event[1]}' + '${event[2]}'] = value;
+      });
+    }
   }
 
-  cacheParameters(DeviceParameters parameters) {
-    print('Device parameters are:' + parameters.toString());
-    _dbManager.insertParameters(parameters);
-    _holder.deviceParameters.value = parameters;
-  }
+  cacheParameters(DeviceParameters parameters) =>
+      _holder.deviceParameters.value =
+          parameters; // _dbManager.insertParameters(parameters);
+
+  initParams(DeviceParameters parameters) =>
+      _holder.deviceParameters.value = parameters;
 }
 
 extension FetchParams on ParameterFetchBloc {

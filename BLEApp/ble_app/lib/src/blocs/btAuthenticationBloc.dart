@@ -1,3 +1,4 @@
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/main.dart';
@@ -5,6 +6,8 @@ import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/sealedStates/btAuthState.dart';
 import 'package:ble_app/src/services/Database.dart';
 import 'package:injectable/injectable.dart';
+
+import 'PageManager.dart';
 
 part 'blocExtensions/BTAuthMethods.dart';
 

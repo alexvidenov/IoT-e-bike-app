@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _hasDisconnected = false;
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   PersistentBottomSheetController _bottomSheetController;
 
   _instantiateObserver() => routeObserver = RouteObserver<PageRoute>();
@@ -325,6 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
   //@override
   onDisconnected() {
     if (mounted) {
+      print('ONDISCONNECTED');
       widget._repository.cancel();
       _hasDisconnected = true;
       _bottomSheetController =

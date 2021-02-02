@@ -4,6 +4,9 @@ import 'package:floor/floor.dart';
 
 @dao
 abstract class ParametersDao extends Dao<DeviceParameters> {
-  @Query("SELECT * FROM parameters WHERE id = :deviceId")
-  Stream<DeviceParameters> fetchDeviceParameters(String deviceId);
+  @Query('SELECT * FROM parameters WHERE id = :deviceId')
+  Stream<DeviceParameters> fetchDeviceParametersAsStream(String deviceId);
+
+  @Query('SELECT * FROM parameters WHERE id = :deviceId')
+  Future<DeviceParameters> fetchDeviceParametersAsFuture(String deviceId);
 }

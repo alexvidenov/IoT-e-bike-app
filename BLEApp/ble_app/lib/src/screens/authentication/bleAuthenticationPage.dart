@@ -44,12 +44,8 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
     super.initState();
     widget._deviceBloc.stopScan(); // this is not needed for sure
     widget._authBloc.create();
-    widget._deviceBloc.connect().then((_) => _init());
+    widget._deviceBloc.connect().then((_) => _listenToAuthBloc());
     _handleBLEError();
-  }
-
-  _init() {
-    _listenToAuthBloc();
   }
 
   _handleBLEError() => Future.delayed(Duration(seconds: 7), () {
