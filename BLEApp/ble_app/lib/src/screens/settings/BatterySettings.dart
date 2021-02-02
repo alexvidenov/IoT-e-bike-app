@@ -7,6 +7,7 @@ import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
 
 // P0000 - OK
 
@@ -17,6 +18,8 @@ import 'package:flutter/material.dart';
 // W0002 - second node
 
 typedef EditedParameterCallback = Future<void> Function(String, String);
+
+typedef CalibrateCallback = void Function();
 
 class _CardParameter extends StatelessWidget {
   // Should keep the last value. If it doesnt program correctly, rturn the old value
@@ -76,6 +79,43 @@ class _CardParameter extends StatelessWidget {
       );
 }
 
+class CalibrateTile extends StatelessWidget {
+  final int _showcaseIndex;
+  final String _parameterName;
+  final String _description;
+  final CalibrateCallback _calibrateCallback;
+
+  const CalibrateTile(this._showcaseIndex, this._parameterName,
+      this._description, this._calibrateCallback);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Column(
+        children: <Widget>[
+          ListTile(
+              leading: Text(_showcaseIndex.toString()),
+              title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        '$_parameterName :',
+                        style: TextStyle(fontSize: 24, color: Colors.black),
+                      ),
+                    ),
+                  ]),
+              subtitle: Text(_description),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+              onTap: () => _calibrateCallback(),
+              tileColor: Colors.lightBlueAccent),
+        ],
+      ),
+    );
+  }
+}
+
 class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
   final ParameterListenerBloc _parameterListenerBloc;
   final DeviceRepository _repository;
@@ -96,12 +136,11 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
 
   Future<void> serialNumberCompletion(String key, String value) async {
     // only for superusers
-    final dateTime = DateTime.now();
-    final year = dateTime.year.toString();
+    final year = DateTime.now().year.toString();
+    final currentDay = Jiffy().dayOfYear;
     _repository.cancel();
-    await _write(key, '${year[2]}' + '${year[3]}' + dateTime.month.toString());
-    await _write(
-        (int.parse(key) + 1).toString(), dateTime.day.toString() + value);
+    await _write(key, '${year[3]}' + '$currentDay');
+    await _write((int.parse(key) + 1).toString(), value);
     Future.delayed(Duration(milliseconds: 80), () => _repository.resume());
   }
 
@@ -319,6 +358,15 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
                           completion),
                       _CardParameter(17, '44', 'Serial number', 0000, '', '',
                           serialNumberCompletion),
+                      CalibrateTile(18, 'Cal. V', 'Voltage calibrate', () {
+                        _parameterListenerBloc.calibrateVoltage();
+                      }),
+                      CalibrateTile(19, 'Cal. C', 'Charge calibrate', () {
+                        _parameterListenerBloc.calibrateCharge();
+                      }),
+                      CalibrateTile(20, 'Cal. D', 'Discharge calibrate', () {
+                        _parameterListenerBloc.calibrateDischarge();
+                      })
                     ],
                   );
                 } else

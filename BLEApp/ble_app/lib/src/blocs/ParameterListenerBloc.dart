@@ -135,6 +135,25 @@ class ParameterListenerBloc extends Bloc<ParameterChangeStatus, String>
     this.value = value;
   }
 
+  calibrateVoltage() {
+    // FIXME: fix this bruh repetition here
+    _successful = false;
+    _timeout();
+    _repository.writeToCharacteristic('V\r');
+  }
+
+  calibrateCharge() {
+    _successful = false;
+    _timeout();
+    _repository.writeToCharacteristic('C\r');
+  }
+
+  calibrateDischarge() {
+    _successful = false;
+    _timeout();
+    _repository.writeToCharacteristic('D\r');
+  }
+
   _timeout() => Future.delayed(Duration(milliseconds: 500), () {
         if (!_successful) addEvent(ParameterChangeStatus.Unsuccessful);
       });

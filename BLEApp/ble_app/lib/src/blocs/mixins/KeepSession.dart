@@ -19,7 +19,5 @@ mixin KeepSession<T extends Bloc<dynamic, dynamic>> on RouteAwareWidget<T> {
         shortStatusBloc.resume();
       };
 
-  _Pause get pause => () {
-        shortStatusBloc.pause();
-      };
+  _Pause get pause => () => shortStatusBloc.dispose();
 }

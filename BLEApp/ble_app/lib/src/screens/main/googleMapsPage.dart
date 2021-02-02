@@ -47,5 +47,9 @@ class MapPage extends RouteAwareWidget<LocationBloc>
   }
 
   @override
-  onPause() => pause();
+  onDestroy() {
+    print('ON DESTROYING MAP PAGE');
+    pause();
+    super.onDestroy();
+  }
 }

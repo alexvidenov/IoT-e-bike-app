@@ -34,12 +34,6 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
           //addEvent(BTAuthState.failedToBTAuthenticate(
           //reason: BTNotAuthenticatedReason.DeviceIsNotRegistered));
           // } else {
-          if (await _db.isAnonymous()) {
-            _repository.deviceSerialNumber = '1234';
-          } else {
-            _repository.deviceSerialNumber =
-                1234567.toString(); // TODO: fetch 55 param here (for example)
-          }
         } else if (event.startsWith('R44')) {
           serialNumFirstPart =
               '${event[3]}' + '${event[4]}' + '${event[5]}' + '${event[6]}';
@@ -47,8 +41,15 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
           serialNumSecondPart =
               '${event[3]}' + '${event[4]}' + '${event[5]}' + '${event[6]}';
           String number = extractSerialNumber();
-          addEvent(BTAuthState.btAuthenticated());
           print('GOTTEN SERIAL NUMBER => $number');
+          if (await _db.isAnonymous()) {
+            _repository.deviceSerialNumber = '1234'; // serial number here
+          } else {
+            _repository.deviceSerialNumber =
+                1234567.toString(); // TODO: fetch 55 param here (for example)
+          }
+          addEvent(BTAuthState
+              .btAuthenticated()); // or not authenticated if fetched serial number is not equal
         }
       });
 

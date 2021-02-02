@@ -172,7 +172,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: <Widget>[
                           icon,
                           RaisedButton(
-                            color: Colors.deepPurple,
+                            color: snapshot.data == OutputsState.On
+                                ? Colors.lightGreenAccent
+                                : Colors.redAccent,
                             onPressed: () => function(funcToPass),
                             child: text,
                           ),
@@ -257,37 +259,38 @@ class _HomeScreenState extends State<HomeScreen> {
                             duration: Duration(milliseconds: 800),
                             curve: Curves.easeOutExpo,
                             tabBackgroundColor: Colors.lightBlue,
+                            textStyle: TextStyle(fontSize: 20),
                             tabs: [
                               GButton(
                                 gap: 8,
                                 icon: Icons.home,
                                 iconActiveColor: Colors.redAccent,
                                 iconColor: Colors.black,
-                                textColor: Colors.redAccent,
+                                textColor: Colors.black,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 18, vertical: 5),
-                                backgroundColor: Colors.purple.withOpacity(.2),
+                                backgroundColor: Colors.lightGreenAccent.withOpacity(.2),
                                 text: 'Home',
                               ),
                               GButton(
                                 gap: 8,
-                                icon: Icons.dashboard,
+                                icon: Icons.battery_charging_full_sharp,
                                 text: 'Bat. status',
                                 iconActiveColor: Colors.redAccent,
                                 iconColor: Colors.black,
-                                textColor: Colors.redAccent,
+                                textColor: Colors.black,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 18, vertical: 5),
-                                backgroundColor: Colors.teal.withOpacity(.2),
+                                backgroundColor: Colors.lightBlueAccent.withOpacity(.2),
                               ),
                               GButton(
                                 gap: 8,
                                 icon: Icons.zoom_out_map,
                                 iconActiveColor: Colors.redAccent,
                                 iconColor: Colors.black,
-                                textColor: Colors.redAccent,
+                                textColor: Colors.black,
                                 backgroundColor:
-                                    Colors.amber[600].withOpacity(.2),
+                                    Colors.yellowAccent.withOpacity(.2),
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 18, vertical: 5),
                                 text: 'Map',
