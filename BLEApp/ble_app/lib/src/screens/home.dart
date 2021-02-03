@@ -17,16 +17,6 @@ import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
-// Offline - ONLY
-// Online - optional
-
-// V nachaloto da ima landing page, v koito da ima dve opcii:
-// go online with registration, or go completely offline without shit ton of features. If you choose the latter, you can still back off
-// ..if statements
-// in a settings page, have an option "register", which deletes the "phantom" user and starts everything anew.
-
-// Add + symbol in the current
-
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
@@ -101,47 +91,6 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: Colors.black,
               appBar: AppBar(
                 backgroundColor: Colors.black,
-                title: StreamBuilder<CurrentPage>(
-                    stream: widget.navigationBloc.stream,
-                    initialData: CurrentPage.ShortStatus,
-                    builder: (_, snapshot) {
-                      String _title;
-                      Function _onPressed;
-                      switch (snapshot.data) {
-                        case CurrentPage.ShortStatus:
-                          _onPressed = () => widget.navigationBloc.to('/full');
-                          _title = 'Main status';
-                          break;
-                        case CurrentPage.FullStatus:
-                          _onPressed = () => widget.navigationBloc.to('/map');
-                          _title = 'Bat. status';
-                          break;
-                        case CurrentPage.Map:
-                          _onPressed =
-                              () => widget.navigationBloc.returnToFirstRoute();
-                          _title = 'Location';
-                          break;
-                      }
-                      return Container(
-                        decoration: BoxDecoration(
-                            color: Colors.black26,
-                            shape: BoxShape.rectangle,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.white,
-                                  blurRadius: 0.5,
-                                  spreadRadius: 0.4),
-                            ]),
-                        child: RaisedButton(
-                            color: Colors.black,
-                            onPressed: _onPressed,
-                            child: Text(_title,
-                                style: TextStyle(
-                                    fontSize: 23,
-                                    color: Colors.white,
-                                    letterSpacing: 2))),
-                      );
-                    }),
                 centerTitle: false,
                 actions: <Widget>[
                   StreamBuilder<OutputsState>(
@@ -149,12 +98,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     initialData: OutputsState.Off,
                     builder: (_, snapshot) {
                       Text text = snapshot.data == OutputsState.On
-                          ? Text('Off',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20))
-                          : Text('On',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20));
+                          ? Text('Unlock',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  letterSpacing: 1.3))
+                          : Text('Lock',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  letterSpacing: 1.3));
                       Icon icon = snapshot.data == OutputsState.On
                           ? Icon(Icons.lock)
                           : Icon(Icons.lock_open);
@@ -168,18 +121,39 @@ class _HomeScreenState extends State<HomeScreen> {
                       final funcToPass = snapshot.data == OutputsState.On
                           ? () => widget._controlBloc.off()
                           : () => widget._controlBloc.on();
+                      return OutlinedButton.icon(
+                        icon: icon,
+                        label: text,
+                        onPressed: () => function(funcToPass),
+                        style: ElevatedButton.styleFrom(
+                          side: BorderSide(
+                              width: 5.0,
+                              color: snapshot.data == OutputsState.Off
+                                  ? Colors.blue
+                                  : Colors.redAccent),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.0),
+                          ),
+                        ),
+                      );
+                      /*
                       return Row(
                         children: <Widget>[
                           icon,
                           RaisedButton(
-                            color: snapshot.data == OutputsState.On
+                            color: snapshot.data == OutputsState.Off
                                 ? Colors.lightGreenAccent
                                 : Colors.redAccent,
                             onPressed: () => function(funcToPass),
                             child: text,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular()
+                            ),
                           ),
                         ],
                       );
+
+                       */
                     },
                   )
                 ],
@@ -259,7 +233,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             duration: Duration(milliseconds: 800),
                             curve: Curves.easeOutExpo,
                             tabBackgroundColor: Colors.lightBlue,
-                            textStyle: TextStyle(fontSize: 20),
+                            textStyle: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.bold),
                             tabs: [
                               GButton(
                                 gap: 8,
@@ -269,28 +244,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                 textColor: Colors.black,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 18, vertical: 5),
-                                backgroundColor: Colors.lightGreenAccent.withOpacity(.2),
+                                backgroundColor: Colors.greenAccent,
                                 text: 'Home',
                               ),
                               GButton(
-                                gap: 8,
-                                icon: Icons.battery_charging_full_sharp,
-                                text: 'Bat. status',
-                                iconActiveColor: Colors.redAccent,
-                                iconColor: Colors.black,
-                                textColor: Colors.black,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 18, vertical: 5),
-                                backgroundColor: Colors.lightBlueAccent.withOpacity(.2),
-                              ),
+                                  gap: 8,
+                                  icon: Icons.battery_charging_full_sharp,
+                                  text: 'Bat. status',
+                                  iconActiveColor: Colors.redAccent,
+                                  iconColor: Colors.black,
+                                  textColor: Colors.black,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 18, vertical: 5),
+                                  backgroundColor: Colors.lightBlue),
                               GButton(
                                 gap: 8,
                                 icon: Icons.zoom_out_map,
                                 iconActiveColor: Colors.redAccent,
                                 iconColor: Colors.black,
                                 textColor: Colors.black,
-                                backgroundColor:
-                                    Colors.yellowAccent.withOpacity(.2),
+                                backgroundColor: Colors.yellow,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 18, vertical: 5),
                                 text: 'Map',
@@ -326,7 +299,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return route.didPop(result);
   }
 
-  //@override
   onDisconnected() {
     if (mounted) {
       print('ONDISCONNECTED');
@@ -346,9 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
   authenticate(String password) => // TODO: remove that from here
       widget._repository.writeToCharacteristic('P$password\r');
 
-  //@override
   onReconnected() async {
-    // FIXME: this fails
     if (_hasDisconnected && mounted) {
       print('RECONNECTED');
       _bottomSheetController?.close();
@@ -360,10 +330,5 @@ class _HomeScreenState extends State<HomeScreen> {
             Duration(milliseconds: 100), () => widget._repository.resume());
       });
     }
-  }
-
-  //@override
-  onReadyToAuthenticate() {
-    print('READY TO AUTTH');
   }
 }

@@ -7,52 +7,6 @@ const String noAccount = "Don't have an account?";
 const Color kMainColor = Color(0xffFFFFFF);
 const Color kSecondaryColor = Colors.lightBlueAccent;
 
-class CustomAppBar extends StatelessWidget {
-  final String screenName;
-  final Function onPressed;
-
-  CustomAppBar({this.onPressed, this.screenName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Material(
-          color: Colors.transparent,
-          child: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: kMainColor,
-              ),
-              onPressed: () => {}),
-        ),
-        Spacer(),
-        Padding(
-          padding: const EdgeInsets.only(right: 30),
-          child: GestureDetector(
-            onTap: onPressed, // pass toggleView here,
-            child: Text(
-              screenName,
-              style: TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.bold, color: kMainColor),
-            ),
-          ),
-        ),
-        Container(
-          height: 40,
-          width: 4,
-          decoration: BoxDecoration(
-              color: kMainColor,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                bottomLeft: Radius.circular(30),
-              )),
-        )
-      ],
-    );
-  }
-}
-
 Padding inputWidget(
     {String hintText,
     IconData primaryIcon,
@@ -167,9 +121,26 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: Text('Login'),
+          actions: [
+            RaisedButton(
+                color: Colors.transparent,
+                onPressed: widget.toggleView,
+                child: Text('Register',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        letterSpacing: 2,
+                        fontFamily: 'Europe_Ext'))),
+            const Icon(Icons.arrow_forward)
+          ],
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+        ),
+        extendBodyBehindAppBar: true,
         body: Stack(
           fit: StackFit.expand,
           children: <Widget>[
@@ -178,7 +149,6 @@ class _LoginScreenState extends State<LoginScreen> {
               // TODO: replace with some other image, this is test
               fit: BoxFit.fill,
             ),
-            //Image.asset("assets/images/someimage.jpg", fit: BoxFit.fill),
             Container(
               color: kSecondaryColor.withOpacity(0.6),
             ),
@@ -187,14 +157,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 key: this.formKey,
                 child: Column(
                   children: <Widget>[
-                    Container(
-                      height: height * 0.1,
-                      width: width,
-                      child: CustomAppBar(
-                        screenName: "Register",
-                        onPressed: () => widget.toggleView(),
-                      ),
-                    ),
                     Container(
                         height: height * 0.4,
                         alignment: Alignment.center,

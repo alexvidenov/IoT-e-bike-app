@@ -126,7 +126,6 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
         super(bloc: parameterListenerBloc);
 
   Future<void> completion(String key, String value) async {
-    // TODO: actually write a typedef for that one and move it in the bloc
     _repository.cancel();
     await Future.delayed(
         Duration(milliseconds: 150), // works perfectly with 80.
@@ -148,22 +147,30 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
       Duration(milliseconds: 100),
       () => _parameterListenerBloc.changeParameter(key, value));
 
-  Future<void> _showDialog(context) async {
-    AwesomeDialog(
-      context: context,
-      useRootNavigator: true,
-      dialogType: DialogType.SUCCES,
-      headerAnimationLoop: false,
-      animType: AnimType.TOPSLIDE,
-      title: 'Successful',
-      desc: 'Parameter changed',
-      autoHide: Duration(seconds: 2),
-    ).show();
+  Future<void> _showDialog(context, bool success) async {
+    success
+        ? AwesomeDialog(
+            context: context,
+            useRootNavigator: true,
+            dialogType: DialogType.SUCCES,
+            headerAnimationLoop: false,
+            animType: AnimType.TOPSLIDE,
+            title: 'Successful',
+            desc: 'Parameter changed',
+            autoHide: Duration(seconds: 2),
+          ).show()
+        : AwesomeDialog(
+            context: context,
+            useRootNavigator: true,
+            dialogType: DialogType.ERROR,
+            animType: AnimType.SCALE,
+            title: 'Failed',
+            desc: 'Parameter change failed. Retry?',
+            btnOkText: 'Yes',
+            btnOkOnPress: () => _parameterListenerBloc.retry(),
+            btnCancelText: 'Cancel',
+            btnCancelOnPress: () => this.buildWidget(context)).show();
   }
-
-  testRead1() => this._repository.writeToCharacteristic('R44\r');
-
-  testRead2() => this._repository.writeToCharacteristic('R45\r');
 
   @override
   Widget buildWidget(BuildContext context) {
@@ -172,21 +179,10 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
         onData: (status) {
           switch (status) {
             case ParameterChangeStatus.Successful:
-              _showDialog(context);
+              _showDialog(context, true);
               break;
             case ParameterChangeStatus.Unsuccessful:
-              AwesomeDialog(
-                      context: context,
-                      useRootNavigator: true,
-                      dialogType: DialogType.ERROR,
-                      animType: AnimType.SCALE,
-                      title: 'Failed',
-                      desc: 'Parameter change failed. Retry?',
-                      btnOkText: 'Yes',
-                      btnOkOnPress: () => _parameterListenerBloc.retry(),
-                      btnCancelText: 'Cancel',
-                      btnCancelOnPress: () => this.buildWidget(context))
-                  .show(); // FIXME: definitely fix that
+              _showDialog(context, false);
               break;
           }
         },
@@ -195,21 +191,6 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
               brightness: Brightness.dark,
               title: const Text('Battery Settings'),
               backgroundColor: Colors.transparent,
-              actions: [
-                RaisedButton(
-                  color: Colors.black,
-                  child: Text('Write'),
-                  onPressed: () async {
-                    _repository.cancel();
-                    await Future.delayed(Duration(milliseconds: 100), () async {
-                      testRead1();
-                      await Future.delayed(
-                          Duration(milliseconds: 100), () => testRead2());
-                    });
-                    _repository.resume();
-                  },
-                )
-              ],
             ),
             body: SingleChildScrollView(
                 child: StreamBuilder<DeviceParameters>(
@@ -358,15 +339,12 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
                           completion),
                       _CardParameter(17, '44', 'Serial number', 0000, '', '',
                           serialNumberCompletion),
-                      CalibrateTile(18, 'Cal. V', 'Voltage calibrate', () {
-                        _parameterListenerBloc.calibrateVoltage();
-                      }),
-                      CalibrateTile(19, 'Cal. C', 'Charge calibrate', () {
-                        _parameterListenerBloc.calibrateCharge();
-                      }),
-                      CalibrateTile(20, 'Cal. D', 'Discharge calibrate', () {
-                        _parameterListenerBloc.calibrateDischarge();
-                      })
+                      CalibrateTile(18, 'Cal. V', 'Voltage calibrate',
+                          () => _parameterListenerBloc.calibrateVoltage()),
+                      CalibrateTile(19, 'Cal. C', 'Charge calibrate',
+                          () => _parameterListenerBloc.calibrateCharge()),
+                      CalibrateTile(20, 'Cal. D', 'Discharge calibrate',
+                          () => _parameterListenerBloc.calibrateDischarge())
                     ],
                   );
                 } else
