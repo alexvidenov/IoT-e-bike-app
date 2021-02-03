@@ -32,6 +32,7 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String>
     super.create();
     final params = await _dbManager.fetchParametersAsFuture();
     if (params != null) {
+      initParams(params);
       addEvent(ParameterFetchState.fetched(params));
     } else {
       addEvent(ParameterFetchState.fetching());
@@ -51,8 +52,7 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String>
   }
 
   cacheParameters(DeviceParameters parameters) =>
-      _holder.deviceParameters.value =
-          parameters; // _dbManager.insertParameters(parameters);
+      _dbManager.insertParameters(parameters);
 
   initParams(DeviceParameters parameters) =>
       _holder.deviceParameters.value = parameters;
@@ -100,6 +100,8 @@ extension FetchParams on ParameterFetchBloc {
             motoHoursChargeCounter: _parameters['28'].toInt(),
             motoHoursDischargeCounter: _parameters['29'].toInt());
         //}
+        cacheParameters(entity);
+        initParams(entity);
         addEvent(ParameterFetchState.fetched(entity));
       } else
         queryParameters();

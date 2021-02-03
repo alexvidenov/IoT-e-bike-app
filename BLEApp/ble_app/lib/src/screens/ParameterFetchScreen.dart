@@ -55,8 +55,7 @@ class ParameterFetchScreen extends RouteAwareWidget<ParameterFetchBloc> {
             stream: super.bloc.stream,
             onData: (state) {
               state.when(
-                  fetched: (fetched) {
-                    super.bloc.cacheParameters(fetched);
+                  fetched: (_) {
                     dialog.dismiss();
                     $<PageManager>().openHome();
                   },

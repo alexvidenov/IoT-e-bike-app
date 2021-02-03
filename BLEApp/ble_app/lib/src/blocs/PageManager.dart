@@ -45,7 +45,7 @@ class PageManager {
   void openBleApp() {
     _pages.removeWhere(
       (page) =>
-          page.key == const Key('Welcome') &&
+          page.key == const Key('Welcome') ||
           page.key ==
               const Key(
                   'AuthWrapper'), // TODO: remove where the key is NOT welcome or the auth wrapper or the other thing
@@ -97,6 +97,7 @@ class PageManager {
         child: AuthenticationWrapper($()), key: Key('AuthWrapper')));
     _pages.insert(_pages.length - 1,
         MaterialPage(child: Welcome(func: func), key: Key('Welcome')));
+
     pages.addEvent(_pagesList);
   }
 
