@@ -1,8 +1,9 @@
 import 'package:ble_app/src/blocs/fullStatusBloc.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusModel.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
+import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:flutter/material.dart';
-
+import 'package:ble_app/src/sealedStates/statusState.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/_BottomProgressText.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -23,7 +24,8 @@ class VoltagesBarChart extends StatelessWidget {
           minimum: 0,
           maximum: 17,
           // NUM OF CELLS HERE
-          labelStyle: TextStyle(fontSize: 20),
+          labelStyle: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
           majorGridLines: MajorGridLines(width: 0),
         ),
         primaryYAxis: NumericAxis(
@@ -31,6 +33,8 @@ class VoltagesBarChart extends StatelessWidget {
             majorTickLines: MajorTickLines(size: 0),
             isVisible: true,
             title: AxisTitle(text: ''),
+            labelStyle: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
             minimum: _fullStatusBloc.getParameters().value.minCellVoltage,
             maximum: _fullStatusBloc.getParameters().value.maxCellVoltage),
         series: getBarSeries(),
@@ -62,24 +66,27 @@ class VoltagesBarChart extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          StreamBuilder<FullStatusModel>(
+          StreamBuilder<StatusState<FullStatus>>(
             stream: _fullStatusBloc.stream,
-            builder: (_, model) {
-              if (model.connectionState == ConnectionState.active) {
+            builder: (_, state) {
+              if (state.connectionState == ConnectionState.active) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     ProgressText(
                       title: 'Utot.',
-                      content: model.data.totalVoltage.toStringAsFixed(2) + 'V',
+                      content:
+                          state.data.model.totalVoltage.toStringAsFixed(2) +
+                              'V',
                     ),
                     ProgressText(
                       title: 'Current',
-                      content: model.data.current.toStringAsFixed(2) + 'A',
+                      content:
+                          state.data.model.current.toStringAsFixed(2) + 'A',
                     ),
                     ProgressText(
                       title: 'Temp.',
-                      content: model.data.temperature.toString() + '°C',
+                      content: state.data.model.temperature.toString() + '°C',
                     ),
                   ],
                 );
@@ -100,13 +107,13 @@ class VoltagesBarChart extends StatelessWidget {
                     content: (value.motoHoursChargeCounter).toString() + 'h',
                   ),
                 ),
-                StreamBuilder<FullStatusModel>(
+                StreamBuilder<StatusState<FullStatus>>(
                   stream: _fullStatusBloc.stream,
                   builder: (_, model) =>
                       model.connectionState == ConnectionState.active
                           ? ProgressText(
                               title: 'Bat.status',
-                              content: model.data.status.string(),
+                              content: model.data.state.string(),
                             )
                           : Container(),
                 ),
@@ -158,11 +165,11 @@ class VoltagesBarChart extends StatelessWidget {
             ),
           ),
           Expanded(
-              child: StreamBuilder<FullStatusModel>(
-                  stream: this._fullStatusBloc.stream,
+              child: StreamBuilder<StatusState<FullStatus>>(
+                  stream: _fullStatusBloc.stream,
                   builder: (_, snapshot) {
                     if (snapshot.connectionState == ConnectionState.active) {
-                      _chartData = snapshot.data.fullStatus;
+                      _chartData = snapshot.data.model.fullStatus;
                       return getBarChart();
                     } else
                       return Container();

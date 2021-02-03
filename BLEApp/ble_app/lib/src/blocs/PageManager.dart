@@ -22,7 +22,6 @@ class PageManager {
   GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
 
   PageManager() {
-    print('INITIALIZING');
     pages.addEvent(_pages);
   }
 

@@ -109,7 +109,7 @@ class _$ShortStatusCopyWithImpl<$Res>
   }
 }
 
-@Implements(BaseStatus)
+@Implements(BaseModel)
 
 /// @nodoc
 class _$ShortStatus implements ShortStatus {
@@ -161,7 +161,7 @@ class _$ShortStatus implements ShortStatus {
       _$ShortStatusCopyWithImpl<ShortStatus>(this, _$identity);
 }
 
-abstract class ShortStatus implements ShortStatusModel, BaseStatus {
+abstract class ShortStatus implements ShortStatusModel, BaseModel {
   const factory ShortStatus(
       {double totalVoltage, double current, int temperature}) = _$ShortStatus;
 

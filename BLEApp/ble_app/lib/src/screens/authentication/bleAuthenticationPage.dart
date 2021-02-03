@@ -177,9 +177,9 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
                   switch (state) {
                     case PeripheralConnectionState.connected:
                       _connected = true;
-                      if (widget._settingsBloc.isPasswordRemembered() == true) {
+                      if (widget._settingsBloc.isPasswordRemembered()) {
                         widget._deviceBloc.deviceReady.listen((event) {
-                          if (event == true) {
+                          if (event) {
                             final password = widget._settingsBloc.getPassword();
                             print('Password is $password');
                             widget._authBloc.authenticate(password);

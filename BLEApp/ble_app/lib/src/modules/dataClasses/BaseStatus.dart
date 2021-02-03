@@ -1,9 +1,8 @@
-abstract class BaseStatus {
-  double get totalVoltage;
+import 'package:ble_app/src/modules/dataClasses/BaseModel.dart';
+import 'package:ble_app/src/sealedStates/BatteryState.dart';
 
-  double get current;
+abstract class BaseStatus<T extends BaseModel> {
+  T get model;
 
-  int get temperature;
-
-// add optional here
+  BatteryState get state;
 }

@@ -1,6 +1,6 @@
-import 'package:ble_app/src/sealedStates/shortStatusState.dart';
+import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:flutter/material.dart';
-
+import 'package:ble_app/src/sealedStates/statusState.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
@@ -18,30 +18,26 @@ class CurrentRow extends StatelessWidget {
   const CurrentRow({@required this.bloc});
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<ShortStatusState>(
+  Widget build(BuildContext context) => StreamBuilder<StatusState<ShortStatus>>(
       // TODO: optimize the builder not to rerender the row and everything
       stream: bloc.stream,
-      initialData: ShortStatusState(ShortStatusModel()),
+      initialData: StatusState(BatteryState.Unknown, ShortStatusModel()),
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active) {
-          var current;
+          // Check if we even have model
+          final current = shortStatus.data.model.current;
           Color CCColor = Colors.lightBlueAccent;
           Color DCColor = Colors.lightBlueAccent;
-          shortStatus.data.when((model) {
-            current = model.current;
-          }, error: (error, model) {
-            switch (error) {
-              case ShortStatusErrorState.Overcharge:
-                CCColor = Colors.red;
-                break;
-              case ShortStatusErrorState.OverDischarge:
-                DCColor = Colors.red;
-                break;
-              default:
-                break;
-            }
-            current = model.current;
-          });
+          switch (shortStatus.data.state) {
+            case BatteryState.OverCharge:
+              CCColor = Colors.red;
+              break;
+            case BatteryState.OverDischarge:
+              DCColor = Colors.red;
+              break;
+            default:
+              break;
+          }
           int charge =
               bloc.getParameters().value.maxCutoffChargeCurrent.toInt();
           int discharge =
@@ -138,32 +134,13 @@ class CurrentRow extends StatelessWidget {
                   const SizedBox(height: 15),
                   Row(
                     children: <Widget>[
-                      StreamBuilder<ShortStatusState>(
-                        stream: bloc.stream,
-                        builder: (_, model) {
-                          if (model.connectionState == ConnectionState.active) {
-                            var color;
-                            double current;
-                            model.data.when((state) {
-                              // TODO: check for charge or discharge here
-                              color = Colors.white;
-                              current = state
-                                  .current; // or discharge. FIXME fix the data model
-                            }, error: (error, state) {
-                              color = Colors.white;
-                              current = state.current;
-                            });
-                            return Text((current).toStringAsFixed(2) + 'A',
-                                style: TextStyle(
-                                    color: color,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25.0,
-                                    letterSpacing: 1.5,
-                                    fontFamily: 'Europe_Ext'));
-                          } else
-                            return Container();
-                        },
-                      ),
+                      Text((current).toStringAsFixed(2) + 'A',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25.0,
+                              letterSpacing: 1.5,
+                              fontFamily: 'Europe_Ext')),
                       const SizedBox(
                         width: 20,
                       ),

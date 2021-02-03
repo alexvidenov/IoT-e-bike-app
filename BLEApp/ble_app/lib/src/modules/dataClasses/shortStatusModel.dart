@@ -1,12 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'BaseStatus.dart';
+import 'BaseModel.dart';
 
 part 'shortStatusModel.freezed.dart';
 
 @freezed
 abstract class ShortStatusModel with _$ShortStatusModel {
-  @Implements(BaseStatus)
+  @Implements(BaseModel)
   const factory ShortStatusModel(
       {@Default(0) double totalVoltage,
       @Default(0) double current,

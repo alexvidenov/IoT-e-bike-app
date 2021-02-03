@@ -7,7 +7,7 @@ class FirestoreDatabase {
   final String uid;
   final String deviceId;
 
-  get _firestore => FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   CollectionReference get _users => _firestore.collection('users');
 
@@ -93,4 +93,16 @@ class FirestoreDatabase {
 
   Future<void> setIndividualParameter(String key, dynamic value) =>
       _parameters().update({key: value});
+
+  Future<void> updateArray() {
+    _firestore.collection('users').doc('someuser').update({
+      'devices': FieldValue.arrayUnion(['newdeviceid'])
+    });
+  }
+
+  Future<void> setArray() {
+    _firestore.collection('users').doc('someuser').set({
+      'devices': [123, 124]
+    });
+  }
 }

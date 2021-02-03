@@ -1,23 +1,17 @@
-import 'package:ble_app/src/modules/dataClasses/BaseStatus.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'BaseModel.dart';
 import 'fullStatusBarGraphModel.dart';
 
 part 'fullStatusModel.freezed.dart';
 
-enum BattStatus { OK, OC, OD, OCOD, ERROR, SC }
-
-extension BattStatusToString on BattStatus {
-  String string() => this.toString().split('.').last;
-}
-
 @freezed
 abstract class FullStatusModel with _$FullStatusModel {
+  @Implements(BaseModel)
   const factory FullStatusModel(
-      List<FullStatusDataModel> fullStatus,
-      double totalVoltage,
-      double current,
-      int temperature,
-      int rIn,
-      BattStatus status) = _FullStatus;
+      {@Default([]) List<FullStatusDataModel> fullStatus,
+      @Default(0) double totalVoltage,
+      @Default(0) double current,
+      @Default(0) int temperature,
+      @Default(0) int rIn}) = FullStatus;
 }

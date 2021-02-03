@@ -1,6 +1,7 @@
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
-import 'package:ble_app/src/sealedStates/shortStatusState.dart';
+import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:flutter/material.dart';
+import 'package:ble_app/src/sealedStates/statusState.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
@@ -12,18 +13,15 @@ class VoltageProgressBar extends StatelessWidget {
   const VoltageProgressBar({@required this.bloc});
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<ShortStatusState>(
+  Widget build(BuildContext context) => StreamBuilder<StatusState<ShortStatus>>(
       stream: bloc.stream,
-      initialData: ShortStatusState(ShortStatusModel()),
+      initialData: StatusState(BatteryState.Unknown, ShortStatusModel()),
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active) {
           Color color = Colors.lightBlueAccent;
-          final state = shortStatus.data;
-          final voltage = state.model.totalVoltage;
-          if (state is ShortStatusError &&
-              state.errorState == ShortStatusErrorState.HighVoltage) {
-            color = Colors.redAccent;
-          }
+          final state = shortStatus.data.state;
+          final voltage = shortStatus.data.model.totalVoltage;
+          if (state == BatteryState.OverVoltage) color = Colors.redAccent;
           return Container(
             height: 180,
             width: 20,

@@ -1,7 +1,8 @@
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
-import 'package:ble_app/src/sealedStates/shortStatusState.dart';
+import 'package:ble_app/src/sealedStates/BatteryState.dart';
+import 'package:ble_app/src/sealedStates/statusState.dart';
 import 'package:ble_app/src/widgets/progressBars/temperatureProgressBar.dart';
 import 'package:ble_app/src/widgets/progressBars/voltageProgressBar.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,7 @@ class ProgressColumns extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Column(
                       children: <Widget>[
-                        StreamBuilder<ShortStatusState>(
+                        StreamBuilder<StatusState<ShortStatus>>(
                           stream: shortStatusBloc.stream,
                           builder: (_, snapshot) {
                             if (snapshot.connectionState ==
@@ -94,20 +95,16 @@ class ProgressColumns extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Column(
                       children: <Widget>[
-                        StreamBuilder<ShortStatusState>(
+                        StreamBuilder<StatusState<ShortStatus>>(
                           stream: shortStatusBloc.stream,
-                          initialData: ShortStatusState(ShortStatusModel()),
+                          initialData: StatusState(
+                              BatteryState.Unknown, ShortStatusModel()),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.active) {
-                              String voltageText;
-                              snapshot.data.when((model) {
-                                voltageText =
-                                    (model.totalVoltage).toStringAsFixed(1);
-                              }, error: (error, model) {
-                                voltageText =
-                                    (model.totalVoltage).toStringAsFixed(1);
-                              });
+                              String voltageText = snapshot
+                                  .data.model.totalVoltage
+                                  .toStringAsFixed(1);
                               return Text(
                                 voltageText,
                                 style: TextStyle(

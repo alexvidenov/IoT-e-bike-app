@@ -127,14 +127,11 @@ class DeviceRepository {
     final c = _characteristics.firstWhere((characteristic) =>
         characteristic.uuid == BluetoothUtils.CHARACTERISTIC_UUID);
 
-    _characteristic = c; // FIXME THIS IS DUPLICATION
-
     return c;
   }
 
   dispose() {
     _characteristicSubscription?.cancel();
     _characteristicRx.dispose();
-    ;
   }
 }

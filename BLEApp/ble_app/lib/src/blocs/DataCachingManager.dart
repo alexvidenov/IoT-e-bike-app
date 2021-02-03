@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/modules/dataClasses/BaseStatus.dart';
+import 'package:ble_app/src/modules/dataClasses/BaseModel.dart';
 import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +23,7 @@ mixin DataCachingManager on CurrentContext {
   }
 
   @optionalTypeArgs
-  addData<T extends BaseStatus>(T _model) {
+  addData<T extends BaseModel>(T _model) {
     _appData.addCurrentRecord({
       'timeStamp': DateTime.now().toString(),
       'stats': {
