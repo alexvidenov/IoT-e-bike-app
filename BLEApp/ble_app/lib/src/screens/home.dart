@@ -17,6 +17,8 @@ import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
+//
+
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
@@ -98,12 +100,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     initialData: OutputsState.Off,
                     builder: (_, snapshot) {
                       Text text = snapshot.data == OutputsState.On
-                          ? Text('Unlock',
+                          ? Text('Locked',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
                                   letterSpacing: 1.3))
-                          : Text('Lock',
+                          : Text('Unlocked',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -129,31 +131,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           side: BorderSide(
                               width: 5.0,
                               color: snapshot.data == OutputsState.Off
-                                  ? Colors.blue
+                                  ? Colors.green
                                   : Colors.redAccent),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25.0),
                           ),
                         ),
                       );
-                      /*
-                      return Row(
-                        children: <Widget>[
-                          icon,
-                          RaisedButton(
-                            color: snapshot.data == OutputsState.Off
-                                ? Colors.lightGreenAccent
-                                : Colors.redAccent,
-                            onPressed: () => function(funcToPass),
-                            child: text,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular()
-                            ),
-                          ),
-                        ],
-                      );
-
-                       */
                     },
                   )
                 ],
@@ -259,14 +243,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   backgroundColor: Colors.lightBlue),
                               GButton(
                                 gap: 8,
-                                icon: Icons.zoom_out_map,
+                                icon: Icons.location_on_sharp,
                                 iconActiveColor: Colors.redAccent,
                                 iconColor: Colors.black,
                                 textColor: Colors.black,
                                 backgroundColor: Colors.yellow,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 18, vertical: 5),
-                                text: 'Map',
+                                text: 'Location',
                               ),
                             ],
                             selectedIndex: _index,
