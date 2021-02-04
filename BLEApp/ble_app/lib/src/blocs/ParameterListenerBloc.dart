@@ -1,29 +1,18 @@
-import 'package:ble_app/src/blocs/CurrentContext.dart';
-import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
-import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
-import 'package:ble_app/src/persistence/localDatabase.dart';
-import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/services/Database.dart';
 import 'package:ble_app/src/utils/ADCToTemp.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
-
-import 'bloc.dart';
 
 enum ParameterChangeStatus { Successful, Unsuccessful }
 
 @injectable
-class ParameterListenerBloc extends Bloc<ParameterChangeStatus, String>
-    with CurrentContext {
+class ParameterListenerBloc
+    extends ParameterAwareBloc<ParameterChangeStatus, String> {
   final DeviceRepository _repository;
-  final ParameterHolder _parameterHolder;
-  final LocalDatabaseManager _dbManager;
 
-  ParameterListenerBloc(
-      this._repository, this._parameterHolder, this._dbManager);
+  ParameterListenerBloc(this._repository) : super();
 
   String currentKey; // TODO: extract in an object
   String value;
@@ -41,84 +30,85 @@ class ParameterListenerBloc extends Bloc<ParameterChangeStatus, String>
         DeviceParameters newModel;
         switch (currentKey) {
           case '01':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(maxCellVoltage: double.parse(value));
+            newModel =
+                currentParams.copyWith(maxCellVoltage: double.parse(value));
             break;
           case '02':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(maxRecoveryVoltage: double.parse(value));
+            newModel =
+                currentParams.copyWith(maxRecoveryVoltage: double.parse(value));
             break;
           case '03':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(balanceCellVoltage: double.parse(value));
+            newModel =
+                currentParams.copyWith(balanceCellVoltage: double.parse(value));
             break;
           case '04':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(minCellVoltage: double.parse(value));
+            newModel =
+                currentParams.copyWith(minCellVoltage: double.parse(value));
             break;
           case '05':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(minCellRecoveryVoltage: double.parse(value));
+            newModel = currentParams.copyWith(
+                minCellRecoveryVoltage: double.parse(value));
             break;
           case '06':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(ultraLowCellVoltage: double.parse(value));
+            newModel = currentParams.copyWith(
+                ultraLowCellVoltage: double.parse(value));
             break;
           case '12':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(maxTimeLimitedDischargeCurrent: double.parse(value));
+            newModel = currentParams.copyWith(
+                maxTimeLimitedDischargeCurrent: double.parse(value));
             break;
           case '13':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(maxCutoffDischargeCurrent: double.parse(value));
+            newModel = currentParams.copyWith(
+                maxCutoffDischargeCurrent: double.parse(value));
             break;
           case '14':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(maxCurrentTimeLimitPeriod: int.parse(value));
+            newModel = currentParams.copyWith(
+                maxCurrentTimeLimitPeriod: int.parse(value));
             break;
           case '15':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(maxCutoffChargeCurrent: double.parse(value));
+            newModel = currentParams.copyWith(
+                maxCutoffChargeCurrent: double.parse(value));
             break;
           case '16':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(motoHoursCounterCurrentThreshold: int.parse(value));
+            newModel = currentParams.copyWith(
+                motoHoursCounterCurrentThreshold: int.parse(value));
             break;
           case '17':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(currentCutOffTimerPeriod: int.parse(value));
+            newModel = currentParams.copyWith(
+                currentCutOffTimerPeriod: int.parse(value));
             break;
           case '23':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(maxCutoffTemperature: int.parse(value));
+            newModel =
+                currentParams.copyWith(maxCutoffTemperature: int.parse(value));
             break;
           case '24':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(maxTemperatureRecovery: int.parse(value));
+            newModel = currentParams.copyWith(
+                maxTemperatureRecovery: int.parse(value));
             break;
           case '25':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(minTemperatureRecovery: int.parse(value));
+            newModel = currentParams.copyWith(
+                minTemperatureRecovery: int.parse(value));
             break;
           case '26':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(minCutoffTemperature: int.parse(value));
+            newModel =
+                currentParams.copyWith(minCutoffTemperature: int.parse(value));
             break;
           case '28':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(motoHoursChargeCounter: int.parse(value));
+            newModel = currentParams.copyWith(
+                motoHoursChargeCounter: int.parse(value));
             break;
           case '29':
-            newModel = _parameterHolder.deviceParameters.value
-                .copyWith(motoHoursDischargeCounter: int.parse(value));
+            newModel = currentParams.copyWith(
+                motoHoursDischargeCounter: int.parse(value));
             break;
         }
         num numValue = num.parse(value);
-        FirestoreDatabase(uid: this.curUserId, deviceId: this.curDeviceId)
-            .setIndividualParameter(currentKey, numValue);
-        _dbManager.updateParameter(newModel);
-        if (newModel != null)
-          _parameterHolder.deviceParameters.value = newModel;
+        if (newModel != null) {
+          FirestoreDatabase(uid: this.curUserId, deviceId: this.curDeviceId)
+              .setIndividualParameter(currentKey, numValue);
+          updateParameters(model: newModel);
+          setLocalParameters(newModel);
+        }
         // TODO; add method in the data class to parse stuff and return
         // enum with the available parameters (?). actually needed only for specific stuff
       }
@@ -163,7 +153,7 @@ class ParameterListenerBloc extends Bloc<ParameterChangeStatus, String>
     _repository.writeToCharacteristic(command);
   }
 
-  Stream<DeviceParameters> get parameters => _dbManager.fetchParameters();
+  Stream<DeviceParameters> get parameters => parametersAsStream();
 }
 
 extension ParseParameterString on ParameterListenerBloc {

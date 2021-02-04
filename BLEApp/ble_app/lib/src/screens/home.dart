@@ -17,8 +17,6 @@ import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
-//
-
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;

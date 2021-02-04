@@ -6,7 +6,14 @@ import 'ParameterAwareBlocInterface.dart';
 import 'ParameterHolder.dart';
 
 mixin ParameterAware implements ParameterAwareInterface {
+  final _holder = $<ParameterHolder>();
+
   @override
-  ValueNotifier<DeviceParameters> getParameters() =>
-      $<ParameterHolder>().deviceParameters;
+  ValueNotifier<DeviceParameters> getParameters() => _holder.deviceParameters;
+
+  @override
+  DeviceParameters get currentParams => _holder.params;
+
+  @override
+  set currentParams(DeviceParameters parameters) => _holder.setParameters(parameters);
 }

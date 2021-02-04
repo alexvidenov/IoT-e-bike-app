@@ -1,8 +1,7 @@
 import 'dart:collection';
 
 import 'package:ble_app/src/blocs/CurrentContext.dart';
-import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
-import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterHolder.dart';
+import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:ble_app/src/sealedStates/parameterFetchState.dart';
@@ -11,28 +10,23 @@ import 'package:ble_app/src/utils/ADCToTemp.dart';
 import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:injectable/injectable.dart';
 
-import 'bloc.dart';
-
 @injectable
-class ParameterFetchBloc extends Bloc<ParameterFetchState, String>
+class ParameterFetchBloc extends ParameterAwareBloc<ParameterFetchState, String>
     with CurrentContext {
   final DeviceRepository _repository;
-  final ParameterHolder _holder;
-  final LocalDatabaseManager _dbManager;
 
   final tempConverter = TemperatureConverter();
 
-  ParameterFetchBloc(this._repository, this._holder, this._dbManager)
-      : super(); // can be const as well
+  ParameterFetchBloc(this._repository) : super();
 
   final _parameters = SplayTreeMap<String, double>();
 
   @override
   create() async {
     super.create();
-    final params = await _dbManager.fetchParametersAsFuture();
+    final params = await parametersAsFuture();
     if (params != null) {
-      initParams(params);
+      setLocalParameters(params);
       addEvent(ParameterFetchState.fetched(params));
     } else {
       addEvent(ParameterFetchState.fetching());
@@ -50,12 +44,6 @@ class ParameterFetchBloc extends Bloc<ParameterFetchState, String>
       });
     }
   }
-
-  cacheParameters(DeviceParameters parameters) =>
-      _dbManager.insertParameters(parameters);
-
-  initParams(DeviceParameters parameters) =>
-      _holder.deviceParameters.value = parameters;
 }
 
 extension FetchParams on ParameterFetchBloc {
@@ -100,8 +88,8 @@ extension FetchParams on ParameterFetchBloc {
             motoHoursChargeCounter: _parameters['28'].toInt(),
             motoHoursDischargeCounter: _parameters['29'].toInt());
         //}
-        cacheParameters(entity);
-        initParams(entity);
+        setLocalParameters(entity);
+        cacheParameters();
         addEvent(ParameterFetchState.fetched(entity));
       } else
         queryParameters();

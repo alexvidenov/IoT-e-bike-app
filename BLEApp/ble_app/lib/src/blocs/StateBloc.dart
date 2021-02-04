@@ -1,13 +1,17 @@
 import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/blocs/DataCachingManager.dart';
+import 'package:ble_app/src/blocs/OutputControlBloc.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/dataClasses/BaseModel.dart';
+import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
 
 abstract class StateBloc<T extends BaseModel>
-    extends ParameterAwareBloc<StatusState<T>, String>
-    with CurrentContext, DataCachingManager {
+    extends ParameterAwareBloc<StatusState<T>, String> with DataCachingManager {
+  final _controlBloc = $<OutputControlBloc>(); // TODO: use that
+
   int _scCounter = 0;
 
   double _lastCurrent;

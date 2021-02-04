@@ -51,12 +51,11 @@ GetIt $initGetIt(
   gh.factory<OutputControlBloc>(
       () => OutputControlBloc(get<DeviceRepository>()));
   gh.lazySingleton<PageManager>(() => PageManager());
+  gh.factory<ParameterFetchBloc>(
+      () => ParameterFetchBloc(get<DeviceRepository>()));
   gh.lazySingleton<ParameterHolder>(() => ParameterHolder());
-  gh.factory<ParameterListenerBloc>(() => ParameterListenerBloc(
-        get<DeviceRepository>(),
-        get<ParameterHolder>(),
-        get<LocalDatabaseManager>(),
-      ));
+  gh.factory<ParameterListenerBloc>(
+      () => ParameterListenerBloc(get<DeviceRepository>()));
   gh.factory<ShortStatusBloc>(() => ShortStatusBloc(get<DeviceRepository>()));
   gh.lazySingleton<Auth>(() => Auth(get<LocalDatabaseManager>()));
   gh.lazySingleton<AuthBloc>(() => AuthBloc(get<Auth>()));
@@ -67,11 +66,6 @@ GetIt $initGetIt(
       () => DevicesBloc(get<DeviceRepository>(), get<LocalDatabaseManager>()));
   gh.lazySingleton<NavigationBloc>(
       () => NavigationBloc(get<NavigationService>()));
-  gh.factory<ParameterFetchBloc>(() => ParameterFetchBloc(
-        get<DeviceRepository>(),
-        get<ParameterHolder>(),
-        get<LocalDatabaseManager>(),
-      ));
   gh.lazySingleton<SettingsBloc>(() => SettingsBloc(get<SharedPrefsService>()));
   gh.factory<EntryEndpointBloc>(
       () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));

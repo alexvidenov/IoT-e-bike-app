@@ -102,7 +102,7 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
           delta1 = 0;
           deltaCounter = 0;
         }
-      } else if (current / 100 >
+      } else if (current >
           (getParameters().value.maxTimeLimitedDischargeCurrent / 2)) {
         delta2 += diff;
         if (deltaCounter == 4) {
@@ -115,7 +115,7 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
 
     return FullStatus(
         fullStatus: fullStatus,
-        totalVoltage: voltage,
+        totalVoltage: voltage / 100,
         current: current,
         temperature: temperature);
   }

@@ -14,13 +14,12 @@ class OutputControlBloc extends Bloc<OutputsState, String> {
   var curOutputsState;
 
   @override
-  create() {
-    streamSubscription = _repository.characteristicValueStream.listen((event) {
-      if (event.startsWith('OK')) {
-        if (curOutputsState != null) addEvent(curOutputsState);
-      }
-    });
-  }
+  create() => streamSubscription =
+          _repository.characteristicValueStream.listen((event) {
+        if (event.startsWith('OK')) {
+          if (curOutputsState != null) addEvent(curOutputsState);
+        }
+      });
 
   on() {
     curOutputsState = OutputsState.On;

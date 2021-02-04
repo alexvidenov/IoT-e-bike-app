@@ -6,4 +6,9 @@ import 'package:injectable/injectable.dart';
 class ParameterHolder {
   ValueNotifier<DeviceParameters> deviceParameters =
       ValueNotifier<DeviceParameters>(null);
+
+  DeviceParameters get params => deviceParameters.value;
+
+  void setParameters(DeviceParameters parameters) =>
+      deviceParameters.value = parameters;
 }
