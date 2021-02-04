@@ -66,15 +66,14 @@ class CurrentRow extends StatelessWidget {
                       quarterTurns: 2,
                       child: FAProgressBar(
                         currentValue: current > 0
-                            ? current //currentCharge
+                            ? (current * 10) //currentCharge
                                 .toInt()
                             : 0,
                         size: 50,
-                        maxValue: bloc
-                            .getParameters()
-                            .value
-                            .maxCutoffChargeCurrent
-                            .toInt(),
+                        maxValue:
+                            (bloc.getParameters().value.maxCutoffChargeCurrent *
+                                    10)
+                                .toInt(),
                         backgroundColor: Colors.black,
                         progressColor: CCColor,
                         animatedDuration: const Duration(milliseconds: 300),
@@ -111,19 +110,21 @@ class CurrentRow extends StatelessWidget {
                         ]),
                     child: FAProgressBar(
                       currentValue: current < 0
-                          ? ((current as num) * -1) //currentDischarge
+                          ? ((current) * -10) //currentDischarge
                               .toInt()
                           : 0,
-                      maxValue: bloc
-                          .getParameters()
-                          .value
-                          .maxCutoffDischargeCurrent
+                      maxValue: (bloc
+                                  .getParameters()
+                                  .value
+                                  .maxCutoffDischargeCurrent *
+                              10)
                           .toInt(),
                       backgroundColor: Colors.black,
-                      changeColorValue: bloc
-                          .getParameters()
-                          .value
-                          .maxTimeLimitedDischargeCurrent
+                      changeColorValue: (bloc
+                                  .getParameters()
+                                  .value
+                                  .maxTimeLimitedDischargeCurrent *
+                              10)
                           .toInt(),
                       progressColor: DCColor,
                       changeProgressColor: Colors.redAccent,

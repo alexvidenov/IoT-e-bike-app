@@ -1,14 +1,14 @@
 enum BatteryState {
   Normal,
   OverDischarge,
-  UnderVoltageBalance,
+  LowVoltage,
   ManualODTriggered,
   OverCharge,
   OverVoltage,
   LowTemp,
   HighTemp,
   CommunicationLoss,
-  UnderVoltageCritical,
+  UltraLowVoltage,
   ShortCircuit,
   Unknown
 }
