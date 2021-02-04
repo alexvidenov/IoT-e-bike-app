@@ -5,13 +5,13 @@ import 'bloc.dart';
 
 enum OutputsState { On, Off }
 
-@injectable
+@singleton
 class OutputControlBloc extends Bloc<OutputsState, String> {
   final DeviceRepository _repository;
 
   OutputControlBloc(this._repository) : super();
 
-  var curOutputsState;
+  var curOutputsState = OutputsState.Off;
 
   @override
   create() => streamSubscription =
@@ -30,4 +30,6 @@ class OutputControlBloc extends Bloc<OutputsState, String> {
     curOutputsState = OutputsState.Off;
     _repository.writeToCharacteristic('O0\r');
   }
+
+  bool isDeviceManuallyLocked() => curOutputsState == OutputsState.On;
 }

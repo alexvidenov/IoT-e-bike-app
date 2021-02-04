@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
@@ -11,8 +10,8 @@ import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
-class ParameterFetchBloc extends ParameterAwareBloc<ParameterFetchState, String>
-    with CurrentContext {
+class ParameterFetchBloc
+    extends ParameterAwareBloc<ParameterFetchState, String> {
   final DeviceRepository _repository;
 
   final tempConverter = TemperatureConverter();

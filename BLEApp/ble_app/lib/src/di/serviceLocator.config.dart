@@ -48,8 +48,6 @@ GetIt $initGetIt(
       () => LocalDatabaseManager(get<LocalDatabase>()));
   gh.factory<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
-  gh.factory<OutputControlBloc>(
-      () => OutputControlBloc(get<DeviceRepository>()));
   gh.lazySingleton<PageManager>(() => PageManager());
   gh.factory<ParameterFetchBloc>(
       () => ParameterFetchBloc(get<DeviceRepository>()));
@@ -72,6 +70,7 @@ GetIt $initGetIt(
 
   // Eager singletons must be registered in the right order
   gh.singletonAsync<LocalDatabase>(() => LocalDatabase.getInstance());
+  gh.singleton<OutputControlBloc>(OutputControlBloc(get<DeviceRepository>()));
   gh.singletonAsync<SharedPrefsService>(() => SharedPrefsService.getInstance());
   return get;
 }

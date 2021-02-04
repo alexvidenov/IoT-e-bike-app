@@ -39,9 +39,7 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with RouteUtils {
         behavior: HitTestBehavior.opaque,
         onHorizontalDragEnd: (details) {
           if (details.primaryVelocity > 0) {
-            // User swiped Left
           } else if (details.primaryVelocity < 0) {
-            // RIGHT
             $<InnerPageManager>().openFullStatus();
           }
         },
