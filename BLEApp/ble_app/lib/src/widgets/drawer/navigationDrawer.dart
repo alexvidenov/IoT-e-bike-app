@@ -29,7 +29,9 @@ class NavigationDrawer extends StatelessWidget {
                 text: 'Battery Settings',
                 onTap: () => $<PageManager>().openDeviceSettings()),
             _createDrawerItem(
-                icon: Icons.assessment, text: 'Statistics', onTap: () => {}),
+                icon: Icons.assessment,
+                text: 'Statistics',
+                onTap: () => $<PageManager>().openDeviceStatistics()),
             Divider(),
             ListTile(
               title: const Text('Disconnect',

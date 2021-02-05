@@ -1,4 +1,5 @@
 import 'package:ble_app/main.dart';
+import 'package:ble_app/src/blocs/DeviceStatisticsBloc.dart';
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/authentication/authenticationWrapper.dart';
@@ -8,6 +9,7 @@ import 'package:ble_app/src/screens/entrypoints/Mode.dart';
 import 'package:ble_app/src/screens/entrypoints/Root.dart';
 import 'package:ble_app/src/screens/entrypoints/WelcomeScreen.dart';
 import 'package:ble_app/src/screens/home.dart';
+import 'package:ble_app/src/screens/main/DeviceStatistics.dart';
 import 'package:ble_app/src/screens/parameterFetchScreen.dart';
 import 'package:ble_app/src/screens/settings/BatterySettings.dart';
 import 'package:ble_app/src/screens/settings/settingsPage.dart';
@@ -110,6 +112,12 @@ class PageManager {
     _pages.add(MaterialPage(
         child: ConnectionSettingsScreen($(), $(), $()),
         key: Key('ConnectionSettings')));
+    pages.addEvent(_pagesList);
+  }
+
+  void openDeviceStatistics() {
+    _pages.add(MaterialPage(
+        child: DeviceStatisticsScreen($()), key: Key('DeviceStatistics')));
     pages.addEvent(_pagesList);
   }
 

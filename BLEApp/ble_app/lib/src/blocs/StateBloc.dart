@@ -14,7 +14,9 @@ abstract class StateBloc<T extends BaseModel>
 
   int _scCounter = 0;
 
-  double _lastCurrent = 0;
+  double _lastCurrent =
+      0; // THIS LAST CURRENT SHOULD RESIDE IN A SINGLETON. THE RECREATION OF BLOC FUCKS UP THE STATE.
+  // Example: Over charge in short status reflects into lowBatt in full.
 
   Timer _overChargeTimer;
   Timer _overDischargeTimeLimited;
@@ -30,12 +32,9 @@ abstract class StateBloc<T extends BaseModel>
     print('LAST CURRENT IS $_lastCurrent');
     switch (status) {
       case '0':
-        if (_overDischargeTimeLimited != null &&
-            _overDischargeTimeLimited.isActive) {
-          print('OVER DISCHARGE TIME LIMITED ACTIVE');
-        }
         // 0 -> count 10 seconds then -> 4 then count 10 seconds again -> 0
         if (_isTimeLimitedOverDischarge()) {
+          // MAX POWER
           if (_overDischargeTimeLimited != null &&
               !_overDischargeTimeLimited.isActive) {
             _overDischargeTimeLimited = Timer(Duration(seconds: 10), () {});
@@ -44,54 +43,45 @@ abstract class StateBloc<T extends BaseModel>
               _overDischargeTimeLimited = Timer(Duration(seconds: 10), () {});
             }
           }
+          battState = BatteryState.MaxPower;
         } else {
           if (_overDischargeTimeLimited != null &&
               _overDischargeTimeLimited.isActive) {
             _overDischargeTimeLimited.cancel();
-          }
+          } else
+            battState = BatteryState.Normal;
         }
-        battState = BatteryState.Normal;
         break; // TODO: add a discharge timer here to indicate the user that he can drive at this state just for a minute or so
       case '4':
         if (_controlBloc.isDeviceManuallyLocked()) {
-          print('MANUALLY LOCKED');
-          battState = BatteryState.Normal;
+          battState = BatteryState.Locked;
         } else if (_isTimeLimitedOverDischarge() || _isCutOffOverDischarge()) {
-          print('TRIGGERED THE DAMN OVER DISCHARGE');
-          if (_overDischargeTimer != null && !_overDischargeTimer.isActive) {
+          if (_overDischargeTimer != null && !_overDischargeTimer.isActive ||
+              _overDischargeTimer == null) {
             _overDischargeTimer = Timer(Duration(seconds: 10), () {});
-            battState = BatteryState.OverDischarge;
-          } else {
-            if (_overDischargeTimer == null) {
-              _overDischargeTimer = Timer(Duration(seconds: 10), () {});
-            }
-            battState = BatteryState.OverDischarge;
           }
+          battState = BatteryState.OverCurrent;
         } else {
           if (_overDischargeTimer != null && _overDischargeTimer.isActive) {
-            battState = BatteryState.OverDischarge;
+            battState = BatteryState.OverCurrent;
           } else {
-            battState = BatteryState.LowVoltage;
+            battState = BatteryState.LowBatt;
           }
         }
         break;
       case '8':
         final bool isOC = _isOverCharge();
         if (isOC) {
-          if (_overChargeTimer != null && !_overChargeTimer.isActive) {
+          if (_overChargeTimer != null && !_overChargeTimer.isActive ||
+              _overChargeTimer == null) {
             _overChargeTimer = Timer(Duration(seconds: 10), () {});
-            battState = BatteryState.OverCharge;
-          } else {
-            if (_overChargeTimer == null) {
-              _overChargeTimer = Timer(Duration(seconds: 10), () {});
-            }
-            battState = BatteryState.OverCharge;
           }
+          battState = BatteryState.OverCharge;
         } else {
           if (_overChargeTimer != null && _overChargeTimer.isActive) {
             battState = BatteryState.OverCharge;
           } else {
-            battState = BatteryState.OverVoltage;
+            battState = BatteryState.EndOfCharge;
           }
         }
         break;

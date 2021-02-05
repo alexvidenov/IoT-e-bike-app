@@ -75,18 +75,32 @@ class VoltagesBarChart extends StatelessWidget {
                   children: <Widget>[
                     ProgressText(
                       title: 'Utot.',
-                      content:
-                          state.data.model.totalVoltage.toStringAsFixed(2) +
-                              'V',
+                      content: state.connectionState == ConnectionState.active
+                          ? state.data.model != null
+                              ? state.data.model.totalVoltage
+                                      .toStringAsFixed(2) +
+                                  'V'
+                              : '-'
+                          : '-',
                     ),
                     ProgressText(
                       title: 'Current',
-                      content:
-                          state.data.model.current.toStringAsFixed(2) + 'A',
+                      content: state.connectionState == ConnectionState.active
+                          ? state.data.model != null
+                              ? state.data.model.current.toStringAsFixed(2) +
+                                  'A'
+                              : '-'
+                          : '-',
                     ),
                     ProgressText(
                       title: 'Temp.',
-                      content: state.data.model.temperature.toString() + '°C',
+                      content: state.connectionState == ConnectionState.active
+                          ? state.data.model != null
+                              ? state.data.model.temperature
+                                      .toStringAsFixed(2) +
+                                  'C'
+                              : '-'
+                          : '-',
                     ),
                   ],
                 );
@@ -133,20 +147,13 @@ class VoltagesBarChart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 StreamBuilder<double>(
-                  stream: _fullStatusBloc.delta1Holder.stream,
-                  builder: (_, model) => model.connectionState ==
-                          ConnectionState.active
-                      ? ProgressText(
-                          title: 'ΔV1Cell',
-                          content:
-                              model.connectionState == ConnectionState.active
-                                  ? ((model.data != null
-                                          ? (model.data / 100)
-                                          : '-'))
-                                      .toString()
-                                  : '-')
-                      : Container(),
-                ),
+                    stream: _fullStatusBloc.delta1Holder.stream,
+                    builder: (_, model) => ProgressText(
+                        title: 'ΔV1Cell',
+                        content: model.connectionState == ConnectionState.active
+                            ? ((model.data != null ? (model.data / 100) : '-'))
+                                .toString()
+                            : '-')),
                 StreamBuilder<double>(
                   stream: _fullStatusBloc.delta2Holder.stream,
                   builder: (_, model) => ProgressText(
@@ -169,7 +176,14 @@ class VoltagesBarChart extends StatelessWidget {
                   stream: _fullStatusBloc.stream,
                   builder: (_, snapshot) {
                     if (snapshot.connectionState == ConnectionState.active) {
-                      _chartData = snapshot.data.model.fullStatus;
+                      if (snapshot.data.model != null) {
+                        _chartData = snapshot.data.model.fullStatus;
+                      } else {
+                        _chartData = _chartData
+                            .map((e) => FullStatusDataModel(
+                                x: e.x, y: 0, color: Colors.transparent))
+                            .toList();
+                      }
                       return getBarChart();
                     } else
                       return Container();

@@ -1,15 +1,18 @@
 enum BatteryState {
   Normal,
+  Locked,
   OverDischarge,
-  LowVoltage,
+  OverCurrent,
+  MaxPower,
+  LowBatt,
   ManualODTriggered,
   OverCharge,
-  OverVoltage,
+  EndOfCharge,
   LowTemp,
   HighTemp,
-  CommunicationLoss,
-  UltraLowVoltage,
-  ShortCircuit,
+  CommunicationLoss, // TODO: alertDialog here
+  UltraLowVoltage, // TODO: alertDialog here
+  ShortCircuit, // TODO: alertDialog here
   Unknown
 }
 

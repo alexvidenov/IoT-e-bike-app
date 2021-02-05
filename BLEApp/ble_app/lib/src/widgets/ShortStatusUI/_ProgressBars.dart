@@ -38,7 +38,8 @@ class ProgressColumns extends StatelessWidget {
                           stream: shortStatusBloc.stream,
                           builder: (_, snapshot) {
                             if (snapshot.connectionState ==
-                                ConnectionState.active) {
+                                    ConnectionState.active &&
+                                snapshot.data.model != null) {
                               return Text(
                                   snapshot.data.model.temperature
                                       .toInt()
@@ -101,7 +102,8 @@ class ProgressColumns extends StatelessWidget {
                               BatteryState.Unknown, ShortStatusModel()),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
-                                ConnectionState.active) {
+                                    ConnectionState.active &&
+                                snapshot.data.model != null) {
                               String voltageText = snapshot
                                   .data.model.totalVoltage
                                   .toStringAsFixed(1);

@@ -13,6 +13,7 @@ import '../blocs/btAuthenticationBloc.dart';
 import '../services/CloudMessaging.dart';
 import '../blocs/deviceBloc.dart';
 import '../repositories/DeviceRepository.dart';
+import '../blocs/DeviceStatisticsBloc.dart';
 import '../blocs/devicesBloc.dart';
 import '../blocs/entryEndpointBloc.dart';
 import '../blocs/fullStatusBloc.dart';
@@ -42,6 +43,7 @@ GetIt $initGetIt(
   final gh = GetItHelper(get, environment, environmentFilter);
   gh.lazySingleton<CloudMessaging>(() => CloudMessaging());
   gh.lazySingleton<DeviceRepository>(() => DeviceRepository());
+  gh.factory<DeviceStatisticsBloc>(() => DeviceStatisticsBloc());
   gh.factory<FullStatusBloc>(() => FullStatusBloc(get<DeviceRepository>()));
   gh.lazySingleton<InnerPageManager>(() => InnerPageManager());
   gh.lazySingleton<LocalDatabaseManager>(

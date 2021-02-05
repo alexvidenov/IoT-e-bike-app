@@ -17,11 +17,12 @@ class VoltageProgressBar extends StatelessWidget {
       stream: bloc.stream,
       initialData: StatusState(BatteryState.Unknown, ShortStatusModel()),
       builder: (_, shortStatus) {
-        if (shortStatus.connectionState == ConnectionState.active) {
+        if (shortStatus.connectionState == ConnectionState.active &&
+            shortStatus.data.model != null) {
           Color color = Colors.lightBlueAccent;
           final state = shortStatus.data.state;
           final voltage = shortStatus.data.model.totalVoltage;
-          if (state == BatteryState.OverVoltage) color = Colors.redAccent;
+          if (state == BatteryState.EndOfCharge) color = Colors.redAccent;
           return Container(
             height: 180,
             width: 20,

@@ -46,14 +46,42 @@ class Storage {
     await fileRef.putData(uploadData).whenComplete(() => {});
   }
 
-  Future<String> download(String deviceNumber) async {
-    final Reference ref = _root.child('/users/$uid/$deviceNumber');
+  Future<String> download() async {
+    // test user
+    final userId = "5YQFtZI5QsRsXVcd1ZB8JSamjjj2";
+    final deviceNumber = "1234457";
+    final builder = StringBuffer();
+    final Reference ref = _root.child('/users/$userId/$deviceNumber');
     final files = await ref.listAll();
-    Uint8List uint8list = await files.items.elementAt(0).getData();
-    return String.fromCharCodes(uint8list);
-    //files.items.forEach((ref) {
-    // return ref.getData();
-    //ref.getDownloadURL();
-    //});
+    final Reference file = files.items.elementAt(3);
+    final bytes = await file.getData();
+
+    StringBuffer buffer = new StringBuffer();
+    for (int i = 0; i < bytes.length;) {
+      int firstWord = (bytes[i] << 8) + bytes[i + 1];
+      if (0xD800 <= firstWord && firstWord <= 0xDBFF) {
+        int secondWord = (bytes[i + 2] << 8) + bytes[i + 3];
+        buffer.writeCharCode(
+            ((firstWord - 0xD800) << 10) + (secondWord - 0xDC00) + 0x10000);
+        i += 4;
+      } else {
+        buffer.writeCharCode(firstWord);
+        i += 2;
+      }
+    }
+    final String json = buffer.toString();
+    final size = bytes.lengthInBytes;
+    print('DATA IS: $json');
+    print('AND HAS SIZE: $size');
+    /*
+    await Future.forEach(files.items, (Reference ref) async {
+      print('REFERENCE HERE');
+      final data = await ref.getData();
+      final string = String.fromCharCodes(data); // this is assigned 30% of **data**.
+      print('DATA IS: $string');
+      builder.write(String.fromCharCodes(data));
+    });
+     */
+    return builder.toString();
   }
 }

@@ -23,7 +23,8 @@ class CurrentRow extends StatelessWidget {
       stream: bloc.stream,
       initialData: StatusState(BatteryState.Unknown, ShortStatusModel()),
       builder: (_, shortStatus) {
-        if (shortStatus.connectionState == ConnectionState.active) {
+        if (shortStatus.connectionState == ConnectionState.active &&
+            shortStatus.data.model != null) {
           // Check if we even have model
           final current = shortStatus.data.model.current;
           Color CCColor = Colors.lightBlueAccent;
