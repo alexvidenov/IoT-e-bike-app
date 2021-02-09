@@ -108,9 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Colors.white,
                                   fontSize: 20,
                                   letterSpacing: 1.3));
-                      Icon icon = snapshot.data == OutputsState.On
-                          ? Icon(Icons.lock)
-                          : Icon(Icons.lock_open);
                       final function = (func) async {
                         widget._repository.cancel();
                         await Future.delayed(
@@ -121,9 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       final funcToPass = snapshot.data == OutputsState.On
                           ? () => widget._controlBloc.off()
                           : () => widget._controlBloc.on();
-                      return OutlinedButton.icon(
-                        icon: icon,
-                        label: text,
+                      return OutlinedButton(
+                        child: text,
                         onPressed: () => function(funcToPass),
                         style: ElevatedButton.styleFrom(
                           side: BorderSide(

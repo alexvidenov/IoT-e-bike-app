@@ -25,12 +25,19 @@ class ShortStatusUI extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.active) {
               final state = snapshot.data.state.string();
+              if (snapshot.data.state == BatteryState.Locked) {
+                return Icon(
+                  Icons.lock,
+                  size: 150,
+                  color: Colors.redAccent,
+                );
+              }
               return Text(
                 'State: $state',
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w400,
-                    fontSize: 20.0,
+                    fontSize: 25.0,
                     fontFamily: 'Europe_Ext'),
               );
             } else

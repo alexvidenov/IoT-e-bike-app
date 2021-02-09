@@ -70,11 +70,14 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
         if (i != splitObject.length - 1) {
           if (splitInner[j] != '' && splitInner[j].length != 2) {
             counter++;
-            voltage += double.parse(splitInner[j]);
+            final cellVoltage = double.parse(splitInner[j]);
+            voltage += cellVoltage;
             fullStatus.add(FullStatusDataModel(
                 x: counter,
-                y: double.parse(splitInner[j]),
-                color: Colors.lightBlueAccent));
+                y: cellVoltage,
+                color: (cellVoltage / 100) >= currentParams.balanceCellVoltage
+                    ? Colors.redAccent
+                    : Colors.lightBlueAccent));
           }
         } else {
           current = splitInner[1] != '0'

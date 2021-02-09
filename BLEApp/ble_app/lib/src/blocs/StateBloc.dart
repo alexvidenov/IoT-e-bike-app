@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/DataCachingManager.dart';
+import 'package:ble_app/src/blocs/LastCurrentTracker.dart';
 import 'package:ble_app/src/blocs/OutputControlBloc.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
@@ -11,43 +12,32 @@ import 'package:ble_app/src/sealedStates/statusState.dart';
 abstract class StateBloc<T extends BaseModel>
     extends ParameterAwareBloc<StatusState<T>, String> with DataCachingManager {
   final _controlBloc = $<OutputControlBloc>();
+  final _currentTracker = $<OverCurrentTimers>();
 
   int _scCounter = 0;
-
-  double _lastCurrent =
-      0; // THIS LAST CURRENT SHOULD RESIDE IN A SINGLETON. THE RECREATION OF BLOC FUCKS UP THE STATE.
-  // Example: Over charge in short status reflects into lowBatt in full.
-
-  Timer _overChargeTimer;
-  Timer _overDischargeTimeLimited;
-  Timer _overDischargeTimer;
 
   StatusState<T> generateState(String rawData) {
     final String status = '${rawData[0]}';
     if (_isDataEmpty(rawData)) {
-      return Status(BatteryState.CommunicationLoss);
+      return Status(BatteryState.Error1);
     }
     final model = generateModel(rawData);
     var battState;
-    print('LAST CURRENT IS $_lastCurrent');
     switch (status) {
       case '0':
         // 0 -> count 10 seconds then -> 4 then count 10 seconds again -> 0
         if (_isTimeLimitedOverDischarge()) {
-          // MAX POWER
-          if (_overDischargeTimeLimited != null &&
-              !_overDischargeTimeLimited.isActive) {
-            _overDischargeTimeLimited = Timer(Duration(seconds: 10), () {});
-          } else {
-            if (_overDischargeTimeLimited == null) {
-              _overDischargeTimeLimited = Timer(Duration(seconds: 10), () {});
-            }
+          if (_currentTracker.overDischargeTimeLimited != null &&
+                  !_currentTracker.overDischargeTimeLimited.isActive ||
+              _currentTracker.overDischargeTimeLimited == null) {
+            _currentTracker.overDischargeTimeLimited =
+                Timer(Duration(seconds: 10), () {});
           }
           battState = BatteryState.MaxPower;
         } else {
-          if (_overDischargeTimeLimited != null &&
-              _overDischargeTimeLimited.isActive) {
-            _overDischargeTimeLimited.cancel();
+          if (_currentTracker.overDischargeTimeLimited != null &&
+              _currentTracker.overDischargeTimeLimited.isActive) {
+            _currentTracker.overDischargeTimeLimited.cancel();
           } else
             battState = BatteryState.Normal;
         }
@@ -56,13 +46,16 @@ abstract class StateBloc<T extends BaseModel>
         if (_controlBloc.isDeviceManuallyLocked()) {
           battState = BatteryState.Locked;
         } else if (_isTimeLimitedOverDischarge() || _isCutOffOverDischarge()) {
-          if (_overDischargeTimer != null && !_overDischargeTimer.isActive ||
-              _overDischargeTimer == null) {
-            _overDischargeTimer = Timer(Duration(seconds: 10), () {});
+          if (_currentTracker.overDischargeTimer != null &&
+                  !_currentTracker.overDischargeTimer.isActive ||
+              _currentTracker.overDischargeTimer == null) {
+            _currentTracker.overDischargeTimer =
+                Timer(Duration(seconds: 10), () {});
           }
           battState = BatteryState.OverCurrent;
         } else {
-          if (_overDischargeTimer != null && _overDischargeTimer.isActive) {
+          if (_currentTracker.overDischargeTimer != null &&
+              _currentTracker.overDischargeTimer.isActive) {
             battState = BatteryState.OverCurrent;
           } else {
             battState = BatteryState.LowBatt;
@@ -70,15 +63,17 @@ abstract class StateBloc<T extends BaseModel>
         }
         break;
       case '8':
-        final bool isOC = _isOverCharge();
-        if (isOC) {
-          if (_overChargeTimer != null && !_overChargeTimer.isActive ||
-              _overChargeTimer == null) {
-            _overChargeTimer = Timer(Duration(seconds: 10), () {});
+        if (_isOverCharge()) {
+          if (_currentTracker.overChargeTimer != null &&
+                  !_currentTracker.overChargeTimer.isActive ||
+              _currentTracker.overChargeTimer == null) {
+            _currentTracker.overChargeTimer =
+                Timer(Duration(seconds: 10), () {});
           }
           battState = BatteryState.OverCharge;
         } else {
-          if (_overChargeTimer != null && _overChargeTimer.isActive) {
+          if (_currentTracker.overChargeTimer != null &&
+              _currentTracker.overChargeTimer.isActive) {
             battState = BatteryState.OverCharge;
           } else {
             battState = BatteryState.EndOfCharge;
@@ -92,36 +87,36 @@ abstract class StateBloc<T extends BaseModel>
         battState = BatteryState.HighTemp;
         break;
       case 'C':
-        battState = BatteryState.UltraLowVoltage;
+        battState = BatteryState.Error2;
         break;
       case '2':
-        battState = BatteryState.ShortCircuit;
+        battState = BatteryState.Error3;
         break;
       default:
         battState = BatteryState.Unknown;
         break;
     }
-    _lastCurrent = model.current;
+    _currentTracker.current = model.current;
     return StatusState(battState, model);
   }
 
   bool _isTimeLimitedOverDischarge() {
     double param = currentParams.maxTimeLimitedDischargeCurrent;
     print('DISCHARGE TIME LIMITED PARAM IS $param');
-    return _lastCurrent < 0 && _lastCurrent <= -param;
+    return _currentTracker.current < 0 && _currentTracker.current <= -param;
   }
 
   bool _isCutOffOverDischarge() {
     double param = currentParams.maxCutoffDischargeCurrent;
     print('DISCHARGE TIME LIMITED PARAM IS $param');
-    return _lastCurrent < 0 && _lastCurrent <= -param;
+    return _currentTracker.current < 0 && _currentTracker.current <= -param;
   }
 
   bool _isOverCharge() {
     double param = currentParams.maxCutoffChargeCurrent;
     print('CHARGE PARAM IS $param');
-    return _lastCurrent > 0 &&
-        _lastCurrent >=
+    return _currentTracker.current > 0 &&
+        _currentTracker.current >=
             param; // should keep it 10 seconds again. It goes to over voltage because it's still an 8 and the current is 0 at that point
   }
 

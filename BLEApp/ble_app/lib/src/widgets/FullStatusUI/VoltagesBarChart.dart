@@ -57,7 +57,7 @@ class VoltagesBarChart extends StatelessWidget {
           // (status.y / 100).toString() + "V",
           enableTooltip: true,
           xValueMapper: (FullStatusDataModel status, _) => status.x,
-          yValueMapper: (FullStatusDataModel status, _) => status.y / 100,
+          yValueMapper: (FullStatusDataModel status, _) => (status.y / 100),
           pointColorMapper: (FullStatusDataModel status, _) => status.color,
         ),
       ];

@@ -10,9 +10,9 @@ enum BatteryState {
   EndOfCharge,
   LowTemp,
   HighTemp,
-  CommunicationLoss, // TODO: alertDialog here
-  UltraLowVoltage, // TODO: alertDialog here
-  ShortCircuit, // TODO: alertDialog here
+  Error1, // TODO: alertDialog here. Service -> errors: ulv, comm, short circuit
+  Error2, // TODO: alertDialog here
+  Error3, // TODO: alertDialog here
   Unknown
 }
 
