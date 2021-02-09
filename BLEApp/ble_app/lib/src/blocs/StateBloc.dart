@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/DataCachingManager.dart';
-import 'package:ble_app/src/blocs/AbnormalStateTracker.dart';
+import 'package:ble_app/src/blocs/stateTracker.dart';
 import 'package:ble_app/src/blocs/OutputControlBloc.dart';
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
@@ -9,87 +9,103 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/dataClasses/BaseModel.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
+import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
 abstract class StateBloc<T extends BaseModel>
     extends ParameterAwareBloc<StatusState<T>, String> with DataCachingManager {
   final _controlBloc = $<OutputControlBloc>();
-  final _abnormalStateTracker = $<AbnormalStateTracker>();
+  final _stateTracker = $<StateTracker>();
 
-  RxObject<int> get overCurrentTimer => _abnormalStateTracker.timerRx;
+  RxObject<int> get overCurrentTimer => _stateTracker.timerRx;
+
+  RxObject<ServiceNotification> get serviceRx => _stateTracker.serviceRx;
 
   StatusState<T> generateState(String rawData) {
     final String status = '${rawData[0]}';
+    // TODO: fix the holy shit repetition going on here
     if (_isDataEmpty(rawData)) {
-      return Status(BatteryState.Error1);
+      if (_stateTracker.lastServiceState == ServiceState.SC ||
+          _stateTracker.lastServiceState == ServiceState.ULV) {
+        _stateTracker.lastServiceState = ServiceState.Undetermined;
+        _stateTracker.serviceRx
+            .addEvent(ServiceNotification(isStateGone: true)); // removes dialog
+      } else if (_stateTracker.lastState == BatteryState.ErrorCommunication &&
+          _stateTracker.lastServiceState != ServiceState.LossComm) {
+        _stateTracker.lastServiceState = ServiceState.LossComm;
+        _stateTracker.serviceRx.addEvent(ServiceNotification(
+            state: BatteryState.ErrorCommunication, isStateGone: false));
+      }
+      _stateTracker.lastState = BatteryState.ErrorCommunication;
+      return Status(BatteryState.ErrorCommunication);
     }
+
     final model = generateModel(rawData);
-    var battState;
+    BatteryState battState;
     switch (status) {
       case '0':
-        if (_abnormalStateTracker.wasSC) _abnormalStateTracker.scCounter = 0;
+        if (_stateTracker.lastServiceState != ServiceState.Undetermined) {
+          _stateTracker.lastServiceState = ServiceState.Undetermined;
+          _stateTracker.serviceRx
+              .addEvent(ServiceNotification(isStateGone: true));
+        }
         if (_isTimeLimitedOverDischarge()) {
-          if (_abnormalStateTracker.overDischargeTimeLimited != null &&
-                  !_abnormalStateTracker.overDischargeTimeLimited.isActive ||
-              _abnormalStateTracker.overDischargeTimeLimited == null) {
-            _abnormalStateTracker.seconds = 11;
-            _abnormalStateTracker.overDischargeTimeLimited =
+          if (_stateTracker.overDischargeTimeLimited != null &&
+                  !_stateTracker.overDischargeTimeLimited.isActive ||
+              _stateTracker.overDischargeTimeLimited == null) {
+            _stateTracker.seconds = 11;
+            _stateTracker.overDischargeTimeLimited =
                 Timer.periodic(const Duration(seconds: 1), (_) {
-              _abnormalStateTracker.seconds--;
-              this
-                  ._abnormalStateTracker
-                  .timerRx
-                  .addEvent(_abnormalStateTracker.seconds);
-              if (_abnormalStateTracker.seconds == 0) {
-                _abnormalStateTracker.overDischargeTimeLimited.cancel();
+              _stateTracker.seconds--;
+              this._stateTracker.timerRx.addEvent(_stateTracker.seconds);
+              if (_stateTracker.seconds == 0) {
+                _stateTracker.overDischargeTimeLimited.cancel();
                 Future.delayed(Duration(milliseconds: 400),
-                    () => _abnormalStateTracker.timerRx.addEvent(-1));
+                    () => _stateTracker.timerRx.addEvent(-1));
               }
             });
           }
           battState = BatteryState.MaxPower;
         } else {
-          if (_abnormalStateTracker.overDischargeTimeLimited != null &&
-              _abnormalStateTracker.overDischargeTimeLimited.isActive) {
-            _abnormalStateTracker.seconds = 0;
-            this
-                ._abnormalStateTracker
-                .timerRx
-                .addEvent(_abnormalStateTracker.seconds);
-            _abnormalStateTracker.overDischargeTimeLimited.cancel();
+          if (_stateTracker.overDischargeTimeLimited != null &&
+              _stateTracker.overDischargeTimeLimited.isActive) {
+            _stateTracker.seconds = 0;
+            this._stateTracker.timerRx.addEvent(_stateTracker.seconds);
+            _stateTracker.overDischargeTimeLimited.cancel();
             Future.delayed(Duration(milliseconds: 400),
-                () => _abnormalStateTracker.timerRx.addEvent(-1));
+                () => _stateTracker.timerRx.addEvent(-1));
           } else
             battState = BatteryState.Normal;
         }
         break;
       case '4':
-        if (_abnormalStateTracker.wasSC) _abnormalStateTracker.scCounter = 0;
+        if (_stateTracker.lastServiceState != ServiceState.Undetermined) {
+          _stateTracker.lastServiceState = ServiceState.Undetermined;
+          _stateTracker.serviceRx
+              .addEvent(ServiceNotification(isStateGone: true));
+        }
         if (_controlBloc.isDeviceManuallyLocked()) {
           battState = BatteryState.Locked;
         } else if (_isTimeLimitedOverDischarge() || _isCutOffOverDischarge()) {
-          if (_abnormalStateTracker.overDischargeTimer != null &&
-                  !_abnormalStateTracker.overDischargeTimer.isActive ||
-              _abnormalStateTracker.overDischargeTimer == null) {
-            _abnormalStateTracker.overDischargeTimeLimited?.cancel();
-            _abnormalStateTracker.seconds = 11;
-            _abnormalStateTracker.overDischargeTimer =
+          if (_stateTracker.overDischargeTimer != null &&
+                  !_stateTracker.overDischargeTimer.isActive ||
+              _stateTracker.overDischargeTimer == null) {
+            _stateTracker.overDischargeTimeLimited?.cancel();
+            _stateTracker.seconds = 11;
+            _stateTracker.overDischargeTimer =
                 Timer.periodic(Duration(seconds: 1), (_) {
-              _abnormalStateTracker.seconds--;
-              this
-                  ._abnormalStateTracker
-                  .timerRx
-                  .addEvent(_abnormalStateTracker.seconds);
-              if (_abnormalStateTracker.seconds == 0) {
-                _abnormalStateTracker.overDischargeTimer.cancel();
+              _stateTracker.seconds--;
+              this._stateTracker.timerRx.addEvent(_stateTracker.seconds);
+              if (_stateTracker.seconds == 0) {
+                _stateTracker.overDischargeTimer.cancel();
                 Future.delayed(Duration(milliseconds: 500),
-                    () => _abnormalStateTracker.timerRx.addEvent(-1));
+                    () => _stateTracker.timerRx.addEvent(-1));
               }
             });
           }
           battState = BatteryState.OverCurrent;
         } else {
-          if (_abnormalStateTracker.overDischargeTimer != null &&
-              _abnormalStateTracker.overDischargeTimer.isActive) {
+          if (_stateTracker.overDischargeTimer != null &&
+              _stateTracker.overDischargeTimer.isActive) {
             battState = BatteryState.OverCurrent;
           } else {
             battState = BatteryState.LowBatt;
@@ -97,30 +113,31 @@ abstract class StateBloc<T extends BaseModel>
         }
         break;
       case '8':
-        if (_abnormalStateTracker.wasSC) _abnormalStateTracker.scCounter = 0;
+        if (_stateTracker.lastServiceState != ServiceState.Undetermined) {
+          _stateTracker.lastServiceState = ServiceState.Undetermined;
+          _stateTracker.serviceRx
+              .addEvent(ServiceNotification(isStateGone: true));
+        }
         if (_isOverCharge()) {
-          if (_abnormalStateTracker.overChargeTimer != null &&
-                  !_abnormalStateTracker.overChargeTimer.isActive ||
-              _abnormalStateTracker.overChargeTimer == null) {
-            _abnormalStateTracker.seconds = 11;
-            _abnormalStateTracker.overChargeTimer =
+          if (_stateTracker.overChargeTimer != null &&
+                  !_stateTracker.overChargeTimer.isActive ||
+              _stateTracker.overChargeTimer == null) {
+            _stateTracker.seconds = 11;
+            _stateTracker.overChargeTimer =
                 Timer.periodic(Duration(seconds: 1), (_) {
-                  _abnormalStateTracker.seconds--;
-                  this
-                      ._abnormalStateTracker
-                      .timerRx
-                      .addEvent(_abnormalStateTracker.seconds);
-                  if (_abnormalStateTracker.seconds == 0) {
-                    _abnormalStateTracker.overChargeTimer.cancel();
-                    Future.delayed(Duration(milliseconds: 400),
-                            () => _abnormalStateTracker.timerRx.addEvent(-1));
-                  }
-                });
+              _stateTracker.seconds--;
+              this._stateTracker.timerRx.addEvent(_stateTracker.seconds);
+              if (_stateTracker.seconds == 0) {
+                _stateTracker.overChargeTimer.cancel();
+                Future.delayed(Duration(milliseconds: 400),
+                    () => _stateTracker.timerRx.addEvent(-1));
+              }
+            });
           }
           battState = BatteryState.OverCharge;
         } else {
-          if (_abnormalStateTracker.overChargeTimer != null &&
-              _abnormalStateTracker.overChargeTimer.isActive) {
+          if (_stateTracker.overChargeTimer != null &&
+              _stateTracker.overChargeTimer.isActive) {
             battState = BatteryState.OverCharge;
           } else {
             battState = BatteryState.EndOfCharge;
@@ -128,52 +145,74 @@ abstract class StateBloc<T extends BaseModel>
         }
         break;
       case 'A':
-        if (_abnormalStateTracker.wasSC) _abnormalStateTracker.scCounter = 0;
+        if (_stateTracker.lastServiceState != ServiceState.Undetermined) {
+          _stateTracker.lastServiceState = ServiceState.Undetermined;
+          _stateTracker.serviceRx
+              .addEvent(ServiceNotification(isStateGone: true));
+        }
         battState = BatteryState.LowTemp;
         break;
       case 'E':
-        if (_abnormalStateTracker.wasSC) _abnormalStateTracker.scCounter = 0;
+        if (_stateTracker.lastServiceState != ServiceState.Undetermined) {
+          _stateTracker.lastServiceState = ServiceState.Undetermined;
+          _stateTracker.serviceRx
+              .addEvent(ServiceNotification(isStateGone: true));
+        }
         battState = BatteryState.HighTemp;
         break;
       case 'C':
-        if (_abnormalStateTracker.wasSC) _abnormalStateTracker.scCounter = 0;
-        battState = BatteryState.Error2;
+        if (_stateTracker.lastServiceState == ServiceState.LossComm ||
+            _stateTracker.lastServiceState == ServiceState.SC) {
+          _stateTracker.lastServiceState = ServiceState.Undetermined;
+          _stateTracker.serviceRx.addEvent(
+              ServiceNotification(isStateGone: true)); // removes dialog
+        } else if (_stateTracker.lastState == BatteryState.UltraLowVoltage &&
+            _stateTracker.lastServiceState != ServiceState.ULV) {
+          _stateTracker.lastServiceState = ServiceState.ULV;
+          _stateTracker.serviceRx.addEvent(ServiceNotification(
+              state: BatteryState.UltraLowVoltage, isStateGone: false));
+        }
+        battState = BatteryState.UltraLowVoltage;
         break;
       case '2':
-        _abnormalStateTracker.scCounter++;
-        if (_abnormalStateTracker.scCounter > 2) {
-          battState = BatteryState.Error3;
-        } else
-          battState = BatteryState.Unknown;
+        if (_stateTracker.lastServiceState == ServiceState.LossComm ||
+            _stateTracker.lastServiceState == ServiceState.ULV) {
+          _stateTracker.lastServiceState = ServiceState.Undetermined;
+          _stateTracker.serviceRx.addEvent(
+              ServiceNotification(isStateGone: true)); // removes dialog
+        } else if (_stateTracker.lastState == BatteryState.ShortCircuit &&
+            _stateTracker.lastServiceState != ServiceState.SC) {
+          _stateTracker.lastServiceState = ServiceState.SC;
+          _stateTracker.serviceRx.addEvent(ServiceNotification(
+              state: BatteryState.ShortCircuit, isStateGone: false));
+        }
+        battState = BatteryState.ShortCircuit;
         break;
       default:
         battState = BatteryState.Unknown;
         break;
     }
-    _abnormalStateTracker.current = model.current;
+    _stateTracker.current = model.current;
+    _stateTracker.lastState = battState;
     return StatusState(battState, model);
   }
 
   bool _isTimeLimitedOverDischarge() {
     double param = currentParams.maxTimeLimitedDischargeCurrent;
     print('DISCHARGE TIME LIMITED PARAM IS $param');
-    return _abnormalStateTracker.current < 0 &&
-        _abnormalStateTracker.current <= -param;
+    return _stateTracker.current < 0 && _stateTracker.current <= -param;
   }
 
   bool _isCutOffOverDischarge() {
     double param = currentParams.maxCutoffDischargeCurrent;
     print('DISCHARGE TIME LIMITED PARAM IS $param');
-    return _abnormalStateTracker.current < 0 &&
-        _abnormalStateTracker.current <= -param;
+    return _stateTracker.current < 0 && _stateTracker.current <= -param;
   }
 
   bool _isOverCharge() {
     double param = currentParams.maxCutoffChargeCurrent;
     print('CHARGE PARAM IS $param');
-    return _abnormalStateTracker.current > 0 &&
-        _abnormalStateTracker.current >=
-            param; // should keep it 10 seconds again. It goes to over voltage because it's still an 8 and the current is 0 at that point
+    return _stateTracker.current > 0 && _stateTracker.current >= param;
   }
 
   bool _isDataEmpty(String rawData) => rawData.length <= 3;

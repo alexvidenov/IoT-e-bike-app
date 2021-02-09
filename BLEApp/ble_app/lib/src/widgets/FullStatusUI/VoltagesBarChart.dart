@@ -2,6 +2,7 @@ import 'package:ble_app/src/blocs/fullStatusBloc.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusModel.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
+import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
@@ -63,7 +64,10 @@ class VoltagesBarChart extends StatelessWidget {
       ];
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context) => StreamListener(
+      stream: _fullStatusBloc.serviceRx.stream,
+      onData: (notification) => notification.dispatch(context),
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           StreamBuilder<StatusState<FullStatus>>(
@@ -181,7 +185,9 @@ class VoltagesBarChart extends StatelessWidget {
                       } else {
                         _chartData = _chartData
                             .map((e) => FullStatusDataModel(
-                                x: e.x, y: 0, color: Colors.transparent))
+                                x: e.x,
+                                y: 0,
+                                color: Colors.transparent)) // MAP TO NULL
                             .toList();
                       }
                       return getBarChart();
@@ -189,5 +195,5 @@ class VoltagesBarChart extends StatelessWidget {
                       return Container();
                   })),
         ],
-      );
+      ));
 }

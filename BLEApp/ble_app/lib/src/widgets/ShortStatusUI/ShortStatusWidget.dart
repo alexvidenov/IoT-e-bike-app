@@ -3,10 +3,18 @@ import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
+import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 
 import '_BottomProgressText.dart';
 import '_ProgressBars.dart';
+
+class ServiceNotification extends Notification {
+  final BatteryState state;
+  final bool isStateGone;
+
+  const ServiceNotification({this.state, @required this.isStateGone});
+}
 
 class ShortStatusUI extends StatelessWidget {
   final ShortStatusBloc _shortStatusBloc;
@@ -20,50 +28,56 @@ class ShortStatusUI extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        StreamBuilder<StatusState<ShortStatus>>(
-          stream: _shortStatusBloc.stream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.active) {
-              final state = snapshot.data.state.string();
-              if (snapshot.data.state == BatteryState.Locked) {
-                return Icon(
-                  Icons.lock,
-                  size: 150,
-                  color: Colors.redAccent,
+        StreamListener<ServiceNotification>(
+          stream: _shortStatusBloc.serviceRx.stream,
+          onData: (notification) => notification.dispatch(context),
+          child: StreamBuilder<StatusState<ShortStatus>>(
+            stream: _shortStatusBloc.stream,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.active) {
+                final state = snapshot.data.state;
+                final stateAsString = snapshot.data.state.string();
+                if (state == BatteryState.Locked) {
+                  return Icon(
+                    Icons.lock,
+                    size: 150,
+                    color: Colors.redAccent,
+                  );
+                }
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Batt: $stateAsString',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 25.0,
+                          fontFamily: 'Europe_Ext'),
+                    ),
+                    const SizedBox(width: 30),
+                    StreamBuilder<int>(
+                      stream: _shortStatusBloc.overCurrentTimer.stream,
+                      builder: (_, snapshot) {
+                        if (snapshot.connectionState ==
+                                ConnectionState.active &&
+                            snapshot.data != -1) {
+                          final String counter = snapshot.data.toString();
+                          return Text(counter,
+                              style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold));
+                        } else
+                          return Container();
+                      },
+                    )
+                  ],
                 );
-              }
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Batt: $state',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 25.0,
-                        fontFamily: 'Europe_Ext'),
-                  ),
-                  const SizedBox(width: 30),
-                  StreamBuilder<int>(
-                    stream: _shortStatusBloc.overCurrentTimer.stream,
-                    builder: (_, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.active &&
-                          snapshot.data != -1) {
-                        final String counter = snapshot.data.toString();
-                        return Text(counter,
-                            style: TextStyle(
-                                color: Colors.redAccent,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold));
-                      } else
-                        return Container();
-                    },
-                  )
-                ],
-              );
-            } else
-              return Container();
-          },
+              } else
+                return Container();
+            },
+          ),
         ),
         ProgressColumns(
             shortStatusBloc: _shortStatusBloc, locationBloc: _locationBloc),

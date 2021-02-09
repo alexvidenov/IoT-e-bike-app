@@ -25,7 +25,6 @@ class CurrentRow extends StatelessWidget {
       builder: (_, shortStatus) {
         if (shortStatus.connectionState == ConnectionState.active &&
             shortStatus.data.model != null) {
-          // Check if we even have model
           final current = shortStatus.data.model.current;
           Color CCColor = Colors.lightBlueAccent;
           Color DCColor = Colors.lightBlueAccent;

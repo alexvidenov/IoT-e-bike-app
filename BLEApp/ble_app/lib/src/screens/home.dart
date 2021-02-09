@@ -24,7 +24,7 @@ class HomeScreen extends StatefulWidget with Navigation {
   final OutputControlBloc _controlBloc;
   final InnerPageManager _pageManager;
 
-  HomeScreen(this._prefsBloc, this._deviceBloc, this._repository,
+  const HomeScreen(this._prefsBloc, this._deviceBloc, this._repository,
       this._controlBloc, this._pageManager);
 
   @override
@@ -35,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _hasDisconnected = false;
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  bool _isDisconnectManual = false;
 
   PersistentBottomSheetController _bottomSheetController;
 
@@ -55,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text('No')),
               FlatButton(
                   onPressed: () {
+                    _isDisconnectManual = true;
                     widget._deviceBloc.disconnect();
                     widget._prefsBloc.clearUserPrefs();
                     widget._deviceBloc.cancel();
@@ -187,6 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 3.0, vertical: 3),
                     child: StreamBuilder<CurrentPage>(
+                      // USE NOTIFIFICATIONS HERE HOLY SHIT
                       stream: widget.navigationBloc.stream,
                       initialData: CurrentPage.ShortStatus,
                       builder: (_, snapshot) {
@@ -278,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   onDisconnected() {
-    if (mounted) {
+    if (mounted && !_isDisconnectManual) {
       print('ONDISCONNECTED');
       widget._repository.cancel();
       _hasDisconnected = true;
