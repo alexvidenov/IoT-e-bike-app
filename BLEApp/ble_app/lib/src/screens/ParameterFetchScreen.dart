@@ -57,7 +57,7 @@ class ParameterFetchScreen extends RouteAwareWidget<ParameterFetchBloc> {
               state.when(
                   fetched: (_) {
                     dialog.dismiss();
-                    Future.delayed(Duration(seconds: 2), () {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
                       $<PageManager>().openHome();
                     });
                   },

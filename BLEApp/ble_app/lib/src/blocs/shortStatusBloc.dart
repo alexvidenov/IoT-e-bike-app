@@ -1,9 +1,11 @@
 import 'package:ble_app/main.dart';
+import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:ble_app/src/utils/ADCToTemp.dart';
 import 'package:injectable/injectable.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'StateBloc.dart';
 

@@ -32,13 +32,34 @@ class ShortStatusUI extends StatelessWidget {
                   color: Colors.redAccent,
                 );
               }
-              return Text(
-                'State: $state',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 25.0,
-                    fontFamily: 'Europe_Ext'),
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Batt: $state',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 25.0,
+                        fontFamily: 'Europe_Ext'),
+                  ),
+                  const SizedBox(width: 30),
+                  StreamBuilder<int>(
+                    stream: _shortStatusBloc.overCurrentTimer.stream,
+                    builder: (_, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.active &&
+                          snapshot.data != -1) {
+                        final String counter = snapshot.data.toString();
+                        return Text(counter,
+                            style: TextStyle(
+                                color: Colors.redAccent,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold));
+                      } else
+                        return Container();
+                    },
+                  )
+                ],
               );
             } else
               return Container();
