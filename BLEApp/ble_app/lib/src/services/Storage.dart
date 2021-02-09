@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class Storage {
@@ -43,45 +45,22 @@ class Storage {
     Reference fileRef =
         _root.child('/users/$uid/$deviceSerialNumber/$fileName');
 
-    await fileRef.putData(uploadData).whenComplete(() => {});
+    await fileRef
+        .putData(uploadData, SettableMetadata(contentType: 'application/json'))
+        .whenComplete(() => {});
   }
 
-  Future<String> download() async {
-    // test user
-    final userId = "5YQFtZI5QsRsXVcd1ZB8JSamjjj2";
-    final deviceNumber = "1234457";
-    final builder = StringBuffer();
-    final Reference ref = _root.child('/users/$userId/$deviceNumber');
-    final files = await ref.listAll();
-    final Reference file = files.items.elementAt(3);
-    final bytes = await file.getData();
-
-    StringBuffer buffer = new StringBuffer();
-    for (int i = 0; i < bytes.length;) {
-      int firstWord = (bytes[i] << 8) + bytes[i + 1];
-      if (0xD800 <= firstWord && firstWord <= 0xDBFF) {
-        int secondWord = (bytes[i + 2] << 8) + bytes[i + 3];
-        buffer.writeCharCode(
-            ((firstWord - 0xD800) << 10) + (secondWord - 0xDC00) + 0x10000);
-        i += 4;
-      } else {
-        buffer.writeCharCode(firstWord);
-        i += 2;
-      }
-    }
-    final String json = buffer.toString();
-    final size = bytes.lengthInBytes;
-    print('DATA IS: $json');
-    print('AND HAS SIZE: $size');
-    /*
-    await Future.forEach(files.items, (Reference ref) async {
-      print('REFERENCE HERE');
-      final data = await ref.getData();
-      final string = String.fromCharCodes(data); // this is assigned 30% of **data**.
-      print('DATA IS: $string');
-      builder.write(String.fromCharCodes(data));
-    });
-     */
-    return builder.toString();
-  }
+  // Fetches concurrently an arbitrary number of json files, applies custom Model fromJson to all of them, flattens the resulted list and returns it
+  Future<List<LogModel>> download() async =>
+      (await Future.wait<Response<List<dynamic>>>((await FirebaseStorage
+                  .instance
+                  .ref()
+                  .child('/users/5YQFtZI5QsRsXVcd1ZB8JSamjjj2/1234457')
+                  .listAll())
+              .items
+              .map((ref) async =>
+                  Dio().get<List<dynamic>>(await ref.getDownloadURL()))))
+          .map((l) => l.data.map((e) => LogModel.fromJson(e)))
+          .expand((m) => m)
+          .toList();
 }

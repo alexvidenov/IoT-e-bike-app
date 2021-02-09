@@ -35,10 +35,12 @@ class Auth {
     await this.isSignedInAnonymously();
   }
 
-  Future<bool> isSignedInAnonymously() async {
+  Future<bool> isSignedInAnonymously({bool isCalledFromIsolate = false}) async {
     if (await _dbManager.isAnonymous()) {
-      _localAuthState.addEvent(
-          AuthState.authenticated('0000')); // FIXME fix that flying string
+      if (!isCalledFromIsolate) {
+        _localAuthState.addEvent(
+            AuthState.authenticated('0000')); // FIXME fix that flying string
+      }
       _isAnonymous = true;
       return true;
     } else {
@@ -148,8 +150,8 @@ extension UserStatus on Auth {
 
   Stream<AuthState> get _onLocalAuthStateChanged => _localAuthState.stream;
 
-  Stream<AuthState> get auth => Rx.merge(
-      [_onAuthStateChanged, _onLocalAuthStateChanged]); // refactor this Rx
+  Stream<AuthState> get auth =>
+      Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]);
 
   String getCurrentUserId() => _isAnonymous ? '0000' : _auth.currentUser?.uid;
 }

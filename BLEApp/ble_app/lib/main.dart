@@ -5,9 +5,8 @@ import 'package:background_fetch/background_fetch.dart';
 import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
-import 'package:ble_app/src/screens/entrypoints/AuthEntrypoint.dart';
-import 'package:ble_app/src/screens/entrypoints/DevicesEntrypoint.dart';
 import 'package:ble_app/src/screens/entrypoints/Root.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/services/Auth.dart';
@@ -32,14 +31,14 @@ Future<void> firebaseStorageUpload() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.reload();
   final String jsonString = prefs.get(PrefsKeys.USER_DATA);
-  if (jsonString != null) {
+  final auth = Auth();
+  if (jsonString != null &&
+      !await auth.isSignedInAnonymously(isCalledFromIsolate: true)) {
     print('NOT NULL DATA');
     print('User Id: ' +
-        Auth()
-            .getCurrentUserId()); // FIXME fix the null bool cuz its an isolate
+        auth.getCurrentUserId()); // FIXME fix the null bool cuz its an isolate
     await prefs.remove(PrefsKeys.USER_DATA);
-    await Storage(uid: Auth().getCurrentUserId())
-        .upload(jsonDecode(jsonString));
+    await Storage(uid: auth.getCurrentUserId()).upload(jsonDecode(jsonString));
   }
 }
 
@@ -80,6 +79,9 @@ void main() async {
       enableHeadless: true,
       forceAlarmManager: Platform.isAndroid));
   $<CloudMessaging>().init();
+  print('Downloading');
+  List<LogModel> list = await Storage().download();
+  print(list.length);
   $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
 }
 

@@ -36,14 +36,14 @@ class ShortStatusBloc extends StateBloc<ShortStatus> {
     loadData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       logger.wtf('SHORT STATUS EVENT: $event');
-      if (!event.contains('OK')) {
-        addEvent(generateState(event));
-      }
       _uploadTimer++;
-      if (_uploadTimer == 10) {
-        _uploadTimer = 0;
-        addData<ShortStatus>(
-            generateModel(event)); // the exception comes from here, don't worry
+      if (!event.contains('OK')) {
+        final state = generateState(event);
+        addEvent(state);
+        if (_uploadTimer == 10) {
+          _uploadTimer = 0;
+          addData<ShortStatus>(state.model);
+        }
       }
     });
   }

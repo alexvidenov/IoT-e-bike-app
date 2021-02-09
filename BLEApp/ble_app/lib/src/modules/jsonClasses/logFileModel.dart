@@ -2,29 +2,16 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'logFileModel.g.dart';
 
-@JsonSerializable(nullable: false) // TODO: convert to freezed
-class _BatteryStatusModel {
+@JsonSerializable(nullable: true) // TODO: convert to freezed
+class LogModel {
+  final String timeStamp;
   final double voltage;
   final double current;
   final double temp;
-  //final double delta;
+  final double delta;
 
-  const _BatteryStatusModel({this.voltage, this.temp, this.current});
-
-  factory _BatteryStatusModel.fromJson(Map<String, dynamic> json) =>
-      _$_BatteryStatusModelFromJson(json);
-
-  Map<String, dynamic> toJson() => _$_BatteryStatusModelToJson(this);
-}
-
-@JsonSerializable(nullable: false)
-class LogModel {
-  final String timeStamp;
-
-  @JsonKey(name: 'stats')
-  final _BatteryStatusModel model;
-
-  const LogModel({this.timeStamp, this.model});
+  const LogModel(
+      {this.voltage, this.temp, this.current, this.delta, this.timeStamp});
 
   factory LogModel.fromJson(Map<String, dynamic> json) =>
       _$LogModelFromJson(json);

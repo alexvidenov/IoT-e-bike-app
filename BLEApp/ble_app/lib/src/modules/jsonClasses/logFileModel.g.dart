@@ -6,32 +6,22 @@ part of 'logFileModel.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_BatteryStatusModel _$_BatteryStatusModelFromJson(Map<String, dynamic> json) {
-  return _BatteryStatusModel(
-    voltage: (json['voltage'] as num).toDouble(),
-    temp: (json['temp'] as num).toDouble(),
-    current: (json['current'] as num).toDouble(),
-  );
-}
-
-Map<String, dynamic> _$_BatteryStatusModelToJson(
-        _BatteryStatusModel instance) =>
-    <String, dynamic>{
-      'voltage': instance.voltage,
-      'current': instance.current,
-      'temp': instance.temp,
-    };
-
 LogModel _$LogModelFromJson(Map<String, dynamic> json) {
   return LogModel(
+    voltage: (json['voltage'] as num)?.toDouble(),
+    temp: (json['temp'] as num)?.toDouble(),
+    current: (json['current'] as num)?.toDouble(),
+    delta: (json['delta'] as num)?.toDouble(),
     timeStamp: json['timeStamp'] as String,
-    model: _BatteryStatusModel.fromJson(json['stats'] as Map<String, dynamic>),
   );
 }
 
 Map<String, dynamic> _$LogModelToJson(LogModel instance) => <String, dynamic>{
       'timeStamp': instance.timeStamp,
-      'stats': instance.model,
+      'voltage': instance.voltage,
+      'current': instance.current,
+      'temp': instance.temp,
+      'delta': instance.delta,
     };
 
 LogFileModel _$LogFileModelFromJson(Map<String, dynamic> json) {

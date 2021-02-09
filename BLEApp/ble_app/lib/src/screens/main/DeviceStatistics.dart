@@ -1,5 +1,6 @@
 import 'package:ble_app/src/blocs/DeviceStatisticsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:flutter/material.dart';
 
@@ -23,11 +24,21 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
 
   fetch() async {
     final data = await widget._deviceStatisticsBloc.fetchData();
-    print('String is: $data');
+    print('Data:' + data.toString());
   }
 
   @override
   Widget build(BuildContext context) {
     return Container();
   }
+}
+
+class StatisticsData {
+  final DateTime x;
+  final double y;
+
+  StatisticsData(this.x, this.y);
+
+  factory StatisticsData.fromLogModel(LogModel model) =>
+      StatisticsData(DateTime.parse(model.timeStamp), model.voltage);
 }

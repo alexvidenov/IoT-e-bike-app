@@ -18,7 +18,6 @@ import '../blocs/devicesBloc.dart';
 import '../blocs/entryEndpointBloc.dart';
 import '../blocs/fullStatusBloc.dart';
 import '../blocs/InnerPageManager.dart';
-import '../blocs/stateTracker.dart';
 import '../persistence/localDatabase.dart';
 import '../persistence/LocalDatabaseManager.dart';
 import '../blocs/locationBloc.dart';
@@ -32,6 +31,7 @@ import '../blocs/parameterListenerBloc.dart';
 import '../blocs/settingsBloc.dart';
 import '../blocs/sharedPrefsService.dart';
 import '../blocs/shortStatusBloc.dart';
+import '../blocs/stateTracker.dart';
 
 /// adds generated dependencies
 /// to the provided [GetIt] instance
@@ -72,9 +72,9 @@ GetIt $initGetIt(
       () => EntryEndpointBloc(get<DevicesBloc>(), get<SettingsBloc>()));
 
   // Eager singletons must be registered in the right order
-  gh.singleton<StateTracker>(StateTracker());
   gh.singletonAsync<LocalDatabase>(() => LocalDatabase.getInstance());
   gh.singleton<OutputControlBloc>(OutputControlBloc(get<DeviceRepository>()));
   gh.singletonAsync<SharedPrefsService>(() => SharedPrefsService.getInstance());
+  gh.singleton<StateTracker>(StateTracker());
   return get;
 }

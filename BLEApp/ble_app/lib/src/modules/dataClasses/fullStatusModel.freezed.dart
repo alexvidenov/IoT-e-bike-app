@@ -19,13 +19,13 @@ class _$FullStatusModelTearOff {
       double totalVoltage = 0,
       double current = 0,
       int temperature = 0,
-      int rIn = 0}) {
+      double delta = 0}) {
     return FullStatus(
       fullStatus: fullStatus,
       totalVoltage: totalVoltage,
       current: current,
       temperature: temperature,
-      rIn: rIn,
+      delta: delta,
     );
   }
 }
@@ -40,7 +40,7 @@ mixin _$FullStatusModel {
   double get totalVoltage;
   double get current;
   int get temperature;
-  int get rIn;
+  double get delta;
 
   $FullStatusModelCopyWith<FullStatusModel> get copyWith;
 }
@@ -55,7 +55,7 @@ abstract class $FullStatusModelCopyWith<$Res> {
       double totalVoltage,
       double current,
       int temperature,
-      int rIn});
+      double delta});
 }
 
 /// @nodoc
@@ -73,7 +73,7 @@ class _$FullStatusModelCopyWithImpl<$Res>
     Object totalVoltage = freezed,
     Object current = freezed,
     Object temperature = freezed,
-    Object rIn = freezed,
+    Object delta = freezed,
   }) {
     return _then(_value.copyWith(
       fullStatus: fullStatus == freezed
@@ -85,7 +85,7 @@ class _$FullStatusModelCopyWithImpl<$Res>
       current: current == freezed ? _value.current : current as double,
       temperature:
           temperature == freezed ? _value.temperature : temperature as int,
-      rIn: rIn == freezed ? _value.rIn : rIn as int,
+      delta: delta == freezed ? _value.delta : delta as double,
     ));
   }
 }
@@ -102,7 +102,7 @@ abstract class $FullStatusCopyWith<$Res>
       double totalVoltage,
       double current,
       int temperature,
-      int rIn});
+      double delta});
 }
 
 /// @nodoc
@@ -120,7 +120,7 @@ class _$FullStatusCopyWithImpl<$Res> extends _$FullStatusModelCopyWithImpl<$Res>
     Object totalVoltage = freezed,
     Object current = freezed,
     Object temperature = freezed,
-    Object rIn = freezed,
+    Object delta = freezed,
   }) {
     return _then(FullStatus(
       fullStatus: fullStatus == freezed
@@ -132,7 +132,7 @@ class _$FullStatusCopyWithImpl<$Res> extends _$FullStatusModelCopyWithImpl<$Res>
       current: current == freezed ? _value.current : current as double,
       temperature:
           temperature == freezed ? _value.temperature : temperature as int,
-      rIn: rIn == freezed ? _value.rIn : rIn as int,
+      delta: delta == freezed ? _value.delta : delta as double,
     ));
   }
 }
@@ -146,12 +146,12 @@ class _$FullStatus implements FullStatus {
       this.totalVoltage = 0,
       this.current = 0,
       this.temperature = 0,
-      this.rIn = 0})
+      this.delta = 0})
       : assert(fullStatus != null),
         assert(totalVoltage != null),
         assert(current != null),
         assert(temperature != null),
-        assert(rIn != null);
+        assert(delta != null);
 
   @JsonKey(defaultValue: const [])
   @override
@@ -167,11 +167,20 @@ class _$FullStatus implements FullStatus {
   final int temperature;
   @JsonKey(defaultValue: 0)
   @override
-  final int rIn;
+  final double delta;
+
+  @override
+  LogModel generate() => LogModel.fromJson({
+    'timeStamp' : DateTime.now(),
+    'voltage' : this.totalVoltage,
+    'current' : this.current,
+    'temp' : this.temperature,
+    'delta' : this.delta
+  });
 
   @override
   String toString() {
-    return 'FullStatusModel(fullStatus: $fullStatus, totalVoltage: $totalVoltage, current: $current, temperature: $temperature, rIn: $rIn)';
+    return 'FullStatusModel(fullStatus: $fullStatus, totalVoltage: $totalVoltage, current: $current, temperature: $temperature, delta: $delta)';
   }
 
   @override
@@ -190,8 +199,8 @@ class _$FullStatus implements FullStatus {
             (identical(other.temperature, temperature) ||
                 const DeepCollectionEquality()
                     .equals(other.temperature, temperature)) &&
-            (identical(other.rIn, rIn) ||
-                const DeepCollectionEquality().equals(other.rIn, rIn)));
+            (identical(other.delta, delta) ||
+                const DeepCollectionEquality().equals(other.delta, delta)));
   }
 
   @override
@@ -201,7 +210,7 @@ class _$FullStatus implements FullStatus {
       const DeepCollectionEquality().hash(totalVoltage) ^
       const DeepCollectionEquality().hash(current) ^
       const DeepCollectionEquality().hash(temperature) ^
-      const DeepCollectionEquality().hash(rIn);
+      const DeepCollectionEquality().hash(delta);
 
   @override
   $FullStatusCopyWith<FullStatus> get copyWith =>
@@ -214,7 +223,7 @@ abstract class FullStatus implements FullStatusModel, BaseModel {
       double totalVoltage,
       double current,
       int temperature,
-      int rIn}) = _$FullStatus;
+      double delta}) = _$FullStatus;
 
   @override
   List<FullStatusDataModel> get fullStatus;
@@ -225,7 +234,9 @@ abstract class FullStatus implements FullStatusModel, BaseModel {
   @override
   int get temperature;
   @override
-  int get rIn;
+  double get delta;
+  @override
+  LogModel generate();
   @override
   $FullStatusCopyWith<FullStatus> get copyWith;
 }

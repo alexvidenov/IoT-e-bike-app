@@ -61,7 +61,6 @@ class _CardParameter extends StatelessWidget {
                         flex: 1,
                         child: TextFormField(
                           controller: TextEditingController.fromValue(
-                              // instantiate a controller here i guess?
                               TextEditingValue(text: '$_parameterValue')),
                           onFieldSubmitted: (value) =>
                               _onEdit(_tableIndex, value),
@@ -343,6 +342,12 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
                               completion),
                           _CardParameter(17, '44', 'Serial number', 0000, '',
                               '', serialNumberCompletion),
+                          CalibrateTile(18, 'Cal. V', 'Voltage calibrate',
+                              () => _parameterListenerBloc.calibrateVoltage()),
+                          CalibrateTile(19, 'Cal. C', 'Charge calibrate',
+                              () => _parameterListenerBloc.calibrateCharge()),
+                          CalibrateTile(20, 'Cal. D', 'Discharge calibrate',
+                              () => _parameterListenerBloc.calibrateDischarge())
                         ],
                       )
                       /*

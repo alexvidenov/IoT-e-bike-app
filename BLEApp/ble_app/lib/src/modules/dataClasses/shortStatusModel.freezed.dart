@@ -130,6 +130,14 @@ class _$ShortStatus implements ShortStatus {
   final int temperature;
 
   @override
+  LogModel generate() => LogModel.fromJson({
+      'timeStamp' : DateTime.now(),
+      'voltage' : this.totalVoltage,
+      'current' : this.current,
+      'temp' : this.temperature
+    });
+
+  @override
   String toString() {
     return 'ShortStatusModel(totalVoltage: $totalVoltage, current: $current, temperature: $temperature)';
   }
@@ -171,6 +179,8 @@ abstract class ShortStatus implements ShortStatusModel, BaseModel {
   double get current;
   @override
   int get temperature;
+  @override
+  LogModel generate();
   @override
   $ShortStatusCopyWith<ShortStatus> get copyWith;
 }

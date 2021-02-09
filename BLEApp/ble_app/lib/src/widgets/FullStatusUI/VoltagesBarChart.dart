@@ -100,9 +100,7 @@ class VoltagesBarChart extends StatelessWidget {
                       title: 'Temp.',
                       content: state.connectionState == ConnectionState.active
                           ? state.data.model != null
-                              ? state.data.model.temperature
-                                      .toStringAsFixed(2) +
-                                  'C'
+                              ? state.data.model.temperature.toString() + 'C'
                               : '-'
                           : '-',
                     ),

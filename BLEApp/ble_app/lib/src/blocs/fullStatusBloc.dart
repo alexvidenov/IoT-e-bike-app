@@ -22,12 +22,14 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
   create() {
     loadData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
-      //final _model = _generateFullStatus(e);
-      addEvent(generateState(event));
       _uploadTimer++;
-      if (_uploadTimer == 10) {
-        _uploadTimer = 0;
-        //addData(_model);
+      if (!event.contains('OK')) {
+        final state = generateState(event);
+        addEvent(state);
+        if (_uploadTimer == 10) {
+          _uploadTimer = 0;
+          addData<FullStatus>(state.model);
+        }
       }
     });
   }
@@ -75,7 +77,7 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
             fullStatus.add(FullStatusDataModel(
                 x: counter,
                 y: cellVoltage,
-                color: (cellVoltage / 100) >= currentParams.balanceCellVoltage
+                color: (cellVoltage / 100) > currentParams.balanceCellVoltage
                     ? Colors.redAccent
                     : Colors.lightBlueAccent));
           }
