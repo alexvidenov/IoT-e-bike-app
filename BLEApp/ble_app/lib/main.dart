@@ -36,10 +36,8 @@ Future<void> firebaseStorageUpload() async {
   if (jsonString != null &&
       !await auth.isSignedInAnonymously(isCalledFromIsolate: true)) {
     print('NOT NULL DATA');
-    print('User Id: ' +
-        auth.getCurrentUserId()); // FIXME fix the null bool cuz its an isolate
     await prefs.remove(PrefsKeys.USER_DATA);
-    await Storage(uid: auth.getCurrentUserId()).upload(jsonDecode(jsonString));
+    await Storage().upload(jsonDecode(jsonString));
   }
 }
 

@@ -49,16 +49,9 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
                 1234567.toString(); // TODO: fetch 55 param here (for example)
           }
           addEvent(BTAuthState
-              .btAuthenticated()); // or not authenticated if fetched serial number is not equal
+              .btAuthenticated()); // or not authenticated if fetched serial number is not equal. If anonymous, authenticated by default
         }
       });
-
-  setMacAddressIfNull(String mac) {
-    _repository.deviceMacAddress = mac; // this may be unnecessary
-    FirestoreDatabase(uid: _db.curUserId, deviceId: _db.curDeviceId)
-        .setDeviceMacAddress(mac: mac);
-    _db.setMacAddress(_repository.deviceMacAddress);
-  }
 
   String extractSerialNumber() => serialNumFirstPart + serialNumSecondPart;
 

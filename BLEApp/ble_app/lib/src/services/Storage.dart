@@ -4,6 +4,7 @@ import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 
 class Storage {
   final String uid; // user id
@@ -17,7 +18,10 @@ class Storage {
     for (final user in appData.usersData) {
       for (final log in user.userLog) {
         if (log.deviceId != null) {
-          await _convertToUInt8ListAndUpload(log.deviceLog, log.deviceId);
+          await _convertToUInt8ListAndUpload(
+              data: log.deviceLog,
+              userId: user.userId,
+              deviceSerialNumber: log.deviceId);
         }
       }
     }
@@ -25,7 +29,9 @@ class Storage {
   }
 
   Future<void> _convertToUInt8ListAndUpload(
-      List<dynamic> data, String deviceSerialNumber) async {
+      {@required List<dynamic> data,
+      @required String userId,
+      @required String deviceSerialNumber}) async {
     JsonEncoder encoder = JsonEncoder.withIndent('  ');
     String jsonString = encoder.convert(data);
     List<int> bytes = utf8.encode(jsonString);
@@ -40,10 +46,10 @@ class Storage {
 
     String fileName = year + month + day + '.json';
 
-    print('UPLOADING ON $uid/$deviceSerialNumber/$fileName');
+    print('UPLOADING ON /devices/$deviceSerialNumber/$userId/$fileName');
 
     Reference fileRef =
-        _root.child('/users/$uid/$deviceSerialNumber/$fileName');
+        _root.child('/devices/$deviceSerialNumber/$userId/$fileName');
 
     await fileRef
         .putData(uploadData, SettableMetadata(contentType: 'application/json'))

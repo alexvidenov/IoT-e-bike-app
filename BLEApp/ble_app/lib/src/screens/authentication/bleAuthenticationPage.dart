@@ -66,15 +66,12 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
               this._verificationNotifier.add(true);
               _isAuthenticated = true;
               widget._authBloc.pause();
-              widget._authBloc.setMacAddressIfNull(
-                  widget._deviceBloc.device.value.id); // device Id is inferred
               $<PageManager>().openParameters();
             },
             failedToBTAuthenticate: (reason) => _presentDialog(context,
                 message: reason.toString(), action: 'TRY AGAIN'));
       });
 
-// this retry will be in the bloc
   _retry() => Future.delayed(Duration(seconds: 1), () {
         if (_isAuthenticated == false)
           _showLockScreen(

@@ -5,9 +5,5 @@ import 'package:floor/floor.dart';
 class User extends Model {
   final String email;
   final String password; // TODO: needs to be hashed
-
-  final bool isSuperuser;
-
-  const User(String id, this.email, this.password, this.isSuperuser)
-      : super(id: id);
+  const User(String id, this.email, this.password) : super(id: id);
 }

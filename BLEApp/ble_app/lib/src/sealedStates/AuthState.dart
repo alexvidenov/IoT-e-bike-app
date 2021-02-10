@@ -8,6 +8,7 @@ enum NotAuthenticatedReason {
   invalidEmail,
   userNotFound,
   userDisabled,
+  deviceSerialNumberDoesNotExist,
   undefined,
 }
 

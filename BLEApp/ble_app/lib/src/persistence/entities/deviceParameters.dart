@@ -80,7 +80,53 @@ class DeviceParameters extends Model {
     int motoHoursChargeCounter,
     int motoHoursDischargeCounter,
   }) {
-    return DeviceParameters(
+    if ((cellCount == null || identical(cellCount, this.cellCount)) &&
+        (maxCellVoltage == null ||
+            identical(maxCellVoltage, this.maxCellVoltage)) &&
+        (maxRecoveryVoltage == null ||
+            identical(maxRecoveryVoltage, this.maxRecoveryVoltage)) &&
+        (balanceCellVoltage == null ||
+            identical(balanceCellVoltage, this.balanceCellVoltage)) &&
+        (minCellVoltage == null ||
+            identical(minCellVoltage, this.minCellVoltage)) &&
+        (minCellRecoveryVoltage == null ||
+            identical(minCellRecoveryVoltage, this.minCellRecoveryVoltage)) &&
+        (ultraLowCellVoltage == null ||
+            identical(ultraLowCellVoltage, this.ultraLowCellVoltage)) &&
+        (maxTimeLimitedDischargeCurrent == null ||
+            identical(maxTimeLimitedDischargeCurrent,
+                this.maxTimeLimitedDischargeCurrent)) &&
+        (maxCutoffDischargeCurrent == null ||
+            identical(
+                maxCutoffDischargeCurrent, this.maxCutoffDischargeCurrent)) &&
+        (maxCurrentTimeLimitPeriod == null ||
+            identical(
+                maxCurrentTimeLimitPeriod, this.maxCurrentTimeLimitPeriod)) &&
+        (maxCutoffChargeCurrent == null ||
+            identical(maxCutoffChargeCurrent, this.maxCutoffChargeCurrent)) &&
+        (motoHoursCounterCurrentThreshold == null ||
+            identical(motoHoursCounterCurrentThreshold,
+                this.motoHoursCounterCurrentThreshold)) &&
+        (currentCutOffTimerPeriod == null ||
+            identical(
+                currentCutOffTimerPeriod, this.currentCutOffTimerPeriod)) &&
+        (maxCutoffTemperature == null ||
+            identical(maxCutoffTemperature, this.maxCutoffTemperature)) &&
+        (maxTemperatureRecovery == null ||
+            identical(maxTemperatureRecovery, this.maxTemperatureRecovery)) &&
+        (minTemperatureRecovery == null ||
+            identical(minTemperatureRecovery, this.minTemperatureRecovery)) &&
+        (minCutoffTemperature == null ||
+            identical(minCutoffTemperature, this.minCutoffTemperature)) &&
+        (motoHoursChargeCounter == null ||
+            identical(motoHoursChargeCounter, this.motoHoursChargeCounter)) &&
+        (motoHoursDischargeCounter == null ||
+            identical(
+                motoHoursDischargeCounter, this.motoHoursDischargeCounter))) {
+      return this;
+    }
+
+    return new DeviceParameters(
       id: this.id,
       cellCount: cellCount ?? this.cellCount,
       maxCellVoltage: maxCellVoltage ?? this.maxCellVoltage,
@@ -168,6 +214,53 @@ class DeviceParameters extends Model {
       minCutoffTemperature.hashCode ^
       motoHoursChargeCounter.hashCode ^
       motoHoursDischargeCounter.hashCode;
+
+  factory DeviceParameters.fromMap(Map<String, dynamic> map) =>
+      new DeviceParameters(
+        cellCount: map['00'] as int,
+        maxCellVoltage: map['01'] as double,
+        maxRecoveryVoltage: map['02'] as double,
+        balanceCellVoltage: map['03'] as double,
+        minCellVoltage: map['04'] as double,
+        minCellRecoveryVoltage: map['05'] as double,
+        ultraLowCellVoltage: map['06'] as double,
+        maxTimeLimitedDischargeCurrent: map['12'] as double,
+        maxCutoffDischargeCurrent: map['13'] as double,
+        maxCurrentTimeLimitPeriod: map['14'] as int,
+        maxCutoffChargeCurrent: map['15'] as double,
+        motoHoursCounterCurrentThreshold: map['16'] as int,
+        currentCutOffTimerPeriod: map['17'] as int,
+        maxCutoffTemperature: map['23'] as int,
+        maxTemperatureRecovery: map['24'] as int,
+        minTemperatureRecovery: map['25'] as int,
+        minCutoffTemperature: map['26'] as int,
+        motoHoursChargeCounter: map['28'] as int,
+        motoHoursDischargeCounter: map['29'] as int,
+        id: map['45'],
+      );
+
+  Map<String, dynamic> toMap() => {
+        '00': this.cellCount,
+        '01': this.maxCellVoltage,
+        '02': this.maxRecoveryVoltage,
+        '03': this.balanceCellVoltage,
+        '04': this.minCellVoltage,
+        '05': this.minCellRecoveryVoltage,
+        '06': this.ultraLowCellVoltage,
+        '12': this.maxTimeLimitedDischargeCurrent,
+        '13': this.maxCutoffDischargeCurrent,
+        '14': this.maxCurrentTimeLimitPeriod,
+        '15': this.maxCutoffChargeCurrent,
+        '16': this.motoHoursCounterCurrentThreshold,
+        '17': this.currentCutOffTimerPeriod,
+        '23': this.maxCutoffTemperature,
+        '24': this.maxTemperatureRecovery,
+        '25': this.minTemperatureRecovery,
+        '26': this.minCutoffTemperature,
+        '28': this.motoHoursChargeCounter,
+        '29': this.motoHoursDischargeCounter,
+        '45': this.id
+      };
 
 //</editor-fold>
 

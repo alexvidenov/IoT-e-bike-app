@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/parameterListenerBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
+import 'package:ble_app/src/services/Database.dart';
 import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
@@ -88,31 +91,29 @@ class CalibrateTile extends StatelessWidget {
       this._description, this._calibrateCallback);
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Column(
-        children: <Widget>[
-          ListTile(
-              leading: Text(_showcaseIndex.toString()),
-              title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        '$_parameterName :',
-                        style: TextStyle(fontSize: 24, color: Colors.black),
+  Widget build(BuildContext context) => Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Column(
+          children: <Widget>[
+            ListTile(
+                leading: Text(_showcaseIndex.toString()),
+                title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          '$_parameterName :',
+                          style: TextStyle(fontSize: 24, color: Colors.black),
+                        ),
                       ),
-                    ),
-                  ]),
-              subtitle: Text(_description),
-              trailing: const Icon(Icons.edit_sharp),
-              onTap: () => _calibrateCallback(),
-              tileColor: Colors.lightBlueAccent),
-        ],
-      ),
-    );
-  }
+                    ]),
+                subtitle: Text(_description),
+                trailing: const Icon(Icons.edit_sharp),
+                onTap: () => _calibrateCallback(),
+                tileColor: Colors.lightBlueAccent),
+          ],
+        ),
+      );
 }
 
 class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
@@ -352,44 +353,58 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
                   child: Icon(Icons.build),
                   onPressed: () => showModalBottomSheet(
                       context: context,
-                      builder: (_) {
-                        return Wrap(
-                          children: [
-                            Container(
-                              child: Container(
-                                decoration: new BoxDecoration(
-                                    color: Color(0xFF737373),
-                                    borderRadius: new BorderRadius.only(
-                                        topLeft: const Radius.circular(25.0),
-                                        topRight: const Radius.circular(25.0))),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    CalibrateTile(
-                                        18,
-                                        'Cal. V',
-                                        'Voltage calibrate',
-                                        () => _parameterListenerBloc
-                                            .calibrateVoltage()),
-                                    CalibrateTile(
-                                        19,
-                                        'Cal. C',
-                                        'Charge calibrate',
-                                        () => _parameterListenerBloc
-                                            .calibrateCharge()),
-                                    CalibrateTile(
-                                        20,
-                                        'Cal. D',
-                                        'Discharge calibrate',
-                                        () => _parameterListenerBloc
-                                            .calibrateDischarge())
-                                  ],
+                      builder: (_) => Wrap(
+                            children: [
+                              Container(
+                                child: Container(
+                                  decoration: new BoxDecoration(
+                                      color: Color(0xFF737373),
+                                      borderRadius: new BorderRadius.only(
+                                          topLeft: const Radius.circular(25.0),
+                                          topRight:
+                                              const Radius.circular(25.0))),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CalibrateTile(
+                                          18,
+                                          'Cal. V',
+                                          'Voltage calibrate',
+                                          () => _parameterListenerBloc
+                                              .calibrateVoltage()),
+                                      CalibrateTile(
+                                          19,
+                                          'Cal. C',
+                                          'Charge calibrate',
+                                          () => _parameterListenerBloc
+                                              .calibrateCharge()),
+                                      CalibrateTile(
+                                          20,
+                                          'Cal. D',
+                                          'Discharge calibrate',
+                                          () => _parameterListenerBloc
+                                              .calibrateDischarge()),
+                                      OutlineButton(
+                                        child: Text('Register device'),
+                                        onPressed: () => FirestoreDatabase(
+                                                uid: this.bloc.curUserId,
+                                                deviceId: this.bloc.curDeviceId)
+                                            .uploadDevice(
+                                                macAddress: $<DeviceBloc>()
+                                                    .device
+                                                    .value
+                                                    .id,
+                                                parameters: this
+                                                    .bloc
+                                                    .currentParams
+                                                    .toMap()),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            )
-                          ],
-                        );
-                      })),
+                              )
+                            ],
+                          ))),
             )));
   }
 }

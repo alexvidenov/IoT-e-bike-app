@@ -4,11 +4,8 @@ import 'package:flutter/services.dart';
 
 class _Credentials {
   String userName = '';
-  String email = '';
   String password = '';
   String deviceSerialNumber = '';
-  String superUserPasscode = '';
-  bool isSuperUser = false;
 }
 
 class RegisterScreen extends StatelessWidget {
@@ -68,25 +65,23 @@ class StepperBody extends StatefulWidget {
 class _StepperBodyState extends State<StepperBody> {
   int currStep = 0;
 
-  get _focusNode => FocusNode();
+  get _focusNodeUsername => FocusNode();
 
   get _focusNodeLastName => FocusNode();
 
   final data = _Credentials();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
-  bool _shouldEnterSuperUser = false;
-
   @override
   initState() {
     super.initState();
-    _focusNode.addListener(() => setState(() => {}));
+    _focusNodeUsername.addListener(() => setState(() => {}));
     _focusNodeLastName.addListener(() => setState(() => {}));
   }
 
   @override
   dispose() {
-    _focusNode.dispose();
+    _focusNodeUsername.dispose();
     _focusNodeLastName.dispose();
     super.dispose();
   }
@@ -101,7 +96,7 @@ class _StepperBodyState extends State<StepperBody> {
           isActive: currStep >= 1,
           state: currStep == 0 ? StepState.editing : StepState.indexed,
           content: TextFormField(
-              focusNode: _focusNode,
+              focusNode: _focusNodeUsername,
               keyboardType: TextInputType.text,
               autocorrect: false,
               onSaved: (String value) {
@@ -117,28 +112,6 @@ class _StepperBodyState extends State<StepperBody> {
                       color: Colors.white,
                       fontSize: 16.0))),
         ),
-        Step(
-            title: const Text('Email',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 19.0)),
-            isActive: currStep >= 2,
-            state: currStep == 1 ? StepState.editing : StepState.indexed,
-            content: TextFormField(
-              focusNode: _focusNodeLastName,
-              keyboardType: TextInputType.text,
-              autocorrect: false,
-              onSaved: (String value) {
-                data.email = value;
-              },
-              maxLines: 1,
-              decoration: InputDecoration(
-                  labelText: 'Enter your email',
-                  icon: const Icon(Icons.person, color: Colors.white),
-                  labelStyle:
-                      TextStyle(decorationStyle: TextDecorationStyle.solid)),
-            )),
         Step(
             title: const Text('Password',
                 style: TextStyle(
@@ -163,7 +136,7 @@ class _StepperBodyState extends State<StepperBody> {
                       fontSize: 16.0)),
             )),
         Step(
-          title: const Text('Device number',
+          title: const Text('Device serial number',
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -187,49 +160,12 @@ class _StepperBodyState extends State<StepperBody> {
                       color: Colors.white,
                       fontSize: 16.0))),
         ),
-        Step(
-            title: const Text('Superuser?',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 19.0)),
-            isActive: currStep >= 5,
-            state: currStep == 4 ? StepState.editing : StepState.indexed,
-            content: Card(
-              color: Colors.lightBlueAccent,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SwitchListTile(
-                    activeColor: Colors.redAccent,
-                    title: const Text('Are you a superuser?'),
-                    value: _shouldEnterSuperUser,
-                    onChanged: (value) =>
-                        setState(() => _shouldEnterSuperUser = value),
-                  ),
-                  _shouldEnterSuperUser
-                      ? TextFormField(
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(color: Colors.white),
-                          autocorrect: false,
-                          onSaved: (value) => data.superUserPasscode = value,
-                          maxLines: 1,
-                          decoration: new InputDecoration(
-                              labelText: 'Enter passcode',
-                              icon: const Icon(Icons.confirmation_number,
-                                  color: Colors.white),
-                              labelStyle: new TextStyle(
-                                  decorationStyle: TextDecorationStyle.solid,
-                                  color: Colors.white,
-                                  fontSize: 16.0)))
-                      : Container(),
-                ],
-              ),
-            )),
       ];
 
   showSnackBarMessage(String message) =>
       Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
+
+  _showDialog() {}
 
   _submitDetails() {
     final FormState formState = _formKey.currentState;
@@ -238,7 +174,8 @@ class _StepperBodyState extends State<StepperBody> {
     //} else {
     formState.save();
     widget._authBloc.signUpWithEmailAndPassword(
-        email: data.email,
+        // await the result here and if it returnns the other thing that means the suer didnt input the thing properly
+        email: data.userName + '@gmail.com',
         password: data.password,
         deviceId: data.deviceSerialNumber);
     //}

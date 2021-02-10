@@ -53,14 +53,7 @@ extension FetchParams on ParameterFetchBloc {
     await _querySingleParam('R28\r');
     await _querySingleParam('R29\r');
     Future.delayed(Duration(milliseconds: 150), () async {
-      // was 100, try to vary that
       if (_parameters.keys.length >= 19) {
-        //final db = FirestoreDatabase(uid: $<AuthBloc>().user);
-        //if (!(await db.parametersExist(deviceId: _repository.deviceId))) {
-        if (await ConnectivityManager.isOnline()) {
-          FirestoreDatabase(uid: this.curUserId, deviceId: this.curDeviceId)
-              .setDeviceParameters(_parameters);
-        }
         final entity = DeviceParameters(
             id: curDeviceId,
             cellCount: _parameters['00'].toInt(),
@@ -86,7 +79,6 @@ extension FetchParams on ParameterFetchBloc {
                 tempConverter.tempFromADC(_parameters['26'].toInt()),
             motoHoursChargeCounter: _parameters['28'].toInt(),
             motoHoursDischargeCounter: _parameters['29'].toInt());
-        //}
         setLocalParameters(entity);
         cacheParameters();
         addEvent(ParameterFetchState.fetched(entity));

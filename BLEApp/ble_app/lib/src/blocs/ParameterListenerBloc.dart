@@ -105,7 +105,7 @@ class ParameterListenerBloc
         num numValue = num.parse(value);
         if (newModel != null) {
           FirestoreDatabase(uid: this.curUserId, deviceId: this.curDeviceId)
-              .setIndividualParameter(currentKey, numValue);
+              .updateIndividualParameter(currentKey, numValue);
           updateParameters(model: newModel);
           setLocalParameters(newModel);
         }

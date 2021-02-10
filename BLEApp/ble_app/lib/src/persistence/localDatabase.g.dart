@@ -84,9 +84,9 @@ class _$LocalDatabase extends LocalDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `users` (`email` TEXT, `password` TEXT, `isSuperuser` INTEGER, `id` TEXT, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `users` (`email` TEXT, `password` TEXT, `id` TEXT, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `devices` (`user_id` TEXT NOT NULL, `macAddress` TEXT, `name` TEXT, `parametersToChange` TEXT, `id` TEXT, FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `devices` (`user_id` TEXT NOT NULL, `macAddress` TEXT, `name` TEXT, `isSuper` INTEGER, `parametersToChange` TEXT, `id` TEXT, FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `parameters` (`cellCount` INTEGER, `maxCellVoltage` REAL, `maxRecoveryVoltage` REAL, `balanceCellVoltage` REAL, `minCellVoltage` REAL, `minCellRecoveryVoltage` REAL, `ultraLowCellVoltage` REAL, `maxTimeLimitedDischargeCurrent` REAL, `maxCutoffDischargeCurrent` REAL, `maxCurrentTimeLimitPeriod` INTEGER, `maxCutoffChargeCurrent` REAL, `motoHoursCounterCurrentThreshold` INTEGER, `currentCutOffTimerPeriod` INTEGER, `maxCutoffTemperature` INTEGER, `maxTemperatureRecovery` INTEGER, `minTemperatureRecovery` INTEGER, `minCutoffTemperature` INTEGER, `motoHoursChargeCounter` INTEGER, `motoHoursDischargeCounter` INTEGER, `id` TEXT, FOREIGN KEY (`id`) REFERENCES `devices` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`id`))');
 
@@ -121,9 +121,6 @@ class _$UserDao extends UserDao {
             (User item) => <String, dynamic>{
                   'email': item.email,
                   'password': item.password,
-                  'isSuperuser': item.isSuperuser == null
-                      ? null
-                      : (item.isSuperuser ? 1 : 0),
                   'id': item.id
                 }),
         _userUpdateAdapter = UpdateAdapter(
@@ -133,9 +130,6 @@ class _$UserDao extends UserDao {
             (User item) => <String, dynamic>{
                   'email': item.email,
                   'password': item.password,
-                  'isSuperuser': item.isSuperuser == null
-                      ? null
-                      : (item.isSuperuser ? 1 : 0),
                   'id': item.id
                 }),
         _userDeletionAdapter = DeletionAdapter(
@@ -145,9 +139,6 @@ class _$UserDao extends UserDao {
             (User item) => <String, dynamic>{
                   'email': item.email,
                   'password': item.password,
-                  'isSuperuser': item.isSuperuser == null
-                      ? null
-                      : (item.isSuperuser ? 1 : 0),
                   'id': item.id
                 });
 
@@ -166,26 +157,16 @@ class _$UserDao extends UserDao {
   @override
   Future<List<User>> fetchUsers() async {
     return _queryAdapter.queryList('SELECT * FROM users',
-        mapper: (Map<String, dynamic> row) => User(
-            row['id'] as String,
-            row['email'] as String,
-            row['password'] as String,
-            row['isSuperuser'] == null
-                ? null
-                : (row['isSuperuser'] as int) != 0));
+        mapper: (Map<String, dynamic> row) => User(row['id'] as String,
+            row['email'] as String, row['password'] as String));
   }
 
   @override
   Future<User> fetchUser(String email) async {
     return _queryAdapter.query('SELECT * FROM users WHERE email = ?',
         arguments: <dynamic>[email],
-        mapper: (Map<String, dynamic> row) => User(
-            row['id'] as String,
-            row['email'] as String,
-            row['password'] as String,
-            row['isSuperuser'] == null
-                ? null
-                : (row['isSuperuser'] as int) != 0));
+        mapper: (Map<String, dynamic> row) => User(row['id'] as String,
+            row['email'] as String, row['password'] as String));
   }
 
   @override
@@ -226,6 +207,8 @@ class _$DeviceDao extends DeviceDao {
                   'user_id': item.userId,
                   'macAddress': item.macAddress,
                   'name': item.name,
+                  'isSuper':
+                      item.isSuper == null ? null : (item.isSuper ? 1 : 0),
                   'parametersToChange': item.parametersToChange,
                   'id': item.id
                 }),
@@ -237,6 +220,8 @@ class _$DeviceDao extends DeviceDao {
                   'user_id': item.userId,
                   'macAddress': item.macAddress,
                   'name': item.name,
+                  'isSuper':
+                      item.isSuper == null ? null : (item.isSuper ? 1 : 0),
                   'parametersToChange': item.parametersToChange,
                   'id': item.id
                 }),
@@ -248,6 +233,8 @@ class _$DeviceDao extends DeviceDao {
                   'user_id': item.userId,
                   'macAddress': item.macAddress,
                   'name': item.name,
+                  'isSuper':
+                      item.isSuper == null ? null : (item.isSuper ? 1 : 0),
                   'parametersToChange': item.parametersToChange,
                   'id': item.id
                 });
@@ -272,7 +259,9 @@ class _$DeviceDao extends DeviceDao {
             userId: row['user_id'] as String,
             parametersToChange: row['parametersToChange'] as String,
             macAddress: row['macAddress'] as String,
-            name: row['name'] as String));
+            name: row['name'] as String,
+            isSuper:
+                row['isSuper'] == null ? null : (row['isSuper'] as int) != 0));
   }
 
   @override
@@ -284,7 +273,9 @@ class _$DeviceDao extends DeviceDao {
             userId: row['user_id'] as String,
             parametersToChange: row['parametersToChange'] as String,
             macAddress: row['macAddress'] as String,
-            name: row['name'] as String));
+            name: row['name'] as String,
+            isSuper:
+                row['isSuper'] == null ? null : (row['isSuper'] as int) != 0));
   }
 
   @override

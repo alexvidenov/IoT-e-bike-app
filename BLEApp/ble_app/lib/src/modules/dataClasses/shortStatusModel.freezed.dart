@@ -131,11 +131,11 @@ class _$ShortStatus implements ShortStatus {
 
   @override
   LogModel generate() => LogModel.fromJson({
-      'timeStamp' : DateTime.now().toString(),
-      'voltage' : this.totalVoltage,
-      'current' : this.current,
-      'temp' : this.temperature
-    });
+    'timeStamp' : DateTime.now().toString(),
+    'voltage' : this.totalVoltage,
+    'current' : this.current,
+    'temp' : this.temperature
+  });
 
   @override
   String toString() {

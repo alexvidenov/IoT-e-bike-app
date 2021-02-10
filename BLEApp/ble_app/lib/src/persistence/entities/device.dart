@@ -23,6 +23,8 @@ class Device extends Model {
 
   final String name;
 
+  final bool isSuper;
+
   @ColumnInfo(nullable: true)
   final String parametersToChange; // changed via FCM
 
@@ -31,6 +33,7 @@ class Device extends Model {
       @required this.userId,
       this.parametersToChange,
       this.macAddress,
-      this.name})
+      this.name,
+      this.isSuper})
       : super(id: deviceId);
 }

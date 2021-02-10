@@ -10,6 +10,7 @@ import 'package:ble_app/src/services/Database.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -69,8 +70,8 @@ class Auth {
         print('USER ID IS $id');
         final _firestore = FirestoreDatabase(uid: id);
         if (!(await _dbManager.userExists(user.email))) {
-          await _dbManager.insertUser(
-              localUser.User(user.uid, user.email, password, false));
+          await _dbManager
+              .insertUser(localUser.User(user.uid, user.email, password));
           final userDevicesWithParameters =
               await _firestore.fetchUserDevicesWithParams();
           print('USER DEVICES WITH PARAMETERS ARE $userDevicesWithParameters');
@@ -80,8 +81,9 @@ class Auth {
             await _dbManager.insertParameters(element.value);
           });
         }
-        _firestore.setUserDeviceToken(
-            token: await $<CloudMessaging>().getToken()); // TODO; should update
+        _firestore.updateUserDeviceTokens(
+            deviceToken:
+                await $<CloudMessaging>().getToken()); // TODO; should update
         return AuthState.authenticated(user.uid);
       } on FirebaseAuthException catch (e) {
         return AuthState.failedToAuthenticate(
@@ -100,28 +102,35 @@ class Auth {
   }
 
   Future<AuthState> signUpWithEmailAndPassword(String email, String password,
-      {String deviceSerialNumber}) async {
+      {@required String deviceSerialNumber}) async {
     User user;
     try {
       final UserCredential credential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
       user = credential?.user;
       if (user != null) {
-        final _id = user.uid;
-        final _db = FirestoreDatabase(uid: _id, deviceId: deviceSerialNumber);
-        await _db.setUserId();
-        await _db.setDeviceId();
-        await _db.setDeviceName(
-            name: BluetoothUtils.defaultBluetoothDeviceName);
-        await _db.setUserDeviceToken(
-            token: await $<CloudMessaging>().getToken());
-        await _dbManager.insertUser(localUser.User(
-            _id, email, password, false)); // TODO: hash password here
-        await _dbManager.insertDevice(Device(
-            deviceId: deviceSerialNumber,
-            userId: _id,
-            name: BluetoothUtils.defaultBluetoothDeviceName));
-        return AuthState.authenticated(user.uid);
+        final _userId = user.uid;
+        final _db =
+            FirestoreDatabase(uid: _userId, deviceId: deviceSerialNumber);
+        final device = await _db.fetchDevice();
+        if (device != null) {
+          final parameters = await _db.fetchDeviceParameters();
+          await _db.addUser(await $<CloudMessaging>().getToken());
+          await _db.addUserAsOwnerOfDevice();
+          await _dbManager.insertUser(localUser.User(
+              _userId, email, password)); // TODO: hash password here
+          await _dbManager.insertDevice(Device(
+              deviceId: deviceSerialNumber,
+              userId: _userId,
+              name: BluetoothUtils.defaultBluetoothDeviceName,
+              macAddress: device.macAddress,
+              isSuper: device.isSuper));
+          await _dbManager.insertParameters(parameters);
+          return AuthState.authenticated(user.uid);
+        } else {
+          return AuthState.failedToAuthenticate(
+              reason: NotAuthenticatedReason.deviceSerialNumberDoesNotExist);
+        }
       }
     } on FirebaseAuthException catch (e) {
       return AuthState.failedToAuthenticate(

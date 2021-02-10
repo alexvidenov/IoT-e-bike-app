@@ -64,7 +64,7 @@ class LocalDatabaseManager with CurrentContext {
       await _userDao.fetchUser('anonymous') != null;
 
   insertAnonymousUser() =>
-      _userDao.insertEntity(User('0000', 'anonymous', 'password', false));
+      _userDao.insertEntity(User('0000', 'anonymous', 'password'));
 
   insertAnonymousDevice() => _deviceDao.insertEntity(Device(
       deviceId: '1234',

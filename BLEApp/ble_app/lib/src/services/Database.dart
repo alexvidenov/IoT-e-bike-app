@@ -1,5 +1,6 @@
 import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
+import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -7,102 +8,93 @@ class FirestoreDatabase {
   final String uid;
   final String deviceId;
 
+  const FirestoreDatabase({this.uid, this.deviceId});
+
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   CollectionReference get _users => _firestore.collection('users');
 
-  DocumentReference get _device =>
-      _users.doc(uid).collection('devices').doc(deviceId);
+  CollectionReference get _devices => _firestore.collection('devices');
 
-  DocumentReference _parameters([String id]) => _users
-      .doc(uid)
-      .collection('devices')
-      .doc(id ?? this.deviceId)
-      .collection('parameters')
-      .doc('parameters');
+  DocumentReference get _device => _devices.doc(deviceId);
 
-  const FirestoreDatabase({this.uid, this.deviceId});
+  DocumentReference get _user => _users.doc(uid);
 
-  Future<void> setUserId() => _users.doc(uid).set({'id': this.uid});
+  DocumentReference get _deviceIdGenerator =>
+      _firestore.collection('deviceId').doc('currentId');
 
-  Future<void> setUserDeviceToken({@required String token}) =>
-      _users.doc(uid).update({
-        'token': token
-      }); // make it array of tokens cuz user can have more than one device
+  Future<void> uploadDevice(
+      {String macAddress,
+      bool isSuperDevice = false,
+      Map<String, dynamic> parameters}) async {
+    _device.set({
+      'MAC': macAddress,
+      'createdAt': FieldValue.serverTimestamp(),
+      'isSuper': isSuperDevice,
+      'name': BluetoothUtils.defaultBluetoothDeviceName,
+      'parameters': parameters ?? {},
+      'userIds': []
+    });
+    //final lastDeviceId = (await _deviceIdGenerator.get()).get('id');
+    //_deviceIdGenerator.update({'id': lastDeviceId + 1});
+  }
 
-  Future<void> setDeviceId() => _device.set({'id': this.deviceId});
+  // FIXME: actually returns the parameters here as well to optimize reads
+  Future<Device> fetchDevice({String id}) async {
+    final device = await _devices.doc(id ?? this.deviceId).get();
+    if (device.exists) {
+      final id2 = device.id;
+      print('DEVICE IS IS $id2');
+      return Device(
+          deviceId: id ?? this.deviceId,
+          userId: this.uid,
+          macAddress: device.get('MAC'),
+          name: device.get('name'),
+          isSuper: device.get('isSuper'));
+    } else
+      return null; // here the bloc calling this DB service should emit state saying that the device number is wrong
+  }
+
+  Future<DeviceParameters> fetchDeviceParameters({String id}) async {
+    final Map<String, dynamic> _params =
+        (await _devices.doc(id ?? this.deviceId).get()).get('parameters');
+    return DeviceParameters.fromMap(_params);
+  }
+
+  Future<void> addUser(String deviceToken) => _user.set({
+        'devices': [deviceId],
+        'tokens': [deviceToken]
+      });
+
+  Future<void> updateUserDeviceTokens({String deviceToken}) => _user.update({
+        'tokens': FieldValue.arrayUnion([deviceToken]),
+      });
+
+  Future<void> addUserAsOwnerOfDevice() => _device.update({
+        // will be called from registering another device
+        'userIds': FieldValue.arrayUnion([uid]),
+      });
+
+  Future<void> updateUserDevices() => _user.update({
+        // will be called from registering another device
+        'devices': FieldValue.arrayUnion([deviceId]),
+      });
+
+  Future<void> updateIndividualParameter(String key, dynamic value) =>
+      _device.update({'parameters.$key': value});
+
+  Future<void> updateDeviceName({@required String name}) =>
+      _device.update({'Name': name});
 
   Future<List<MapEntry<Device, DeviceParameters>>>
       fetchUserDevicesWithParams() async {
-    final _devices = List<MapEntry<Device, DeviceParameters>>();
-    final devices = await _users.doc(uid).collection('devices').get();
-    await Future.forEach(devices.docs, (device) async {
-      final id = device.get('id');
-      print('ID IS $id');
-      final params = await this.fetchDeviceParameters(id);
-      print('PARAMS ARE $params');
-      _devices.add(MapEntry(
-          Device(
-              deviceId: id,
-              userId: this.uid,
-              name: device.get('name'),
-              macAddress: device.get('MAC')),
-          params));
-    });
-    return _devices;
-  }
-
-  Future<DeviceParameters> fetchDeviceParameters(String id) async {
-    final _params = await _parameters(id).get();
-    return DeviceParameters(
-        id: id,
-        cellCount: (_params.get('00') as double).toInt(),
-        maxCellVoltage: _params.get('01'),
-        maxRecoveryVoltage: _params.get('02'),
-        balanceCellVoltage: _params.get('03'),
-        minCellVoltage: _params.get('04'),
-        minCellRecoveryVoltage: _params.get('05'),
-        ultraLowCellVoltage: _params.get('06'),
-        maxTimeLimitedDischargeCurrent: _params.get('12'),
-        maxCutoffDischargeCurrent: _params.get('13'),
-        maxCurrentTimeLimitPeriod: (_params.get('14') as double).toInt(),
-        maxCutoffChargeCurrent: _params.get('15'),
-        motoHoursCounterCurrentThreshold: (_params.get('16') as double).toInt(),
-        currentCutOffTimerPeriod: (_params.get('17') as double).toInt(),
-        maxCutoffTemperature: (_params.get('23') as double).toInt(),
-        maxTemperatureRecovery: (_params.get('24') as double).toInt(),
-        minTemperatureRecovery: (_params.get('25') as double).toInt(),
-        minCutoffTemperature: (_params.get('26') as double).toInt(),
-        motoHoursChargeCounter: (_params.get('28') as double).toInt(),
-        motoHoursDischargeCounter: (_params.get('29') as double).toInt());
-  }
-
-  Future<void> setDeviceMacAddress({@required String mac}) =>
-      _device.update({'MAC': mac});
-
-  Future<void> setDeviceName({@required String name}) =>
-      _device.update({'name': name});
-
-  Future<bool> parametersExist({@required String deviceId}) async {
-    final parameterDoc = await _parameters().get();
-    return parameterDoc.exists;
-  }
-
-  Future<void> setDeviceParameters(Map<String, dynamic> parameters) =>
-      _parameters().set(parameters);
-
-  Future<void> setIndividualParameter(String key, dynamic value) =>
-      _parameters().update({key: value});
-
-  Future<void> updateArray() {
-    _firestore.collection('users').doc('someuser').update({
-      'devices': FieldValue.arrayUnion(['newdeviceid'])
-    });
-  }
-
-  Future<void> setArray() {
-    _firestore.collection('users').doc('someuser').set({
-      'devices': [123, 124]
-    });
+    final devicesWithParameters = List<MapEntry<Device, DeviceParameters>>();
+    final List<String> deviceListIds = await (await _user.get()).get('devices');
+    await Future.forEach(
+        deviceListIds,
+        (id) async => devicesWithParameters.add(MapEntry(
+            await fetchDevice(id: deviceId),
+            await fetchDeviceParameters(id: deviceId))));
+    return devicesWithParameters;
   }
 }
