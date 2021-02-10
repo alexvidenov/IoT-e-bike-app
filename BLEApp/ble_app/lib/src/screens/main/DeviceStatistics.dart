@@ -17,14 +17,13 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
   @override
   void initState() {
     super.initState();
-    $<DeviceRepository>().cancel();
     print('Fetching');
     fetch();
   }
 
   fetch() async {
     final data = await widget._deviceStatisticsBloc.fetchData();
-    print('Data:' + data.toString());
+    print('Data:' + data.last.voltage.toString());
   }
 
   @override

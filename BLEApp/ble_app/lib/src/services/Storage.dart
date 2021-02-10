@@ -51,11 +51,11 @@ class Storage {
   }
 
   // Fetches concurrently an arbitrary number of json files, applies custom Model fromJson to all of them, flattens the resulted list and returns it
-  Future<List<LogModel>> download() async =>
+  Future<List<LogModel>> download(String deviceSerialNumber) async =>
       (await Future.wait<Response<List<dynamic>>>((await FirebaseStorage
                   .instance
                   .ref()
-                  .child('/users/5YQFtZI5QsRsXVcd1ZB8JSamjjj2/1234457')
+                  .child('/users/$uid/$deviceSerialNumber')
                   .listAll())
               .items
               .map((ref) async =>

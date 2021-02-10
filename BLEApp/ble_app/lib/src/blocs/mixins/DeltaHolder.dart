@@ -7,5 +7,7 @@ mixin DeltaCalculation {
   double delta1 = 0;
   double delta2 = 0;
 
+  double lastDelta = 0;
+
   int deltaCounter = 0;
 }

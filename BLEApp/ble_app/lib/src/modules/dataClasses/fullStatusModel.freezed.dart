@@ -171,7 +171,7 @@ class _$FullStatus implements FullStatus {
 
   @override
   LogModel generate() => LogModel.fromJson({
-    'timeStamp' : DateTime.now(),
+    'timeStamp' : DateTime.now().toString(),
     'voltage' : this.totalVoltage,
     'current' : this.current,
     'temp' : this.temperature,

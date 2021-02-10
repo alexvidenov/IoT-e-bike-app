@@ -6,6 +6,7 @@ import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
+import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/entrypoints/Root.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
@@ -31,7 +32,7 @@ Future<void> firebaseStorageUpload() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.reload();
   final String jsonString = prefs.get(PrefsKeys.USER_DATA);
-  final auth = Auth();
+  final auth = Auth(LocalDatabaseManager(await LocalDatabase.getInstance()));
   if (jsonString != null &&
       !await auth.isSignedInAnonymously(isCalledFromIsolate: true)) {
     print('NOT NULL DATA');
@@ -79,9 +80,6 @@ void main() async {
       enableHeadless: true,
       forceAlarmManager: Platform.isAndroid));
   $<CloudMessaging>().init();
-  print('Downloading');
-  List<LogModel> list = await Storage().download();
-  print(list.length);
   $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
 }
 

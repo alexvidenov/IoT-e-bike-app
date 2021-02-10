@@ -54,11 +54,12 @@ class ShortStatusBloc extends StateBloc<ShortStatus> {
     final voltage = double.parse(splitObject[1]);
     final currentCharge = double.parse(splitObject[2]);
     final currentDischarge = double.parse(splitObject[3]);
-    final current = currentCharge != 0 ? currentCharge : -currentDischarge;
+    var current = currentCharge != 0 ? currentCharge : -currentDischarge;
     final temperature = tempConverter.tempFromADC(int.parse(splitObject[4]));
+    current /= 100;
     return ShortStatusModel(
         totalVoltage: voltage / 100,
-        current: current / 100,
+        current: current <= 0.02 && current >= -0.02 ? 0.0 : current,
         temperature: temperature);
   }
 

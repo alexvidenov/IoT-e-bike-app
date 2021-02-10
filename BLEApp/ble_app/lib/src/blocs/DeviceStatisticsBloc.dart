@@ -7,5 +7,5 @@ import 'package:injectable/injectable.dart';
 class DeviceStatisticsBloc with CurrentContext {
   Storage get _storage => Storage(uid: curUserId);
 
-  Future<List<LogModel>> fetchData() async => await _storage.download();
+  Future<List<LogModel>> fetchData() async => await _storage.download(curDeviceId);
 }

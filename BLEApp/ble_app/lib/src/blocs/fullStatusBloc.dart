@@ -103,7 +103,9 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
       if (current < threshold) {
         delta1 += diff;
         if (deltaCounter == 4) {
-          delta1Holder.addEvent(delta1 / 4);
+          final deltaEvent = delta1 / 4;
+          lastDelta = deltaEvent;
+          delta1Holder.addEvent(deltaEvent);
           delta1 = 0;
           deltaCounter = 0;
         }
@@ -111,7 +113,9 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
           (getParameters().value.maxTimeLimitedDischargeCurrent / 2)) {
         delta2 += diff;
         if (deltaCounter == 4) {
-          delta2Holder.addEvent(delta2 / 4);
+          final deltaEvent = delta2 / 4;
+          lastDelta = deltaEvent;
+          delta2Holder.addEvent(deltaEvent);
           delta2 = 0;
           deltaCounter = 0;
         }
@@ -121,7 +125,8 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
     return FullStatus(
         fullStatus: fullStatus,
         totalVoltage: voltage / 100,
-        current: current,
-        temperature: temperature);
+        current: current <= 0.02 && current >= -0.02 ? 0.0 : current,
+        temperature: temperature,
+        delta: (lastDelta / 100));
   }
 }
