@@ -8,10 +8,11 @@ import 'package:flutter/material.dart';
 
 class Storage {
   final String uid; // user id
+  final String deviceSerialNumber;
 
   final Reference _root = FirebaseStorage.instance.ref();
 
-  Storage({this.uid});
+  Storage({this.uid, this.deviceSerialNumber});
 
   Future<void> upload(List<dynamic> data) async {
     final appData = AppData.fromJson(data);
@@ -57,11 +58,11 @@ class Storage {
   }
 
   // Fetches concurrently an arbitrary number of json files, applies custom Model fromJson to all of them, flattens the resulted list and returns it
-  Future<List<LogModel>> download(String deviceSerialNumber) async =>
+  Future<List<LogModel>> downloadAll() async =>
       (await Future.wait<Response<List<dynamic>>>((await FirebaseStorage
                   .instance
                   .ref()
-                  .child('/users/$uid/$deviceSerialNumber')
+                  .child('/devices/$deviceSerialNumber/$uid')
                   .listAll())
               .items
               .map((ref) async =>
@@ -69,4 +70,21 @@ class Storage {
           .map((l) => l.data.map((e) => LogModel.fromJson(e)))
           .expand((m) => m)
           .toList();
+
+  Future<List<LogModel>> downloadOne(String fileName) async {
+    final references =
+        await _root.child('/devices/$deviceSerialNumber/$uid/$fileName');
+    final url = await references.getDownloadURL();
+    final data = await Dio().get<List<dynamic>>(url);
+    return data.data.map((e) => LogModel.fromJson(e)).toList();
+  }
+
+  Future<List<String>> fetchList() async {
+    final references =
+        await _root.child('/devices/$deviceSerialNumber/$uid').listAll();
+    final items = references.items;
+    print('ITEMS ARE $items');
+    print('First name is ' + items.first.name);
+    return items.map((e) => e.name).toList();
+  }
 }
