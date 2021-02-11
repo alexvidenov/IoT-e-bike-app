@@ -99,7 +99,6 @@ class PageManager {
         child: AuthenticationWrapper($()), key: Key('AuthWrapper')));
     _pages.insert(_pages.length - 1,
         MaterialPage(child: Welcome(func: func), key: Key('Welcome')));
-
     pages.addEvent(_pagesList);
   }
 

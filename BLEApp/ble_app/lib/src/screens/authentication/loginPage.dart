@@ -95,7 +95,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   context,
                   message: 'Auth failed',
                   additionalInformation: notAuthenticated.toString()),
-              loggedOut: () => {}));
+              loggedOut: () => {},
+              fetchingUserInformation: () => {}));
     }
   }
 

@@ -22,19 +22,6 @@ class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
         super(bloc: devicesBloc);
 
   @override
-  onCreate() async {
-    print('CREATING DEVICES');
-    super.onCreate();
-    locationPerm.PermissionStatus permissionStatus =
-        await locationPerm.LocationPermissions().checkPermissionStatus();
-    if (permissionStatus != locationPerm.PermissionStatus.granted) {
-      await locationPerm.LocationPermissions().requestPermissions();
-    } else if (!await Location().serviceEnabled()) {
-      Location().requestService();
-    }
-  }
-
-  @override
   Widget buildWidget(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
