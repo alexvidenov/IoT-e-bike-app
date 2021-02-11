@@ -94,11 +94,12 @@ class FirestoreDatabase {
   Future<List<MapEntry<Device, DeviceParameters>>>
       fetchUserDevicesWithParams() async {
     final devicesWithParameters = List<MapEntry<Device, DeviceParameters>>();
-    final List<String> deviceListIds = await (await _user.get()).get('devices');
+    final List<dynamic> deviceListIds =
+        await (await _user.get()).get('devices');
     await Future.forEach(
         deviceListIds,
-        (id) async => devicesWithParameters
-            .add(await fetchDeviceWithParameters(id: deviceId)));
+        (id) async =>
+            devicesWithParameters.add(await fetchDeviceWithParameters(id: id)));
     return devicesWithParameters;
   }
 

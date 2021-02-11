@@ -28,15 +28,8 @@ class CurrentRow extends StatelessWidget {
           final current = shortStatus.data.model.current;
           Color CCColor = Colors.lightBlueAccent;
           Color DCColor = Colors.lightBlueAccent;
-          switch (shortStatus.data.state) {
-            case BatteryState.OverCharge:
-              CCColor = Colors.red;
-              break;
-            case BatteryState.OverDischarge:
-              DCColor = Colors.red;
-              break;
-            default:
-              break;
+          if (shortStatus.data.state == BatteryState.OverCharge) {
+            CCColor = Colors.red;
           }
           int charge =
               bloc.getParameters().value.maxCutoffChargeCurrent.toInt();

@@ -5,20 +5,29 @@ extension TrackLocation on LocationBloc {
     try {
       final location = await _location.getLocation();
 
-      addEvent(location);
+      addEvent(LocationState(location));
 
       if (streamSubscription != null) streamSubscription.cancel();
 
-      streamSubscription = _location.onLocationChanged.listen((newLocalData) {
+      streamSubscription = _location.onLocationChanged.listen((locData) {
+        final lat = locData.latitude;
+        final long = locData.longitude;
         if (_controller != null) {
           _controller.animateCamera(CameraUpdate.newCameraPosition(
               CameraPosition(
                   bearing: 192.8334901395799,
-                  target: LatLng(newLocalData.latitude, newLocalData.longitude),
+                  target: LatLng(lat, long),
                   tilt: 0,
                   zoom: 18.00)));
         }
-        addEvent(newLocalData);
+        _coords.add(LatLng(lat, long));
+        addEvent(LocationState(locData,
+            polylines: Set.of([
+              Polyline(
+                  polylineId: PolylineId('firstRoute'),
+                  points: this._coords,
+                  width: 8)
+            ])));
       });
     } on PlatformException catch (e) {
       if (e.code == 'PERMISSION_DENIED') {

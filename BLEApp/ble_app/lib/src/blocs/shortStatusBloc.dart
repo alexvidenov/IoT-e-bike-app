@@ -35,7 +35,6 @@ class ShortStatusBloc extends StateBloc<ShortStatus> {
   create() {
     loadData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
-      logger.wtf('SHORT STATUS EVENT: $event');
       _uploadTimer++;
       if (!event.contains('OK')) {
         final state = generateState(event);

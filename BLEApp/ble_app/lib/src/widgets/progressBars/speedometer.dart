@@ -10,12 +10,12 @@ class SpeedometerWidget extends StatelessWidget {
   const SpeedometerWidget({Key key, @required this.locationBloc}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<LocationData>(
+  Widget build(BuildContext context) => StreamBuilder<LocationState>(
         stream: locationBloc.stream,
         builder: (_, snapshot) {
           double _speed = 0.0;
           if (snapshot.data != null) {
-            _speed = snapshot.data.speed * 3.6;
+            _speed = snapshot.data.locationData.speed * 3.6;
           }
           return Container(child: Speedometer(speed: _speed, speedRecord: 70));
         });

@@ -31,13 +31,13 @@ class SpeedometerWithCurrent extends StatelessWidget {
                 ), // find a way for these to not be hardcoded
                 child: Column(
                   children: <Widget>[
-                    StreamBuilder<LocationData>(
+                    StreamBuilder<LocationState>(
                         stream: locationBloc.stream,
                         builder: (context, snapshot) {
                           String _speedInKMH = '0.0';
                           if (snapshot.data != null) {
                             _speedInKMH =
-                                (snapshot.data.speed * 3.6).toStringAsFixed(1);
+                                (snapshot.data.locationData.speed * 3.6).toStringAsFixed(1);
                           }
                           return Text(
                               snapshot.connectionState == ConnectionState.active

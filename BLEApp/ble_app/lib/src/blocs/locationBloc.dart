@@ -8,8 +8,15 @@ import 'package:location/location.dart';
 
 part 'blocExtensions/TrackLocation.dart';
 
+class LocationState {
+  final LocationData locationData;
+  final Set<Polyline> polylines;
+
+  const LocationState(this.locationData, {this.polylines});
+}
+
 @injectable
-class LocationBloc extends Bloc<LocationData, LocationData> {
+class LocationBloc extends Bloc<LocationState, LocationData> {
   final Location _location = Location();
 
   GoogleMapController _controller;
@@ -21,12 +28,14 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
     zoom: 14.4746,
   );
 
+  final List<LatLng> _coords = [];
+
   get initialLocation => _initialLocation;
 
   set controller(GoogleMapController controller) =>
       this._controller = controller;
 
-  generateNewCircle(LocationData locationData) => Circle(
+  Circle generateNewCircle(LocationData locationData) => Circle(
       circleId: CircleId("car"),
       radius: locationData.accuracy,
       zIndex: 1,
@@ -34,7 +43,7 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
       center: LatLng(locationData.latitude, locationData.longitude),
       fillColor: Colors.blue.withAlpha(70));
 
-  generateNewMarker(LocationData locationData) => Marker(
+  Marker generateNewMarker(LocationData locationData) => Marker(
         markerId: MarkerId("home"),
         position: LatLng(locationData.latitude, locationData.longitude),
         rotation: locationData.heading,
@@ -54,4 +63,3 @@ class LocationBloc extends Bloc<LocationData, LocationData> {
     super.dispose();
   }
 }
-

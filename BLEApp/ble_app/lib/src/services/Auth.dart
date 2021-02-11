@@ -80,7 +80,7 @@ class Auth {
         }
         _firestore.updateUserDeviceTokens(
             deviceToken:
-                await $<CloudMessaging>().getToken()); // TODO; should update
+                await $<CloudMessaging>().getToken());
         return AuthState.authenticated(user.uid);
       } on FirebaseAuthException catch (e) {
         return AuthState.failedToAuthenticate(

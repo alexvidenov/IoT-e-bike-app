@@ -1,11 +1,9 @@
 enum BatteryState {
   Normal,
   Locked,
-  OverDischarge,
   OverCurrent,
   MaxPower,
   LowBatt,
-  ManualODTriggered,
   OverCharge,
   EndOfCharge,
   LowTemp,
