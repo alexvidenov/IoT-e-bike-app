@@ -56,6 +56,14 @@ class NavigationDrawer extends StatelessWidget {
                       _deviceBloc.disconnect();
                     })),
             ListTile(
+                title: const Text('Contact us',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                        fontFamily: 'Europe_Ext')),
+                onTap: () => $<PageManager>().openReportScreen()),
+            ListTile(
               title: Text('Version 0.0.1. All rights reserved. '),
             ),
           ],

@@ -1,22 +1,27 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'logFileModel.g.dart';
 
-@JsonSerializable(nullable: true) // TODO: convert to freezed
-class LogModel {
-  final String timeStamp;
-  final double voltage;
-  final double current;
-  final double temp;
-  final double delta;
+part 'logFileModel.freezed.dart';
 
-  const LogModel(
-      {this.voltage, this.temp, this.current, this.delta, this.timeStamp});
+@freezed
+abstract class LogModel with _$LogModel {
+  const factory LogModel.short(
+      {String timeStamp,
+      double voltage,
+      double current,
+      int temp}) = ShortLogmodel;
+
+  const factory LogModel.full(
+      {String timeStamp,
+      double voltage,
+      double current,
+      int temp,
+      double delta}) = FullLogModel;
 
   factory LogModel.fromJson(Map<String, dynamic> json) =>
       _$LogModelFromJson(json);
-
-  Map<String, dynamic> toJson() => _$LogModelToJson(this);
 }
 
 @JsonSerializable(nullable: false)

@@ -5,7 +5,6 @@ import 'package:background_fetch/background_fetch.dart';
 import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/entrypoints/Root.dart';

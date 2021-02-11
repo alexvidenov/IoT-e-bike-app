@@ -14,12 +14,11 @@ class _$FullStatusModelTearOff {
   const _$FullStatusModelTearOff();
 
 // ignore: unused_element
-  FullStatus call(
-      {List<FullStatusDataModel> fullStatus = const [],
-      double totalVoltage = 0,
-      double current = 0,
-      int temperature = 0,
-      double delta = 0}) {
+  FullStatus call({List<FullStatusDataModel> fullStatus = const [],
+    double totalVoltage = 0,
+    double current = 0,
+    int temperature = 0,
+    double delta = 0}) {
     return FullStatus(
       fullStatus: fullStatus,
       totalVoltage: totalVoltage,
@@ -37,9 +36,13 @@ const $FullStatusModel = _$FullStatusModelTearOff();
 /// @nodoc
 mixin _$FullStatusModel {
   List<FullStatusDataModel> get fullStatus;
+
   double get totalVoltage;
+
   double get current;
+
   int get temperature;
+
   double get delta;
 
   $FullStatusModelCopyWith<FullStatusModel> get copyWith;
@@ -47,15 +50,15 @@ mixin _$FullStatusModel {
 
 /// @nodoc
 abstract class $FullStatusModelCopyWith<$Res> {
-  factory $FullStatusModelCopyWith(
-          FullStatusModel value, $Res Function(FullStatusModel) then) =
-      _$FullStatusModelCopyWithImpl<$Res>;
-  $Res call(
-      {List<FullStatusDataModel> fullStatus,
-      double totalVoltage,
-      double current,
-      int temperature,
-      double delta});
+  factory $FullStatusModelCopyWith(FullStatusModel value,
+      $Res Function(FullStatusModel) then) =
+  _$FullStatusModelCopyWithImpl<$Res>;
+
+  $Res call({List<FullStatusDataModel> fullStatus,
+    double totalVoltage,
+    double current,
+    int temperature,
+    double delta});
 }
 
 /// @nodoc
@@ -64,6 +67,7 @@ class _$FullStatusModelCopyWithImpl<$Res>
   _$FullStatusModelCopyWithImpl(this._value, this._then);
 
   final FullStatusModel _value;
+
   // ignore: unused_field
   final $Res Function(FullStatusModel) _then;
 
@@ -84,7 +88,7 @@ class _$FullStatusModelCopyWithImpl<$Res>
           : totalVoltage as double,
       current: current == freezed ? _value.current : current as double,
       temperature:
-          temperature == freezed ? _value.temperature : temperature as int,
+      temperature == freezed ? _value.temperature : temperature as int,
       delta: delta == freezed ? _value.delta : delta as double,
     ));
   }
@@ -93,16 +97,16 @@ class _$FullStatusModelCopyWithImpl<$Res>
 /// @nodoc
 abstract class $FullStatusCopyWith<$Res>
     implements $FullStatusModelCopyWith<$Res> {
-  factory $FullStatusCopyWith(
-          FullStatus value, $Res Function(FullStatus) then) =
-      _$FullStatusCopyWithImpl<$Res>;
+  factory $FullStatusCopyWith(FullStatus value,
+      $Res Function(FullStatus) then) =
+  _$FullStatusCopyWithImpl<$Res>;
+
   @override
-  $Res call(
-      {List<FullStatusDataModel> fullStatus,
-      double totalVoltage,
-      double current,
-      int temperature,
-      double delta});
+  $Res call({List<FullStatusDataModel> fullStatus,
+    double totalVoltage,
+    double current,
+    int temperature,
+    double delta});
 }
 
 /// @nodoc
@@ -131,7 +135,7 @@ class _$FullStatusCopyWithImpl<$Res> extends _$FullStatusModelCopyWithImpl<$Res>
           : totalVoltage as double,
       current: current == freezed ? _value.current : current as double,
       temperature:
-          temperature == freezed ? _value.temperature : temperature as int,
+      temperature == freezed ? _value.temperature : temperature as int,
       delta: delta == freezed ? _value.delta : delta as double,
     ));
   }
@@ -141,12 +145,11 @@ class _$FullStatusCopyWithImpl<$Res> extends _$FullStatusModelCopyWithImpl<$Res>
 
 /// @nodoc
 class _$FullStatus implements FullStatus {
-  const _$FullStatus(
-      {this.fullStatus = const [],
-      this.totalVoltage = 0,
-      this.current = 0,
-      this.temperature = 0,
-      this.delta = 0})
+  const _$FullStatus({this.fullStatus = const [],
+    this.totalVoltage = 0,
+    this.current = 0,
+    this.temperature = 0,
+    this.delta = 0})
       : assert(fullStatus != null),
         assert(totalVoltage != null),
         assert(current != null),
@@ -170,13 +173,12 @@ class _$FullStatus implements FullStatus {
   final double delta;
 
   @override
-  LogModel generate() => LogModel.fromJson({
-    'timeStamp' : DateTime.now().toString(),
-    'voltage' : this.totalVoltage,
-    'current' : this.current,
-    'temp' : this.temperature,
-    'delta' : this.delta
-  });
+  T generate<T extends LogModel>() =>
+      LogModel.full(timeStamp: DateTime.now().toString(),
+          voltage: this.totalVoltage,
+          current: this.current,
+          temp: this.temperature,
+          delta: this.delta);
 
   @override
   String toString() {
@@ -218,25 +220,30 @@ class _$FullStatus implements FullStatus {
 }
 
 abstract class FullStatus implements FullStatusModel, BaseModel {
-  const factory FullStatus(
-      {List<FullStatusDataModel> fullStatus,
-      double totalVoltage,
-      double current,
-      int temperature,
-      double delta}) = _$FullStatus;
+  const factory FullStatus({List<FullStatusDataModel> fullStatus,
+    double totalVoltage,
+    double current,
+    int temperature,
+    double delta}) = _$FullStatus;
 
   @override
   List<FullStatusDataModel> get fullStatus;
+
   @override
   double get totalVoltage;
+
   @override
   double get current;
+
   @override
   int get temperature;
+
   @override
   double get delta;
+
   @override
-  LogModel generate();
+  T generate<T extends LogModel>();
+
   @override
   $FullStatusCopyWith<FullStatus> get copyWith;
 }

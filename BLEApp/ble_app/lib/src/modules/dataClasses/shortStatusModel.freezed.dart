@@ -31,7 +31,9 @@ const $ShortStatusModel = _$ShortStatusModelTearOff();
 /// @nodoc
 mixin _$ShortStatusModel {
   double get totalVoltage;
+
   double get current;
+
   int get temperature;
 
   $ShortStatusModelCopyWith<ShortStatusModel> get copyWith;
@@ -39,9 +41,10 @@ mixin _$ShortStatusModel {
 
 /// @nodoc
 abstract class $ShortStatusModelCopyWith<$Res> {
-  factory $ShortStatusModelCopyWith(
-          ShortStatusModel value, $Res Function(ShortStatusModel) then) =
-      _$ShortStatusModelCopyWithImpl<$Res>;
+  factory $ShortStatusModelCopyWith(ShortStatusModel value,
+      $Res Function(ShortStatusModel) then) =
+  _$ShortStatusModelCopyWithImpl<$Res>;
+
   $Res call({double totalVoltage, double current, int temperature});
 }
 
@@ -51,6 +54,7 @@ class _$ShortStatusModelCopyWithImpl<$Res>
   _$ShortStatusModelCopyWithImpl(this._value, this._then);
 
   final ShortStatusModel _value;
+
   // ignore: unused_field
   final $Res Function(ShortStatusModel) _then;
 
@@ -66,7 +70,7 @@ class _$ShortStatusModelCopyWithImpl<$Res>
           : totalVoltage as double,
       current: current == freezed ? _value.current : current as double,
       temperature:
-          temperature == freezed ? _value.temperature : temperature as int,
+      temperature == freezed ? _value.temperature : temperature as int,
     ));
   }
 }
@@ -74,9 +78,10 @@ class _$ShortStatusModelCopyWithImpl<$Res>
 /// @nodoc
 abstract class $ShortStatusCopyWith<$Res>
     implements $ShortStatusModelCopyWith<$Res> {
-  factory $ShortStatusCopyWith(
-          ShortStatus value, $Res Function(ShortStatus) then) =
-      _$ShortStatusCopyWithImpl<$Res>;
+  factory $ShortStatusCopyWith(ShortStatus value,
+      $Res Function(ShortStatus) then) =
+  _$ShortStatusCopyWithImpl<$Res>;
+
   @override
   $Res call({double totalVoltage, double current, int temperature});
 }
@@ -85,8 +90,8 @@ abstract class $ShortStatusCopyWith<$Res>
 class _$ShortStatusCopyWithImpl<$Res>
     extends _$ShortStatusModelCopyWithImpl<$Res>
     implements $ShortStatusCopyWith<$Res> {
-  _$ShortStatusCopyWithImpl(
-      ShortStatus _value, $Res Function(ShortStatus) _then)
+  _$ShortStatusCopyWithImpl(ShortStatus _value,
+      $Res Function(ShortStatus) _then)
       : super(_value, (v) => _then(v as ShortStatus));
 
   @override
@@ -104,7 +109,7 @@ class _$ShortStatusCopyWithImpl<$Res>
           : totalVoltage as double,
       current: current == freezed ? _value.current : current as double,
       temperature:
-          temperature == freezed ? _value.temperature : temperature as int,
+      temperature == freezed ? _value.temperature : temperature as int,
     ));
   }
 }
@@ -130,12 +135,11 @@ class _$ShortStatus implements ShortStatus {
   final int temperature;
 
   @override
-  LogModel generate() => LogModel.fromJson({
-    'timeStamp' : DateTime.now().toString(),
-    'voltage' : this.totalVoltage,
-    'current' : this.current,
-    'temp' : this.temperature
-  });
+  T generate<T extends LogModel>() =>
+      LogModel.short(timeStamp: DateTime.now().toString(),
+          voltage: this.totalVoltage,
+          current: this.current,
+          temp: this.temperature);
 
   @override
   String toString() {
@@ -175,12 +179,16 @@ abstract class ShortStatus implements ShortStatusModel, BaseModel {
 
   @override
   double get totalVoltage;
+
   @override
   double get current;
+
   @override
   int get temperature;
+
   @override
-  LogModel generate();
+  T generate<T extends LogModel>();
+
   @override
   $ShortStatusCopyWith<ShortStatus> get copyWith;
 }

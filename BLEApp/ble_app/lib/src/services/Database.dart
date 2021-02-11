@@ -1,6 +1,8 @@
 import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
+import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
+import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -39,18 +41,21 @@ class FirestoreDatabase {
     //_deviceIdGenerator.update({'id': lastDeviceId + 1});
   }
 
-  // FIXME: actually returns the parameters here as well to optimize reads
-  Future<Device> fetchDevice({String id}) async {
+  Future<MapEntry<Device, DeviceParameters>> fetchDeviceWithParameters(
+      {String id}) async {
+    // Should accepts list of ids (register three devices at once is possible for example) )
     final device = await _devices.doc(id ?? this.deviceId).get();
     if (device.exists) {
       final id2 = device.id;
       print('DEVICE IS IS $id2');
-      return Device(
-          deviceId: id ?? this.deviceId,
-          userId: this.uid,
-          macAddress: device.get('MAC'),
-          name: device.get('name'),
-          isSuper: device.get('isSuper'));
+      return MapEntry(
+          Device(
+              deviceId: id ?? this.deviceId,
+              userId: this.uid,
+              macAddress: device.get('MAC'),
+              name: device.get('name'),
+              isSuper: device.get('isSuper')),
+          DeviceParameters.fromMap(device.get('parameters')));
     } else
       return null; // here the bloc calling this DB service should emit state saying that the device number is wrong
   }
@@ -92,9 +97,15 @@ class FirestoreDatabase {
     final List<String> deviceListIds = await (await _user.get()).get('devices');
     await Future.forEach(
         deviceListIds,
-        (id) async => devicesWithParameters.add(MapEntry(
-            await fetchDevice(id: deviceId),
-            await fetchDeviceParameters(id: deviceId))));
+        (id) async => devicesWithParameters
+            .add(await fetchDeviceWithParameters(id: deviceId)));
     return devicesWithParameters;
   }
+
+  Future<void> addError(ServiceNotification notification) =>
+      _device.collection('errors').doc().set({
+        'from': uid,
+        'reason': notification.state.string(),
+        'timeStamp': DateTime.now(),
+      });
 }

@@ -4,8 +4,6 @@ import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/dataClasses/BaseModel.dart';
-import 'package:ble_app/src/modules/dataClasses/fullStatusModel.dart';
-import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
 import 'package:flutter/material.dart';

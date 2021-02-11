@@ -16,10 +16,10 @@ enum NotAuthenticatedReason {
 abstract class AuthState with _$AuthState {
   const factory AuthState.authenticated(String userId) = _Authenticated;
 
-  // TODO: add in process of authentication
-
   const factory AuthState.failedToAuthenticate(
       {NotAuthenticatedReason reason}) = _FailedToAuthenticate;
+
+  const factory AuthState.fetchingUserInformation() = _FetchingUserInformation;
 
   const factory AuthState.loggedOut() = _LoggedOut;
 }

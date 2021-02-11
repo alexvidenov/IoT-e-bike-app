@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/parameterListenerBloc.dart';
@@ -37,40 +35,40 @@ class _CardParameter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Column(
-          children: <Widget>[
-            ListTile(
-                leading: Text(_showcaseIndex.toString()),
-                title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 1,
-                        child: Text(
-                          '$_parameterName :',
-                          style: TextStyle(fontSize: 24, color: Colors.black),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: TextFormField(
-                          controller: TextEditingController.fromValue(
-                              TextEditingValue(text: '$_parameterValue')),
-                          onFieldSubmitted: (value) =>
-                              _onEdit(_tableIndex, value),
-                        ),
-                      ),
-                      Text(
-                        '$_measureUnit',
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                      ),
-                    ]),
-                subtitle: Text(_description),
-                trailing: const Icon(Icons.keyboard_arrow_right)),
-          ],
-        ),
-      );
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    child: Column(
+      children: <Widget>[
+        ListTile(
+            leading: Text(_showcaseIndex.toString()),
+            title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      '$_parameterName :',
+                      style: TextStyle(fontSize: 24, color: Colors.black),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: TextFormField(
+                      controller: TextEditingController.fromValue(
+                          TextEditingValue(text: '$_parameterValue')),
+                      onFieldSubmitted: (value) =>
+                          _onEdit(_tableIndex, value),
+                    ),
+                  ),
+                  Text(
+                    '$_measureUnit',
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                  ),
+                ]),
+            subtitle: Text(_description),
+            trailing: const Icon(Icons.keyboard_arrow_right)),
+      ],
+    ),
+  );
 }
 
 class CalibrateTile extends StatelessWidget {
@@ -84,28 +82,28 @@ class CalibrateTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Column(
-          children: <Widget>[
-            ListTile(
-                leading: Text(_showcaseIndex.toString()),
-                title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          '$_parameterName :',
-                          style: TextStyle(fontSize: 24, color: Colors.black),
-                        ),
-                      ),
-                    ]),
-                subtitle: Text(_description),
-                trailing: const Icon(Icons.edit_sharp),
-                onTap: () => _calibrateCallback(),
-                tileColor: Colors.lightBlueAccent),
-          ],
-        ),
-      );
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    child: Column(
+      children: <Widget>[
+        ListTile(
+            leading: Text(_showcaseIndex.toString()),
+            title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      '$_parameterName :',
+                      style: TextStyle(fontSize: 24, color: Colors.black),
+                    ),
+                  ),
+                ]),
+            subtitle: Text(_description),
+            trailing: const Icon(Icons.edit_sharp),
+            onTap: () => _calibrateCallback(),
+            tileColor: Colors.lightBlueAccent),
+      ],
+    ),
+  );
 }
 
 class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
@@ -126,20 +124,20 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
       _parameterListenerBloc.programNumOfCellsFirstNode(value,
           reminderValue: (remainder + 1).toString());
       await Future.delayed(Duration(milliseconds: 100),
-          () => _parameterListenerBloc.programNumOfCellsSecondNode(value));
+              () => _parameterListenerBloc.programNumOfCellsSecondNode(value));
     } else if (remainder != 0) {
       _parameterListenerBloc.programNumOfCellsFirstNode(value,
           reminderValue: (remainder).toString());
       await Future.delayed(
           Duration(milliseconds: 100),
-          () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
+              () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
               reminderValue: '4'));
     } else {
       _parameterListenerBloc.programNumOfCellsFirstNode(value,
           reminderValue: '4');
       await Future.delayed(
           Duration(milliseconds: 100),
-          () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
+              () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
               reminderValue: '4'));
     }
     Future.delayed(Duration(milliseconds: 80), () => _repository.resume());
@@ -149,7 +147,7 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
     _repository.cancel();
     await Future.delayed(
         Duration(milliseconds: 150), // works perfectly with 80.
-        () => _parameterListenerBloc.changeParameter(key, value));
+            () => _parameterListenerBloc.changeParameter(key, value));
     Future.delayed(Duration(milliseconds: 80), () => _repository.resume());
   }
 
@@ -165,31 +163,31 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
 
   Future<void> _write(String key, String value) async => await Future.delayed(
       Duration(milliseconds: 100),
-      () => _parameterListenerBloc.changeParameter(key, value));
+          () => _parameterListenerBloc.changeParameter(key, value));
 
   Future<void> _showDialog(context, bool success) async {
     success
         ? AwesomeDialog(
-            context: context,
-            useRootNavigator: true,
-            dialogType: DialogType.SUCCES,
-            headerAnimationLoop: false,
-            animType: AnimType.TOPSLIDE,
-            title: 'Successful',
-            desc: 'Parameter changed',
-            autoHide: Duration(seconds: 2),
-          ).show()
+      context: context,
+      useRootNavigator: true,
+      dialogType: DialogType.SUCCES,
+      headerAnimationLoop: false,
+      animType: AnimType.TOPSLIDE,
+      title: 'Successful',
+      desc: 'Parameter changed',
+      autoHide: Duration(seconds: 2),
+    ).show()
         : AwesomeDialog(
-            context: context,
-            useRootNavigator: true,
-            dialogType: DialogType.ERROR,
-            animType: AnimType.SCALE,
-            title: 'Failed',
-            desc: 'Parameter change failed. Retry?',
-            btnOkText: 'Yes',
-            btnOkOnPress: () => _parameterListenerBloc.retry(),
-            btnCancelText: 'Cancel',
-            btnCancelOnPress: () => this.buildWidget(context)).show();
+        context: context,
+        useRootNavigator: true,
+        dialogType: DialogType.ERROR,
+        animType: AnimType.SCALE,
+        title: 'Failed',
+        desc: 'Parameter change failed. Retry?',
+        btnOkText: 'Yes',
+        btnOkOnPress: () => _parameterListenerBloc.retry(),
+        btnCancelText: 'Cancel',
+        btnCancelOnPress: () => this.buildWidget(context)).show();
   }
 
   @override
@@ -214,157 +212,157 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
             ),
             body: SingleChildScrollView(
                 child: StreamBuilder<DeviceParameters>(
-              stream: _parameterListenerBloc.parameters,
-              builder: (_, snapshot) {
-                if (snapshot.connectionState == ConnectionState.active) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      _CardParameter(
-                          0,
-                          '00',
-                          'Cell Num',
-                          snapshot.data.cellCount ?? 4,
-                          'Number of active cells',
-                          '',
-                          numCellsCompletion),
-                      _CardParameter(
-                          1,
-                          '01',
-                          'V Max',
-                          (snapshot.data.maxCellVoltage) ?? 4.28,
-                          'Max cell voltage',
-                          'V',
-                          completion),
-                      _CardParameter(
-                          2,
-                          '02',
-                          'V MaxR',
-                          (snapshot.data.maxRecoveryVoltage) ?? 4.15,
-                          'Max recovery voltage',
-                          'V',
-                          completion),
-                      _CardParameter(
-                          3,
-                          '03',
-                          'V Bal',
-                          (snapshot.data.balanceCellVoltage) ?? 4.20,
-                          'Balance cell voltage',
-                          'V',
-                          completion),
-                      _CardParameter(
-                          4,
-                          '04',
-                          'VMin',
-                          (snapshot.data.minCellVoltage) ?? 2.80,
-                          'Min cell voltage',
-                          'V',
-                          completion),
-                      _CardParameter(
-                          5,
-                          '05',
-                          'VMinR',
-                          (snapshot.data.minCellRecoveryVoltage) ?? 3.10,
-                          'Min cell recovery voltage',
-                          'V',
-                          completion),
-                      _CardParameter(
-                          6,
-                          '06',
-                          'VULOW',
-                          (snapshot.data.ultraLowCellVoltage) ?? 2,
-                          'Ultra low cell voltage',
-                          'V',
-                          completion),
-                      _CardParameter(
-                          7,
-                          '12',
-                          'IDMax1',
-                          (snapshot.data.maxTimeLimitedDischargeCurrent) ?? 20,
-                          'Max limited discharge current',
-                          'A',
-                          completion),
-                      _CardParameter(
-                          8,
-                          '13',
-                          'IDMax2',
-                          (snapshot.data.maxCutoffDischargeCurrent) ?? 25,
-                          'Max cut-off discharge current',
-                          'A',
-                          completion),
-                      _CardParameter(
-                          9,
-                          '14',
-                          'Id max 1 time',
-                          snapshot.data.maxCurrentTimeLimitPeriod ?? 10,
-                          'Max current time-limit period',
-                          's',
-                          completion),
-                      _CardParameter(
-                          10,
-                          '15',
-                          'ICMax',
-                          (snapshot.data.maxCutoffChargeCurrent) ?? 8,
-                          'Max cut-off charge current',
-                          'A',
-                          completion),
-                      _CardParameter(
-                          11,
-                          '16',
-                          'I Thr Count',
-                          (snapshot.data.motoHoursCounterCurrentThreshold) ??
-                              40,
-                          'Moto-hours current threshold',
-                          'A',
-                          completion),
-                      _CardParameter(
-                          12,
-                          '17',
-                          'I Max c-off Time ',
-                          snapshot.data.currentCutOffTimerPeriod ?? 5,
-                          'Max cut-off time period',
-                          's',
-                          completion),
-                      _CardParameter(
-                          13,
-                          '23',
-                          'T Max',
-                          (snapshot.data.maxCutoffTemperature) ?? 240,
-                          'Max temperature cut-off',
-                          '°C',
-                          completion),
-                      _CardParameter(
-                          14,
-                          '24',
-                          'T MaxR',
-                          snapshot.data.maxTemperatureRecovery ?? 530,
-                          'Max temperature recovery ',
-                          '°C',
-                          completion),
-                      _CardParameter(
-                          15,
-                          '25',
-                          'T MinR',
-                          snapshot.data.minTemperatureRecovery ?? 1680,
-                          'Min temperature recovery',
-                          '°C',
-                          completion),
-                      _CardParameter(
-                          16,
-                          '26',
-                          'T Min',
-                          snapshot.data.minCutoffTemperature ?? 2480,
-                          'Min temperature cut-off',
-                          '°C',
-                          completion),
-                      _CardParameter(17, '44', 'Serial number', 0000, '', '',
-                          serialNumberCompletion),
-                    ],
-                  );
-                } else
-                  return Container();
-              },
-            )),
+                  stream: _parameterListenerBloc.parameters,
+                  builder: (_, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.active) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          _CardParameter(
+                              0,
+                              '00',
+                              'Cell Num',
+                              snapshot.data.cellCount ?? 4,
+                              'Number of active cells',
+                              '',
+                              numCellsCompletion),
+                          _CardParameter(
+                              1,
+                              '01',
+                              'V Max',
+                              (snapshot.data.maxCellVoltage) ?? 4.28,
+                              'Max cell voltage',
+                              'V',
+                              completion),
+                          _CardParameter(
+                              2,
+                              '02',
+                              'V MaxR',
+                              (snapshot.data.maxRecoveryVoltage) ?? 4.15,
+                              'Max recovery voltage',
+                              'V',
+                              completion),
+                          _CardParameter(
+                              3,
+                              '03',
+                              'V Bal',
+                              (snapshot.data.balanceCellVoltage) ?? 4.20,
+                              'Balance cell voltage',
+                              'V',
+                              completion),
+                          _CardParameter(
+                              4,
+                              '04',
+                              'VMin',
+                              (snapshot.data.minCellVoltage) ?? 2.80,
+                              'Min cell voltage',
+                              'V',
+                              completion),
+                          _CardParameter(
+                              5,
+                              '05',
+                              'VMinR',
+                              (snapshot.data.minCellRecoveryVoltage) ?? 3.10,
+                              'Min cell recovery voltage',
+                              'V',
+                              completion),
+                          _CardParameter(
+                              6,
+                              '06',
+                              'VULOW',
+                              (snapshot.data.ultraLowCellVoltage) ?? 2,
+                              'Ultra low cell voltage',
+                              'V',
+                              completion),
+                          _CardParameter(
+                              7,
+                              '12',
+                              'IDMax1',
+                              (snapshot.data.maxTimeLimitedDischargeCurrent) ?? 20,
+                              'Max limited discharge current',
+                              'A',
+                              completion),
+                          _CardParameter(
+                              8,
+                              '13',
+                              'IDMax2',
+                              (snapshot.data.maxCutoffDischargeCurrent) ?? 25,
+                              'Max cut-off discharge current',
+                              'A',
+                              completion),
+                          _CardParameter(
+                              9,
+                              '14',
+                              'Id max 1 time',
+                              snapshot.data.maxCurrentTimeLimitPeriod ?? 10,
+                              'Max current time-limit period',
+                              's',
+                              completion),
+                          _CardParameter(
+                              10,
+                              '15',
+                              'ICMax',
+                              (snapshot.data.maxCutoffChargeCurrent) ?? 8,
+                              'Max cut-off charge current',
+                              'A',
+                              completion),
+                          _CardParameter(
+                              11,
+                              '16',
+                              'I Thr Count',
+                              (snapshot.data.motoHoursCounterCurrentThreshold) ??
+                                  40,
+                              'Moto-hours current threshold',
+                              'A',
+                              completion),
+                          _CardParameter(
+                              12,
+                              '17',
+                              'I Max c-off Time ',
+                              snapshot.data.currentCutOffTimerPeriod ?? 5,
+                              'Max cut-off time period',
+                              's',
+                              completion),
+                          _CardParameter(
+                              13,
+                              '23',
+                              'T Max',
+                              (snapshot.data.maxCutoffTemperature) ?? 240,
+                              'Max temperature cut-off',
+                              '°C',
+                              completion),
+                          _CardParameter(
+                              14,
+                              '24',
+                              'T MaxR',
+                              snapshot.data.maxTemperatureRecovery ?? 530,
+                              'Max temperature recovery ',
+                              '°C',
+                              completion),
+                          _CardParameter(
+                              15,
+                              '25',
+                              'T MinR',
+                              snapshot.data.minTemperatureRecovery ?? 1680,
+                              'Min temperature recovery',
+                              '°C',
+                              completion),
+                          _CardParameter(
+                              16,
+                              '26',
+                              'T Min',
+                              snapshot.data.minCutoffTemperature ?? 2480,
+                              'Min temperature cut-off',
+                              '°C',
+                              completion),
+                          _CardParameter(17, '44', 'Serial number', 0000, '', '',
+                              serialNumberCompletion),
+                        ],
+                      );
+                    } else
+                      return Container();
+                  },
+                )),
             floatingActionButton: Builder(
               builder: (context) => FloatingActionButton(
                   elevation: 7,
@@ -372,57 +370,58 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
                   onPressed: () => showModalBottomSheet(
                       context: context,
                       builder: (_) => Wrap(
-                            children: [
-                              Container(
-                                child: Container(
-                                  decoration: new BoxDecoration(
-                                      color: Color(0xFF737373),
-                                      borderRadius: new BorderRadius.only(
-                                          topLeft: const Radius.circular(25.0),
-                                          topRight:
-                                              const Radius.circular(25.0))),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      CalibrateTile(
-                                          18,
-                                          'Cal. V',
-                                          'Voltage calibrate',
+                        children: [
+                          Container(
+                            child: Container(
+                              decoration: new BoxDecoration(
+                                  color: Color(0xFF737373),
+                                  borderRadius: new BorderRadius.only(
+                                      topLeft: const Radius.circular(25.0),
+                                      topRight:
+                                      const Radius.circular(25.0))),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CalibrateTile(
+                                      18,
+                                      'Cal. V',
+                                      'Voltage calibrate',
                                           () => _parameterListenerBloc
-                                              .calibrateVoltage()),
-                                      CalibrateTile(
-                                          19,
-                                          'Cal. C',
-                                          'Charge calibrate',
+                                          .calibrateVoltage()),
+                                  CalibrateTile(
+                                      19,
+                                      'Cal. C',
+                                      'Charge calibrate',
                                           () => _parameterListenerBloc
-                                              .calibrateCharge()),
-                                      CalibrateTile(
-                                          20,
-                                          'Cal. D',
-                                          'Discharge calibrate',
+                                          .calibrateCharge()),
+                                  CalibrateTile(
+                                      20,
+                                      'Cal. D',
+                                      'Discharge calibrate',
                                           () => _parameterListenerBloc
-                                              .calibrateDischarge()),
-                                      OutlineButton(
-                                        child: Text('Register device'),
-                                        onPressed: () => FirestoreDatabase(
-                                                uid: this.bloc.curUserId,
-                                                deviceId: this.bloc.curDeviceId)
-                                            .uploadDevice(
-                                                macAddress: $<DeviceBloc>()
-                                                    .device
-                                                    .value
-                                                    .id,
-                                                parameters: this
-                                                    .bloc
-                                                    .currentParams
-                                                    .toMap()),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ))),
+                                          .calibrateDischarge()),
+                                  OutlineButton(
+                                    child: Text('Register device'),
+                                    onPressed: () => FirestoreDatabase(
+                                        uid: this.bloc.curUserId,
+                                        deviceId: this.bloc.curDeviceId)
+                                        .uploadDevice(
+                                        macAddress: $<DeviceBloc>()
+                                            .device
+                                            .value
+                                            .id,
+                                        parameters: this
+                                            .bloc
+                                            .currentParams
+                                            .toMap()),
+                                  )
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ))),
             )));
   }
 }
+

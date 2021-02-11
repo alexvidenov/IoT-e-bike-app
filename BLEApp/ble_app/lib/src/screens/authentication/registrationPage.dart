@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:ble_app/src/blocs/authBloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -165,7 +166,17 @@ class _StepperBodyState extends State<StepperBody> {
   showSnackBarMessage(String message) =>
       Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
 
-  _showDialog() {}
+  _showDialog() => AwesomeDialog(
+      context: context,
+      useRootNavigator: true,
+      dialogType: DialogType.ERROR,
+      animType: AnimType.SCALE,
+      title: 'Failed',
+      desc: 'The device does not exist. Try again',
+      btnOkText: 'Yes',
+      btnOkOnPress: () => {},
+      btnCancelText: 'Cancel',
+      btnCancelOnPress: () => {}).show();
 
   _submitDetails() {
     final FormState formState = _formKey.currentState;

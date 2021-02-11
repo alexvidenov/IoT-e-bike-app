@@ -67,7 +67,7 @@ extension FetchParams on ParameterFetchBloc {
             maxCutoffDischargeCurrent: _parameters['13'] / 100,
             maxCurrentTimeLimitPeriod: _parameters['14'].toInt(),
             maxCutoffChargeCurrent: _parameters['15'] / 100,
-            motoHoursCounterCurrentThreshold: _parameters['16'].toInt(),
+            motoHoursCounterCurrentThreshold: _parameters['16'].toInt(), // TODO: fix that
             currentCutOffTimerPeriod: _parameters['17'].toInt(),
             maxCutoffTemperature:
                 tempConverter.tempFromADC(_parameters['23'].toInt()),

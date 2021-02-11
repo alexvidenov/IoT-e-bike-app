@@ -166,8 +166,8 @@ class ParameterListenerBloc
   }
 
   _timeout() => Future.delayed(Duration(milliseconds: 500), () {
-        if (!_successful) addEvent(ParameterChangeStatus.Unsuccessful);
-      });
+    if (!_successful) addEvent(ParameterChangeStatus.Unsuccessful);
+  });
 
   retry() {
     final String command = _generateCommandString(this.currentKey, value);
@@ -202,3 +202,4 @@ extension ParseParameterString on ParameterListenerBloc {
     return 'W$key$value\r';
   }
 }
+

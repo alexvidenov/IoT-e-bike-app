@@ -2,6 +2,7 @@ import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/DeviceStatisticsBloc.dart';
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/screens/ErrorReportScreen.dart';
 import 'package:ble_app/src/screens/authentication/authenticationWrapper.dart';
 import 'package:ble_app/src/screens/authentication/bleAuthenticationPage.dart';
 import 'package:ble_app/src/screens/devicesListScreen.dart';
@@ -118,6 +119,12 @@ class PageManager {
   void openDeviceStatistics() {
     _pages.add(MaterialPage(
         child: DeviceStatisticsScreen($()), key: Key('DeviceStatistics')));
+    pages.addEvent(_pagesList);
+  }
+
+  void openReportScreen() {
+    _pages.add(MaterialPage(
+        child: ErrorReportScreen(), key: Key('ErrorReportScreen')));
     pages.addEvent(_pagesList);
   }
 

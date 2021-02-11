@@ -1,4 +1,5 @@
 import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'BaseModel.dart';

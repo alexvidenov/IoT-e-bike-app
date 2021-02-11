@@ -26,12 +26,15 @@ class Auth {
 
   final _localAuthState = RxObject<AuthState>();
 
+  final _deviceFetchState = RxObject<bool>();
+
   bool _isAnonymous;
 
   Auth([this._dbManager]);
 
   void setListenerAndDetermineState(AuthStateListener listener) async {
     this.authStateListener = listener;
+    _deviceFetchState.addEvent(true);
     auth.listen(this.authStateListener.onAuthStateChanged);
     await this.isSignedInAnonymously();
   }
@@ -104,6 +107,7 @@ class Auth {
   Future<AuthState> signUpWithEmailAndPassword(String email, String password,
       {@required String deviceSerialNumber}) async {
     User user;
+    this._deviceFetchState.addEvent(false);
     try {
       final UserCredential credential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -112,20 +116,15 @@ class Auth {
         final _userId = user.uid;
         final _db =
             FirestoreDatabase(uid: _userId, deviceId: deviceSerialNumber);
-        final device = await _db.fetchDevice();
-        if (device != null) {
-          final parameters = await _db.fetchDeviceParameters();
+        final deviceWithParams = await _db.fetchDeviceWithParameters();
+        if (deviceWithParams != null) {
           await _db.addUser(await $<CloudMessaging>().getToken());
           await _db.addUserAsOwnerOfDevice();
           await _dbManager.insertUser(localUser.User(
               _userId, email, password)); // TODO: hash password here
-          await _dbManager.insertDevice(Device(
-              deviceId: deviceSerialNumber,
-              userId: _userId,
-              name: BluetoothUtils.defaultBluetoothDeviceName,
-              macAddress: device.macAddress,
-              isSuper: device.isSuper));
-          await _dbManager.insertParameters(parameters);
+          await _dbManager.insertDevice(deviceWithParams.key);
+          await _dbManager.insertParameters(deviceWithParams.value);
+          _deviceFetchState.addEvent(true);
           return AuthState.authenticated(user.uid);
         } else {
           return AuthState.failedToAuthenticate(
@@ -159,8 +158,23 @@ extension UserStatus on Auth {
 
   Stream<AuthState> get _onLocalAuthStateChanged => _localAuthState.stream;
 
-  Stream<AuthState> get auth =>
-      Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]);
+  // FIXME: this..doesn't really work
+  Stream<AuthState> get auth => Rx.merge([
+        Rx.combineLatest2<User, bool, AuthState>(
+            _auth.authStateChanges(), _deviceFetchState.stream,
+            (user, isFetched) {
+          if (user == null) {
+            return AuthState.loggedOut();
+          } else {
+            if (isFetched) {
+              return AuthState.authenticated(user.uid);
+            } else {
+              return AuthState.fetchingUserInformation();
+            }
+          }
+        }),
+        _onLocalAuthStateChanged
+      ]);
 
   String getCurrentUserId() => _isAnonymous ? '0000' : _auth.currentUser?.uid;
 }

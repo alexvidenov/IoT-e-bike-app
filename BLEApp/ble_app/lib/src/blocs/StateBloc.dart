@@ -9,6 +9,7 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/dataClasses/BaseModel.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
+import 'package:ble_app/src/services/Database.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
 abstract class StateBloc<T extends BaseModel>
@@ -22,19 +23,11 @@ abstract class StateBloc<T extends BaseModel>
 
   StatusState<T> generateState(String rawData) {
     final String status = '${rawData[0]}';
-    // TODO: fix the holy shit repetition going on here
     if (_isDataEmpty(rawData)) {
-      if (_stateTracker.lastServiceState == ServiceState.SC ||
-          _stateTracker.lastServiceState == ServiceState.ULV) {
-        _stateTracker.lastServiceState = ServiceState.Undetermined;
-        _stateTracker.serviceRx
-            .addEvent(ServiceNotification(isStateGone: true)); // removes dialog
-      } else if (_stateTracker.lastState == BatteryState.ErrorCommunication &&
-          _stateTracker.lastServiceState != ServiceState.LossComm) {
-        _stateTracker.lastServiceState = ServiceState.LossComm;
-        _stateTracker.serviceRx.addEvent(ServiceNotification(
-            state: BatteryState.ErrorCommunication, isStateGone: false));
-      }
+      _resetOrNotifyForServiceState(
+          exclusiveStates: [ServiceState.SC, ServiceState.ULV],
+          battState: BatteryState.ErrorCommunication,
+          serviceState: ServiceState.LossComm);
       _stateTracker.lastState = BatteryState.ErrorCommunication;
       return Status(BatteryState.ErrorCommunication);
     }
@@ -43,11 +36,7 @@ abstract class StateBloc<T extends BaseModel>
     BatteryState battState;
     switch (status) {
       case '0':
-        if (_stateTracker.lastServiceState != ServiceState.Undetermined) {
-          _stateTracker.lastServiceState = ServiceState.Undetermined;
-          _stateTracker.serviceRx
-              .addEvent(ServiceNotification(isStateGone: true));
-        }
+        _resetServiceState();
         if (_isTimeLimitedOverDischarge()) {
           if (_stateTracker.overDischargeTimeLimited != null &&
                   !_stateTracker.overDischargeTimeLimited.isActive ||
@@ -78,11 +67,7 @@ abstract class StateBloc<T extends BaseModel>
         }
         break;
       case '4':
-        if (_stateTracker.lastServiceState != ServiceState.Undetermined) {
-          _stateTracker.lastServiceState = ServiceState.Undetermined;
-          _stateTracker.serviceRx
-              .addEvent(ServiceNotification(isStateGone: true));
-        }
+        _resetServiceState();
         if (_controlBloc.isDeviceManuallyLocked()) {
           battState = BatteryState.Locked;
         } else if (_isTimeLimitedOverDischarge() || _isCutOffOverDischarge()) {
@@ -145,47 +130,25 @@ abstract class StateBloc<T extends BaseModel>
         }
         break;
       case 'A':
-        if (_stateTracker.lastServiceState != ServiceState.Undetermined) {
-          _stateTracker.lastServiceState = ServiceState.Undetermined;
-          _stateTracker.serviceRx
-              .addEvent(ServiceNotification(isStateGone: true));
-        }
+        _resetServiceState();
         battState = BatteryState.LowTemp;
         break;
       case 'E':
-        if (_stateTracker.lastServiceState != ServiceState.Undetermined) {
-          _stateTracker.lastServiceState = ServiceState.Undetermined;
-          _stateTracker.serviceRx
-              .addEvent(ServiceNotification(isStateGone: true));
-        }
+        _resetServiceState();
         battState = BatteryState.HighTemp;
         break;
       case 'C':
-        if (_stateTracker.lastServiceState == ServiceState.LossComm ||
-            _stateTracker.lastServiceState == ServiceState.SC) {
-          _stateTracker.lastServiceState = ServiceState.Undetermined;
-          _stateTracker.serviceRx.addEvent(
-              ServiceNotification(isStateGone: true)); // removes dialog
-        } else if (_stateTracker.lastState == BatteryState.UltraLowVoltage &&
-            _stateTracker.lastServiceState != ServiceState.ULV) {
-          _stateTracker.lastServiceState = ServiceState.ULV;
-          _stateTracker.serviceRx.addEvent(ServiceNotification(
-              state: BatteryState.UltraLowVoltage, isStateGone: false));
-        }
+        _resetOrNotifyForServiceState(
+            exclusiveStates: [ServiceState.LossComm, ServiceState.SC],
+            battState: BatteryState.UltraLowVoltage,
+            serviceState: ServiceState.ULV);
         battState = BatteryState.UltraLowVoltage;
         break;
       case '2':
-        if (_stateTracker.lastServiceState == ServiceState.LossComm ||
-            _stateTracker.lastServiceState == ServiceState.ULV) {
-          _stateTracker.lastServiceState = ServiceState.Undetermined;
-          _stateTracker.serviceRx.addEvent(
-              ServiceNotification(isStateGone: true)); // removes dialog
-        } else if (_stateTracker.lastState == BatteryState.ShortCircuit &&
-            _stateTracker.lastServiceState != ServiceState.SC) {
-          _stateTracker.lastServiceState = ServiceState.SC;
-          _stateTracker.serviceRx.addEvent(ServiceNotification(
-              state: BatteryState.ShortCircuit, isStateGone: false));
-        }
+        _resetOrNotifyForServiceState(
+            exclusiveStates: [ServiceState.LossComm, ServiceState.ULV],
+            battState: BatteryState.ShortCircuit,
+            serviceState: ServiceState.SC);
         battState = BatteryState.ShortCircuit;
         break;
       default:
@@ -195,6 +158,32 @@ abstract class StateBloc<T extends BaseModel>
     _stateTracker.current = model.current;
     _stateTracker.lastState = battState;
     return StatusState(battState, model);
+  }
+
+  void _resetServiceState() {
+    if (_stateTracker.lastServiceState != ServiceState.Undetermined) {
+      _stateTracker.lastServiceState = ServiceState.Undetermined;
+      _stateTracker.serviceRx.addEvent(ServiceNotification(isStateGone: true));
+    }
+  }
+
+  void _resetOrNotifyForServiceState(
+      {List<ServiceState> exclusiveStates,
+      BatteryState battState,
+      ServiceState serviceState}) {
+    if (exclusiveStates.contains(_stateTracker.lastServiceState)) {
+      _stateTracker.lastServiceState = ServiceState.Undetermined;
+      _stateTracker.serviceRx
+          .addEvent(ServiceNotification(isStateGone: true)); // removes dialog;
+    } else if (_stateTracker.lastState == battState &&
+        _stateTracker.lastServiceState != serviceState) {
+      _stateTracker.lastServiceState = serviceState;
+      final notification =
+          ServiceNotification(state: battState, isStateGone: false);
+      _stateTracker.serviceRx.addEvent(notification);
+      FirestoreDatabase(uid: curUserId, deviceId: curDeviceId)
+          .addError(notification);
+    }
   }
 
   bool _isTimeLimitedOverDischarge() {

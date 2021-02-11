@@ -128,6 +128,7 @@ class _DetermineEndpointWidgetState extends State<DetermineEndpointWidget>
                 .addPostFrameCallback((_) => $<PageManager>().openBleApp()),
             loggedOut: () => WidgetsBinding.instance.addPostFrameCallback(
                 (_) => $<PageManager>().openAuthWrapper(this._chosen)),
+            fetchingUserInformation: () => {},
             orElse: () => {});
         return Center(child: CircularProgressIndicator());
       } else
