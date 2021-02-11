@@ -12,14 +12,6 @@ import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 
-// P0000 - OK
-
-// W27_newPINHERE - OK
-
-// Cell count
-// W0001 - first node (first to get info from master) if(ostatuk == 1) else substract a from the  second
-// W0002 - second node
-
 typedef EditedParameterCallback = Future<void> Function(String, String);
 
 typedef CalibrateCallback = void Function();
@@ -127,6 +119,32 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
       : this._parameterListenerBloc = parameterListenerBloc,
         super(bloc: parameterListenerBloc);
 
+  Future<void> numCellsCompletion(String _, String value) async {
+    _repository.cancel();
+    final remainder = int.parse(value).remainder(4);
+    if (remainder == 1) {
+      _parameterListenerBloc.programNumOfCellsFirstNode(value,
+          reminderValue: (remainder + 1).toString());
+      await Future.delayed(Duration(milliseconds: 100),
+          () => _parameterListenerBloc.programNumOfCellsSecondNode(value));
+    } else if (remainder != 0) {
+      _parameterListenerBloc.programNumOfCellsFirstNode(value,
+          reminderValue: (remainder).toString());
+      await Future.delayed(
+          Duration(milliseconds: 100),
+          () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
+              reminderValue: '4'));
+    } else {
+      _parameterListenerBloc.programNumOfCellsFirstNode(value,
+          reminderValue: '4');
+      await Future.delayed(
+          Duration(milliseconds: 100),
+          () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
+              reminderValue: '4'));
+    }
+    Future.delayed(Duration(milliseconds: 80), () => _repository.resume());
+  }
+
   Future<void> completion(String key, String value) async {
     _repository.cancel();
     await Future.delayed(
@@ -209,7 +227,7 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
                           snapshot.data.cellCount ?? 4,
                           'Number of active cells',
                           '',
-                          completion),
+                          numCellsCompletion),
                       _CardParameter(
                           1,
                           '01',

@@ -29,6 +29,9 @@ class ParameterListenerBloc
             .Successful); // in the UI, wait 1 second if not successful
         DeviceParameters newModel;
         switch (currentKey) {
+          case '00':
+            newModel = currentParams.copyWith(cellCount: int.parse(value));
+            break;
           case '01':
             newModel =
                 currentParams.copyWith(maxCellVoltage: double.parse(value));
@@ -142,6 +145,24 @@ class ParameterListenerBloc
     _successful = false;
     _timeout();
     _repository.writeToCharacteristic('D\r');
+  }
+
+  void programNumOfCellsFirstNode(String value, {String reminderValue}) {
+    _successful = false;
+    _timeout();
+    _repository.writeToCharacteristic('W00010$reminderValue\r');
+    print('FIRST NODE:' + 'W00010$reminderValue\r');
+    currentKey = '00';
+    this.value = value;
+  }
+
+  void programNumOfCellsSecondNode(String value, {String reminderValue = '3'}) {
+    _successful = false;
+    _timeout();
+    _repository.writeToCharacteristic('W00020$reminderValue\r');
+    print('SECOND NODE:' + 'W00020$reminderValue\r');
+    currentKey = '00';
+    this.value = value;
   }
 
   _timeout() => Future.delayed(Duration(milliseconds: 500), () {
