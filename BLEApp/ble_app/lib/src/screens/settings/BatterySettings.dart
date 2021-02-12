@@ -402,7 +402,13 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
                                           () => _parameterListenerBloc
                                               .calibrateDischarge()),
                                       OutlineButton(
-                                        child: Text('Register device'),
+                                        child: Text(
+                                          'Register device',
+                                          style: TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.lightGreen),
+                                        ),
                                         onPressed: () => FirestoreDatabase(
                                                 uid: this.bloc.curUserId,
                                                 deviceId: this.bloc.curDeviceId)

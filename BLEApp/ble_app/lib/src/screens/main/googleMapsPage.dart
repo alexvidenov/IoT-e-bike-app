@@ -17,46 +17,44 @@ class MapPage extends RouteAwareWidget<LocationBloc>
         super(bloc: locationBloc);
 
   @override
-  Widget buildWidget(BuildContext context) {
-    return Stack(
-      children: [
-        StreamBuilder<LocationState>(
-            stream: _locationBloc.stream,
-            builder: (_, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                final marker =
-                    _locationBloc.generateNewMarker(snapshot.data.locationData);
-                final circle =
-                    _locationBloc.generateNewCircle(snapshot.data.locationData);
-                return GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onLongPress: () => $<InnerPageManager>().openShortStatus(),
-                  child: GoogleMap(
-                    mapType: MapType.normal,
-                    initialCameraPosition: _locationBloc.initialLocation,
-                    markers: Set.of((marker != null) ? [marker] : []),
-                    circles: Set.of((circle != null) ? [circle] : []),
-                    polylines: snapshot.data.polylines,
-                    onMapCreated: (controller) =>
-                        _locationBloc.controller = controller,
-                  ),
-                );
-              } else
-                return Container();
-            }),
-        DraggableScrollableSheet(
-          initialChildSize: 0.3,
-          minChildSize: 0.15,
-          builder: (_, controller) {
-            return SingleChildScrollView(
-              controller: controller,
-              child: BottomSheetContainer(),
-            );
-          },
-        )
-      ],
-    );
-  }
+  Widget buildWidget(BuildContext context) => Stack(
+        children: [
+          StreamBuilder<LocationState>(
+              stream: _locationBloc.stream,
+              builder: (_, snapshot) {
+                if (snapshot.connectionState == ConnectionState.active) {
+                  final marker = _locationBloc
+                      .generateNewMarker(snapshot.data.locationData);
+                  final circle = _locationBloc
+                      .generateNewCircle(snapshot.data.locationData);
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onLongPress: () => $<InnerPageManager>().openShortStatus(),
+                    child: GoogleMap(
+                      mapType: MapType.normal,
+                      initialCameraPosition: _locationBloc.initialLocation,
+                      markers: Set.of((marker != null) ? [marker] : []),
+                      circles: Set.of((circle != null) ? [circle] : []),
+                      polylines: snapshot.data.polylines,
+                      onMapCreated: (controller) =>
+                          _locationBloc.controller = controller,
+                    ),
+                  );
+                } else
+                  return Container();
+              }),
+          DraggableScrollableSheet(
+            initialChildSize: 0.3,
+            minChildSize: 0.15,
+            builder: (_, controller) {
+              return SingleChildScrollView(
+                controller: controller,
+                child: BottomSheetContainer(),
+              );
+            },
+          )
+        ],
+      );
 
   @override
   onResume() {

@@ -19,100 +19,143 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
   void initState() {
     super.initState();
     widget._deviceStatisticsBloc.fetchFileNames();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _setupSheet());
   }
+
+  Future<void> _setupSheet() async => await _showFileBottomSheet();
 
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: Text('DeviceStatistics'),
         ),
-        body: Stack(children: [
-          StreamBuilder<List<LogModel>>(
-            stream: widget._deviceStatisticsBloc.stream,
-            builder: (_, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                _chartData = snapshot.data;
-                return _getDefaultLineChart();
-              } else
-                return Center(
-                  child: Text('Select file'),
-                );
-            },
-          ),
-          DraggableScrollableSheet(
-            minChildSize: 0.15,
-            maxChildSize: 0.8,
-            builder: (_, controller) => Column(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 8),
-                        height: 8.0,
-                        width: 70.0,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10.0)),
+        body: StreamBuilder<List<LogModel>>(
+          stream: widget._deviceStatisticsBloc.stream,
+          builder: (_, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              _chartData = snapshot.data;
+              return _getDefaultLineChart();
+            } else
+              return Center(
+                child: Text(
+                  'Select file',
+                  style: TextStyle(
+                      fontSize: 30,
+                      letterSpacing: 1.5,
+                      color: Colors.lightBlueAccent,
+                      fontWeight: FontWeight.bold),
+                ),
+              );
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.build),
+          onPressed: () => _showFileBottomSheet(),
+        ),
+      );
+
+  Future<void> _showFileBottomSheet() async => await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return DraggableScrollableSheet(
+            expand: false,
+            builder: (_, controller) {
+              return SingleChildScrollView(
+                  controller: controller,
+                  child: Card(
+                    elevation: 12.0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24)),
+                    margin: const EdgeInsets.all(0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                    ),
-                    SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Text(
-                        'DeviceStatistics',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(height: 20.0),
-                          Text('Select file',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20)),
+                        children: [
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          Container(
+                            height: 5,
+                            width: 30,
+                            decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(16)),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text("Select a file",
+                                  style: TextStyle(
+                                      fontSize: 22, color: Colors.black45)),
+                              SizedBox(width: 8),
+                              Container(
+                                height: 24,
+                                width: 24,
+                                child: Icon(Icons.arrow_downward_outlined,
+                                    size: 12, color: Colors.black54),
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(16)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          StreamBuilder<List<String>>(
+                            stream:
+                                widget._deviceStatisticsBloc.nameFetchRx.stream,
+                            builder: (_, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.active) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16),
+                                  child: Column(
+                                    children: [
+                                      ...snapshot.data.map((s) => Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              ListTile(
+                                                tileColor:
+                                                    Colors.lightBlueAccent,
+                                                title: Text(
+                                                  s,
+                                                  style: TextStyle(
+                                                      fontSize: 24,
+                                                      color: Colors.black),
+                                                ),
+                                                trailing: const Icon(
+                                                    Icons.edit_sharp),
+                                                onTap: () => widget
+                                                    ._deviceStatisticsBloc
+                                                    .fetchOne(snapshot.data
+                                                        .indexOf(s))
+                                                    .then((_) =>
+                                                        Navigator.of(context)
+                                                            .pop()),
+                                              ),
+                                              const Divider(
+                                                height: 5.0,
+                                              ),
+                                            ],
+                                          ))
+                                    ],
+                                  ),
+                                );
+                              } else
+                                return Container();
+                            },
+                          )
                         ],
                       ),
                     ),
-                    SizedBox(height: 16),
-                  ],
-                ),
-                StreamBuilder<List<String>>(
-                    stream: widget._deviceStatisticsBloc.nameFetchRx.stream,
-                    builder: (_, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.active) {
-                        return Expanded(
-                            child: ListView.builder(
-                          controller: controller,
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (_, index) => ListTile(
-                            tileColor: Colors.black12,
-                            title: Text(
-                              snapshot.data.elementAt(index),
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                            onTap: () =>
-                                widget._deviceStatisticsBloc.fetchOne(index),
-                          ),
-                        ));
-                      } else
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                    })
-              ],
-            ),
-          ),
-        ]),
-      );
+                  ));
+            });
+      });
 
   SfCartesianChart _getDefaultLineChart() => SfCartesianChart(
         backgroundColor: Colors.black,
@@ -153,6 +196,3 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
         ),
       ];
 }
-
-
-
