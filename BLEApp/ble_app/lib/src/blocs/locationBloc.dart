@@ -1,5 +1,7 @@
+import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/main.dart';
+import 'package:ble_app/src/persistence/SembastDatabase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,10 +18,13 @@ class LocationState {
 }
 
 @injectable
-class LocationBloc extends Bloc<LocationState, LocationData> {
+class LocationBloc extends Bloc<LocationState, LocationData> with CurrentContext {
   final Location _location = Location();
+  final SembastDatabase _sembastDatabase;
 
   GoogleMapController _controller;
+
+  LocationBloc(this._sembastDatabase);
 
   static final CameraPosition _initialLocation = CameraPosition(
     // prolly save the latest seen location in shared prefs(aka in dispose())
