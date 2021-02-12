@@ -23,6 +23,7 @@ dependencies:
   injectable: ^1.0.4
   get_it: ^4.0.4
   shared_preferences: ^0.5.8
+  sembast: ^2.4.9
   floor: ^0.17.0
   flutter_ble_lib:
     git:

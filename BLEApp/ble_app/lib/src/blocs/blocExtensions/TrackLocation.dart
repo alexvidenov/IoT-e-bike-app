@@ -20,12 +20,12 @@ extension TrackLocation on LocationBloc {
                   tilt: 0,
                   zoom: 18.00)));
         }
-        _coords.add(LatLng(lat, long));
+        _coordinates.add(LatLng(lat, long));
         addEvent(LocationState(locData,
             polylines: Set.of([
               Polyline(
                   polylineId: PolylineId('firstRoute'),
-                  points: this._coords,
+                  points: this._coordinates,
                   width: 8)
             ])));
       });

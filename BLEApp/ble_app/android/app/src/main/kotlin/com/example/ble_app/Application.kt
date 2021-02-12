@@ -16,8 +16,6 @@ class Application : FlutterApplication(), PluginRegistry.PluginRegistrantCallbac
     }
 
     override fun registerWith(reg: PluginRegistry?) {
-        //AndroidAlarmManagerPlugin.registerWith(
-        //reg?.registrarFor("io.flutter.plugins.androidalarmmanager.AndroidAlarmManagerPlugin"))
         FirebaseMessagingPlugin.registerWith(reg?.registrarFor("io.flutter.plugins.firebasemessaging.FirebaseMessagingPlugin"))
         SqflitePlugin.registerWith(reg?.registrarFor("com.tekartik.sqflite.SqflitePlugin"))
     }

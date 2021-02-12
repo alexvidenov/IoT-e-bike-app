@@ -28,7 +28,7 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
     zoom: 14.4746,
   );
 
-  final List<LatLng> _coords = [];
+  final List<LatLng> _coordinates = [];
 
   get initialLocation => _initialLocation;
 

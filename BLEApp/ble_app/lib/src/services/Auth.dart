@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
@@ -7,7 +8,6 @@ import 'package:ble_app/src/sealedStates/authState.dart';
 import 'package:ble_app/src/services/Database.dart';
 import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -79,8 +79,7 @@ class Auth {
           });
         }
         _firestore.updateUserDeviceTokens(
-            deviceToken:
-                await $<CloudMessaging>().getToken());
+            deviceToken: await $<CloudMessaging>().getToken());
         return AuthState.authenticated(user.uid);
       } on FirebaseAuthException catch (e) {
         return AuthState.failedToAuthenticate(

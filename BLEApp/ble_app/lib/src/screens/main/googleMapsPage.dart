@@ -17,44 +17,110 @@ class MapPage extends RouteAwareWidget<LocationBloc>
         super(bloc: locationBloc);
 
   @override
-  Widget buildWidget(BuildContext context) => Stack(
-        children: [
-          StreamBuilder<LocationState>(
-              stream: _locationBloc.stream,
-              builder: (_, snapshot) {
-                if (snapshot.connectionState == ConnectionState.active) {
-                  final marker = _locationBloc
-                      .generateNewMarker(snapshot.data.locationData);
-                  final circle = _locationBloc
-                      .generateNewCircle(snapshot.data.locationData);
-                  return GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onLongPress: () => $<InnerPageManager>().openShortStatus(),
-                    child: GoogleMap(
-                      mapType: MapType.normal,
-                      initialCameraPosition: _locationBloc.initialLocation,
-                      markers: Set.of((marker != null) ? [marker] : []),
-                      circles: Set.of((circle != null) ? [circle] : []),
-                      polylines: snapshot.data.polylines,
-                      onMapCreated: (controller) =>
-                          _locationBloc.controller = controller,
-                    ),
-                  );
-                } else
-                  return Container();
-              }),
-          DraggableScrollableSheet(
-            initialChildSize: 0.3,
-            minChildSize: 0.15,
-            builder: (_, controller) {
-              return SingleChildScrollView(
-                controller: controller,
-                child: BottomSheetContainer(),
+  Widget buildWidget(BuildContext context) {
+    return Scaffold(
+      body: StreamBuilder<LocationState>(
+          stream: _locationBloc.stream,
+          builder: (_, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              final marker =
+                  _locationBloc.generateNewMarker(snapshot.data.locationData);
+              final circle =
+                  _locationBloc.generateNewCircle(snapshot.data.locationData);
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onLongPress: () => $<InnerPageManager>().openShortStatus(),
+                child: GoogleMap(
+                  mapType: MapType.normal,
+                  initialCameraPosition: _locationBloc.initialLocation,
+                  zoomControlsEnabled: false,
+                  markers: Set.of((marker != null) ? [marker] : []),
+                  circles: Set.of((circle != null) ? [circle] : []),
+                  polylines: snapshot.data.polylines,
+                  onMapCreated: (controller) =>
+                      _locationBloc.controller = controller,
+                ),
               );
+            } else
+              return Container();
+          }),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            child: Icon(Icons.add_location_rounded),
+            onPressed: () {},
+            heroTag: null,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          FloatingActionButton(
+            child: Icon(Icons.album_rounded),
+            onPressed: () {
+              showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) {
+                    return DraggableScrollableSheet(
+                      expand: false,
+                      builder: (_, controller) {
+                        return SingleChildScrollView(
+                          controller: controller,
+                          child: Card(
+                            elevation: 12.0,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24)),
+                            margin: const EdgeInsets.all(0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  BottomSheetHeader(),
+                                  const SizedBox(height: 16),
+                                  LastRoutesHeader(),
+                                  const SizedBox(height: 16),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 16),
+                                    child: GridView.count(
+                                      physics: ScrollPhysics(),
+                                      padding: const EdgeInsets.all(0),
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: 12,
+                                      crossAxisSpacing: 12,
+                                      shrinkWrap: true,
+                                      children: [
+                                        LastRouteView(),
+                                        LastRouteView(),
+                                        LastRouteView(),
+                                        LastRouteView(),
+                                        LastRouteView(),
+                                        LastRouteView(),
+                                        LastRouteView(),
+                                        LastRouteView(),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  });
             },
+            heroTag: null,
           )
         ],
-      );
+      ),
+    );
+  }
 
   @override
   onResume() {
@@ -66,41 +132,6 @@ class MapPage extends RouteAwareWidget<LocationBloc>
   onDestroy() {
     pause();
     super.onDestroy();
-  }
-}
-
-class BottomSheetContainer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 12.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      margin: const EdgeInsets.all(0),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: BottomSheetContent(),
-      ),
-    );
-  }
-}
-
-class BottomSheetContent extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 12,
-        ),
-        BottomSheetHeader(),
-        const SizedBox(height: 16),
-        LastRoutesHeader(),
-        const SizedBox(height: 16),
-        LastRoutesScrollView(),
-      ],
-    );
   }
 }
 
@@ -137,44 +168,34 @@ class LastRoutesHeader extends StatelessWidget {
   }
 }
 
-class LastRoutesScrollView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            LastRouteView(),
-            SizedBox(width: 12),
-            LastRouteView(),
-            SizedBox(width: 12),
-            LastRouteView(),
-            SizedBox(width: 12),
-            LastRouteView(),
-            SizedBox(width: 12),
-            LastRouteView(),
-            SizedBox(width: 12),
-            LastRouteView(),
-            SizedBox(width: 12),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class LastRouteView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 100,
-      width: 100,
-      decoration: BoxDecoration(
-        color: Colors.grey[500],
-        borderRadius: BorderRadius.circular(8),
+    return Card(
+      color: Colors.lightBlueAccent,
+      elevation: 12.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      margin: const EdgeInsets.all(0),
+      child: InkWell(
+        onTap: () => {}, // TODO: handle this
+        child: Container(
+          width: 150,
+          height: 150,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Place here'),
+              const SizedBox(
+                height: 4.0,
+              ),
+              Text('Kilometers here'),
+              const SizedBox(
+                height: 4.0,
+              ),
+              Text('W/h here'),
+            ],
+          ),
+        ),
       ),
     );
   }
