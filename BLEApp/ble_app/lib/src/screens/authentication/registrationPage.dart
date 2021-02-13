@@ -70,7 +70,7 @@ class _StepperBodyState extends State<StepperBody> {
 
   get _focusNodeLastName => FocusNode();
 
-  final List<String> _devicesList = [null];
+  final List<String> _devicesList = [];
 
   final data = _Credentials();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
@@ -162,11 +162,11 @@ class _StepperBodyState extends State<StepperBody> {
             Expanded(
               child: TextFormField(
                   controller: TextEditingController.fromValue(
-                      TextEditingValue(text: _devicesList[index] ?? '')),
+                      TextEditingValue(text: _devicesList[index])),
                   keyboardType: TextInputType.number,
                   style: TextStyle(color: Colors.white),
                   autocorrect: false,
-                  onChanged: (value) => _devicesList[index] = value,
+                  onSaved: (String value) => _devicesList[index] = value,
                   maxLines: 1,
                   decoration: new InputDecoration(
                       labelText: 'Enter device number',
