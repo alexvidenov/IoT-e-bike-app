@@ -1,7 +1,7 @@
-import 'package:ble_app/src/blocs/CurrentContext.dart';
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/ContextAwareBloc.dart';
+import 'package:ble_app/src/blocs/LocationCachingManager.dart';
 import 'package:ble_app/main.dart';
-import 'package:ble_app/src/persistence/SembastDatabase.dart';
+import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -17,28 +17,43 @@ class LocationState {
   const LocationState(this.locationData, {this.polylines});
 }
 
-@injectable
-class LocationBloc extends Bloc<LocationState, LocationData> with CurrentContext {
+@lazySingleton // FIXME: the fact that this is a singleton fucks up the disposal of the stream here
+class LocationBloc extends ContextAwareBloc<LocationState, LocationData>
+    with LocationCachingManager {
   final Location _location = Location();
-  final SembastDatabase _sembastDatabase;
 
   GoogleMapController _controller;
 
-  LocationBloc(this._sembastDatabase);
-
   static final CameraPosition _initialLocation = CameraPosition(
     // prolly save the latest seen location in shared prefs(aka in dispose())
-    target: LatLng(37.42796133580664,
-        -122.085749655962), // probably don't have initial location, but dynami
+    target: LatLng(37.42796133580664, -122.085749655962),
+    // probably don't have initial location, but dynamically load it
     zoom: 14.4746,
   );
 
   final List<LatLng> _coordinates = [];
 
-  get initialLocation => _initialLocation;
+  final isRecordingRx = RxObject<bool>();
+
+  DateTime _currentFilename;
+
+  CameraPosition get initialLocation => _initialLocation;
 
   set controller(GoogleMapController controller) =>
       this._controller = controller;
+
+  void startRecording() {
+    isRecordingRx.addEvent(true);
+    _currentFilename = DateTime.now();
+    createCoordinatesFile(_currentFilename.toString());
+  }
+
+  void stopRecording() {
+    isRecordingRx.addEvent(false);
+    updateCachedLocation(_currentFilename.toString(), _coordinates);
+    _coordinates.clear();
+    // optionally rename this
+  }
 
   Circle generateNewCircle(LocationData locationData) => Circle(
       circleId: CircleId("car"),
@@ -56,7 +71,6 @@ class LocationBloc extends Bloc<LocationState, LocationData> with CurrentContext
         zIndex: 2,
         flat: true,
         anchor: Offset(0.5, 0.5),
-        //icon: BitmapDescriptor.fromBytes(imageData) add icon later on, you know
       );
 
   @override
@@ -65,6 +79,9 @@ class LocationBloc extends Bloc<LocationState, LocationData> with CurrentContext
   @override
   dispose() {
     logger.wtf('Closing stream in Location Bloc');
+    if (isRecordingRx.value) {
+      // save the routes
+    }
     super.dispose();
   }
 }

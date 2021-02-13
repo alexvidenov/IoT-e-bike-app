@@ -1,7 +1,8 @@
 part of '../locationBloc.dart';
 
 extension TrackLocation on LocationBloc {
-  _startTrackingLocation() async {
+  void _startTrackingLocation() async {
+    isRecordingRx.addEvent(false);
     try {
       final location = await _location.getLocation();
 
@@ -20,14 +21,19 @@ extension TrackLocation on LocationBloc {
                   tilt: 0,
                   zoom: 18.00)));
         }
-        _coordinates.add(LatLng(lat, long));
+        if (isRecordingRx.value) {
+          print('ADDING COORDINATES');
+          _coordinates.add(LatLng(lat, long));
+        }
         addEvent(LocationState(locData,
-            polylines: Set.of([
-              Polyline(
-                  polylineId: PolylineId('firstRoute'),
-                  points: this._coordinates,
-                  width: 8)
-            ])));
+            polylines: Set.of(isRecordingRx.value
+                ? [
+                    Polyline(
+                        polylineId: PolylineId('firstRoute'),
+                        points: _coordinates,
+                        width: 8)
+                  ]
+                : [])));
       });
     } on PlatformException catch (e) {
       if (e.code == 'PERMISSION_DENIED') {

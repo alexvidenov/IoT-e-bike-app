@@ -28,6 +28,7 @@ import '../blocs/PageManager.dart';
 import '../blocs/parameterFetchBloc.dart';
 import '../blocs/mixins/parameterAware/ParameterHolder.dart';
 import '../blocs/parameterListenerBloc.dart';
+import '../persistence/SembastDatabase.dart';
 import '../blocs/settingsBloc.dart';
 import '../blocs/sharedPrefsService.dart';
 import '../blocs/shortStatusBloc.dart';
@@ -49,7 +50,7 @@ GetIt $initGetIt(
   gh.lazySingleton<InnerPageManager>(() => InnerPageManager());
   gh.lazySingleton<LocalDatabaseManager>(
       () => LocalDatabaseManager(get<LocalDatabase>()));
-  gh.factory<LocationBloc>(() => LocationBloc());
+  gh.lazySingleton<LocationBloc>(() => LocationBloc());
   gh.lazySingleton<NavigationService>(() => NavigationService());
   gh.lazySingleton<PageManager>(() => PageManager());
   gh.factory<ParameterFetchBloc>(
@@ -74,6 +75,7 @@ GetIt $initGetIt(
   // Eager singletons must be registered in the right order
   gh.singletonAsync<LocalDatabase>(() => LocalDatabase.getInstance());
   gh.singleton<OutputControlBloc>(OutputControlBloc(get<DeviceRepository>()));
+  gh.singletonAsync<SembastDatabase>(() => SembastDatabase.getInstance());
   gh.singletonAsync<SharedPrefsService>(() => SharedPrefsService.getInstance());
   gh.singleton<StateTracker>(StateTracker());
   return get;

@@ -36,7 +36,7 @@ class MapPage extends RouteAwareWidget<LocationBloc>
                   zoomControlsEnabled: false,
                   markers: Set.of((marker != null) ? [marker] : []),
                   circles: Set.of((circle != null) ? [circle] : []),
-                  polylines: snapshot.data.polylines,
+                  polylines: snapshot.data.polylines ?? Set.of([]),
                   onMapCreated: (controller) =>
                       _locationBloc.controller = controller,
                 ),
@@ -47,10 +47,20 @@ class MapPage extends RouteAwareWidget<LocationBloc>
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          FloatingActionButton(
-            child: Icon(Icons.add_location_rounded),
-            onPressed: () {},
-            heroTag: null,
+          StreamBuilder<bool>(
+            stream: _locationBloc.isRecordingRx.stream,
+            initialData: false,
+            builder: (_, snapshot) {
+              return FloatingActionButton(
+                child: Icon(snapshot.data
+                    ? Icons.add_location_rounded
+                    : Icons.pause_circle_filled_outlined),
+                onPressed: () => snapshot.data
+                    ? _locationBloc.stopRecording()
+                    : _locationBloc.startRecording(),
+                heroTag: null,
+              );
+            },
           ),
           const SizedBox(
             height: 15,

@@ -15,7 +15,7 @@ class ParameterListenerBloc
   ParameterListenerBloc(this._repository) : super();
 
   String currentKey; // TODO: extract in an object
-  String value;
+  String currentValue;
 
   bool _successful = false;
 
@@ -30,82 +30,83 @@ class ParameterListenerBloc
         DeviceParameters newModel;
         switch (currentKey) {
           case '00':
-            newModel = currentParams.copyWith(cellCount: int.parse(value));
+            newModel =
+                currentParams.copyWith(cellCount: int.parse(currentValue));
             break;
           case '01':
-            newModel =
-                currentParams.copyWith(maxCellVoltage: double.parse(value));
+            newModel = currentParams.copyWith(
+                maxCellVoltage: double.parse(currentValue));
             break;
           case '02':
-            newModel =
-                currentParams.copyWith(maxRecoveryVoltage: double.parse(value));
+            newModel = currentParams.copyWith(
+                maxRecoveryVoltage: double.parse(currentValue));
             break;
           case '03':
-            newModel =
-                currentParams.copyWith(balanceCellVoltage: double.parse(value));
+            newModel = currentParams.copyWith(
+                balanceCellVoltage: double.parse(currentValue));
             break;
           case '04':
-            newModel =
-                currentParams.copyWith(minCellVoltage: double.parse(value));
+            newModel = currentParams.copyWith(
+                minCellVoltage: double.parse(currentValue));
             break;
           case '05':
             newModel = currentParams.copyWith(
-                minCellRecoveryVoltage: double.parse(value));
+                minCellRecoveryVoltage: double.parse(currentValue));
             break;
           case '06':
             newModel = currentParams.copyWith(
-                ultraLowCellVoltage: double.parse(value));
+                ultraLowCellVoltage: double.parse(currentValue));
             break;
           case '12':
             newModel = currentParams.copyWith(
-                maxTimeLimitedDischargeCurrent: double.parse(value));
+                maxTimeLimitedDischargeCurrent: double.parse(currentValue));
             break;
           case '13':
             newModel = currentParams.copyWith(
-                maxCutoffDischargeCurrent: double.parse(value));
+                maxCutoffDischargeCurrent: double.parse(currentValue));
             break;
           case '14':
             newModel = currentParams.copyWith(
-                maxCurrentTimeLimitPeriod: int.parse(value));
+                maxCurrentTimeLimitPeriod: int.parse(currentValue));
             break;
           case '15':
             newModel = currentParams.copyWith(
-                maxCutoffChargeCurrent: double.parse(value));
+                maxCutoffChargeCurrent: double.parse(currentValue));
             break;
           case '16':
             newModel = currentParams.copyWith(
-                motoHoursCounterCurrentThreshold: int.parse(value));
+                motoHoursCounterCurrentThreshold: int.parse(currentValue));
             break;
           case '17':
             newModel = currentParams.copyWith(
-                currentCutOffTimerPeriod: int.parse(value));
+                currentCutOffTimerPeriod: int.parse(currentValue));
             break;
           case '23':
-            newModel =
-                currentParams.copyWith(maxCutoffTemperature: int.parse(value));
+            newModel = currentParams.copyWith(
+                maxCutoffTemperature: int.parse(currentValue));
             break;
           case '24':
             newModel = currentParams.copyWith(
-                maxTemperatureRecovery: int.parse(value));
+                maxTemperatureRecovery: int.parse(currentValue));
             break;
           case '25':
             newModel = currentParams.copyWith(
-                minTemperatureRecovery: int.parse(value));
+                minTemperatureRecovery: int.parse(currentValue));
             break;
           case '26':
-            newModel =
-                currentParams.copyWith(minCutoffTemperature: int.parse(value));
+            newModel = currentParams.copyWith(
+                minCutoffTemperature: int.parse(currentValue));
             break;
           case '28':
             newModel = currentParams.copyWith(
-                motoHoursChargeCounter: int.parse(value));
+                motoHoursChargeCounter: int.parse(currentValue));
             break;
           case '29':
             newModel = currentParams.copyWith(
-                motoHoursDischargeCounter: int.parse(value));
+                motoHoursDischargeCounter: int.parse(currentValue));
             break;
         }
-        num numValue = num.parse(value);
+        num numValue = num.parse(currentValue);
         if (newModel != null) {
           FirestoreDatabase(uid: this.curUserId, deviceId: this.curDeviceId)
               .updateIndividualParameter(currentKey, numValue);
@@ -125,7 +126,7 @@ class ParameterListenerBloc
     _timeout();
     _repository.writeToCharacteristic(command);
     currentKey = key;
-    this.value = value;
+    this.currentValue = value;
   }
 
   calibrateVoltage() {
@@ -153,7 +154,7 @@ class ParameterListenerBloc
     _repository.writeToCharacteristic('W00010$reminderValue\r');
     print('FIRST NODE:' + 'W00010$reminderValue\r');
     currentKey = '00';
-    this.value = value;
+    this.currentValue = value;
   }
 
   void programNumOfCellsSecondNode(String value, {String reminderValue = '3'}) {
@@ -162,15 +163,16 @@ class ParameterListenerBloc
     _repository.writeToCharacteristic('W00020$reminderValue\r');
     print('SECOND NODE:' + 'W00020$reminderValue\r');
     currentKey = '00';
-    this.value = value;
+    this.currentValue = value;
   }
 
   _timeout() => Future.delayed(Duration(milliseconds: 500), () {
-    if (!_successful) addEvent(ParameterChangeStatus.Unsuccessful);
-  });
+        if (!_successful) addEvent(ParameterChangeStatus.Unsuccessful);
+      });
 
   retry() {
-    final String command = _generateCommandString(this.currentKey, value);
+    final String command =
+        _generateCommandString(this.currentKey, currentValue);
     _repository.writeToCharacteristic(command);
   }
 
@@ -202,4 +204,3 @@ extension ParseParameterString on ParameterListenerBloc {
     return 'W$key$value\r';
   }
 }
-
