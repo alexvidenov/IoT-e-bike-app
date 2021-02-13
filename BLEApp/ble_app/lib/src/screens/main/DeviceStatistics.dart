@@ -28,29 +28,104 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: Text('DeviceStatistics'),
-        ),
-        body: StreamBuilder<List<LogModel>>(
-          stream: widget._deviceStatisticsBloc.stream,
-          builder: (_, snapshot) {
-            if (snapshot.connectionState == ConnectionState.active) {
-              _chartData = snapshot.data;
-              return _getDefaultLineChart();
-            } else
-              return Center(
-                child: Text(
-                  'Select file',
+          actions: [
+            OutlineButton.icon(
+              icon: Icon(Icons.arrow_drop_down_circle_outlined),
+              label: Text('Select file',
                   style: TextStyle(
-                      fontSize: 30,
-                      letterSpacing: 1.5,
-                      color: Colors.lightBlueAccent,
-                      fontWeight: FontWeight.bold),
-                ),
-              );
-          },
+                      color: Colors.black, fontSize: 20, letterSpacing: 1.3)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25.0),
+              ),
+              onPressed: () => _showFileBottomSheet(),
+            )
+          ],
         ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.build),
-          onPressed: () => _showFileBottomSheet(),
+        body: Column(
+          children: [
+            Wrap(
+              children: [
+                OutlineButton(
+                  child: Text(
+                    'Current',
+                    style: TextStyle(
+                      color: Colors.lightBlue,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  onPressed: () => widget._deviceStatisticsBloc
+                      .changeCurrentStatisticsType(StatisticsType.Current),
+                ),
+                OutlineButton(
+                    child: Text(
+                      'Voltage',
+                      style: TextStyle(
+                        color: Colors.lightBlue,
+                        fontSize: 25,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    onPressed: () => widget._deviceStatisticsBloc
+                        .changeCurrentStatisticsType(StatisticsType.Voltage)),
+                OutlineButton(
+                    child: Text(
+                      'Temperature',
+                      style: TextStyle(
+                        color: Colors.lightBlue,
+                        fontSize: 25,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    onPressed: () => widget._deviceStatisticsBloc
+                        .changeCurrentStatisticsType(
+                            StatisticsType.Temperature)),
+              ],
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            Expanded(
+              child: StreamBuilder<DeviceStatisticsState>(
+                stream: widget._deviceStatisticsBloc.stream,
+                builder: (_, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    _chartData = snapshot.data.logs;
+                    double max;
+                    double interval;
+                    switch (snapshot.data.type) {
+                      case StatisticsType.Current:
+                        max = widget._deviceStatisticsBloc.currentParams
+                            .maxCutoffDischargeCurrent; // FIXME: think whether to save the  parametrs AT TIME OF USAGE
+                        interval = 1.5;
+                        break;
+                      case StatisticsType.Voltage:
+                        max = 60;
+                        interval = 10;
+                        break;
+                      case StatisticsType.Temperature:
+                        max = widget._deviceStatisticsBloc.currentParams
+                            .maxCutoffTemperature
+                            .toDouble();
+                        interval = 5;
+                    }
+                    return _getDefaultLineChart(
+                        max: max, interval: interval, type: snapshot.data.type);
+                  } else
+                    return Center(
+                      child: Text(
+                        'No file selected',
+                        style: TextStyle(
+                            fontSize: 30,
+                            letterSpacing: 1.5,
+                            color: Colors.lightBlueAccent,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    );
+                },
+              ),
+            )
+          ],
         ),
       );
 
@@ -157,7 +232,9 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
             });
       });
 
-  SfCartesianChart _getDefaultLineChart() => SfCartesianChart(
+  SfCartesianChart _getDefaultLineChart(
+          {double max, double min = 0, double interval, StatisticsType type}) =>
+      SfCartesianChart(
         backgroundColor: Colors.black,
         plotAreaBorderWidth: 0,
         primaryXAxis: DateTimeAxis(
@@ -167,14 +244,14 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
             majorGridLines: MajorGridLines(width: 0)),
         primaryYAxis: NumericAxis(
             rangePadding: ChartRangePadding.none,
-            minimum: 0,
-            maximum: 60,
+            minimum: min,
+            maximum: max,
             interval: 10,
             labelStyle: TextStyle(
                 fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
             axisLine: AxisLine(width: 0),
             majorTickLines: MajorTickLines(size: 0)),
-        series: _getDefaultLineSeries(),
+        series: _getDefaultLineSeries(type: type),
         trackballBehavior: TrackballBehavior(
             enable: true,
             lineColor: Color.fromRGBO(255, 255, 255, 0.03),
@@ -187,12 +264,24 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
                 markerVisibility: TrackballVisibilityMode.visible)),
       );
 
-  List<SplineSeries<LogModel, DateTime>> _getDefaultLineSeries() =>
+  List<SplineSeries<LogModel, DateTime>> _getDefaultLineSeries(
+          {StatisticsType type}) =>
       <SplineSeries<LogModel, DateTime>>[
         SplineSeries<LogModel, DateTime>(
-          dataSource: _chartData,
-          xValueMapper: (LogModel model, _) => DateTime.parse(model.timeStamp),
-          yValueMapper: (LogModel model, _) => model.voltage,
-        ),
+            dataSource: _chartData,
+            xValueMapper: (LogModel model, _) =>
+                DateTime.parse(model.timeStamp),
+            yValueMapper: (LogModel model, _) {
+              switch (type) {
+                case StatisticsType.Current:
+                  return model.current;
+                case StatisticsType.Voltage:
+                  return model.voltage;
+                case StatisticsType.Temperature:
+                  return model.temp;
+                default:
+                  return 0.0; // can't get to here
+              }
+            }),
       ];
 }

@@ -21,7 +21,7 @@ import 'PageManager.dart';
 part 'blocExtensions/BLEScanMethods.dart';
 
 @injectable
-class DevicesBloc extends Bloc<BleDevice, BleDevice> with CurrentContext {
+class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   final DeviceRepository _deviceRepository;
   final LocalDatabaseManager _dbManager;
 

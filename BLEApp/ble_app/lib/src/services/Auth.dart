@@ -66,18 +66,18 @@ class Auth {
         final id = user.uid;
         print('USER ID IS $id');
         final _firestore = FirestoreDatabase(uid: id);
-        if (!(await _dbManager.userExists(user.email))) {
-          await _dbManager
-              .insertUser(localUser.User(user.uid, user.email, password));
-          final userDevicesWithParameters =
-              await _firestore.fetchUserDevicesWithParams();
-          print('USER DEVICES WITH PARAMETERS ARE $userDevicesWithParameters');
-          await Future.forEach(userDevicesWithParameters, (element) async {
-            print('ELEMENT FETCHED $element');
-            await _dbManager.insertDevice(element.key);
-            await _dbManager.insertParameters(element.value);
-          });
-        }
+        //if (!(await _dbManager.userExists(user.email))) {
+        await _dbManager
+            .insertUser(localUser.User(user.uid, user.email, password));
+        final userDevicesWithParameters =
+            await _firestore.fetchUserDevicesWithParams();
+        print('USER DEVICES WITH PARAMETERS ARE $userDevicesWithParameters');
+        await Future.forEach(userDevicesWithParameters, (element) async {
+          print('ELEMENT FETCHED $element');
+          await _dbManager.insertDevice(element.key);
+          await _dbManager.insertParameters(element.value);
+        });
+        //}
         _firestore.updateUserDeviceTokens(
             deviceToken: await $<CloudMessaging>().getToken());
         return AuthState.authenticated(user.uid);

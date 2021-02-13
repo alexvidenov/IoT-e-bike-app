@@ -51,10 +51,21 @@ class MapPage extends RouteAwareWidget<LocationBloc>
             stream: _locationBloc.isRecordingRx.stream,
             initialData: false,
             builder: (_, snapshot) {
-              return FloatingActionButton(
-                child: Icon(snapshot.data
-                    ? Icons.add_location_rounded
-                    : Icons.pause_circle_filled_outlined),
+              return FloatingActionButton.extended(
+                label: snapshot.data
+                    ? Text('Stop recording',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.lightBlue))
+                    : Text('Record route',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.lightBlue)),
+                icon: Icon(snapshot.data
+                    ? Icons.pause_circle_filled_outlined
+                    : Icons.add_location_rounded),
                 onPressed: () => snapshot.data
                     ? _locationBloc.stopRecording()
                     : _locationBloc.startRecording(),
@@ -65,8 +76,15 @@ class MapPage extends RouteAwareWidget<LocationBloc>
           const SizedBox(
             height: 15,
           ),
-          FloatingActionButton(
-            child: Icon(Icons.album_rounded),
+          FloatingActionButton.extended(
+            label: Text(
+              'View routes',
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.lightBlue),
+            ),
+            icon: Icon(Icons.album_rounded),
             onPressed: () {
               showModalBottomSheet(
                   context: context,
@@ -105,14 +123,10 @@ class MapPage extends RouteAwareWidget<LocationBloc>
                                       crossAxisSpacing: 12,
                                       shrinkWrap: true,
                                       children: [
-                                        LastRouteView(),
-                                        LastRouteView(),
-                                        LastRouteView(),
-                                        LastRouteView(),
-                                        LastRouteView(),
-                                        LastRouteView(),
-                                        LastRouteView(),
-                                        LastRouteView(),
+                                        ..._locationBloc.routesRx.value
+                                            .map((e) => LastRouteView(
+                                                  routeName: e.name,
+                                                )),
                                       ],
                                     ),
                                   ),
@@ -163,7 +177,7 @@ class LastRoutesHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text("Last routes",
+        Text("Saved routes",
             style: TextStyle(fontSize: 22, color: Colors.black45)),
         SizedBox(width: 8),
         Container(
@@ -179,34 +193,36 @@ class LastRoutesHeader extends StatelessWidget {
 }
 
 class LastRouteView extends StatelessWidget {
+  final String routeName;
+
+  const LastRouteView({Key key, this.routeName}) : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.lightBlueAccent,
-      elevation: 12.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      margin: const EdgeInsets.all(0),
-      child: InkWell(
-        onTap: () => {}, // TODO: handle this
-        child: Container(
-          width: 150,
-          height: 150,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Place here'),
-              const SizedBox(
-                height: 4.0,
-              ),
-              Text('Kilometers here'),
-              const SizedBox(
-                height: 4.0,
-              ),
-              Text('W/h here'),
-            ],
+  Widget build(BuildContext context) => Card(
+        color: Colors.lightBlueAccent,
+        elevation: 12.0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        margin: const EdgeInsets.all(0),
+        child: InkWell(
+          onTap: () => {}, // TODO: handle this
+          child: Container(
+            width: 150,
+            height: 150,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(routeName),
+                const SizedBox(
+                  height: 4.0,
+                ),
+                Text('Kilometers here'),
+                const SizedBox(
+                  height: 4.0,
+                ),
+                Text('W/h here'),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }

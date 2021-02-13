@@ -35,6 +35,8 @@ class LocationBloc extends ContextAwareBloc<LocationState, LocationData>
 
   final isRecordingRx = RxObject<bool>();
 
+  final routesRx = RxObject<List<RouteFileModel>>();
+
   DateTime _currentFilename;
 
   CameraPosition get initialLocation => _initialLocation;
@@ -52,7 +54,7 @@ class LocationBloc extends ContextAwareBloc<LocationState, LocationData>
     isRecordingRx.addEvent(false);
     updateCachedLocation(_currentFilename.toString(), _coordinates);
     _coordinates.clear();
-    // optionally rename this
+    // optionally rename the file
   }
 
   Circle generateNewCircle(LocationData locationData) => Circle(
@@ -74,7 +76,13 @@ class LocationBloc extends ContextAwareBloc<LocationState, LocationData>
       );
 
   @override
-  create() => _startTrackingLocation();
+  create() {
+    cachedRoutesStream.then((stream) => stream.listen((event) {
+          print('Cached routes event : $event');
+          routesRx.addEvent(event);
+        }));
+    _startTrackingLocation();
+  }
 
   @override
   dispose() {

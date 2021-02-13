@@ -1,3 +1,5 @@
+import 'package:ble_app/src/blocs/CurrentContext.dart';
+import 'package:ble_app/src/blocs/LocationCachingManager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
@@ -6,7 +8,8 @@ import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
 @singleton
-class SembastDatabase {
+class SembastDatabase with CurrentContext {
+  // FIXME: db services should not be aware of users or devices
   static SembastDatabase _instance;
   static Database _sembastDB;
 
@@ -43,4 +46,20 @@ class SembastDatabase {
       String userId, String deviceId, String oldName, String newName) {
     _coordinatesStore.record(oldName).update(_sembastDB, {'name': newName});
   }
+
+  Future<Stream<List<RouteFileModel>>> get cachedRoutesStream async =>
+      (await _coordinatesStore.query(
+              finder: Finder(
+                  filter: Filter.and([
+        Filter.equals('userId', curUserId),
+        Filter.equals('deviceId', curDeviceId)
+      ]))))
+          .onSnapshots(_sembastDB)
+          .map((snap) => snap
+              .map((e) => RouteFileModel(
+                  e['name'],
+                  (e['coordinates'] as List<dynamic>)
+                      .map((c) => LatLng.fromJson(c))
+                      .toList()))
+              .toList());
 }

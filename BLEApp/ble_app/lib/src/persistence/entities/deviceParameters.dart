@@ -25,7 +25,7 @@ class DeviceParameters extends Model {
   final double maxCutoffDischargeCurrent;
   final int maxCurrentTimeLimitPeriod;
   final double maxCutoffChargeCurrent;
-  final int motoHoursCounterCurrentThreshold;
+  final double motoHoursCounterCurrentThreshold;
   final int currentCutOffTimerPeriod;
   final int maxCutoffTemperature;
   final int maxTemperatureRecovery;
@@ -228,7 +228,7 @@ class DeviceParameters extends Model {
         maxCutoffDischargeCurrent: map['13'] as double,
         maxCurrentTimeLimitPeriod: map['14'] as int,
         maxCutoffChargeCurrent: map['15'] as double,
-        motoHoursCounterCurrentThreshold: map['16'] as int,
+        motoHoursCounterCurrentThreshold: map['16'] as double,
         currentCutOffTimerPeriod: map['17'] as int,
         maxCutoffTemperature: map['23'] as int,
         maxTemperatureRecovery: map['24'] as int,

@@ -4,9 +4,7 @@ import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:ble_app/src/sealedStates/parameterFetchState.dart';
-import 'package:ble_app/src/services/Database.dart';
 import 'package:ble_app/src/utils/ADCToTemp.dart';
-import 'package:ble_app/src/utils/connectivityManager.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
@@ -67,7 +65,7 @@ extension FetchParams on ParameterFetchBloc {
             maxCutoffDischargeCurrent: _parameters['13'] / 100,
             maxCurrentTimeLimitPeriod: _parameters['14'].toInt(),
             maxCutoffChargeCurrent: _parameters['15'] / 100,
-            motoHoursCounterCurrentThreshold: _parameters['16'].toInt(), // TODO: fix that
+            motoHoursCounterCurrentThreshold: _parameters['16'] / 100,
             currentCutOffTimerPeriod: _parameters['17'].toInt(),
             maxCutoffTemperature:
                 tempConverter.tempFromADC(_parameters['23'].toInt()),
