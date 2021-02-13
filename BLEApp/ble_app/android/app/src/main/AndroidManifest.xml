@@ -23,7 +23,7 @@
         android:label="ble_app">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="You thought I was going to put my Api key here, didn't you?" />
+            android:value="AIzaSyAfkVijQOiwCZ2YdjkHRnLRfql3n6ZICzY" />
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
