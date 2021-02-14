@@ -22,6 +22,11 @@ mixin LocationCachingManager on CurrentContext {
         coordinates: coordinates);
   }
 
+  void renameCachedLocation(String oldFileName, String newFileName) {
+    _sembastDB.renameRecording(
+        curUserId, curDeviceId, oldFileName, newFileName);
+  }
+
   Future<Stream<List<RouteFileModel>>> get cachedRoutesStream =>
-      _sembastDB.cachedRoutesStream;
+      _sembastDB.cachedRoutesStream(curUserId, curDeviceId);
 }

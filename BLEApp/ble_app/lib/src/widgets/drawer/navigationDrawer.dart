@@ -52,7 +52,6 @@ class NavigationDrawer extends StatelessWidget {
                         fontFamily: 'Europe_Ext')),
                 onTap: () => _onLogout().then((_) async {
                       _prefsBloc.clearUserPrefs();
-                      _prefsBloc.deleteUserData();
                       _deviceBloc.disconnect();
                     })),
             ListTile(

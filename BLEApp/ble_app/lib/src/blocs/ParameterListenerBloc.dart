@@ -84,7 +84,7 @@ class ParameterListenerBloc
             break;
           case '16':
             newModel = currentParams.copyWith(
-                motoHoursCounterCurrentThreshold: int.parse(currentValue));
+                motoHoursCounterCurrentThreshold: int.parse(currentValue)); // TODO: should be double
             break;
           case '17':
             newModel = currentParams.copyWith(

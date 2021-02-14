@@ -123,20 +123,20 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
     if (remainder == 1) {
       _parameterListenerBloc.programNumOfCellsFirstNode(value,
           reminderValue: (remainder + 1).toString());
-      await Future.delayed(Duration(milliseconds: 100),
+      await Future.delayed(Duration(milliseconds: 250),
           () => _parameterListenerBloc.programNumOfCellsSecondNode(value));
     } else if (remainder != 0) {
       _parameterListenerBloc.programNumOfCellsFirstNode(value,
           reminderValue: (remainder).toString());
       await Future.delayed(
-          Duration(milliseconds: 100),
+          Duration(milliseconds: 250),
           () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
               reminderValue: '4'));
     } else {
       _parameterListenerBloc.programNumOfCellsFirstNode(value,
           reminderValue: '4');
       await Future.delayed(
-          Duration(milliseconds: 100),
+          Duration(milliseconds: 250),
           () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
               reminderValue: '4'));
     }

@@ -14,8 +14,6 @@ class SettingsBloc {
 
   SettingsBloc(this._preferencesService);
 
-  String getUserData() => _preferencesService.userData() ?? 'empty';
-
   bool isFirstTime() {
     final isFirstTime = _preferencesService.isFirstTime();
     if (isFirstTime != null && !isFirstTime) {
@@ -27,42 +25,41 @@ class SettingsBloc {
     }
   }
 
-  setUserData(String json) => _preferencesService.setUserData(json);
-
-  deleteUserData() => _preferencesService.deleteUserData();
-
   bool isDeviceRemembered() => _preferencesService.getDeviceExists();
 
   bool isPasswordRemembered() => _preferencesService.isPasswordRemembered();
 
-  clearAllPrefs() async => await _preferencesService.clearAllPrefs();
+  Future<void> clearAllPrefs() async =>
+      await _preferencesService.clearAllPrefs();
 
-  clearUserPrefs() => setManual();
+  void clearUserPrefs() => setManual();
 
-  setAutoPassword(String deviceId) {
+  void setAutoPassword(String deviceId) {
     _saveDevice(deviceId);
     _savePassword(password.value);
     _connectionRx.addEvent(ConnectionSettings.AutoPassword);
   }
 
-  setAutoConnect(String deviceId) {
+  void setAutoConnect(String deviceId) {
     _saveDevice(deviceId);
     removePassword();
     _connectionRx.addEvent(ConnectionSettings.AutoConnect);
   }
 
-  setManual() {
+  void setManual() {
     _removeDeviceId();
     _connectionRx.addEvent((ConnectionSettings.Manual));
   }
 
-  _saveDevice(String deviceId) => _preferencesService.saveDeviceId(deviceId);
+  void _saveDevice(String deviceId) =>
+      _preferencesService.saveDeviceId(deviceId);
 
-  _savePassword(String password) => _preferencesService.savePassword(password);
+  void _savePassword(String password) =>
+      _preferencesService.savePassword(password);
 
-  removePassword() => _preferencesService.removePasswordRemembrance();
+  void removePassword() => _preferencesService.removePasswordRemembrance();
 
-  _removeDeviceId() => _preferencesService.removeDeviceId();
+  void _removeDeviceId() => _preferencesService.removeDeviceId();
 
   String getOptionalDeviceId() => _preferencesService.getOptionalDevice();
 
@@ -75,7 +72,7 @@ class SettingsBloc {
 
   Function(String) get setPassword => _passwordRx.addEvent;
 
-  dispose() {
+  void dispose() {
     _passwordRx.dispose();
     _connectionRx.dispose();
   }

@@ -6,19 +6,18 @@ import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
+import 'package:ble_app/src/persistence/SembastDatabase.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/entrypoints/Root.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/services/CloudMessaging.dart';
 import 'package:ble_app/src/services/Storage.dart';
-import 'package:ble_app/src/utils/PrefsKeys.dart';
 import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:logger/logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock/wakelock.dart';
 
 final logger = Logger();
@@ -28,14 +27,13 @@ const storageUpload = 'storageUpload';
 Future<void> firebaseStorageUpload() async {
   await Firebase.initializeApp();
   print('I AM IN THE ISOLATE');
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.reload();
-  final String jsonString = prefs.get(PrefsKeys.USER_DATA);
+  final sembastDatabase = await SembastDatabase.getInstance();
+  final String jsonString = await sembastDatabase.getUserLogData();
   final auth = Auth(LocalDatabaseManager(await LocalDatabase.getInstance()));
   if (jsonString != null &&
       !await auth.isSignedInAnonymously(isCalledFromIsolate: true)) {
     print('NOT NULL DATA');
-    await prefs.remove(PrefsKeys.USER_DATA);
+    await sembastDatabase.deleteUserLogData();
     await Storage().upload(jsonDecode(jsonString));
   }
 }

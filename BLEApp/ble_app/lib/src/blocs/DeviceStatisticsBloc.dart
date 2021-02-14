@@ -1,18 +1,16 @@
-import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/blocs/RxObject.dart';
-import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/services/Storage.dart';
 import 'package:injectable/injectable.dart';
 
-enum StatisticsType { Current, Voltage, Temperature }
+enum StatisticsType { Voltage, Current, Temperature }
 
 class DeviceStatisticsState {
-  final StatisticsType type;
+  final List<StatisticsType> types;
   final List<LogModel> logs;
 
-  const DeviceStatisticsState({this.type, this.logs});
+  const DeviceStatisticsState({this.types, this.logs});
 }
 
 @injectable
@@ -25,14 +23,20 @@ class DeviceStatisticsBloc
 
   final nameFetchRx = RxObject<List<String>>();
 
-  DeviceStatisticsBloc() : super();
+  final toggleButtonsState = [true, true, true];
+
+  final toggleButtonsStateRx = RxObject<List<bool>>();
+
+  DeviceStatisticsBloc() : super() {
+    toggleButtonsStateRx.addEvent([true, true, true]);
+  }
 
   Future<List<LogModel>> fetchAll() async => await _storage.downloadAll();
 
   Future<void> fetchOne(int index) async => await _storage
       .downloadOne(_logFiles.elementAt(index))
       .then((log) => addEvent(
-          DeviceStatisticsState(type: StatisticsType.Current, logs: log)));
+          DeviceStatisticsState(types: _getCurrentTypes(), logs: log)));
 
   Future<List<String>> fetchFileNames() async =>
       await _storage.fetchList().then((names) {
@@ -40,10 +44,21 @@ class DeviceStatisticsBloc
         return nameFetchRx.addEvent(names);
       });
 
-  void changeCurrentStatisticsType(StatisticsType type) {
+  List<StatisticsType> _getCurrentTypes() {
+    final List<StatisticsType> types = [];
+    for (var i = 0; i < toggleButtonsState.length; i++) {
+      if (toggleButtonsState[i]) {
+        types.add(StatisticsType.values[i]);
+      }
+    }
+    return types;
+  }
+
+  void refreshCurrentStatisticsType() {
     addEvent(DeviceStatisticsState(
-      type: type,
+      types: _getCurrentTypes(),
       logs: value.logs,
     ));
+    toggleButtonsStateRx.addEvent(toggleButtonsState);
   }
 }

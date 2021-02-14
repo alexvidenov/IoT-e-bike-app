@@ -43,10 +43,6 @@ class SharedPrefsService {
 
   isFirstTime() => _getPrefs(PrefsKeys.IS_FIRST_TIME);
 
-  String userData() => _getPrefs(PrefsKeys.USER_DATA);
-
-  setUserData(String json) => _savePrefs(PrefsKeys.USER_DATA, json);
-
   Future<void> deleteUserData() async =>
       await _preferences.remove(PrefsKeys.USER_DATA);
 

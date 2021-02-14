@@ -1,14 +1,13 @@
-import 'package:ble_app/src/blocs/ContextAwareBloc.dart';
-import 'package:ble_app/src/blocs/LocationCachingManager.dart';
-import 'package:ble_app/main.dart';
-import 'package:ble_app/src/blocs/RxObject.dart';
+import 'package:ble_app/src/blocs/LocationTracker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:location/location.dart';
+import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:rxdart/rxdart.dart';
 
-part 'blocExtensions/TrackLocation.dart';
+import 'LocationCachingManager.dart';
 
 class LocationState {
   final LocationData locationData;
@@ -17,10 +16,12 @@ class LocationState {
   const LocationState(this.locationData, {this.polylines});
 }
 
-@lazySingleton // FIXME: the fact that this is a singleton fucks up the disposal of the stream here
-class LocationBloc extends ContextAwareBloc<LocationState, LocationData>
-    with LocationCachingManager {
+@injectable
+class LocationBloc extends Bloc<LocationState, LocationData> {
   final Location _location = Location();
+  LocationTracker _locationTracker;
+
+  LocationBloc(this._locationTracker);
 
   GoogleMapController _controller;
 
@@ -31,34 +32,21 @@ class LocationBloc extends ContextAwareBloc<LocationState, LocationData>
     zoom: 14.4746,
   );
 
-  final List<LatLng> _coordinates = [];
+  ValueStream<List<RouteFileModel>> get routes =>
+      _locationTracker.routesRx.stream;
 
-  final isRecordingRx = RxObject<bool>();
+  Stream<bool> get isRecording => _locationTracker.isRecordingRx.stream;
 
-  final routesRx = RxObject<List<RouteFileModel>>();
-
-  DateTime _currentFilename;
+  Stream<bool> get isShowingRoute =>
+      _locationTracker.isShowingCachedRoute.stream;
 
   CameraPosition get initialLocation => _initialLocation;
 
   set controller(GoogleMapController controller) =>
       this._controller = controller;
 
-  void startRecording() {
-    isRecordingRx.addEvent(true);
-    _currentFilename = DateTime.now();
-    createCoordinatesFile(_currentFilename.toString());
-  }
-
-  void stopRecording() {
-    isRecordingRx.addEvent(false);
-    updateCachedLocation(_currentFilename.toString(), _coordinates);
-    _coordinates.clear();
-    // optionally rename the file
-  }
-
   Circle generateNewCircle(LocationData locationData) => Circle(
-      circleId: CircleId("car"),
+      circleId: CircleId("currentPositionCircle"),
       radius: locationData.accuracy,
       zIndex: 1,
       strokeColor: Colors.blue,
@@ -66,7 +54,7 @@ class LocationBloc extends ContextAwareBloc<LocationState, LocationData>
       fillColor: Colors.blue.withAlpha(70));
 
   Marker generateNewMarker(LocationData locationData) => Marker(
-        markerId: MarkerId("home"),
+        markerId: MarkerId("currentPositionMarker"),
         position: LatLng(locationData.latitude, locationData.longitude),
         rotation: locationData.heading,
         draggable: false,
@@ -76,20 +64,63 @@ class LocationBloc extends ContextAwareBloc<LocationState, LocationData>
       );
 
   @override
-  create() {
-    cachedRoutesStream.then((stream) => stream.listen((event) {
-          print('Cached routes event : $event');
-          routesRx.addEvent(event);
-        }));
-    _startTrackingLocation();
+  create() async {
+    try {
+      final location = await _location.getLocation();
+
+      addEvent(LocationState(location));
+
+      if (streamSubscription != null) streamSubscription.cancel();
+
+      streamSubscription = _location.onLocationChanged.listen((locData) {
+        final lat = locData.latitude;
+        final long = locData.longitude;
+        if (_controller != null) {
+          _controller.animateCamera(CameraUpdate.newCameraPosition(
+              CameraPosition(
+                  bearing: 192.8334901395799,
+                  target: LatLng(lat, long),
+                  tilt: 0,
+                  zoom: 18.00)));
+        }
+        final shouldShowPolyline = _locationTracker.isRecordingRx.value ||
+            _locationTracker.isShowingCachedRoute.value;
+        if (_locationTracker.isRecordingRx.value) {
+          print('ADDING COORDINATES');
+          _locationTracker.addCoords(lat, long);
+        }
+        addEvent(LocationState(locData,
+            polylines: Set.of(shouldShowPolyline
+                ? [
+                    Polyline(
+                        polylineId: PolylineId('firstRoute'),
+                        points: _locationTracker.coords,
+                        width: 8)
+                  ]
+                : [])));
+      });
+    } on PlatformException catch (e) {
+      if (e.code == 'PERMISSION_DENIED') {
+        // add event that says that the permission is denied
+        debugPrint("Permission Denied");
+      }
+    }
   }
 
-  @override
-  dispose() {
-    logger.wtf('Closing stream in Location Bloc');
-    if (isRecordingRx.value) {
-      // save the routes
-    }
-    super.dispose();
-  }
+  void startRecording() => _locationTracker.startRecording();
+
+  void stopRecording() => _locationTracker.stopRecording();
+
+  void renameFile(String fileName) => _locationTracker.renameFile(fileName);
+
+  void loadCachedRoute(String name) => _locationTracker.loadCoordinates(
+      routes.value.firstWhere((route) => route.name == name).coordinates);
+
+  void removeCachedRoute() => _locationTracker.clearLoadedCoordinates();
+
+  void loadCachedRoutes() => _locationTracker.cachedRoutesStream
+      .then((stream) => stream.listen((event) {
+            print('Cached routes event : $event');
+            _locationTracker.routesRx.addEvent(event);
+          }));
 }

@@ -21,6 +21,7 @@ import '../blocs/InnerPageManager.dart';
 import '../persistence/localDatabase.dart';
 import '../persistence/LocalDatabaseManager.dart';
 import '../blocs/locationBloc.dart';
+import '../blocs/LocationTracker.dart';
 import '../blocs/navigationBloc.dart';
 import '../blocs/navigationService.dart';
 import '../blocs/OutputControlBloc.dart';
@@ -50,7 +51,7 @@ GetIt $initGetIt(
   gh.lazySingleton<InnerPageManager>(() => InnerPageManager());
   gh.lazySingleton<LocalDatabaseManager>(
       () => LocalDatabaseManager(get<LocalDatabase>()));
-  gh.lazySingleton<LocationBloc>(() => LocationBloc());
+  gh.lazySingleton<LocationTracker>(() => LocationTracker());
   gh.lazySingleton<NavigationService>(() => NavigationService());
   gh.lazySingleton<PageManager>(() => PageManager());
   gh.factory<ParameterFetchBloc>(
@@ -66,6 +67,7 @@ GetIt $initGetIt(
   gh.lazySingleton<DeviceBloc>(() => DeviceBloc(get<DeviceRepository>()));
   gh.factory<DevicesBloc>(
       () => DevicesBloc(get<DeviceRepository>(), get<LocalDatabaseManager>()));
+  gh.factory<LocationBloc>(() => LocationBloc(get<LocationTracker>()));
   gh.lazySingleton<NavigationBloc>(
       () => NavigationBloc(get<NavigationService>()));
   gh.lazySingleton<SettingsBloc>(() => SettingsBloc(get<SharedPrefsService>()));
