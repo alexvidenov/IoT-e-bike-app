@@ -130,6 +130,6 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
 
-
   assets:
     - assets/images/app_logo.png
+    - assets/images/login_image.jpg
