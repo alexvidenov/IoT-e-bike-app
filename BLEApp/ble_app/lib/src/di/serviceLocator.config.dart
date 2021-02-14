@@ -30,6 +30,7 @@ import '../blocs/parameterFetchBloc.dart';
 import '../blocs/mixins/parameterAware/ParameterHolder.dart';
 import '../blocs/parameterListenerBloc.dart';
 import '../persistence/SembastDatabase.dart';
+import '../blocs/ServiceChatBloc.dart';
 import '../blocs/settingsBloc.dart';
 import '../blocs/sharedPrefsService.dart';
 import '../blocs/shortStatusBloc.dart';
@@ -59,6 +60,7 @@ GetIt $initGetIt(
   gh.lazySingleton<ParameterHolder>(() => ParameterHolder());
   gh.factory<ParameterListenerBloc>(
       () => ParameterListenerBloc(get<DeviceRepository>()));
+  gh.factory<ServiceChatBloc>(() => ServiceChatBloc());
   gh.factory<ShortStatusBloc>(() => ShortStatusBloc(get<DeviceRepository>()));
   gh.lazySingleton<Auth>(() => Auth(get<LocalDatabaseManager>()));
   gh.lazySingleton<AuthBloc>(() => AuthBloc(get<Auth>()));

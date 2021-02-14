@@ -150,7 +150,6 @@ class MapPage extends RouteAwareWidget<LocationBloc>
                       builder: (_, controller) =>
                           NotificationListener<CachedRouteChosenNotification>(
                             onNotification: (notification) {
-                              print('OMDJOIN ITS A NOTIFICATION');
                               _locationBloc
                                   .loadCachedRoute(notification.fileName);
                               return true;

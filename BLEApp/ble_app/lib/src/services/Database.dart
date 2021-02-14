@@ -22,6 +22,8 @@ class FirestoreDatabase {
 
   DocumentReference get _user => _users.doc(uid);
 
+  CollectionReference get _deviceMessages => _device.collection('messages');
+
   DocumentReference get _deviceIdGenerator =>
       _firestore.collection('deviceId').doc('currentId');
 
@@ -109,4 +111,17 @@ class FirestoreDatabase {
         'reason': notification.state.string(),
         'timeStamp': DateTime.now(),
       });
+
+  Future<void> sendMessage(String message) =>
+      _device.collection('messages').doc().set({
+        'from': uid,
+        'message': message,
+        'timeStamp': DateTime.now(),
+      });
+
+  Stream<List<DocumentSnapshot>> lastMessages() => _deviceMessages
+      .orderBy('timeStamp', descending: true)
+      .limit(20)
+      .snapshots()
+      .map((snap) => snap.docs);
 }
