@@ -14,7 +14,7 @@ mixin DataCachingManager on CurrentContext {
   AppData
       _appData; // appData is continuously evolving even if upload occurs -> we should bind this appData instance to the upload somehow
 
-  loadData() async {
+  void loadData() async {
     final data = await _sembastDatabase.getUserLogData();
     data != null
         ? _appData = AppData.fromJson(jsonDecode(data),

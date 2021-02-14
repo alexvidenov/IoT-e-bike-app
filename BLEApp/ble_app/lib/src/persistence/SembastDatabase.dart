@@ -26,27 +26,33 @@ class SembastDatabase {
     return _instance;
   }
 
-  void createRouteFile(String userId, String deviceId, String fileName) {
-    _coordinatesStore.record(fileName).put(_sembastDB, {
+  void createRouteFile(
+      String userId, String deviceId, String initialTimeStamp) {
+    _coordinatesStore.record(initialTimeStamp).put(_sembastDB, {
       'userId': userId,
       'deviceId': deviceId,
-      'name': fileName,
+      'startedAt': initialTimeStamp,
+      'finishedAt': '',
+      'name': '',
+      'length': 0.0,
+      'consumed': 0.0,
       'coordinates': []
     });
   }
 
   void updateCoordinatesRouteFile(
-      String userId, String deviceId, String fileName,
-      {List<LatLng> coordinates}) {
-    _coordinatesStore.record(fileName).put(_sembastDB,
-        {'coordinates': coordinates.map((c) => c.toJson()).toList()},
+      String userId, String deviceId, String fileTimeStamp,
+      {List<LatLng> coordinates, String finishedAt}) {
+    _coordinatesStore.record(fileTimeStamp).put(_sembastDB,
+        {'coordinates': coordinates.map((c) => c.toJson()).toList(),
+        'finishedAt' : finishedAt},
         merge: true);
   }
 
   void renameRecording(
-      String userId, String deviceId, String oldName, String newName) {
+      String userId, String deviceId, String fileTimeStamp, String newName) {
     _coordinatesStore
-        .record(oldName)
+        .record(fileTimeStamp)
         .put(_sembastDB, {'name': newName}, merge: true);
   }
 
@@ -59,8 +65,12 @@ class SembastDatabase {
           .onSnapshots(_sembastDB)
           .map((snap) => snap
               .map((e) => RouteFileModel(
-                  e['name'],
-                  (e['coordinates'] as List<dynamic>)
+                  name: e['name'],
+                  startedAt: e['startedAt'],
+                  finishedAt: e['finishedAt'],
+                  lengthInKilometers: e['length'],
+                  wastedPowerInWh: e['consumed'],
+                  coordinates: (e['coordinates'] as List<dynamic>)
                       .map((c) => LatLng.fromJson(c))
                       .toList()))
               .toList());

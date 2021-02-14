@@ -113,8 +113,10 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
 
   void renameFile(String fileName) => _locationTracker.renameFile(fileName);
 
-  void loadCachedRoute(String name) => _locationTracker.loadCoordinates(
-      routes.value.firstWhere((route) => route.name == name).coordinates);
+  void loadCachedRoute(String fileTimeStamp) =>
+      _locationTracker.loadCoordinates(routes.value
+          .firstWhere((route) => route.startedAt == fileTimeStamp)
+          .coordinates);
 
   void removeCachedRoute() => _locationTracker.clearLoadedCoordinates();
 

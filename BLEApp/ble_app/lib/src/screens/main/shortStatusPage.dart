@@ -53,7 +53,7 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with RouteUtils {
         onNotification: (notification) {
           if (notification.isStateGone) {
             WidgetsBinding.instance
-                .addPostFrameCallback((_) => dialog.dissmiss());
+                .addPostFrameCallback((_) => dialog?.dissmiss());
           } else {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               dialog = AwesomeDialog(

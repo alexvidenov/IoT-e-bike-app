@@ -1,4 +1,5 @@
 import 'package:ble_app/src/blocs/InnerPageManager.dart';
+import 'package:ble_app/src/blocs/LocationCachingManager.dart';
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/mixins/KeepSession.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
@@ -186,7 +187,7 @@ class MapPage extends RouteAwareWidget<LocationBloc>
                                           children: [
                                             ..._locationBloc.routes.value
                                                 .map((e) => LastRouteView(
-                                                      routeName: e.name,
+                                                      model: e,
                                                     )),
                                           ],
                                         ),
@@ -256,9 +257,9 @@ class LastRoutesHeader extends StatelessWidget {
 }
 
 class LastRouteView extends StatelessWidget {
-  final String routeName;
+  final RouteFileModel model;
 
-  const LastRouteView({Key key, this.routeName}) : super(key: key);
+  const LastRouteView({Key key, this.model}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Card(
@@ -268,22 +269,30 @@ class LastRouteView extends StatelessWidget {
         margin: const EdgeInsets.all(0),
         child: InkWell(
           onTap: () =>
-              CachedRouteChosenNotification(routeName).dispatch(context),
+              CachedRouteChosenNotification(model.startedAt).dispatch(context),
           child: Container(
             width: 150,
             height: 150,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(routeName),
+                Text(model.name),
                 const SizedBox(
                   height: 4.0,
                 ),
-                Text('Kilometers here'),
+                Text(model.startedAt),
                 const SizedBox(
                   height: 4.0,
                 ),
-                Text('W/h here'),
+                Text(model.finishedAt),
+                const SizedBox(
+                  height: 4.0,
+                ),
+                Text(model.lengthInKilometers.toString()),
+                const SizedBox(
+                  height: 4.0,
+                ),
+                Text(model.wastedPowerInWh.toString()),
               ],
             ),
           ),

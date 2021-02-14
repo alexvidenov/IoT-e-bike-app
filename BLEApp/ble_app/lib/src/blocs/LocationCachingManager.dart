@@ -5,26 +5,36 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RouteFileModel {
   final String name;
+  final String startedAt;
+  final String finishedAt;
+  final double lengthInKilometers; // TODO: calculate these fields
+  final double wastedPowerInWh;
   final List<LatLng> coordinates;
 
-  const RouteFileModel(this.name, this.coordinates);
+  const RouteFileModel(
+      {this.name,
+      this.coordinates,
+      this.startedAt,
+      this.finishedAt,
+      this.lengthInKilometers,
+      this.wastedPowerInWh});
 }
 
 mixin LocationCachingManager on CurrentContext {
   final _sembastDB = $<SembastDatabase>();
 
-  void createCoordinatesFile(String fileName) {
-    _sembastDB.createRouteFile(curUserId, curDeviceId, fileName);
+  void createCoordinatesFile(String initialTimeStamp) {
+    _sembastDB.createRouteFile(curUserId, curDeviceId, initialTimeStamp);
   }
 
-  void updateCachedLocation(String fileName, List<LatLng> coordinates) {
+  void updateCachedLocation(String fileName, List<LatLng> coordinates, String finishedAt) {
     _sembastDB.updateCoordinatesRouteFile(curUserId, curDeviceId, fileName,
-        coordinates: coordinates);
+        coordinates: coordinates, finishedAt: finishedAt);
   }
 
-  void renameCachedLocation(String oldFileName, String newFileName) {
+  void renameCachedLocation(String fileTimeStamp, String newFileName) {
     _sembastDB.renameRecording(
-        curUserId, curDeviceId, oldFileName, newFileName);
+        curUserId, curDeviceId, fileTimeStamp, newFileName);
   }
 
   Future<Stream<List<RouteFileModel>>> get cachedRoutesStream =>
