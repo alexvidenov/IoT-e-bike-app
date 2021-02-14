@@ -4,6 +4,7 @@ import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:ble_app/src/services/Database.dart';
 import 'package:ble_app/src/utils/ADCToTemp.dart';
 import 'package:injectable/injectable.dart';
+import 'package:rxdart/rxdart.dart';
 
 enum ParameterChangeStatus { Successful, Unsuccessful }
 
@@ -19,14 +20,22 @@ class ParameterListenerBloc
 
   bool _successful = false;
 
+  int _changingNumOfCells = 0;
+
   @override
   create() {
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       print('RESPONSE FROM PARAM LISTENER: $event');
       if (event.startsWith('OK')) {
         _successful = true;
-        addEvent(ParameterChangeStatus
-            .Successful); // in the UI, wait 1 second if not successful
+        if (currentKey == '00') {
+          _changingNumOfCells++;
+          if (_changingNumOfCells == 2) {
+            _changingNumOfCells = 0;
+            addEvent(ParameterChangeStatus.Successful);
+          }
+        } else
+          addEvent(ParameterChangeStatus.Successful);
         DeviceParameters newModel;
         switch (currentKey) {
           case '00':
@@ -106,15 +115,13 @@ class ParameterListenerBloc
                 motoHoursDischargeCounter: int.parse(currentValue));
             break;
         }
-        num numValue = num.parse(currentValue);
+        final num numValue = num.parse(currentValue);
         if (newModel != null) {
           FirestoreDatabase(uid: this.curUserId, deviceId: this.curDeviceId)
               .updateIndividualParameter(currentKey, numValue);
           updateParameters(model: newModel);
           setLocalParameters(newModel);
         }
-        // TODO; add method in the data class to parse stuff and return
-        // enum with the available parameters (?). actually needed only for specific stuff
       }
     });
   }

@@ -83,8 +83,6 @@ class Storage {
     final references =
         await _root.child('/devices/$deviceSerialNumber/$uid').listAll();
     final items = references.items;
-    print('ITEMS ARE $items');
-    print('First name is ' + items.first.name);
     return items.map((e) => e.name).toList();
   }
 }
