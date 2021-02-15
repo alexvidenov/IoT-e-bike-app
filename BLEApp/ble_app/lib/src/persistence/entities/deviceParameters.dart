@@ -71,7 +71,7 @@ class DeviceParameters extends Model {
     double maxCutoffDischargeCurrent,
     int maxCurrentTimeLimitPeriod,
     double maxCutoffChargeCurrent,
-    int motoHoursCounterCurrentThreshold,
+    double motoHoursCounterCurrentThreshold,
     int currentCutOffTimerPeriod,
     int maxCutoffTemperature,
     int maxTemperatureRecovery,

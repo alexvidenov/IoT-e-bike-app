@@ -8,6 +8,23 @@ import 'package:rxdart/rxdart.dart';
 
 enum ParameterChangeStatus { Successful, Unsuccessful }
 
+enum CalibrateType { Voltage, Charge, Discharge }
+
+extension CalibrateStringCommand on CalibrateType {
+  String getStringCommand() {
+    switch (this) {
+      case CalibrateType.Voltage:
+        return 'V';
+      case CalibrateType.Charge:
+        return 'C';
+      case CalibrateType.Discharge:
+        return 'D';
+      default:
+        return 'Error'; // can't get to here
+    }
+  }
+}
+
 @injectable
 class ParameterListenerBloc
     extends ParameterAwareBloc<ParameterChangeStatus, String> {
@@ -84,8 +101,7 @@ class ParameterListenerBloc
             break;
           case '16':
             newModel = currentParams.copyWith(
-                motoHoursCounterCurrentThreshold:
-                    int.parse(currentValue)); // TODO: should be double
+                motoHoursCounterCurrentThreshold: double.parse(currentValue));
             break;
           case '17':
             newModel = currentParams.copyWith(
@@ -127,7 +143,7 @@ class ParameterListenerBloc
     });
   }
 
-  changeParameter(String key, String value) {
+  void changeParameter(String key, String value) {
     final String command = _generateCommandString(key, value);
     print('EXECUTING COMMANd => $command');
     _successful = false;
@@ -137,48 +153,40 @@ class ParameterListenerBloc
     this.currentValue = value;
   }
 
-  calibrateVoltage() {
-    // FIXME: fix this bruh repetition here
+  void _calibrate({CalibrateType calibrateType}) {
     _successful = false;
     _timeout();
-    _repository.writeToCharacteristic('V\r');
+    final command = calibrateType.getStringCommand();
+    _repository.writeToCharacteristic('$command\r');
   }
 
-  calibrateCharge() {
-    _successful = false;
-    _timeout();
-    _repository.writeToCharacteristic('C\r');
-  }
+  void calibrateVoltage() => _calibrate(calibrateType: CalibrateType.Voltage);
 
-  calibrateDischarge() {
-    _successful = false;
-    _timeout();
-    _repository.writeToCharacteristic('D\r');
-  }
+  void calibrateCharge() => _calibrate(calibrateType: CalibrateType.Charge);
 
-  void programNumOfCellsFirstNode(String value, {String reminderValue}) {
+  void calibrateDischarge() =>
+      _calibrate(calibrateType: CalibrateType.Discharge);
+
+  void _programNumOfCells(String value, {int node, String reminderValue}) {
     _successful = false;
     _timeout();
-    _repository.writeToCharacteristic('W00010$reminderValue\r');
-    print('FIRST NODE:' + 'W00010$reminderValue\r');
+    _repository.writeToCharacteristic('W000$node' + '0$reminderValue\r');
     currentKey = '00';
     this.currentValue = value;
   }
 
-  void programNumOfCellsSecondNode(String value, {String reminderValue = '3'}) {
-    _successful = false;
-    _timeout();
-    _repository.writeToCharacteristic('W00020$reminderValue\r');
-    print('SECOND NODE:' + 'W00020$reminderValue\r');
-    currentKey = '00';
-    this.currentValue = value;
-  }
+  void programNumOfCellsFirstNode(String value, {String reminderValue}) =>
+      _programNumOfCells(value, node: 1, reminderValue: reminderValue);
 
-  _timeout() => Future.delayed(Duration(milliseconds: 900), () {
+  void programNumOfCellsSecondNode(String value,
+          {String reminderValue = '3'}) =>
+      _programNumOfCells(value, node: 2, reminderValue: reminderValue);
+
+  void _timeout() => Future.delayed(Duration(milliseconds: 900), () {
         if (!_successful) addEvent(ParameterChangeStatus.Unsuccessful);
       });
 
-  retry() {
+  void retry() {
     final String command =
         _generateCommandString(this.currentKey, currentValue);
     _repository.writeToCharacteristic(command);
