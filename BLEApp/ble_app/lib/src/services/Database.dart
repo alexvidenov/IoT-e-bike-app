@@ -53,7 +53,6 @@ class FirestoreDatabase {
       return MapEntry(
           Device(
               deviceId: id ?? this.deviceId,
-              userId: this.uid,
               macAddress: device.get('MAC'),
               name: device.get('name'),
               isSuper: device.get('isSuper')),
@@ -62,10 +61,26 @@ class FirestoreDatabase {
       return null; // here the bloc calling this DB service should emit state saying that the device number is wrong
   }
 
-  Future<DeviceParameters> fetchDeviceParameters({String id}) async {
-    final Map<String, dynamic> _params =
-        (await _devices.doc(id ?? this.deviceId).get()).get('parameters');
-    return DeviceParameters.fromMap(_params);
+  Future<List<MapEntry<Device, DeviceParameters>>> fetchDevicesWithParameters(
+      {List<String> ids}) async {
+    final devicesWithParameters = List<MapEntry<Device, DeviceParameters>>();
+    await Future.forEach(
+        ids,
+        (id) async =>
+            devicesWithParameters.add(await fetchDeviceWithParameters(id: id)));
+    return devicesWithParameters;
+  }
+
+  Future<List<MapEntry<Device, DeviceParameters>>>
+      fetchUserDevicesWithParams() async {
+    final devicesWithParameters = List<MapEntry<Device, DeviceParameters>>();
+    final List<dynamic> deviceListIds =
+        await (await _user.get()).get('devices');
+    await Future.forEach(
+        deviceListIds,
+        (id) async =>
+            devicesWithParameters.add(await fetchDeviceWithParameters(id: id)));
+    return devicesWithParameters;
   }
 
   Future<void> addUser(String deviceToken) => _user.set({
@@ -92,18 +107,6 @@ class FirestoreDatabase {
 
   Future<void> updateDeviceName({@required String name}) =>
       _device.update({'Name': name});
-
-  Future<List<MapEntry<Device, DeviceParameters>>>
-      fetchUserDevicesWithParams() async {
-    final devicesWithParameters = List<MapEntry<Device, DeviceParameters>>();
-    final List<dynamic> deviceListIds =
-        await (await _user.get()).get('devices');
-    await Future.forEach(
-        deviceListIds,
-        (id) async =>
-            devicesWithParameters.add(await fetchDeviceWithParameters(id: id)));
-    return devicesWithParameters;
-  }
 
   Future<void> addError(ServiceNotification notification) =>
       _device.collection('errors').doc().set({

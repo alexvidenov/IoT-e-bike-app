@@ -16,9 +16,9 @@ class AuthBloc {
       _auth.signInWithEmailAndPassword(email, password);
 
   Future<AuthState> signUpWithEmailAndPassword(
-          {String email, String password, String deviceId, bool isSuperuser}) =>
+          {String email, String password, List<String> deviceIds, bool isSuperuser}) =>
       _auth.signUpWithEmailAndPassword(email, password,
-          deviceSerialNumber: deviceId);
+          deviceIds: deviceIds);
 
   Future<AuthState> signInAnonymously() => _auth.signInAnonymously();
 

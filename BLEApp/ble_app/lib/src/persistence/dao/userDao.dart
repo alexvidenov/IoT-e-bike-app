@@ -7,9 +7,9 @@ abstract class UserDao extends Dao<User> {
   @Query('SELECT * FROM users')
   Future<List<User>> fetchUsers();
 
-  @Query('SELECT * FROM users WHERE email = :email')
-  Future<User> fetchUser(String email);
+  @Query('SELECT * FROM users WHERE username = :username')
+  Future<User> fetchUser(String username);
 
-  @Query('DELETE FROM users WHERE email = :email')
-  Future<void> deleteUser(String email);
+  @Query('DELETE FROM users WHERE username = :username')
+  Future<void> deleteUser(String username);
 }

@@ -15,7 +15,7 @@ typedef EditedParameterCallback = Future<void> Function(String, String);
 typedef CalibrateCallback = void Function();
 
 class _CardParameter extends StatelessWidget {
-  // Should keep the last value. If it doesnt program correctly, rturn the old value
+  // Should keep the last value. If it doesn't program correctly, return the old value
   final int _showcaseIndex;
   final String _tableIndex;
   final String _parameterName;
@@ -120,36 +120,40 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
   Future<void> numCellsCompletion(String _, String value) async {
     _repository.cancel();
     final remainder = int.parse(value).remainder(4);
-    if (remainder == 1) {
-      _parameterListenerBloc.programNumOfCellsFirstNode(value,
-          reminderValue: (remainder + 1).toString());
-      await Future.delayed(Duration(milliseconds: 250),
-          () => _parameterListenerBloc.programNumOfCellsSecondNode(value));
-    } else if (remainder != 0) {
-      _parameterListenerBloc.programNumOfCellsFirstNode(value,
-          reminderValue: (remainder).toString());
-      await Future.delayed(
-          Duration(milliseconds: 250),
-          () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
-              reminderValue: '4'));
-    } else {
-      _parameterListenerBloc.programNumOfCellsFirstNode(value,
-          reminderValue: '4');
-      await Future.delayed(
-          Duration(milliseconds: 250),
-          () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
-              reminderValue: '4'));
-    }
-    Future.delayed(Duration(milliseconds: 80), () => _repository.resume());
+    _runAfter200ms(() async {
+      if (remainder == 1) {
+        _parameterListenerBloc.programNumOfCellsFirstNode(value,
+            reminderValue: (remainder + 1).toString());
+        await Future.delayed(Duration(milliseconds: 250),
+            () => _parameterListenerBloc.programNumOfCellsSecondNode(value));
+      } else if (remainder != 0) {
+        _parameterListenerBloc.programNumOfCellsFirstNode(value,
+            reminderValue: (remainder).toString());
+        await Future.delayed(
+            Duration(milliseconds: 250),
+            () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
+                reminderValue: '4'));
+      } else {
+        _parameterListenerBloc.programNumOfCellsFirstNode(value,
+            reminderValue: '4');
+        await Future.delayed(
+            Duration(milliseconds: 250),
+            () => _parameterListenerBloc.programNumOfCellsSecondNode(value,
+                reminderValue: '4'));
+      }
+    }).then((_) => Future.delayed(
+        Duration(milliseconds: 100), () => _repository.resume()));
   }
 
   Future<void> completion(String key, String value) async {
     _repository.cancel();
-    await Future.delayed(
-        Duration(milliseconds: 150), // works perfectly with 80.
-        () => _parameterListenerBloc.changeParameter(key, value));
-    Future.delayed(Duration(milliseconds: 80), () => _repository.resume());
+    _runAfter200ms(() => _parameterListenerBloc.changeParameter(key, value))
+        .then((_) => Future.delayed(
+            Duration(milliseconds: 100), () => _repository.resume()));
   }
+
+  Future<void> _runAfter200ms(Function() func) async =>
+      await Future.delayed(Duration(milliseconds: 200), () => func());
 
   Future<void> serialNumberCompletion(String key, String value) async {
     // only for superusers

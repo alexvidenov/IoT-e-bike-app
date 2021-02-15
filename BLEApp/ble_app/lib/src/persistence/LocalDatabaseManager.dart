@@ -2,6 +2,8 @@ import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/persistence/dao/deviceDao.dart';
 import 'package:ble_app/src/persistence/dao/parametersDao.dart';
 import 'package:ble_app/src/persistence/dao/userDao.dart';
+import 'package:ble_app/src/persistence/dao/userDevicesDao.dart';
+import 'package:ble_app/src/persistence/entities/userDevices.dart';
 import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:ble_app/src/persistence/entities/user.dart';
@@ -19,26 +21,34 @@ class LocalDatabaseManager with CurrentContext {
 
   ParametersDao get _parametersDao => _localDatabase.parametersDao;
 
+  UserDevicesDao get _userDevicesDao => _localDatabase.userDevicesDao;
+
   const LocalDatabaseManager(this._localDatabase);
 
-  insertUser(User user) => _userDao.insertEntity(user);
+  void insertUser(User user) => _userDao.insertEntity(user);
 
-  deleteAnonymousUser() => _userDao.deleteUser('anonymous');
+  void deleteAnonymousUser() => _userDao.deleteUser('anonymous');
 
-  insertDevice(Device device) => _deviceDao.insertEntity(device);
+  void insertDevice(Device device) => _deviceDao.insertEntity(device);
 
-  insertDevices(List<Device> devices) => _deviceDao.insertList(devices);
+  void insertUserWithDevice(String userId, String deviceId) =>
+      _userDevicesDao.insertEntity(UserDevices(userId, deviceId));
 
-  insertParameters(DeviceParameters parameters) =>
+  void insertDevices(List<Device> devices) => _deviceDao.insertList(devices);
+
+  void insertParameters(DeviceParameters parameters) =>
       _parametersDao.insertEntity(parameters);
 
-  insertListParameters(List<DeviceParameters> parameters) =>
+  void insertListParameters(List<DeviceParameters> parameters) =>
       _parametersDao.insertList(parameters);
 
   Future<User> fetchUser(String email) async => await _userDao.fetchUser(email);
 
+  Future<Device> fetchUserDevice() async =>
+      await _deviceDao.fetchUserDevice(this.curDeviceId, this.curUserId);
+
   Future<Device> fetchDevice() async =>
-      await _deviceDao.fetchDevice(this.curDeviceId, this.curUserId);
+      await _deviceDao.fetchDevice(this.curDeviceId);
 
   Future<List<Device>> fetchDevices() async =>
       await _deviceDao.fetchDevices(curUserId);
@@ -49,26 +59,29 @@ class LocalDatabaseManager with CurrentContext {
   Future<DeviceParameters> fetchParametersAsFuture() async =>
       await _parametersDao.fetchDeviceParametersAsFuture(curDeviceId);
 
-  updateParameter(DeviceParameters parameters) =>
+  void updateParameter(DeviceParameters parameters) =>
       _parametersDao.updateEntity(parameters);
 
-  setMacAddress(String mac) => _deviceDao.setMacAddress(mac, curDeviceId);
+  void setMacAddress(String mac) => _deviceDao.setMacAddress(mac, curDeviceId);
 
-  updateChangedParameters(String parameters) =>
+  void updateChangedParameters(String parameters) =>
       _deviceDao.updateParametersToChange(parameters, this.curDeviceId);
 
   Future<bool> userExists(String email) async =>
       await _userDao.fetchUser(email) != null;
 
+  Future<bool> deviceExists(String deviceId) async =>
+      await _deviceDao.fetchDevice(deviceId) != null;
+
   Future<bool> isAnonymous() async =>
       await _userDao.fetchUser('anonymous') != null;
 
-  insertAnonymousUser() =>
+  void insertAnonymousUser() =>
       _userDao.insertEntity(User('0000', 'anonymous', 'password'));
 
-  insertAnonymousDevice() => _deviceDao.insertEntity(Device(
+  void insertAnonymousDevice() => _deviceDao.insertEntity(Device(
       deviceId: '1234',
       // TODO: extract in a separate object these constants
-      userId: '0000',
-      name: BluetoothUtils.defaultBluetoothDeviceName));
+      name: BluetoothUtils.defaultBluetoothDeviceName,
+      isSuper: false));
 }

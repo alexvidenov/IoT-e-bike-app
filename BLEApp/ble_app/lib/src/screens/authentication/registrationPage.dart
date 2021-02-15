@@ -68,7 +68,7 @@ class _StepperBodyState extends State<StepperBody> {
 
   get _focusNodeUsername => FocusNode();
 
-  get _focusNodeLastName => FocusNode();
+  get _focusNodePassword => FocusNode();
 
   final List<String> _devicesList = [null];
 
@@ -79,13 +79,13 @@ class _StepperBodyState extends State<StepperBody> {
   initState() {
     super.initState();
     _focusNodeUsername.addListener(() => setState(() => {}));
-    _focusNodeLastName.addListener(() => setState(() => {}));
+    _focusNodePassword.addListener(() => setState(() => {}));
   }
 
   @override
   dispose() {
     _focusNodeUsername.dispose();
-    _focusNodeLastName.dispose();
+    _focusNodePassword.dispose();
     super.dispose();
   }
 
@@ -124,6 +124,7 @@ class _StepperBodyState extends State<StepperBody> {
             isActive: currStep >= 3,
             state: currStep == 2 ? StepState.editing : StepState.indexed,
             content: TextFormField(
+              focusNode: _focusNodePassword,
               keyboardType: TextInputType.visiblePassword,
               autocorrect: false,
               onSaved: (String value) {
@@ -237,7 +238,7 @@ class _StepperBodyState extends State<StepperBody> {
         // await the result here and if it returns the other thing that means the user didnt input the thing properly
         email: data.userName + '@gmail.com',
         password: data.password,
-        deviceId: data.deviceSerialNumber);
+        deviceIds: this._devicesList);
     //}
   }
 

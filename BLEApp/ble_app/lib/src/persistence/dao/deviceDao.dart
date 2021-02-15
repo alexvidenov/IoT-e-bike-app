@@ -4,11 +4,23 @@ import 'package:floor/floor.dart';
 
 @dao
 abstract class DeviceDao extends Dao<Device> {
-  @Query('SELECT * FROM devices WHERE user_id = :userId')
+  @Query('''SELECT *
+            FROM devices d
+            INNER JOIN users_devices u ON u.user_id = :userId
+            GROUP BY d.id
+         ''')
   Future<List<Device>> fetchDevices(String userId);
 
-  @Query('SELECT * FROM devices WHERE id = :deviceId AND user_id = :userId')
-  Future<Device> fetchDevice(String deviceId, String userId);
+  @Query('''SELECT *
+            FROM devices d
+            INNER JOIN users_devices u ON u.user_id = :userId AND d.id = :deviceId
+            GROUP BY d.id
+         ''')
+  Future<Device> fetchUserDevice(
+      String deviceId, String userId); // rename to fetch user device
+
+  @Query('SELECT * FROM devices WHERE id = :deviceId')
+  Future<Device> fetchDevice(String deviceId);
 
   @Query(
       'UPDATE devices SET parametersToChange = :parameters WHERE id = :deviceId')
