@@ -1,147 +1,103 @@
-import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
+import 'package:background_fetch/background_fetch.dart';
+import 'package:ble_app/src/blocs/PageManager.dart';
+import 'package:ble_app/src/blocs/entryEndpointBloc.dart';
+import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
+import 'package:ble_app/src/persistence/SembastDatabase.dart';
+import 'package:ble_app/src/persistence/localDatabase.dart';
+import 'package:ble_app/src/screens/entrypoints/Root.dart';
+import 'package:ble_app/src/screens/routeAware.dart';
+import 'package:ble_app/src/services/Auth.dart';
+import 'package:ble_app/src/services/CloudMessaging.dart';
+import 'package:ble_app/src/services/Storage.dart';
+import 'package:ble_app/src/utils/StreamListener.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
-import 'package:ble_app/src/widgets.dart';
-import 'package:ble_app/src/device_screen.dart';
+import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:logger/logger.dart';
+import 'package:wakelock/wakelock.dart';
 
-void main() => runApp(FlutterBlueApp());
+final logger = Logger();
 
+const storageUpload = 'storageUpload';
 
-class FlutterBlueApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      color: Colors.lightBlue,
-      home: StreamBuilder<BluetoothState>(
-          stream: FlutterBlue.instance.state,
-          initialData: BluetoothState.unknown,
-          builder: (c, snapshot) {
-            final state = snapshot.data;
-            if (state == BluetoothState.on) {
-              return FindDevicesScreen();
-            }
-            return BluetoothOffScreen(state: state);
-          }),
-    );
+Future<void> firebaseStorageUpload() async {
+  await Firebase.initializeApp();
+  print('I AM IN THE ISOLATE');
+  final sembastDatabase = await SembastDatabase.getInstance();
+  final String jsonString = await sembastDatabase.getUserLogData();
+  final auth = Auth(LocalDatabaseManager(await LocalDatabase.getInstance()));
+  if (jsonString != null &&
+      !await auth.isSignedInAnonymously(isCalledFromIsolate: true)) {
+    print('NOT NULL DATA');
+    await sembastDatabase.deleteUserLogData();
+    await Storage().upload(jsonDecode(jsonString));
   }
 }
 
-class BluetoothOffScreen extends StatelessWidget {
-  const BluetoothOffScreen({Key key, this.state}) : super(key: key);
+backgroundFetchHeadlessTask(String taskId) async {
+  print('HEADLESS');
+  await firebaseStorageUpload();
+  BackgroundFetch.finish(taskId);
+}
 
-  final BluetoothState state;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.lightBlue,
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Icon(
-              Icons.bluetooth_disabled,
-              size: 200.0,
-              color: Colors.white54,
-            ),
-            Text(
-              'Bluetooth Adapter is ${state != null ? state.toString().substring(15) : 'not available'}.',
-              style: Theme.of(context)
-                  .primaryTextTheme
-                  .subtitle1
-                  .copyWith(color: Colors.white),
-            ),
-          ],
-        ),
-      ),
-    );
+onBackgroundFetch(String taskId) async {
+  print('Running in the background (NOT HEADLESS) $taskId');
+  if (taskId == storageUpload) {
+    await firebaseStorageUpload();
+    BackgroundFetch.finish(taskId);
   }
 }
 
-class FindDevicesScreen extends StatelessWidget {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  Wakelock.enable();
+  configureDependencies();
+  BleManager().createClient(restoreStateIdentifier: "com.parakatowski.ble_app");
+  await BackgroundFetch.configure(
+      BackgroundFetchConfig(
+          minimumFetchInterval: 1,
+          stopOnTerminate: false,
+          enableHeadless: true,
+          forceAlarmManager: Platform.isAndroid),
+      onBackgroundFetch);
+  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+  BackgroundFetch.scheduleTask(TaskConfig(
+      taskId: storageUpload,
+      stopOnTerminate: false,
+      startOnBoot: true,
+      periodic: true,
+      delay: 60000,
+      enableHeadless: true,
+      forceAlarmManager: Platform.isAndroid));
+  $<CloudMessaging>().init();
+  $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
+}
+
+class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
+  const BleApp(EntryEndpointBloc endpointBloc) : super(bloc: endpointBloc);
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Find Devices'),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () =>
-            FlutterBlue.instance.startScan(timeout: Duration(seconds: 4)),
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              StreamBuilder<List<BluetoothDevice>>(
-                stream: Stream.periodic(Duration(seconds: 2))
-                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
-                initialData: [],
-                builder: (c, snapshot) => Column(
-                  children: snapshot.data
-                      .map((d) => ListTile(
-                            title: Text(d.name),
-                            subtitle: Text(d.id.toString()),
-                            trailing: StreamBuilder<BluetoothDeviceState>(
-                              stream: d.state,
-                              initialData: BluetoothDeviceState.disconnected,
-                              builder: (c, snapshot) {
-                                if (snapshot.data ==
-                                    BluetoothDeviceState.connected) {
-                                  return RaisedButton(
-                                    child: Text('OPEN'),
-                                    onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                DeviceScreen(device: d))),
-                                  );
-                                }
-                                return Text(snapshot.data.toString());
-                              },
-                            ),
-                          ))
-                      .toList(),
-                ),
-              ),
-              StreamBuilder<List<ScanResult>>(
-                stream: FlutterBlue.instance.scanResults,
-                initialData: [],
-                builder: (c, snapshot) => Column(
-                  children: snapshot.data
-                      .map(
-                        (r) => ScanResultTile(
-                          result: r,
-                          onTap: () => Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) {
-                            r.device.connect();
-                            return DeviceScreen(device: r.device);
-                          })),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: StreamBuilder<bool>(
-        stream: FlutterBlue.instance.isScanning,
-        initialData: false,
-        builder: (c, snapshot) {
-          if (snapshot.data) {
-            return FloatingActionButton(
-              child: Icon(Icons.stop),
-              onPressed: () => FlutterBlue.instance.stopScan(),
-              backgroundColor: Colors.red,
-            );
-          } else {
-            return FloatingActionButton(
-                child: Icon(Icons.search),
-                onPressed: () => FlutterBlue.instance
-                    .startScan(timeout: Duration(seconds: 4)));
-          }
-        },
-      ),
-    );
-  }
+  Widget buildWidget(BuildContext context) => StreamListener<Endpoint>(
+      stream: super.bloc.stream,
+      onData: (endpoint) {
+        switch (endpoint) {
+          case Endpoint.AuthScreen:
+            $<PageManager>().openBleAuth();
+            break;
+          case Endpoint.DevicesScreen:
+            print('OPENING DEVICES LIST');
+            $<PageManager>().openDevicesListScreen();
+            break;
+          default:
+            break;
+        }
+      },
+      child: Center(
+        child: CircularProgressIndicator(),
+      ));
 }

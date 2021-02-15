@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "531516063930",
+    "firebase_url": "https://bluetooth-low-energy-app.firebaseio.com",
+    "project_id": "bluetooth-low-energy-app",
+    "storage_bucket": "bluetooth-low-energy-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:531516063930:android:a92804816a35780b434283",
+        "android_client_info": {
+          "package_name": "com.parakatowski.ble_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "531516063930-lqd0tj09f4givg8irmd57m4c279l8o8f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJFvnNKPmN07mMftMC3nnyB6UQqjF_R1k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "531516063930-lqd0tj09f4givg8irmd57m4c279l8o8f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
