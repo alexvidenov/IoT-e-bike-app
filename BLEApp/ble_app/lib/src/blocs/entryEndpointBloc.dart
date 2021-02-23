@@ -32,5 +32,5 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
   create() => _determineEndpoint();
 
   @override
-  pause() => _devicePickedSubscription.cancel();
+  pause() => _devicePickedSubscription?.cancel();
 }

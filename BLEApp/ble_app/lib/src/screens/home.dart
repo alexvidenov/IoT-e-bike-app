@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/OutputControlBloc.dart';
+import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/blocs/fullStatusBloc.dart';
 import 'package:ble_app/src/blocs/locationBloc.dart';
@@ -24,11 +25,19 @@ import 'main/shortStatusPage.dart';
 
 // Icon, Fonts, Speedometer less size, Kilometers less than 2 should be 0.0
 
+class VisibleRouteNotification extends Notification {
+  final CurrentPage currentPage;
+
+  const VisibleRouteNotification(this.currentPage);
+}
+
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
   final DeviceRepository _repository;
   final OutputControlBloc _controlBloc;
+
+  // TODO: actually use InheritedWidget here to pass this very instances to the other pages
   final ShortStatusBloc _shortStatusBloc;
   final FullStatusBloc _fullStatusBloc;
   final LocationBloc _locationBloc;
@@ -78,6 +87,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void pageChanged(int index) {
+    print('INDEX NOW IS $index');
+    if (index == 2) {
+      widget._shortStatusBloc.create();
+      widget._shortStatusBloc.resume();
+    } else if (index == 1) {
+      widget._shortStatusBloc.pause();
+    }
     setState(() {
       _currentTab = index;
     });
@@ -187,27 +203,28 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               drawer: NavigationDrawer($(), $(), $<Auth>().signOut),
               body: StreamListener<DeviceConnectionState>(
-                  stream: widget._deviceBloc.connectionState,
-                  onData: (state) {
-                    state.when(
-                        normalBTState: (state) {
-                          switch (state) {
-                            case PeripheralConnectionState.connected:
-                              this.onReconnected();
-                              break;
-                            case PeripheralConnectionState.disconnected:
-                              this.onDisconnected();
-                              break;
-                            default:
-                              break;
-                          }
-                        },
-                        bleException: (_) => {});
-                  },
-                  child: PageStorage(
-                    child: _buildPageView(),
-                    bucket: _storageBucket,
-                  )),
+                stream: widget._deviceBloc.connectionState,
+                onData: (state) {
+                  state.when(
+                      normalBTState: (state) {
+                        switch (state) {
+                          case PeripheralConnectionState.connected:
+                            this.onReconnected();
+                            break;
+                          case PeripheralConnectionState.disconnected:
+                            this.onDisconnected();
+                            break;
+                          default:
+                            break;
+                        }
+                      },
+                      bleException: (_) => {});
+                },
+                child: PageStorage(
+                  child: _buildPageView(),
+                  bucket: _storageBucket,
+                ),
+              ),
               bottomNavigationBar: SafeArea(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -307,6 +324,14 @@ class _HomeScreenState extends State<HomeScreen> {
             Duration(milliseconds: 100), () => widget._repository.resume());
       });
     }
+  }
+
+  void pauseFull() {
+    widget._fullStatusBloc.pause();
+  }
+
+  void pauseShort() {
+    widget._shortStatusBloc.pause();
   }
 
   @override

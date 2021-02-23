@@ -3,7 +3,6 @@ import 'package:ble_app/src/blocs/LocationCachingManager.dart';
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/mixins/KeepSession.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +14,7 @@ class CachedRouteChosenNotification extends Notification {
   const CachedRouteChosenNotification(this.fileName);
 }
 
-class MapPage extends MapRouteAwareWidget<LocationBloc>
-    with MapRouteUtils, KeepSession {
+class MapPage extends MapRouteAwareWidget<LocationBloc> with MapRouteUtils {
   final LocationBloc _locationBloc;
 
   final _saveFileDialogController = TextEditingController();
@@ -214,14 +212,12 @@ class MapPage extends MapRouteAwareWidget<LocationBloc>
   @override
   onResume() {
     logger.wtf('GOOGLE MAP RESUMING');
-    keepSession(); // necessary for the hardware timers to not pass out after three seconds
-    notifyForRoute(CurrentPage.Map);
+    // necessary for the hardware timers to not pass out after three seconds
   }
 
   @override
   onDestroy() {
-    // FIXME: this is not being called due to the
-    pause();
+    // FIXME: this is not being called due to the mixin
     logger.wtf('GOOGLE MAP DESTROYING');
     super.onDestroy();
   }
