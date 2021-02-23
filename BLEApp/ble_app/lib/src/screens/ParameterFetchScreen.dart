@@ -8,7 +8,7 @@ import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 
-class ParameterFetchScreen extends RouteAwareWidget<ParameterFetchBloc> {
+class ParameterFetchScreen extends MapRouteAwareWidget<ParameterFetchBloc> {
   const ParameterFetchScreen(
       ParameterFetchBloc _deviceParameterBloc, this._deviceBloc)
       : super(bloc: _deviceParameterBloc);

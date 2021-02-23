@@ -20,8 +20,10 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
 
   @override
   create() {
+    logger.wtf('CREATING IN FULL STATUS BLOC');
     loadData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
+      print('FULL STATUS EVENT');
       _uploadTimer++;
       if (!event.contains('OK')) {
         final state = generateState(event);
@@ -36,12 +38,13 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
 
   @override
   pause() {
-    _repository.cancel();
+    logger.wtf('PAUSING IN FULL STATUS BLOC');
     super.pause();
   }
 
   @override
   resume() {
+    logger.wtf('RESUMING IN FULL STATUS BLOC');
     _repository.resumeTimer(false); // change this boolean please
     super.resume();
   }

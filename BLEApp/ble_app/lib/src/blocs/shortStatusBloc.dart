@@ -20,19 +20,22 @@ class ShortStatusBloc extends StateBloc<ShortStatus> {
   @override
   pause() {
     super.pause();
-    _repository.cancel();
+    logger.wtf('PAUSING IN SHORT STATUS BLOC');
   }
 
   @override
   resume() {
     super.resume();
+    logger.wtf('RESUMING IN SHORT STATUS BLOC');
     _repository.resumeTimer(true);
   }
 
   @override
   create() {
+    logger.wtf('CREATING IN SHORT STATUS BLOC');
     loadData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
+      print('SHORT STATUS EVENT');
       _uploadTimer++;
       if (!event.contains('OK')) {
         final state = generateState(event);

@@ -27,7 +27,8 @@ mixin LocationCachingManager on CurrentContext {
     _sembastDB.createRouteFile(curUserId, curDeviceId, initialTimeStamp);
   }
 
-  void updateCachedLocation(String fileName, List<LatLng> coordinates, String finishedAt) {
+  void updateCachedLocation(
+      String fileName, List<LatLng> coordinates, String finishedAt) {
     _sembastDB.updateCoordinatesRouteFile(curUserId, curDeviceId, fileName,
         coordinates: coordinates, finishedAt: finishedAt);
   }
@@ -39,4 +40,6 @@ mixin LocationCachingManager on CurrentContext {
 
   Future<Stream<List<RouteFileModel>>> get cachedRoutesStream =>
       _sembastDB.cachedRoutesStream(curUserId, curDeviceId);
+
+  Future<void> openRoutesDB() => _sembastDB.openRoutesDB();
 }

@@ -15,17 +15,13 @@ abstract class Bloc<T, S> with RxObject<T> {
 
   create() {}
 
-  pause() => _pauseSubscription();
+  pause() => streamSubscription?.pause();
 
-  resume() => _resumeSubscription();
-
-  _pauseSubscription() => streamSubscription?.pause();
-
-  _resumeSubscription() => streamSubscription?.resume();
+  resume() => streamSubscription?.resume();
 
   @mustCallSuper
   dispose() {
     super.dispose();
-    streamSubscription?.cancel();
+    //streamSubscription?.cancel();
   }
 }

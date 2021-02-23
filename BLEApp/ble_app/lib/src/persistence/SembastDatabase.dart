@@ -9,26 +9,36 @@ import 'package:sembast/sembast_io.dart';
 @singleton
 class SembastDatabase {
   static SembastDatabase _instance;
-  static Database _sembastDB;
+  static Database _routesDB;
+  static Database _userDataDB;
 
   final _coordinatesStore = stringMapStoreFactory.store('coordinates');
 
   final _userDataStore = stringMapStoreFactory.store('userData');
 
+  static Future<String> _generateDBPath(String filename) async {
+    final dir = await getApplicationDocumentsDirectory();
+    await dir.create(recursive: true);
+    return join(dir.path, '$filename.db');
+  }
+
   @preResolve
   @factoryMethod
   static Future<SembastDatabase> getInstance() async {
     _instance = _instance ?? SembastDatabase();
-    final dir = await getApplicationDocumentsDirectory();
-    await dir.create(recursive: true);
-    final dbPath = join(dir.path, 'sembast_locations.db');
-    _sembastDB = _sembastDB ?? await databaseFactoryIo.openDatabase(dbPath);
+    _userDataDB = _userDataDB ??
+        await databaseFactoryIo
+            .openDatabase(await _generateDBPath('sembast_user_data'));
     return _instance;
   }
 
+  Future<void> openRoutesDB() async => _routesDB = _routesDB ??
+      await databaseFactoryIo
+          .openDatabase(await _generateDBPath('sembast_locations'));
+
   void createRouteFile(
       String userId, String deviceId, String initialTimeStamp) {
-    _coordinatesStore.record(initialTimeStamp).put(_sembastDB, {
+    _coordinatesStore.record(initialTimeStamp).put(_routesDB, {
       'userId': userId,
       'deviceId': deviceId,
       'startedAt': initialTimeStamp,
@@ -43,9 +53,12 @@ class SembastDatabase {
   void updateCoordinatesRouteFile(
       String userId, String deviceId, String fileTimeStamp,
       {List<LatLng> coordinates, String finishedAt}) {
-    _coordinatesStore.record(fileTimeStamp).put(_sembastDB,
-        {'coordinates': coordinates.map((c) => c.toJson()).toList(),
-        'finishedAt' : finishedAt},
+    _coordinatesStore.record(fileTimeStamp).put(
+        _routesDB,
+        {
+          'coordinates': coordinates.map((c) => c.toJson()).toList(),
+          'finishedAt': finishedAt
+        },
         merge: true);
   }
 
@@ -53,7 +66,7 @@ class SembastDatabase {
       String userId, String deviceId, String fileTimeStamp, String newName) {
     _coordinatesStore
         .record(fileTimeStamp)
-        .put(_sembastDB, {'name': newName}, merge: true);
+        .put(_routesDB, {'name': newName}, merge: true);
   }
 
   Future<Stream<List<RouteFileModel>>> cachedRoutesStream(
@@ -62,7 +75,7 @@ class SembastDatabase {
               finder: Finder(
                   filter: Filter.and(
                       [Filter.equals('userId', userId), Filter.equals('deviceId', deviceId)]))))
-          .onSnapshots(_sembastDB)
+          .onSnapshots(_routesDB)
           .map((snap) => snap
               .map((e) => RouteFileModel(
                   name: e['name'],
@@ -76,10 +89,10 @@ class SembastDatabase {
               .toList());
 
   void setUserLogData(String json) =>
-      _userDataStore.record('userLogs').put(_sembastDB, {'userLogs': json});
+      _userDataStore.record('userLogs').put(_userDataDB, {'userLogs': json});
 
   Future<String> getUserLogData() =>
-      _userDataStore.record('userLogs').get(_sembastDB).then((value) {
+      _userDataStore.record('userLogs').get(_userDataDB).then((value) {
         if (value == null)
           return null;
         else
@@ -87,5 +100,5 @@ class SembastDatabase {
       });
 
   Future<void> deleteUserLogData() async =>
-      await _userDataStore.record('userLogs').delete(_sembastDB);
+      await _userDataStore.record('userLogs').delete(_userDataDB);
 }

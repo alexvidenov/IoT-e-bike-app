@@ -58,6 +58,7 @@ class Storage {
   }
 
   // Fetches concurrently an arbitrary number of json files, applies custom Model fromJson to all of them, flattens the resulted list and returns it
+
   Future<List<LogModel>> downloadAll() async =>
       (await Future.wait<Response<List<dynamic>>>((await FirebaseStorage
                   .instance

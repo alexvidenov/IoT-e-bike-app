@@ -74,7 +74,7 @@ class AppData {
 
   List<dynamic> toJson() => usersData.map((user) => user.toJson()).toList();
 
-  addCurrentRecord(LogModel log) => _currentDeviceLog.addLog(log);
+  void addCurrentRecord(LogModel log) => _currentDeviceLog.addLog(log);
 }
 
 @JsonSerializable(nullable: false)

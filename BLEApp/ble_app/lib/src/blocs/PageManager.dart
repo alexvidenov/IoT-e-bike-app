@@ -87,7 +87,8 @@ class PageManager {
     _pages.removeAt(_pages.length - 1);
     _pages.removeAt(_pages.length - 1);
     _pages.add(MaterialPage(
-        child: HomeScreen($(), $(), $(), $(), $()), key: Key('Home')));
+        child: HomeScreen($(), $(), $(), $(), $(), $(), $()),
+        key: Key('Home')));
     pages.addEvent(_pagesList);
   }
 

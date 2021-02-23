@@ -115,7 +115,9 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
   BatterySettingsScreen(
       ParameterListenerBloc parameterListenerBloc, this._repository)
       : this._parameterListenerBloc = parameterListenerBloc,
-        super(bloc: parameterListenerBloc);
+        super(
+            bloc: parameterListenerBloc,
+            key: PageStorageKey('BatterySettingsScreen'));
 
   Future<void> numCellsCompletion(String _, String value) async {
     _repository.cancel();

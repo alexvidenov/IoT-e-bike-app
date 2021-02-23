@@ -15,7 +15,10 @@ class LocationTracker with CurrentContext, LocationCachingManager {
   LocationTracker() {
     isRecordingRx.addEvent(false);
     isShowingCachedRoute.addEvent(false);
+    _setupRoutes();
   }
+
+  _setupRoutes() async => await openRoutesDB();
 
   final List<LatLng> _coordinates = [];
 

@@ -42,7 +42,6 @@ class ParameterListenerBloc
   @override
   create() {
     streamSubscription = _repository.characteristicValueStream.listen((event) {
-      print('RESPONSE FROM PARAM LISTENER: $event');
       if (event.startsWith('OK')) {
         _successful = true;
         if (currentKey == '00') {
@@ -145,7 +144,6 @@ class ParameterListenerBloc
 
   void changeParameter(String key, String value) {
     final String command = _generateCommandString(key, value);
-    print('EXECUTING COMMANd => $command');
     _successful = false;
     _timeout();
     _repository.writeToCharacteristic(command);

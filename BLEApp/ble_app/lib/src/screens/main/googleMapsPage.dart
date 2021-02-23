@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/InnerPageManager.dart';
+import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/LocationCachingManager.dart';
 import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/blocs/mixins/KeepSession.dart';
@@ -15,8 +15,8 @@ class CachedRouteChosenNotification extends Notification {
   const CachedRouteChosenNotification(this.fileName);
 }
 
-class MapPage extends RouteAwareWidget<LocationBloc>
-    with RouteUtils, KeepSession {
+class MapPage extends MapRouteAwareWidget<LocationBloc>
+    with MapRouteUtils, KeepSession {
   final LocationBloc _locationBloc;
 
   final _saveFileDialogController = TextEditingController();
@@ -84,7 +84,7 @@ class MapPage extends RouteAwareWidget<LocationBloc>
                     _locationBloc.generateNewCircle(snapshot.data.locationData);
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onLongPress: () => $<InnerPageManager>().openShortStatus(),
+                  onLongPress: () => {}, // NOTIFICATIONS,
                   child: GoogleMap(
                     mapType: MapType.normal,
                     initialCameraPosition: _locationBloc.initialLocation,
@@ -206,19 +206,23 @@ class MapPage extends RouteAwareWidget<LocationBloc>
 
   @override
   onCreate() {
+    logger.wtf('GOOGLE MAP CREATING');
     _locationBloc.loadCachedRoutes();
     super.onCreate();
   }
 
   @override
   onResume() {
+    logger.wtf('GOOGLE MAP RESUMING');
     keepSession(); // necessary for the hardware timers to not pass out after three seconds
     notifyForRoute(CurrentPage.Map);
   }
 
   @override
   onDestroy() {
+    // FIXME: this is not being called due to the
     pause();
+    logger.wtf('GOOGLE MAP DESTROYING');
     super.onDestroy();
   }
 }

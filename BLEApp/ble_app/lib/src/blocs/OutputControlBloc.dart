@@ -21,12 +21,12 @@ class OutputControlBloc extends Bloc<OutputsState, String> {
         }
       });
 
-  on() {
+  void on() {
     curOutputsState = OutputsState.On;
     _repository.writeToCharacteristic('O1\r');
   }
 
-  off() {
+  void off() {
     curOutputsState = OutputsState.Off;
     _repository.writeToCharacteristic('O0\r');
   }

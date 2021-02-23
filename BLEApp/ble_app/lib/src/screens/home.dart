@@ -1,11 +1,13 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/InnerPageManager.dart';
 import 'package:ble_app/src/blocs/OutputControlBloc.dart';
-import 'package:ble_app/src/blocs/navigationBloc.dart';
+import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/blocs/fullStatusBloc.dart';
+import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
+import 'package:ble_app/src/screens/main/fullStatusPage.dart';
+import 'package:ble_app/src/screens/main/googleMapsPage.dart';
 import 'package:ble_app/src/screens/navigationAware.dart';
-import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/sealedStates/deviceConnectionState.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/utils/StreamListener.dart';
@@ -17,15 +19,28 @@ import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
+import '../../main.dart';
+import 'main/shortStatusPage.dart';
+
+// Icon, Fonts, Speedometer less size, Kilometers less than 2 should be 0.0
+
 class HomeScreen extends StatefulWidget with Navigation {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
   final DeviceRepository _repository;
   final OutputControlBloc _controlBloc;
-  final InnerPageManager _pageManager;
+  final ShortStatusBloc _shortStatusBloc;
+  final FullStatusBloc _fullStatusBloc;
+  final LocationBloc _locationBloc;
 
-  const HomeScreen(this._prefsBloc, this._deviceBloc, this._repository,
-      this._controlBloc, this._pageManager);
+  const HomeScreen(
+      this._prefsBloc,
+      this._deviceBloc,
+      this._repository,
+      this._controlBloc,
+      this._shortStatusBloc,
+      this._fullStatusBloc,
+      this._locationBloc);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -36,11 +51,45 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final _storageBucket = PageStorageBucket();
+
   bool _isDisconnectManual = false;
 
   PersistentBottomSheetController _bottomSheetController;
 
-  _instantiateObserver() => routeObserver = RouteObserver<PageRoute>();
+  List<Widget> get _pages => <Widget>[
+        DeviceScreen(widget._shortStatusBloc),
+        FullStatusScreen(widget._fullStatusBloc),
+        MapPage(widget._locationBloc),
+      ];
+
+  int _currentTab = 0;
+
+  final _pageController = PageController();
+
+  Widget _buildPageView() {
+    return PageView(
+      controller: _pageController,
+      onPageChanged: (index) {
+        pageChanged(index);
+      },
+      children: _pages,
+    );
+  }
+
+  void pageChanged(int index) {
+    setState(() {
+      _currentTab = index;
+    });
+  }
+
+  void bottomTapped(int index) {
+    setState(() {
+      _currentTab = index;
+      _pageController.animateToPage(index,
+          duration: Duration(milliseconds: 500), curve: Curves.ease);
+    });
+  }
 
   Future<bool> _onWillPop() => showDialog(
       context: context,
@@ -72,7 +121,6 @@ class _HomeScreenState extends State<HomeScreen> {
   initState() {
     super.initState();
     widget._controlBloc.create();
-    $<InnerPageManager>().openShortStatus();
   }
 
   function(func) async {
@@ -83,13 +131,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    _instantiateObserver();
-    return WillPopScope(
+  Widget build(BuildContext context) => WillPopScope(
         onWillPop: _onWillPop,
         child: DefaultTabController(
-          length: 3,
-          child: Scaffold(
+            length: 3,
+            child: Scaffold(
               key: _scaffoldKey,
               backgroundColor: Colors.black,
               appBar: AppBar(
@@ -158,20 +204,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         bleException: (_) => {});
                   },
-                  child: StreamBuilder<List<Page>>(
-                    stream: widget._pageManager.pages.stream,
-                    builder: (_, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.active) {
-                        print('BUILDIGN INNER NAVIGATOR WITH PAGES =>');
-                        print(snapshot.data);
-                        return Navigator(
-                            key: widget._pageManager.navigatorKey,
-                            pages: snapshot.data,
-                            onPopPage: (route, result) =>
-                                _onPopPage(route, result, widget._pageManager));
-                      } else
-                        return Container();
-                    },
+                  child: PageStorage(
+                    child: _buildPageView(),
+                    bucket: _storageBucket,
                   )),
               bottomNavigationBar: SafeArea(
                 child: Container(
@@ -189,101 +224,63 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 3.0, vertical: 3),
-                    child: StreamBuilder<CurrentPage>(
-                      // USE NOTIFIFICATIONS HERE HOLY SHIT
-                      stream: widget.navigationBloc.stream,
-                      initialData: CurrentPage.ShortStatus,
-                      builder: (_, snapshot) {
-                        int _index;
-                        switch (snapshot.data) {
-                          case CurrentPage.ShortStatus:
-                            _index = 0;
-                            break;
-                          case CurrentPage.FullStatus:
-                            _index = 1;
-                            break;
-                          case CurrentPage.Map:
-                            _index = 2;
-                            break;
-                        }
-                        return GNav(
+                    child: GNav(
+                        gap: 8,
+                        activeColor: Colors.white30,
+                        iconSize: 24,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        duration: Duration(milliseconds: 800),
+                        curve: Curves.easeOutExpo,
+                        tabBackgroundColor: Colors.lightBlue,
+                        textStyle: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                        tabs: [
+                          GButton(
                             gap: 8,
-                            activeColor: Colors.white30,
-                            iconSize: 24,
+                            icon: Icons.home,
+                            iconActiveColor: Colors.redAccent,
+                            iconColor: Colors.black,
+                            textColor: Colors.black,
                             padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 5),
-                            duration: Duration(milliseconds: 800),
-                            curve: Curves.easeOutExpo,
-                            tabBackgroundColor: Colors.lightBlue,
-                            textStyle: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.bold),
-                            tabs: [
-                              GButton(
-                                gap: 8,
-                                icon: Icons.home,
-                                iconActiveColor: Colors.redAccent,
-                                iconColor: Colors.black,
-                                textColor: Colors.black,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 18, vertical: 5),
-                                backgroundColor: Colors.greenAccent,
-                                text: 'Home',
-                              ),
-                              GButton(
-                                  gap: 8,
-                                  icon: Icons.battery_charging_full_sharp,
-                                  text: 'Bat. status',
-                                  iconActiveColor: Colors.redAccent,
-                                  iconColor: Colors.black,
-                                  textColor: Colors.black,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 18, vertical: 5),
-                                  backgroundColor: Colors.lightBlue),
-                              GButton(
-                                gap: 8,
-                                icon: Icons.location_on_sharp,
-                                iconActiveColor: Colors.redAccent,
-                                iconColor: Colors.black,
-                                textColor: Colors.black,
-                                backgroundColor: Colors.yellow,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 18, vertical: 5),
-                                text: 'Location',
-                              ),
-                            ],
-                            selectedIndex: _index,
-                            onTabChange: (index) {
-                              switch (index) {
-                                case 0:
-                                  $<InnerPageManager>().openShortStatus();
-                                  break;
-                                case 1:
-                                  $<InnerPageManager>().openFullStatus();
-                                  break;
-                                case 2:
-                                  $<InnerPageManager>().openMap();
-                                  break;
-                              }
-                            });
-                      },
-                    ),
+                                horizontal: 18, vertical: 5),
+                            backgroundColor: Colors.greenAccent,
+                            text: 'Home',
+                          ),
+                          GButton(
+                              gap: 8,
+                              icon: Icons.battery_charging_full_sharp,
+                              text: 'Bat. status',
+                              iconActiveColor: Colors.redAccent,
+                              iconColor: Colors.black,
+                              textColor: Colors.black,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 18, vertical: 5),
+                              backgroundColor: Colors.lightBlue),
+                          GButton(
+                            gap: 8,
+                            icon: Icons.location_on_sharp,
+                            iconActiveColor: Colors.redAccent,
+                            iconColor: Colors.black,
+                            textColor: Colors.black,
+                            backgroundColor: Colors.yellow,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 5),
+                            text: 'Location',
+                          ),
+                        ],
+                        selectedIndex: _currentTab,
+                        onTabChange: (index) {
+                          bottomTapped(index);
+                        }),
                   ),
                 ),
-              )),
-        ));
-  }
+              ),
+            )),
+      );
 
-  bool _onPopPage(
-      Route<dynamic> route, dynamic result, InnerPageManager pageManager) {
-    print('POPPING =>');
-    print(route.settings);
-    pageManager.didPop(route.settings, result);
-    return route.didPop(result);
-  }
-
-  onDisconnected() {
+  void onDisconnected() {
     if (mounted && !_isDisconnectManual) {
-      print('ONDISCONNECTED');
       widget._repository.cancel();
       _hasDisconnected = true;
       _bottomSheetController =
@@ -297,20 +294,27 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  authenticate(String password) => // TODO: remove that from here
+  void authenticate(String password) =>
       widget._repository.writeToCharacteristic('P$password\r');
 
-  onReconnected() async {
+  void onReconnected() async {
     if (_hasDisconnected && mounted) {
-      print('RECONNECTED');
       _bottomSheetController?.close();
       String password = widget._prefsBloc.password.value;
       await Future.delayed(Duration(milliseconds: 1000), () async {
         authenticate(password);
-        print('Password is $password');
         await Future.delayed(
             Duration(milliseconds: 100), () => widget._repository.resume());
       });
     }
+  }
+
+  @override
+  void dispose() {
+    logger.wtf('DISPOSING HOME');
+    widget._shortStatusBloc.dispose();
+    widget._fullStatusBloc.dispose();
+    widget._locationBloc.dispose();
+    super.dispose();
   }
 }

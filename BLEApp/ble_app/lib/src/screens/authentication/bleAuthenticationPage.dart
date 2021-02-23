@@ -59,7 +59,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
     _streamSubscriptionAuth.cancel();
   }
 
-  _listenToAuthBloc() =>
+  void _listenToAuthBloc() =>
       _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
         event.when(
             btAuthenticated: () {
@@ -199,7 +199,6 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
                       return Container();
                       break;
                     case PeripheralConnectionState.connecting:
-                      print('CONNECTING IN BLE');
                       return Center(child: CircularProgressIndicator());
                     case PeripheralConnectionState.disconnected:
                       return _generateMessageWidget('disconnected');

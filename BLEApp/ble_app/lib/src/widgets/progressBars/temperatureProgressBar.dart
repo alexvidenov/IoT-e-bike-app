@@ -10,8 +10,7 @@ import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 // otherwise -> green
 
 class TemperatureProgressBar extends StatelessWidget {
-  final ShortStatusBloc
-      bloc; // TODO: actually pass only the necessary stream here
+  final ShortStatusBloc bloc;
 
   const TemperatureProgressBar({@required this.bloc});
 

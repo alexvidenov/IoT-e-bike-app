@@ -1,5 +1,4 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:ble_app/src/blocs/InnerPageManager.dart';
 import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/fullStatusBloc.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
@@ -12,47 +11,18 @@ import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class FullStatusPage extends Page {
-  final Widget child;
-
-  FullStatusPage({@required this.child, Key key}) : super(key: key);
-
-  @override
-  Route createRoute(BuildContext context) {
-    return PageRouteBuilder(
-        settings: this,
-        pageBuilder: (_, animation, __) {
-          return SlideTransition(
-            position: Tween<Offset>(
-                    begin: const Offset(1, 0), end: const Offset(0, 0))
-                .animate(animation),
-            child: child,
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 500));
-  }
-}
-
-class FullStatusScreen extends RouteAwareWidget<
-        FullStatusBloc> // add another abstraction here that will have gesture detector and the notification setup
-    with
-        RouteUtils {
+class FullStatusScreen extends RouteAwareWidget<FullStatusBloc>
+    with RouteUtils {
   const FullStatusScreen(FullStatusBloc fullStatusBloc)
-      : super(bloc: fullStatusBloc);
+      : super(
+            bloc: fullStatusBloc,
+            key: const PageStorageKey('FullStatusScreen'));
 
   @override
   Widget buildWidget(BuildContext context) {
     AwesomeDialog dialog;
     return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onHorizontalDragEnd: (details) {
-          if (details.primaryVelocity > 0) {
-            $<InnerPageManager>().openShortStatus();
-          } else if (details.primaryVelocity < 0) {
-            $<InnerPageManager>().openMap();
-          }
-        },
-        onTap: () => $<InnerPageManager>().openMap(),
+        onTap: () => {}, // TODO: notifications to home
         child: NotificationListener<ServiceNotification>(
           onNotification: (notification) {
             if (notification.isStateGone) {

@@ -47,11 +47,12 @@ class DeviceBloc {
 
   stopScan() => _bleManager.stopPeripheralScan();
 
-  _observeConnectionState() => device.listen((bleDevice) => bleDevice.peripheral
+  void _observeConnectionState() => device.listen((bleDevice) => bleDevice.peripheral
       .observeConnectionState(
           emitCurrentValue: true, completeOnDisconnect: false)
       .listen((state) => _connectionEvent
           .add(DeviceConnectionState.normalBTState(state: state))));
+
 
   dispose() async {
     logger.wtf('Closing stream in DeviceBloc');

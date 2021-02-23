@@ -11,7 +11,7 @@ typedef _Pause = dynamic Function();
 
 @optionalTypeArgs
 // can only be mixed with Route Aware's
-mixin KeepSession<T extends Bloc<dynamic, dynamic>> on RouteAwareWidget<T> {
+mixin KeepSession<T extends Bloc<dynamic, dynamic>> on MapRouteAwareWidget<T> {
   final ShortStatusBloc shortStatusBloc = $<ShortStatusBloc>();
 
   _KeepSessionCallback get keepSession => () {
@@ -19,5 +19,8 @@ mixin KeepSession<T extends Bloc<dynamic, dynamic>> on RouteAwareWidget<T> {
         shortStatusBloc.resume();
       };
 
-  _Pause get pause => () => shortStatusBloc.dispose();
+  _Pause get pause => () {
+        shortStatusBloc.pause();
+        shortStatusBloc.dispose();
+      };
 }

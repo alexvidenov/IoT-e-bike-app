@@ -20,3 +20,13 @@ mixin RouteUtils<T extends Bloc<dynamic, dynamic>> on RouteAwareWidget<T> {
 
   NotifyLocation get notifyForRoute => $<NavigationBloc>().addEvent;
 }
+
+@optionalTypeArgs
+mixin MapRouteUtils<T extends Bloc<dynamic, dynamic>> on MapRouteAwareWidget<T> {
+  Function(String) get to => $<NavigationBloc>().to;
+
+  Function() get toFirst => $<NavigationBloc>().returnToFirstRoute;
+
+  NotifyLocation get notifyForRoute => $<NavigationBloc>().addEvent;
+
+}
