@@ -78,7 +78,7 @@ void main() async {
   $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
 }
 
-class BleApp extends MapRouteAwareWidget<EntryEndpointBloc> {
+class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
   const BleApp(EntryEndpointBloc endpointBloc) : super(bloc: endpointBloc);
 
   @override

@@ -13,7 +13,7 @@ typedef _DeviceTapListener = void Function();
 
 typedef _LogOutListener = Future<void> Function();
 
-class DevicesListScreen extends MapRouteAwareWidget<DevicesBloc> {
+class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
   final DevicesBloc _devicesBloc;
   final _LogOutListener _onLogout;
 

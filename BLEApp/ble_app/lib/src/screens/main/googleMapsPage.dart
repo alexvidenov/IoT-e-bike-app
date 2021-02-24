@@ -1,10 +1,5 @@
-import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/LocationCachingManager.dart';
 import 'package:ble_app/src/blocs/locationBloc.dart';
-import 'package:ble_app/src/blocs/mixins/KeepSession.dart';
-import 'package:ble_app/src/blocs/navigationBloc.dart';
-import 'package:ble_app/src/screens/navigationAware.dart';
-import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -14,14 +9,17 @@ class CachedRouteChosenNotification extends Notification {
   const CachedRouteChosenNotification(this.fileName);
 }
 
-class MapPage extends MapRouteAwareWidget<LocationBloc> with MapRouteUtils {
+class MapPage extends StatefulWidget {
   final LocationBloc _locationBloc;
 
-  final _saveFileDialogController = TextEditingController();
+  MapPage(this._locationBloc);
 
-  MapPage(LocationBloc locationBloc)
-      : this._locationBloc = locationBloc,
-        super(bloc: locationBloc);
+  @override
+  _MapPageState createState() => _MapPageState();
+}
+
+class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
+  final _saveFileDialogController = TextEditingController();
 
   void _showDialogToSaveRoute(context) async => await showDialog(
       context: context,
@@ -35,7 +33,7 @@ class MapPage extends MapRouteAwareWidget<LocationBloc> with MapRouteUtils {
               FlatButton(
                 child: Text("Confirm"),
                 onPressed: () {
-                  _locationBloc
+                  widget._locationBloc
                       .renameFile(_saveFileDialogController.value.text);
                   Navigator.of(context).pop();
                 },
@@ -48,10 +46,16 @@ class MapPage extends MapRouteAwareWidget<LocationBloc> with MapRouteUtils {
           ));
 
   @override
-  Widget buildWidget(BuildContext context) => Scaffold(
+  void initState() {
+    super.initState();
+    widget._locationBloc.loadCachedRoutes();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
         body: Stack(alignment: Alignment.topRight, children: [
           StreamBuilder<bool>(
-            stream: _locationBloc.isShowingRoute,
+            stream: widget._locationBloc.isShowingRoute,
             initialData: false,
             builder: (_, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
@@ -65,7 +69,8 @@ class MapPage extends MapRouteAwareWidget<LocationBloc> with MapRouteUtils {
                           color: Colors.red,
                         ),
                         color: Colors.red,
-                        onPressed: () => _locationBloc.removeCachedRoute(),
+                        onPressed: () =>
+                            widget._locationBloc.removeCachedRoute(),
                       )
                     : Container();
               } else
@@ -73,25 +78,25 @@ class MapPage extends MapRouteAwareWidget<LocationBloc> with MapRouteUtils {
             },
           ),
           StreamBuilder<LocationState>(
-            stream: _locationBloc.stream,
+            stream: widget._locationBloc.stream,
             builder: (_, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
-                final marker =
-                    _locationBloc.generateNewMarker(snapshot.data.locationData);
-                final circle =
-                    _locationBloc.generateNewCircle(snapshot.data.locationData);
+                final marker = widget._locationBloc
+                    .generateNewMarker(snapshot.data.locationData);
+                final circle = widget._locationBloc
+                    .generateNewCircle(snapshot.data.locationData);
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onLongPress: () => {}, // NOTIFICATIONS,
                   child: GoogleMap(
                     mapType: MapType.normal,
-                    initialCameraPosition: _locationBloc.initialLocation,
+                    initialCameraPosition: widget._locationBloc.initialLocation,
                     zoomControlsEnabled: false,
                     markers: Set.of((marker != null) ? [marker] : []),
                     circles: Set.of((circle != null) ? [circle] : []),
                     polylines: snapshot.data.polylines ?? Set.of([]),
                     onMapCreated: (controller) =>
-                        _locationBloc.controller = controller,
+                        widget._locationBloc.controller = controller,
                   ),
                 );
               } else
@@ -103,7 +108,7 @@ class MapPage extends MapRouteAwareWidget<LocationBloc> with MapRouteUtils {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             StreamBuilder<bool>(
-              stream: _locationBloc.isRecording,
+              stream: widget._locationBloc.isRecording,
               initialData: false,
               builder: (_, snapshot) => FloatingActionButton.extended(
                 label: snapshot.data
@@ -122,10 +127,10 @@ class MapPage extends MapRouteAwareWidget<LocationBloc> with MapRouteUtils {
                     : Icons.add_location_rounded),
                 onPressed: snapshot.data
                     ? () {
-                        _locationBloc.stopRecording();
+                        widget._locationBloc.stopRecording();
                         _showDialogToSaveRoute(context);
                       }
-                    : () => _locationBloc.startRecording(),
+                    : () => widget._locationBloc.startRecording(),
                 heroTag: null,
               ),
             ),
@@ -149,7 +154,7 @@ class MapPage extends MapRouteAwareWidget<LocationBloc> with MapRouteUtils {
                       builder: (_, controller) =>
                           NotificationListener<CachedRouteChosenNotification>(
                             onNotification: (notification) {
-                              _locationBloc
+                              widget._locationBloc
                                   .loadCachedRoute(notification.fileName);
                               return true;
                             },
@@ -183,7 +188,7 @@ class MapPage extends MapRouteAwareWidget<LocationBloc> with MapRouteUtils {
                                           crossAxisSpacing: 12,
                                           shrinkWrap: true,
                                           children: [
-                                            ..._locationBloc.routes.value
+                                            ...widget._locationBloc.routes.value
                                                 .map((e) => LastRouteView(
                                                       model: e,
                                                     )),
@@ -203,24 +208,7 @@ class MapPage extends MapRouteAwareWidget<LocationBloc> with MapRouteUtils {
       );
 
   @override
-  onCreate() {
-    logger.wtf('GOOGLE MAP CREATING');
-    _locationBloc.loadCachedRoutes();
-    super.onCreate();
-  }
-
-  @override
-  onResume() {
-    logger.wtf('GOOGLE MAP RESUMING');
-    // necessary for the hardware timers to not pass out after three seconds
-  }
-
-  @override
-  onDestroy() {
-    // FIXME: this is not being called due to the mixin
-    logger.wtf('GOOGLE MAP DESTROYING');
-    super.onDestroy();
-  }
+  bool get wantKeepAlive => true;
 }
 
 class BottomSheetHeader extends StatelessWidget {

@@ -23,14 +23,16 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
     logger.wtf('CREATING IN FULL STATUS BLOC');
     loadData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
-      print('FULL STATUS EVENT');
-      _uploadTimer++;
-      if (!event.contains('OK')) {
-        final state = generateState(event);
-        addEvent(state);
-        if (_uploadTimer == 10) {
-          _uploadTimer = 0;
-          addData<FullStatus>(state.model);
+      if ('${event[1]}' == '2') {
+        print('FULL STATUS EVENT: $event');
+        _uploadTimer++;
+        if (!event.contains('OK')) {
+          final state = generateState(event);
+          addEvent(state);
+          if (_uploadTimer == 10) {
+            _uploadTimer = 0;
+            addData<FullStatus>(state.model);
+          }
         }
       }
     });
@@ -44,9 +46,9 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
 
   @override
   resume() {
+    super.resume();
     logger.wtf('RESUMING IN FULL STATUS BLOC');
     _repository.resumeTimer(false); // change this boolean please
-    super.resume();
   }
 
   @override

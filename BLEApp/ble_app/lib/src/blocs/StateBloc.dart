@@ -38,11 +38,11 @@ abstract class StateBloc<T extends BaseModel>
       case '0':
         _resetServiceState();
         if (_isTimeLimitedOverDischarge()) {
-          if (_stateTracker.overDischargeTimeLimited != null &&
-                  !_stateTracker.overDischargeTimeLimited.isActive ||
+          if ((_stateTracker.overDischargeTimeLimited != null &&
+                  !_stateTracker.overDischargeTimeLimited.isActive) ||
               _stateTracker.overDischargeTimeLimited == null) {
-            print("INITIALIZING OVERDISCHARGE TIME LIMITED 11");
-            _stateTracker.seconds = 11;
+            _stateTracker.seconds =
+                11;
             _stateTracker.overDischargeTimeLimited =
                 Timer.periodic(const Duration(seconds: 1), (_) {
               _stateTracker.seconds--;
@@ -58,13 +58,14 @@ abstract class StateBloc<T extends BaseModel>
         } else {
           if (_stateTracker.overDischargeTimeLimited != null &&
               _stateTracker.overDischargeTimeLimited.isActive) {
-            _stateTracker.seconds = 0;
+            _stateTracker.seconds = 0; // WE GET TO HERE
             this._stateTracker.timerRx.addEvent(_stateTracker.seconds);
             _stateTracker.overDischargeTimeLimited.cancel();
             Future.delayed(
                 Duration(milliseconds: 400),
                 () => _stateTracker.timerRx
                     .addEvent(-1)); // HERE WE GET UNKNOWN STATE
+            battState = BatteryState.MaxPower;
           } else
             battState = BatteryState.Normal;
         }

@@ -1,3 +1,4 @@
+import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/LocationTracker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -65,6 +66,7 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
 
   @override
   create() async {
+    logger.wtf('CREATOING IN LOCATION BLOC');
     try {
       final location = await _location.getLocation();
 
@@ -119,6 +121,18 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
           .coordinates);
 
   void removeCachedRoute() => _locationTracker.clearLoadedCoordinates();
+
+  @override
+  resume() {
+    logger.wtf('RESUMING IN LOCATION BLOC');
+    super.resume();
+  }
+
+  @override
+  dispose() {
+    logger.wtf('Closing stream in Location Bloc');
+    super.dispose();
+  }
 
   void loadCachedRoutes() => _locationTracker.cachedRoutesStream
       .then((stream) => stream.listen((event) {

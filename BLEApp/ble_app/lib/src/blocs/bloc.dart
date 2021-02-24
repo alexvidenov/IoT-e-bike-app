@@ -1,3 +1,4 @@
+import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -22,6 +23,6 @@ abstract class Bloc<T, S> with RxObject<T> {
   @mustCallSuper
   dispose() {
     super.dispose();
-    //streamSubscription?.cancel();
+    streamSubscription?.cancel();
   }
 }

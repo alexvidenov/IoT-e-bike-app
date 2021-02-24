@@ -1,24 +1,28 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:ble_app/src/blocs/PageManager.dart';
-import 'package:ble_app/src/screens/navigationAware.dart';
+import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:flutter/material.dart';
 
-import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
-class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with RouteUtils {
-  // TODO: make RouteUtils an extension of routeAware widgets
-  const DeviceScreen(ShortStatusBloc shortStatusBloc)
-      : super(
-            bloc: shortStatusBloc,
-            key: const PageStorageKey('ShortStatusScreen'));
+class DeviceScreen extends StatefulWidget {
+  final LocationBloc locationBloc;
+  final ShortStatusBloc shortStatusBloc;
+
+  const DeviceScreen(this.shortStatusBloc, this.locationBloc);
 
   @override
-  Widget buildWidget(BuildContext context) {
+  _DeviceScreenState createState() => _DeviceScreenState();
+}
+
+class _DeviceScreenState extends State<DeviceScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
     AwesomeDialog dialog;
     return GestureDetector(
       onTap: () => {}, // SEND NOTIFICATIONS TO HOME
@@ -70,15 +74,13 @@ class DeviceScreen extends RouteAwareWidget<ShortStatusBloc> with RouteUtils {
           return true;
         },
         child: Container(
-          child: ShortStatusUI(super.bloc, $()),
+          child: ShortStatusUI(
+              this.widget.shortStatusBloc, this.widget.locationBloc),
         ),
       ),
     );
   }
 
   @override
-  onResume() {
-    super.onResume();
-    notifyForRoute(CurrentPage.ShortStatus);
-  }
+  bool get wantKeepAlive => true;
 }

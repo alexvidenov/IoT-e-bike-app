@@ -8,7 +8,6 @@ import 'package:ble_app/src/blocs/locationBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/screens/main/fullStatusPage.dart';
 import 'package:ble_app/src/screens/main/googleMapsPage.dart';
-import 'package:ble_app/src/screens/navigationAware.dart';
 import 'package:ble_app/src/sealedStates/deviceConnectionState.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/utils/StreamListener.dart';
@@ -23,15 +22,13 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import '../../main.dart';
 import 'main/shortStatusPage.dart';
 
-// Icon, Fonts, Speedometer less size, Kilometers less than 2 should be 0.0
-
 class VisibleRouteNotification extends Notification {
   final CurrentPage currentPage;
 
   const VisibleRouteNotification(this.currentPage);
 }
 
-class HomeScreen extends StatefulWidget with Navigation {
+class HomeScreen extends StatefulWidget {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
   final DeviceRepository _repository;
@@ -60,14 +57,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final _storageBucket = PageStorageBucket();
-
   bool _isDisconnectManual = false;
 
   PersistentBottomSheetController _bottomSheetController;
 
   List<Widget> get _pages => <Widget>[
-        DeviceScreen(widget._shortStatusBloc),
+        DeviceScreen(widget._shortStatusBloc, widget._locationBloc),
         FullStatusScreen(widget._fullStatusBloc),
         MapPage(widget._locationBloc),
       ];
@@ -88,11 +83,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void pageChanged(int index) {
     print('INDEX NOW IS $index');
-    if (index == 2) {
-      widget._shortStatusBloc.create();
-      widget._shortStatusBloc.resume();
-    } else if (index == 1) {
-      widget._shortStatusBloc.pause();
+    switch (index) {
+      case 0:
+        widget._fullStatusBloc.pause();
+        widget._shortStatusBloc.create();
+        widget._shortStatusBloc.resume();
+        break;
+      case 1:
+        widget._shortStatusBloc.pause();
+        widget._locationBloc.pause();
+        widget._fullStatusBloc.create();
+        widget._fullStatusBloc.resume();
+        break;
+      case 2:
+        widget._fullStatusBloc.pause();
+        widget._locationBloc.resume();
+        widget._shortStatusBloc.create();
+        widget._shortStatusBloc.resume();
+        break;
     }
     setState(() {
       _currentTab = index;
@@ -137,6 +145,9 @@ class _HomeScreenState extends State<HomeScreen> {
   initState() {
     super.initState();
     widget._controlBloc.create();
+    widget._shortStatusBloc
+        .create(); // Necessary cuz we don't get the PageView callback at first.
+    widget._shortStatusBloc.resume();
   }
 
   function(func) async {
@@ -220,10 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                       bleException: (_) => {});
                 },
-                child: PageStorage(
-                  child: _buildPageView(),
-                  bucket: _storageBucket,
-                ),
+                child: _buildPageView(),
               ),
               bottomNavigationBar: SafeArea(
                 child: Container(
@@ -324,14 +332,6 @@ class _HomeScreenState extends State<HomeScreen> {
             Duration(milliseconds: 100), () => widget._repository.resume());
       });
     }
-  }
-
-  void pauseFull() {
-    widget._fullStatusBloc.pause();
-  }
-
-  void pauseShort() {
-    widget._shortStatusBloc.pause();
   }
 
   @override

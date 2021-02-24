@@ -1,25 +1,26 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/fullStatusBloc.dart';
-import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/screens/navigationAware.dart';
-import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/widgets/FullStatusUI/VoltagesBarChart.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class FullStatusScreen extends RouteAwareWidget<FullStatusBloc>
-    with RouteUtils {
-  const FullStatusScreen(FullStatusBloc fullStatusBloc)
-      : super(
-            bloc: fullStatusBloc,
-            key: const PageStorageKey('FullStatusScreen'));
+class FullStatusScreen extends StatefulWidget {
+  final FullStatusBloc fullStatusBloc;
+
+  const FullStatusScreen(this.fullStatusBloc);
 
   @override
-  Widget buildWidget(BuildContext context) {
+  _FullStatusScreenState createState() => _FullStatusScreenState();
+}
+
+class _FullStatusScreenState extends State<FullStatusScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
     AwesomeDialog dialog;
     return GestureDetector(
         onTap: () => {}, // TODO: notifications to home
@@ -70,13 +71,10 @@ class FullStatusScreen extends RouteAwareWidget<FullStatusBloc>
             }
             return true;
           },
-          child: VoltagesBarChart(super.bloc),
+          child: VoltagesBarChart(this.widget.fullStatusBloc),
         ));
   }
 
   @override
-  onResume() {
-    super.onResume();
-    notifyForRoute(CurrentPage.FullStatus);
-  }
+  bool get wantKeepAlive => true;
 }
