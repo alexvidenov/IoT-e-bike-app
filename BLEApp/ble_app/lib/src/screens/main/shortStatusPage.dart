@@ -19,7 +19,7 @@ class DeviceScreen extends StatefulWidget {
 }
 
 class _DeviceScreenState extends State<DeviceScreen>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin { // TODO: abtract
   @override
   Widget build(BuildContext context) {
     super.build(context);

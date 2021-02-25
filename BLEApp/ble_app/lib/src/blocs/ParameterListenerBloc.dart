@@ -35,6 +35,8 @@ class ParameterListenerBloc
   String currentKey; // TODO: extract in an object
   String currentValue;
 
+  // TODO: have current command, which will just get invoked
+
   bool _successful = false;
 
   int _changingNumOfCells = 0;

@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void pageChanged(int index) {
+  void _handlePageChange(int index) {
     print('INDEX NOW IS $index');
     switch (index) {
       case 0:
@@ -102,12 +102,15 @@ class _HomeScreenState extends State<HomeScreen> {
         widget._shortStatusBloc.resume();
         break;
     }
-    setState(() {
-      _currentTab = index;
-    });
+  }
+
+  void pageChanged(int index) {
+    _handlePageChange(index);
+    setState(() => _currentTab = index);
   }
 
   void bottomTapped(int index) {
+    _handlePageChange(index);
     setState(() {
       _currentTab = index;
       _pageController.animateToPage(index,
@@ -150,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
     widget._shortStatusBloc.resume();
   }
 
-  function(func) async {
+  Future<void> outputsControlCompletion(func) async {
     widget._repository.cancel();
     await Future.delayed(Duration(milliseconds: 150), () => func());
     Future.delayed(

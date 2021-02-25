@@ -25,7 +25,7 @@ class NavigationDrawer extends StatelessWidget {
                 text: 'Connection Settings',
                 onTap: () => $<PageManager>().openConnectionSettings()),
             _createDrawerItem(
-                icon: Icons.devices,
+                icon: Icons.battery_charging_full_sharp,
                 text: 'Battery Settings',
                 onTap: () => $<PageManager>().openDeviceSettings()),
             _createDrawerItem(

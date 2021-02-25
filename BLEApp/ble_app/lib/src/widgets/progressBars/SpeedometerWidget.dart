@@ -3,24 +3,20 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class Speedometer extends StatelessWidget {
-  const Speedometer(
-      {@required this.speed, @required this.speedRecord, this.size = 270});
+  const Speedometer({@required this.speed, this.size = 250});
 
   final double speed;
-  final double speedRecord;
   final double size;
 
   @override
   Widget build(BuildContext context) => CustomPaint(
-      painter: SpeedometerPainter(speed: speed, speedRecord: speedRecord),
-      size: Size(size, size));
+      painter: SpeedometerPainter(speed: speed), size: Size(size, size));
 }
 
 class SpeedometerPainter extends CustomPainter {
-  SpeedometerPainter({this.speed, this.speedRecord});
+  SpeedometerPainter({this.speed});
 
   final double speed;
-  final double speedRecord;
 
   Size size;
   Canvas canvas;
