@@ -53,9 +53,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _hasDisconnected = false;
-
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  bool _hasDisconnected = false;
 
   bool _isDisconnectManual = false;
 
@@ -151,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
     widget._shortStatusBloc
         .create(); // Necessary cuz we don't get the PageView callback at first.
     widget._shortStatusBloc.resume();
+    widget._locationBloc.create();
   }
 
   Future<void> outputsControlCompletion(func) async {

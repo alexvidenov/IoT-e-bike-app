@@ -1,5 +1,6 @@
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/LocationTracker.dart';
+import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -36,10 +37,14 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
   ValueStream<List<RouteFileModel>> get routes =>
       _locationTracker.routesRx.stream;
 
+  final speedRx = RxObject<double>();
+
   Stream<bool> get isRecording => _locationTracker.isRecordingRx.stream;
 
   Stream<bool> get isShowingRoute =>
       _locationTracker.isShowingCachedRoute.stream;
+
+  Stream<double> get kilometres => _locationTracker.distanceRx.stream;
 
   CameraPosition get initialLocation => _initialLocation;
 
@@ -66,7 +71,7 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
 
   @override
   create() async {
-    logger.wtf('CREATOING IN LOCATION BLOC');
+    logger.wtf('CREATING IN LOCATION BLOC');
     try {
       final location = await _location.getLocation();
 
@@ -77,6 +82,8 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
       streamSubscription = _location.onLocationChanged.listen((locData) {
         final lat = locData.latitude;
         final long = locData.longitude;
+        speedRx.addEvent(locData.speed);
+        _locationTracker.addCoordsForCalculate(lat, long);
         if (_controller != null) {
           _controller.animateCamera(CameraUpdate.newCameraPosition(
               CameraPosition(
@@ -89,14 +96,14 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
             _locationTracker.isShowingCachedRoute.value;
         if (_locationTracker.isRecordingRx.value) {
           print('ADDING COORDINATES');
-          _locationTracker.addCoords(lat, long);
+          _locationTracker.addVisibleCoords(lat, long);
         }
         addEvent(LocationState(locData,
             polylines: Set.of(shouldShowPolyline
                 ? [
                     Polyline(
                         polylineId: PolylineId('firstRoute'),
-                        points: _locationTracker.coords,
+                        points: _locationTracker.visibleCoords,
                         width: 8)
                   ]
                 : [])));
@@ -122,6 +129,12 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
 
   void removeCachedRoute() => _locationTracker.clearLoadedCoordinates();
 
+  void loadCachedRoutes() => _locationTracker.cachedRoutesStream
+      .then((stream) => stream.listen((event) {
+            print('Cached routes event : $event');
+            _locationTracker.routesRx.addEvent(event);
+          }));
+
   @override
   resume() {
     logger.wtf('RESUMING IN LOCATION BLOC');
@@ -133,10 +146,4 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
     logger.wtf('Closing stream in Location Bloc');
     super.dispose();
   }
-
-  void loadCachedRoutes() => _locationTracker.cachedRoutesStream
-      .then((stream) => stream.listen((event) {
-            print('Cached routes event : $event');
-            _locationTracker.routesRx.addEvent(event);
-          }));
 }

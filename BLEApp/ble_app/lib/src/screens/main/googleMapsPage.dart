@@ -264,7 +264,7 @@ class LastRouteView extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(model.name),
+                Text('Route: ' + model.name),
                 const SizedBox(
                   height: 4.0,
                 ),
@@ -276,11 +276,11 @@ class LastRouteView extends StatelessWidget {
                 const SizedBox(
                   height: 4.0,
                 ),
-                Text(model.lengthInKilometers.toString()),
+                Text('Length: ' + model.lengthInKilometers.toString() + ' km'),
                 const SizedBox(
                   height: 4.0,
                 ),
-                Text(model.wastedPowerInWh.toString()),
+                Text('Waster power: ' + model.wastedPowerInWh.toString()),
               ],
             ),
           ),

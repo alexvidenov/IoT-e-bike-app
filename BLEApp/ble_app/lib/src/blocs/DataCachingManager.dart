@@ -24,10 +24,16 @@ mixin DataCachingManager on CurrentContext {
   }
 
   @optionalTypeArgs
-  addData<T extends BaseModel>(T _model) {
+  void addData<T extends BaseModel>(T _model) {
     LogModel log = _model.generate();
     _appData.addCurrentRecord(log);
     _sembastDatabase
         .setUserLogData(jsonEncode(_appData.toJson())); // list of userData
+  }
+
+  @optionalTypeArgs
+  void addListData<T extends BaseModel>(List<T> models) {
+    _appData.addCurrentRecords(models.map((e) => e.generate()).toList());
+    _sembastDatabase.setUserLogData(jsonEncode(_appData.toJson()));
   }
 }

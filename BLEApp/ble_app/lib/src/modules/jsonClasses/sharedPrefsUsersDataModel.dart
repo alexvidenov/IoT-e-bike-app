@@ -75,6 +75,9 @@ class AppData {
   List<dynamic> toJson() => usersData.map((user) => user.toJson()).toList();
 
   void addCurrentRecord(LogModel log) => _currentDeviceLog.addLog(log);
+
+  void addCurrentRecords(List<LogModel> logs) =>
+      _currentDeviceLog.addLogs(logs);
 }
 
 @JsonSerializable(nullable: false)
@@ -106,7 +109,9 @@ class DeviceLog {
 
   DeviceLog({this.deviceId, this.deviceLog});
 
-  addLog(LogModel log) => deviceLog.add(log);
+  void addLog(LogModel log) => deviceLog.add(log);
+
+  void addLogs(List<LogModel> logs) => deviceLog.addAll(logs);
 
   factory DeviceLog.fromJson(Map<String, dynamic> json) =>
       _$DeviceLogFromJson(json);

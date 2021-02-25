@@ -15,6 +15,8 @@ class ShortStatusBloc extends StateBloc<ShortStatus> {
 
   int _uploadTimer = 0;
 
+  final List<ShortStatus> _currentModels = [];
+
   ShortStatusBloc(this._repository) : super();
 
   @override
@@ -37,14 +39,13 @@ class ShortStatusBloc extends StateBloc<ShortStatus> {
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       if ('${event[1]}' == '1') {
         print('SHORT STATUS EVENT: $event');
+        final state = generateState(event);
+        _currentModels.add(state.model);
+        addEvent(state);
         _uploadTimer++;
-        if (!event.contains('OK')) {
-          final state = generateState(event);
-          addEvent(state);
-          if (_uploadTimer == 10) {
-            _uploadTimer = 0;
-            addData<ShortStatus>(state.model);
-          }
+        if (_uploadTimer == 90) {
+          addListData(_currentModels);
+          _currentModels.clear();
         }
       }
     });

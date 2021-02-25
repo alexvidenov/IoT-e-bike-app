@@ -115,12 +115,13 @@ class VoltagesBarChart extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                ValueListenableBuilder<DeviceParameters>(
-                  // TODO: extract
-                  valueListenable: _fullStatusBloc.getParameters(),
-                  builder: (context, value, _) => ProgressText(
+                StreamBuilder<List<double>>(
+                  stream: _fullStatusBloc.motoHoursRx,
+                  builder: (_, snapshot) => ProgressText(
                     title: 'Chg. time',
-                    content: (value.motoHoursChargeCounter).toString() + 'h',
+                    content: (snapshot.connectionState == ConnectionState.active
+                        ? snapshot.data.first.toString() + 'h'
+                        : ' - '),
                   ),
                 ),
                 StreamBuilder<StatusState<FullStatus>>(
@@ -133,11 +134,13 @@ class VoltagesBarChart extends StatelessWidget {
                             )
                           : Container(),
                 ),
-                ValueListenableBuilder<DeviceParameters>(
-                  valueListenable: _fullStatusBloc.getParameters(),
-                  builder: (context, value, _) => ProgressText(
+                StreamBuilder<List<double>>(
+                  stream: _fullStatusBloc.motoHoursRx,
+                  builder: (_, snapshot) => ProgressText(
                     title: 'Dch. time',
-                    content: (value.motoHoursDischargeCounter).toString() + 'h',
+                    content: (snapshot.connectionState == ConnectionState.active
+                        ? snapshot.data.last.toString() + 'h'
+                        : ' - '),
                   ),
                 ),
               ],

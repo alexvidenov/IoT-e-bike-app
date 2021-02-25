@@ -4,6 +4,7 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
+import 'package:ble_app/src/blocs/MotoHoursTracker.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -47,7 +48,9 @@ GetIt $initGetIt(
   gh.lazySingleton<CloudMessaging>(() => CloudMessaging());
   gh.lazySingleton<DeviceRepository>(() => DeviceRepository());
   gh.factory<DeviceStatisticsBloc>(() => DeviceStatisticsBloc());
-  gh.factory<FullStatusBloc>(() => FullStatusBloc(get<DeviceRepository>()));
+  gh.factory<MotoHoursTracker>(() => MotoHoursTracker(get<DeviceRepository>()));
+  gh.factory<FullStatusBloc>(
+      () => FullStatusBloc(get<DeviceRepository>(), get<MotoHoursTracker>()));
   gh.lazySingleton<LocalDatabaseManager>(
       () => LocalDatabaseManager(get<LocalDatabase>()));
   gh.lazySingleton<LocationTracker>(() => LocationTracker());

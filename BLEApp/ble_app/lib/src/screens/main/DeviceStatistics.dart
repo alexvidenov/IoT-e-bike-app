@@ -65,28 +65,28 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
                     focusColor: Colors.red,
                     children: [
                       Text(
-                        ' V ',
+                        '   V   ',
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
-                        ' Ch ',
+                        '   Ch   ',
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
-                        ' Dch ',
+                        '   Dch   ',
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
-                        ' T ',
+                        '   T   ',
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.w700,

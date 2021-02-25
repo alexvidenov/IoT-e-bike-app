@@ -52,12 +52,13 @@ class SembastDatabase {
 
   void updateCoordinatesRouteFile(
       String userId, String deviceId, String fileTimeStamp,
-      {List<LatLng> coordinates, String finishedAt}) {
+      {List<LatLng> coordinates, String finishedAt, num length}) {
     _coordinatesStore.record(fileTimeStamp).put(
         _routesDB,
         {
           'coordinates': coordinates.map((c) => c.toJson()).toList(),
-          'finishedAt': finishedAt
+          'finishedAt': finishedAt,
+          'length': length
         },
         merge: true);
   }

@@ -7,8 +7,8 @@ class RouteFileModel {
   final String name;
   final String startedAt;
   final String finishedAt;
-  final double lengthInKilometers; // TODO: calculate these fields
-  final double wastedPowerInWh;
+  final double lengthInKilometers;
+  final double wastedPowerInWh; // TODO: calculate this one
   final List<LatLng> coordinates;
 
   const RouteFileModel(
@@ -28,9 +28,9 @@ mixin LocationCachingManager on CurrentContext {
   }
 
   void updateCachedLocation(
-      String fileName, List<LatLng> coordinates, String finishedAt) {
+      String fileName, List<LatLng> coordinates, String finishedAt, num length) {
     _sembastDB.updateCoordinatesRouteFile(curUserId, curDeviceId, fileName,
-        coordinates: coordinates, finishedAt: finishedAt);
+        coordinates: coordinates, finishedAt: finishedAt, length: length);
   }
 
   void renameCachedLocation(String fileTimeStamp, String newFileName) {

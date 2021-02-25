@@ -6,8 +6,7 @@ class ProgressText extends StatelessWidget {
   const ProgressText({this.title, this.content});
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
+  Widget build(BuildContext context) => Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -31,5 +30,4 @@ class ProgressText extends StatelessWidget {
         ],
       ),
     );
-  }
 }
