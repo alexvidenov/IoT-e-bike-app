@@ -2,6 +2,7 @@ import 'package:ble_app/src/blocs/MotoHoursTracker.dart';
 import 'package:ble_app/src/blocs/StateBloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/mixins/DeltaHolder.dart';
+import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusModel.dart';
 import 'package:ble_app/src/utils/ADCToTemp.dart';
@@ -11,7 +12,8 @@ import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
 import 'package:rxdart/streams.dart';
 
 @injectable
-class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
+class FullStatusBloc extends StateBloc<FullStatus, FullLogModel>
+    with DeltaCalculation {
   final DeviceRepository _repository;
 
   final MotoHoursTracker _motoHoursTracker;
@@ -29,17 +31,17 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
     logger.wtf('CREATING IN FULL STATUS BLOC');
     loadData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
-      if ('${event[1]}' == '2') {
-        // ACTUALLY CONFLICTS WHEN THERE IS EVENT R29
+      if ('${event[1]}' == '2' &&
+          '${event[0]}' != 'R' &&
+          !event.contains('OK')) {
         print('FULL STATUS EVENT: $event');
+        final state = generateState(event);
+        addCurrentModel(state.model);
+        addEvent(state);
         _uploadTimer++;
-        if (!event.contains('OK')) {
-          final state = generateState(event);
-          addEvent(state);
-          if (_uploadTimer == 10) {
-            _uploadTimer = 0;
-            addData<FullStatus>(state.model);
-          }
+        if (_uploadTimer == 30) {
+          _uploadTimer = 0;
+          saveLogs();
         }
       }
     });
@@ -61,7 +63,7 @@ class FullStatusBloc extends StateBloc<FullStatus> with DeltaCalculation {
   @override
   dispose() {
     logger.wtf('Closing stream in Full Status Bloc');
-    this._motoHoursTracker.dispose();
+    _motoHoursTracker.dispose();
     super.dispose();
   }
 

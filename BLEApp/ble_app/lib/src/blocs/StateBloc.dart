@@ -7,13 +7,15 @@ import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/dataClasses/BaseModel.dart';
+import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
 import 'package:ble_app/src/services/Database.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 
-abstract class StateBloc<T extends BaseModel>
-    extends ParameterAwareBloc<StatusState<T>, String> with DataCachingManager {
+abstract class StateBloc<T extends BaseModel, S extends LogModel>
+    extends ParameterAwareBloc<StatusState<T>, String>
+    with DataCachingManager<S> {
   final _controlBloc = $<OutputControlBloc>();
   final _stateTracker = $<StateTracker>();
 
@@ -41,8 +43,7 @@ abstract class StateBloc<T extends BaseModel>
           if ((_stateTracker.overDischargeTimeLimited != null &&
                   !_stateTracker.overDischargeTimeLimited.isActive) ||
               _stateTracker.overDischargeTimeLimited == null) {
-            _stateTracker.seconds =
-                11;
+            _stateTracker.seconds = 11;
             _stateTracker.overDischargeTimeLimited =
                 Timer.periodic(const Duration(seconds: 1), (_) {
               _stateTracker.seconds--;

@@ -8,13 +8,15 @@ import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
 import 'package:ble_app/src/persistence/SembastDatabase.dart';
 import 'package:flutter/material.dart';
 
-mixin DataCachingManager on CurrentContext {
+mixin DataCachingManager<T extends LogModel> on CurrentContext {
   final SembastDatabase _sembastDatabase = $<SembastDatabase>();
+
+  final List<T> _currentModels = [];
 
   AppData
       _appData; // appData is continuously evolving even if upload occurs -> we should bind this appData instance to the upload somehow
 
-  void loadData() async {
+  Future<void> loadData() async {
     final data = await _sembastDatabase.getUserLogData();
     data != null
         ? _appData = AppData.fromJson(jsonDecode(data),
@@ -23,17 +25,13 @@ mixin DataCachingManager on CurrentContext {
             userId: this.curUserId, deviceSerialNumber: this.curDeviceId);
   }
 
-  @optionalTypeArgs
-  void addData<T extends BaseModel>(T _model) {
-    LogModel log = _model.generate();
-    _appData.addCurrentRecord(log);
-    _sembastDatabase
-        .setUserLogData(jsonEncode(_appData.toJson())); // list of userData
+  void saveLogs() {
+    _appData.addCurrentRecords(_currentModels);
+    _sembastDatabase.setUserLogData(jsonEncode(_appData.toJson()));
+    _currentModels.clear();
   }
 
   @optionalTypeArgs
-  void addListData<T extends BaseModel>(List<T> models) {
-    _appData.addCurrentRecords(models.map((e) => e.generate()).toList());
-    _sembastDatabase.setUserLogData(jsonEncode(_appData.toJson()));
-  }
+  void addCurrentModel<T extends BaseModel>(T model) =>
+      _currentModels.add(model.generate());
 }

@@ -1,4 +1,5 @@
 import 'package:ble_app/main.dart';
+import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
@@ -8,14 +9,12 @@ import 'package:injectable/injectable.dart';
 import 'StateBloc.dart';
 
 @injectable
-class ShortStatusBloc extends StateBloc<ShortStatus> {
+class ShortStatusBloc extends StateBloc<ShortStatus, ShortLogmodel> {
   final DeviceRepository _repository;
 
   final tempConverter = TemperatureConverter();
 
   int _uploadTimer = 0;
-
-  final List<ShortStatus> _currentModels = [];
 
   ShortStatusBloc(this._repository) : super();
 
@@ -40,12 +39,12 @@ class ShortStatusBloc extends StateBloc<ShortStatus> {
       if ('${event[1]}' == '1') {
         print('SHORT STATUS EVENT: $event');
         final state = generateState(event);
-        _currentModels.add(state.model);
+        addCurrentModel(state.model);
         addEvent(state);
         _uploadTimer++;
-        if (_uploadTimer == 90) {
-          addListData(_currentModels);
-          _currentModels.clear();
+        if (_uploadTimer == 30) {
+          _uploadTimer = 0;
+          saveLogs();
         }
       }
     });

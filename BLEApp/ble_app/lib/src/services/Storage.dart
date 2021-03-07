@@ -5,6 +5,7 @@ import 'package:ble_app/src/modules/jsonClasses/sharedPrefsUsersDataModel.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
 
 class Storage {
   final String uid; // user id
@@ -39,13 +40,7 @@ class Storage {
     String base64str = base64.encode(bytes);
     Uint8List uploadData = base64.decode(base64str);
 
-    DateTime dateTime = DateTime.now();
-
-    String day = dateTime.day.toString();
-    String month = dateTime.month.toString();
-    String year = dateTime.year.toString();
-
-    String fileName = year + month + day + '.json';
+    String fileName = Jiffy().yMMMd;
 
     print('UPLOADING ON /devices/$deviceSerialNumber/$userId/$fileName');
 
@@ -58,7 +53,6 @@ class Storage {
   }
 
   // Fetches concurrently an arbitrary number of json files, applies custom Model fromJson to all of them, flattens the resulted list and returns it
-
   Future<List<LogModel>> downloadAll() async =>
       (await Future.wait<Response<List<dynamic>>>((await FirebaseStorage
                   .instance

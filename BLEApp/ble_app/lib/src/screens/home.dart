@@ -91,13 +91,11 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
       case 1:
         widget._shortStatusBloc.pause();
-        widget._locationBloc.pause();
         widget._fullStatusBloc.create();
         widget._fullStatusBloc.resume();
         break;
       case 2:
         widget._fullStatusBloc.pause();
-        widget._locationBloc.resume();
         widget._shortStatusBloc.create();
         widget._shortStatusBloc.resume();
         break;

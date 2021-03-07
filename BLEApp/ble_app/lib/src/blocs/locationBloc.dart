@@ -77,9 +77,8 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
 
       addEvent(LocationState(location));
 
-      if (streamSubscription != null) streamSubscription.cancel();
-
       streamSubscription = _location.onLocationChanged.listen((locData) {
+        print('ON LOCATION CHANGED');
         final lat = locData.latitude;
         final long = locData.longitude;
         speedRx.addEvent(locData.speed);

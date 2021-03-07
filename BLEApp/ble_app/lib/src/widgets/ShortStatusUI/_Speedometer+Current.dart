@@ -34,15 +34,12 @@ class SpeedometerWithCurrent extends StatelessWidget {
                     StreamBuilder<double>(
                         stream: locationBloc.speedRx.stream,
                         builder: (context, snapshot) {
-                          String _speedInKMH = '0.0';
-                          if (snapshot.data != null) {
-                            _speedInKMH =
-                                (snapshot.data * 3.6).toStringAsFixed(1);
+                          final speed = snapshot.data;
+                          String speedInKMH = '0.0';
+                          if (speed != null && speed > 2.0) {
+                            speedInKMH = (speed * 3.6).toStringAsFixed(2);
                           }
-                          return Text(
-                              snapshot.connectionState == ConnectionState.active
-                                  ? _speedInKMH
-                                  : '0',
+                          return Text(speedInKMH,
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,

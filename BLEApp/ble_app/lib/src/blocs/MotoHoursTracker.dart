@@ -64,7 +64,7 @@ class MotoHoursTracker extends Bloc<List<double>, String> {
 
   @override
   dispose() {
-    _timer.cancel();
-    return super.dispose();
+    _timer?.cancel();
+    super.dispose();
   }
 }
