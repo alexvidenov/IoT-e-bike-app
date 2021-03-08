@@ -26,6 +26,7 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
           _repository.characteristicValueStream.listen((event) async {
         print(event);
         if (event.startsWith('OK')) {
+          print('IF EVENTS STARTS WITH OK');
           await _querySerialNumber();
           //List<String> objects = event.split(' ');
           //String deviceId = objects.elementAt(1);
@@ -56,6 +57,7 @@ class BluetoothAuthBloc extends Bloc<BTAuthState, String> {
   String extractSerialNumber() => serialNumFirstPart + serialNumSecondPart;
 
   Future<void> _querySerialNumber() async {
+    print('QUERYING SERIAL NUMBER');
     _repository.cancel();
     await Future.delayed(Duration(milliseconds: 100), () async {
       _repository.writeToCharacteristic('R44\r');

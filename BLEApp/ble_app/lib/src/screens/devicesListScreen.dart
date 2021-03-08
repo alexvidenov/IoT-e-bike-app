@@ -6,20 +6,48 @@ import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:ble_app/src/screens/routeAware.dart';
 import 'package:flutter/material.dart';
-import 'package:location_permissions/location_permissions.dart' as locationPerm;
-import 'package:location/location.dart';
 
 typedef _DeviceTapListener = void Function();
 
 typedef _LogOutListener = Future<void> Function();
 
+// ignore: must_be_immutable
 class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
   final DevicesBloc _devicesBloc;
   final _LogOutListener _onLogout;
+  final bool _isBeneathView;
 
-  const DevicesListScreen(DevicesBloc devicesBloc, this._onLogout)
+  StreamSubscription _deviceSubscription;
+
+  DevicesListScreen(
+      DevicesBloc devicesBloc, this._onLogout, this._isBeneathView)
       : this._devicesBloc = devicesBloc,
         super(bloc: devicesBloc);
+
+  @override
+  onCreate() {
+    super.onCreate();
+    _deviceSubscription = _devicesBloc.pickedDevice.listen((device) {
+      if (device != null && !_isBeneathView) {
+        // device is null when we go back from home screen
+        this.onPause();
+        $<PageManager>().openBleAuth();
+      }
+    });
+  }
+
+  @override
+  onPause() {
+    super.onPause();
+    _deviceSubscription.pause();
+  }
+
+  @override
+  didUpdate() {
+    super.didUpdate();
+    print('RESUME IN DEVICES LIST SCREEN');
+    _deviceSubscription.resume();
+  }
 
   @override
   Widget buildWidget(BuildContext context) {

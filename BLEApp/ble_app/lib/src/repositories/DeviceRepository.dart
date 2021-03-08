@@ -46,6 +46,7 @@ class DeviceRepository {
 
   pickDevice(BleDevice bleDevice) async {
     _bleDevice = bleDevice;
+    print('PICKED DEVICE');
     _deviceController.add(_bleDevice);
   }
 

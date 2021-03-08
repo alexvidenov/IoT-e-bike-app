@@ -5,13 +5,20 @@ import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:injectable/injectable.dart';
 
+import 'RxObject.dart';
+
 @injectable
 class MotoHoursTracker extends Bloc<List<double>, String> {
   final DeviceRepository _repository;
 
   Timer _timer;
 
-  MotoHoursTracker(this._repository) {
+  MotoHoursTracker(this._repository) : super();
+
+  final isReady = RxObject<bool>();
+
+  void init() {
+    isReady.addEvent(false);
     fetchMotoHours();
     _startTimer();
   }
@@ -28,7 +35,8 @@ class MotoHoursTracker extends Bloc<List<double>, String> {
   create() {
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       print('PARAMETER EVENT: ' + event);
-      if (event.startsWith('R')) {
+      if (event.startsWith('R2')) {
+        // makes sure to not interfere with the last emitted password
         final buffer = StringBuffer();
         for (var i = 3; i < event.length; i++) {
           buffer.write('${event[i]}');
@@ -40,25 +48,29 @@ class MotoHoursTracker extends Bloc<List<double>, String> {
     });
   }
 
+  void pauseTimer() => _timer.cancel();
+
   Future<void> _querySingleParam(String command) async => await Future.delayed(
-      Duration(milliseconds: 100),
+      Duration(milliseconds: 80),
       () => _repository.writeToCharacteristic(command));
 
   Future<void> fetchMotoHours() async {
     create();
     _repository.cancel();
-    await Future.delayed(Duration(milliseconds: 250), () async {
-      await _querySingleParam('R28\r');
-      await _querySingleParam('R29\r');
-      Future.delayed(Duration(milliseconds: 150), () {
-        if (_parameters.keys.length >= 2) {
-          pause();
-          _repository.resume();
-          addEvent([_parameters['28'], _parameters['29']]);
-          _parameters.clear();
-        } else
-          fetchMotoHours();
-      });
+    print('FETCHING MOTO HOURS' + DateTime.now().toString());
+    await _querySingleParam('R28\r');
+    await _querySingleParam('R29\r');
+    Future.delayed(Duration(milliseconds: 150), () {
+      print('KEYS ARE: ' + _parameters.keys.length.toString());
+      if (_parameters.keys.length >= 2) {
+        pause();
+        isReady.addEvent(true);
+        _repository.resume();
+        print('MOTO HOURS ADDED');
+        addEvent([_parameters['28'], _parameters['29']]);
+        _parameters.clear();
+      } else
+        fetchMotoHours(); // prolly clear the parameters again here
     });
   }
 

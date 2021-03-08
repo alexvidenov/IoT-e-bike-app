@@ -34,9 +34,8 @@ class DeviceStatisticsBloc
 
   Future<List<LogModel>> fetchAll() async => await _storage.downloadAll();
 
-  Future<void> fetchOne(int index) async => await _storage
-      .downloadOne(_logFiles.elementAt(index))
-      .then((log) => addEvent(
+  Future<void> fetchOne(int index) =>
+      _storage.downloadOne(_logFiles.elementAt(index)).then((log) => addEvent(
           DeviceStatisticsState(types: _getCurrentTypes(), logs: log)));
 
   Future<List<String>> fetchFileNames() async =>

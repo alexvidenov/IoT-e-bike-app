@@ -51,8 +51,7 @@ class DeviceBloc {
       .observeConnectionState(
           emitCurrentValue: true, completeOnDisconnect: false)
       .listen((state) => _connectionEvent
-          .add(DeviceConnectionState.normalBTState(state: state))));
-
+          .add(DeviceConnectionState.normalBTState(state: state)))); // FIXME: find why this thing fires CONNECTED two times
 
   dispose() async {
     logger.wtf('Closing stream in DeviceBloc');

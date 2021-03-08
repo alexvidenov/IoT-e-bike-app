@@ -72,10 +72,8 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
         return false;
     } else if (!await Location().serviceEnabled()) {
       return Location().requestService();
-      ;
     }
     return true;
-    ;
   }
 
   Future<void> _checkBluetooth() async {
@@ -86,16 +84,11 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   @override
   create() {
     streamSubscription = stream.listen(_handlePickedDevice);
-    _pickedDevicesSubscription = this.pickedDevice.listen((device) {
-      if (device != null) {
-        $<PageManager>().openBleAuth();
-      }
-    });
   }
 
   @override
   pause() {
-    _pickedDevicesSubscription.pause();
+    _pickedDevicesSubscription?.pause();
     _stopScan();
   }
 

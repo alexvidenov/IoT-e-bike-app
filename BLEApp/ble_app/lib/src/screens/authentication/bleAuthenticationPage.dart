@@ -44,7 +44,8 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
     super.initState();
     widget._deviceBloc.stopScan(); // this is not needed for sure
     widget._authBloc.create();
-    widget._deviceBloc.connect().then((_) => _listenToAuthBloc());
+    _listenToAuthBloc();
+    widget._deviceBloc.connect();
     _handleBLEError();
   }
 
@@ -109,6 +110,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
           //_verificationNotifier.add(true);
           widget._settingsBloc.setPassword(pin);
           widget._authBloc.authenticate(pin);
+          print('AUTHENTICATING BOY: ' + DateTime.now().toString());
           _retry();
           //Navigator.of(context, rootNavigator: true).pop();
         },
@@ -175,6 +177,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
                     case PeripheralConnectionState.connected:
                       _connected = true;
                       if (widget._settingsBloc.isPasswordRemembered()) {
+                        print('PASSWORD REMEMBERED');
                         widget._deviceBloc.deviceReady.listen((event) {
                           if (event) {
                             final password = widget._settingsBloc.getPassword();

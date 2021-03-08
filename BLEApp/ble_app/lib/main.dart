@@ -90,7 +90,6 @@ class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
             $<PageManager>().openBleAuth();
             break;
           case Endpoint.DevicesScreen:
-            print('OPENING DEVICES LIST');
             $<PageManager>().openDevicesListScreen();
             break;
           default:

@@ -17,47 +17,69 @@ abstract class RouteAwareWidget<T extends Bloc> extends StatefulWidget {
 
   onDestroy() {}
 
-  const RouteAwareWidget({@required this.bloc, PageStorageKey key})
-      : super(key: key);
+  didUpdate() {}
+
+  const RouteAwareWidget({@required this.bloc});
 
   @override
-  RouteAwareWidgetState createState() => RouteAwareWidgetState();
+  _RouteAwareWidgetState createState() => _RouteAwareWidgetState();
 }
 
-class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
+class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   @override
-  void initState() {
+  initState() {
     super.initState();
     widget.bloc.create();
     widget.onCreate();
   }
 
   @override
-  void didChangeDependencies() {
+  didChangeDependencies() {
     super.didChangeDependencies();
     final route = ModalRoute.of(context);
     // null check needed for the entry screen when we don't have Modal route context.
     if (route != null) routeObserver.subscribe(this, route);
+    print('DID CHANGE DEPS');
+    widget.didUpdate();
   }
 
   @override
-  void didPush() {
+  didPush() {
     super.didPush();
+    widget.bloc.resume();
+    widget.onResume();
+    print('DID PUSH');
+  }
+
+  @override
+  didPushNext() {
+    super.didPushNext();
+    widget.bloc.pause();
+    widget.onPause();
+  }
+
+  @override
+  didPop() {
+    super.didPop();
+    widget.bloc.dispose();
+  }
+
+  @override
+  didPopNext() {
+    super.didPopNext();
+    print('DID POP NEXT');
     widget.bloc.resume();
     widget.onResume();
   }
 
   @override
-  void dispose() {
+  dispose() {
     routeObserver.unsubscribe(this);
-    widget.bloc.pause();
-    widget.onPause();
+    widget.bloc.dispose();
     widget.onDestroy();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return widget.buildWidget(context);
-  }
+  Widget build(BuildContext context) => widget.buildWidget(context);
 }

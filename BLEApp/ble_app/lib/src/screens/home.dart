@@ -146,9 +146,17 @@ class _HomeScreenState extends State<HomeScreen> {
   initState() {
     super.initState();
     widget._controlBloc.create();
-    widget._shortStatusBloc
-        .create(); // Necessary cuz we don't get the PageView callback at first.
-    widget._shortStatusBloc.resume();
+    widget._fullStatusBloc.initMotoTimers();
+    bool fetched = false;
+    widget._fullStatusBloc.fetchedMotoHours.listen((event) {
+      if (event && !fetched) {
+        fetched = true;
+        print('CREATING IN GHOME');
+        widget._shortStatusBloc
+            .create(); // Necessary cuz we don't get the PageView callback at first.
+        widget._shortStatusBloc.resume();
+      }
+    });
     widget._locationBloc.create();
   }
 
@@ -309,6 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void onDisconnected() {
     if (mounted && !_isDisconnectManual) {
       widget._repository.cancel();
+      widget._fullStatusBloc.pauseMotoTimers();
       _hasDisconnected = true;
       _bottomSheetController =
           _scaffoldKey.currentState.showBottomSheet((_) => InkWell(

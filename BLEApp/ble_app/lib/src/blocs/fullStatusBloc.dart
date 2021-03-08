@@ -24,6 +24,8 @@ class FullStatusBloc extends StateBloc<FullStatus, FullLogModel>
 
   ValueStream<List<double>> get motoHoursRx => _motoHoursTracker.stream;
 
+  ValueStream<bool> get fetchedMotoHours =>_motoHoursTracker.isReady.stream;
+
   FullStatusBloc(this._repository, this._motoHoursTracker) : super();
 
   @override
@@ -46,6 +48,10 @@ class FullStatusBloc extends StateBloc<FullStatus, FullLogModel>
       }
     });
   }
+
+  void initMotoTimers() => _motoHoursTracker.init();
+
+  void pauseMotoTimers() => _motoHoursTracker.pauseTimer();
 
   @override
   pause() {
@@ -77,8 +83,6 @@ class FullStatusBloc extends StateBloc<FullStatus, FullLogModel>
     double current;
 
     int temperature;
-
-    deltaCounter++;
 
     List<String> splitObject = rawData.split('  ');
     for (int i = splitObject.length - 1; i >= 0; i--) {
@@ -115,8 +119,14 @@ class FullStatusBloc extends StateBloc<FullStatus, FullLogModel>
       final diff = maxValue.y - lowestValue.y;
       current = current / 100;
       final threshold = getParameters().value.motoHoursCounterCurrentThreshold;
-      if (current < threshold) {
+      final delta2Threshold =
+          getParameters().value.maxTimeLimitedDischargeCurrent / 2;
+      print('delta2Threshold is $delta2Threshold');
+      print('CURRENT IS $current');
+      if (current < threshold && (current >= -0.01 && current <= 0.01)) {
+        // FIXME: find a way to optimize this without the signs..
         delta1 += diff;
+        deltaCounter++;
         if (deltaCounter == 4) {
           final deltaEvent = delta1 / 4;
           lastDelta = deltaEvent;
@@ -124,10 +134,12 @@ class FullStatusBloc extends StateBloc<FullStatus, FullLogModel>
           delta1 = 0;
           deltaCounter = 0;
         }
-      } else if (current >
-          (getParameters().value.maxTimeLimitedDischargeCurrent / 2)) {
+      } else if (current < -delta2Threshold && current < 0) {
+        deltaCounter++;
+        print('WORKING BOY, c: $deltaCounter');
         delta2 += diff;
         if (deltaCounter == 4) {
+          print('ADDING DELTA2 EVENT');
           final deltaEvent = delta2 / 4;
           lastDelta = deltaEvent;
           delta2Holder.addEvent(deltaEvent);

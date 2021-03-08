@@ -152,8 +152,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         child: Column(
           children: <Widget>[
             Text(
-              'Some moto here',
-              style: TextStyle(color: Colors.white, fontSize: 17),
+              'Get power in your hands',
+              style: TextStyle(
+                  color: Colors.white, fontSize: 26, letterSpacing: 1.3),
             ),
             SizedBox(
               height: 20,

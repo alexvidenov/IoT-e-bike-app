@@ -120,7 +120,7 @@ class VoltagesBarChart extends StatelessWidget {
                   builder: (_, snapshot) => ProgressText(
                     title: 'Chg. time',
                     content: (snapshot.connectionState == ConnectionState.active
-                        ? snapshot.data.first.toString() + 'h'
+                        ? snapshot.data.first.toStringAsFixed(0) + 'h'
                         : ' - '),
                   ),
                 ),
@@ -139,7 +139,7 @@ class VoltagesBarChart extends StatelessWidget {
                   builder: (_, snapshot) => ProgressText(
                     title: 'Dch. time',
                     content: (snapshot.connectionState == ConnectionState.active
-                        ? snapshot.data.last.toString() + 'h'
+                        ? snapshot.data.last.toStringAsFixed(0) + 'h'
                         : ' - '),
                   ),
                 ),

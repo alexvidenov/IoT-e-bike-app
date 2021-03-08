@@ -109,7 +109,7 @@ class ConnectionSettingsScreen extends StatelessWidget {
       context: widgetContext,
       builder: (context) {
         return AlertDialog(
-          title: Text("Change your password"),
+          title: Text("Enter new password"),
           content: TextField(
             controller: _writeController,
           ),
