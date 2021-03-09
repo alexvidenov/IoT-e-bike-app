@@ -58,21 +58,23 @@ class PageManager {
 
   void openBleAuth() {
     print('OPENING BLE AUTH');
-    _pages.add(MaterialPage(
-        child: BLEAuthenticationScreen($(), $(), $()), key: Key('Ble auth')));
-    if (!_pages.any((page) => page.key == const Key('DevicesListScreen'))) {
-      _pages.insert(
-          _pages.length - 1,
-          MaterialPage(
-              child: DevicesListScreen($(), $<Auth>().signOut, true),
-              key: Key('DevicesListScreen')));
+    if (!_pages.any((page) => page.key == const Key('Ble auth'))) {
+      _pages.add(MaterialPage(
+          child: BLEAuthenticationScreen($(), $(), $()), key: Key('Ble auth')));
+      if (!_pages.any((page) => page.key == const Key('DevicesListScreen'))) {
+        _pages.insert(
+            _pages.length - 1,
+            MaterialPage(
+                child: DevicesListScreen($(), $<Auth>().signOut),
+                key: Key('DevicesListScreen')));
+      }
+      pages.addEvent(_pagesList);
     }
-    pages.addEvent(_pagesList);
   }
 
   void openDevicesListScreen() {
     _pages.add(MaterialPage(
-        child: DevicesListScreen($(), $<Auth>().signOut, false),
+        child: DevicesListScreen($(), $<Auth>().signOut),
         key: Key('DevicesListScreen')));
     pages.addEvent(_pagesList);
   }

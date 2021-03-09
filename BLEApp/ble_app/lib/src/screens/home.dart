@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/OutputControlBloc.dart';
+import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/blocs/fullStatusBloc.dart';
@@ -147,16 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     widget._controlBloc.create();
     widget._fullStatusBloc.initMotoTimers();
-    bool fetched = false;
-    widget._fullStatusBloc.fetchedMotoHours.listen((event) {
-      if (event && !fetched) {
-        fetched = true;
-        print('CREATING IN GHOME');
-        widget._shortStatusBloc
-            .create(); // Necessary cuz we don't get the PageView callback at first.
-        widget._shortStatusBloc.resume();
-      }
-    });
+    widget._shortStatusBloc
+        .create(); // Necessary cuz we don't get the PageView callback at first.
+    widget._shortStatusBloc.resume();
     widget._locationBloc.create();
   }
 

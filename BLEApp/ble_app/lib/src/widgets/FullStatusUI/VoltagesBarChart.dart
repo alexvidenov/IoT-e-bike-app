@@ -115,15 +115,26 @@ class VoltagesBarChart extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                StreamBuilder<List<double>>(
-                  stream: _fullStatusBloc.motoHoursRx,
-                  builder: (_, snapshot) => ProgressText(
-                    title: 'Chg. time',
-                    content: (snapshot.connectionState == ConnectionState.active
-                        ? snapshot.data.first.toStringAsFixed(0) + 'h'
-                        : ' - '),
-                  ),
-                ),
+                ValueListenableBuilder<DeviceParameters>(
+                    valueListenable: _fullStatusBloc.getParameters(),
+                    builder: (context, value, child) {
+                      return ProgressText(
+                        title: 'Chg. time',
+                        content:
+                            (value.motoHoursChargeCounter).toStringAsFixed(0) +
+                                'h',
+                      );
+                    }),
+                ValueListenableBuilder<DeviceParameters>(
+                    valueListenable: _fullStatusBloc.getParameters(),
+                    builder: (context, value, child) {
+                      return ProgressText(
+                        title: 'Dch. time',
+                        content: (value.motoHoursDischargeCounter)
+                                .toStringAsFixed(0) +
+                            'h',
+                      );
+                    }),
                 StreamBuilder<StatusState<FullStatus>>(
                   stream: _fullStatusBloc.stream,
                   builder: (_, model) =>
@@ -133,15 +144,6 @@ class VoltagesBarChart extends StatelessWidget {
                               content: model.data.state.string(),
                             )
                           : Container(),
-                ),
-                StreamBuilder<List<double>>(
-                  stream: _fullStatusBloc.motoHoursRx,
-                  builder: (_, snapshot) => ProgressText(
-                    title: 'Dch. time',
-                    content: (snapshot.connectionState == ConnectionState.active
-                        ? snapshot.data.last.toStringAsFixed(0) + 'h'
-                        : ' - '),
-                  ),
                 ),
               ],
             ),

@@ -18,6 +18,11 @@ abstract class ParameterAwareBloc<T, S> extends Bloc<T, S>
   void setLocalParameters(DeviceParameters parameters) =>
       currentParams = parameters;
 
+  void updateMotoHours(int chargeHours, int dischargeHours) =>
+      this.setLocalParameters(currentParams.copyWith(
+          motoHoursChargeCounter: chargeHours,
+          motoHoursDischargeCounter: dischargeHours));
+
   Stream<DeviceParameters> parametersAsStream() => _dbManager.fetchParameters();
 
   Future<DeviceParameters> parametersAsFuture() =>

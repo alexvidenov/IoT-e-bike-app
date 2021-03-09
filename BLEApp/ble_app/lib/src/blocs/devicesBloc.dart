@@ -84,6 +84,11 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   @override
   create() {
     streamSubscription = stream.listen(_handlePickedDevice);
+    this.pickedDevice.listen((event) {
+      if (event != null) {
+        $<PageManager>().openBleAuth();
+      }
+    });
   }
 
   @override

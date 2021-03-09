@@ -15,38 +15,40 @@ typedef _LogOutListener = Future<void> Function();
 class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
   final DevicesBloc _devicesBloc;
   final _LogOutListener _onLogout;
-  final bool _isBeneathView;
 
   StreamSubscription _deviceSubscription;
 
-  DevicesListScreen(
-      DevicesBloc devicesBloc, this._onLogout, this._isBeneathView)
+  DevicesListScreen(DevicesBloc devicesBloc, this._onLogout)
       : this._devicesBloc = devicesBloc,
         super(bloc: devicesBloc);
 
   @override
   onCreate() {
     super.onCreate();
+    /*
     _deviceSubscription = _devicesBloc.pickedDevice.listen((device) {
-      if (device != null && !_isBeneathView) {
+      print('DEVICE FROM LISTSCREEN: ' + device.toString());
+      if (device != null) {
         // device is null when we go back from home screen
         this.onPause();
         $<PageManager>().openBleAuth();
       }
     });
+
+     */
   }
 
   @override
   onPause() {
     super.onPause();
-    _deviceSubscription.pause();
+    _deviceSubscription?.pause();
   }
 
   @override
   didUpdate() {
     super.didUpdate();
     print('RESUME IN DEVICES LIST SCREEN');
-    _deviceSubscription.resume();
+    _deviceSubscription?.resume();
   }
 
   @override

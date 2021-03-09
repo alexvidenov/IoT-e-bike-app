@@ -18,17 +18,24 @@ class ParameterFetchBloc
 
   final _parameters = SplayTreeMap<String, double>();
 
+  DeviceParameters _model;
+
   @override
   create() async {
     super.create();
+    addEvent(ParameterFetchState.fetching());
     final params = await parametersAsFuture();
+    _model = params;
     if (params != null) {
       setLocalParameters(params);
-      addEvent(ParameterFetchState.fetched(params));
+      queryMotoHours();
     } else {
-      addEvent(ParameterFetchState.fetching());
       queryParameters();
-      streamSubscription =
+    }
+    _listen();
+  }
+
+  void _listen() => streamSubscription =
           _repository.characteristicValueStream.listen((event) {
         print('PARAMETER EVENT: ' + event);
         final buffer = StringBuffer();
@@ -39,8 +46,6 @@ class ParameterFetchBloc
         print('Parameter: ' + value.toString());
         _parameters['${event[1]}' + '${event[2]}'] = value;
       });
-    }
-  }
 }
 
 extension FetchParams on ParameterFetchBloc {
@@ -82,6 +87,20 @@ extension FetchParams on ParameterFetchBloc {
         addEvent(ParameterFetchState.fetched(entity));
       } else
         queryParameters();
+    });
+  }
+
+  Future<void> queryMotoHours() async {
+    await _querySingleParam('R28\r');
+    await _querySingleParam('R29\r');
+    Future.delayed(Duration(milliseconds: 150), () {
+      print('KEYS ARE: ' + _parameters.keys.length.toString());
+      if (_parameters.keys.length >= 3) {
+        print('MOTO HOURS ADDED');
+        updateMotoHours(_parameters['28'].toInt(), _parameters['29'].toInt());
+        addEvent(ParameterFetchState.fetched(_model));
+      } else
+        queryMotoHours(); // prolly clear the parameters again here
     });
   }
 

@@ -1,33 +1,22 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:injectable/injectable.dart';
 
-import 'RxObject.dart';
-
 @injectable
-class MotoHoursTracker extends Bloc<List<double>, String> {
+class MotoHoursTracker extends ParameterAwareBloc<void, String> {
   final DeviceRepository _repository;
 
   Timer _timer;
 
   MotoHoursTracker(this._repository) : super();
 
-  final isReady = RxObject<bool>();
+  void init() => _startTimer();
 
-  void init() {
-    isReady.addEvent(false);
-    fetchMotoHours();
-    _startTimer();
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 20), (timer) {
-      fetchMotoHours();
-    });
-  }
+  void _startTimer() =>
+      _timer = Timer.periodic(Duration(seconds: 20), (_) => fetchMotoHours());
 
   final _parameters = SplayTreeMap<String, double>();
 
@@ -60,17 +49,18 @@ class MotoHoursTracker extends Bloc<List<double>, String> {
     print('FETCHING MOTO HOURS' + DateTime.now().toString());
     await _querySingleParam('R28\r');
     await _querySingleParam('R29\r');
-    Future.delayed(Duration(milliseconds: 150), () {
+    Future.delayed(Duration(milliseconds: 300), () {
       print('KEYS ARE: ' + _parameters.keys.length.toString());
       if (_parameters.keys.length >= 2) {
         pause();
-        isReady.addEvent(true);
         _repository.resume();
         print('MOTO HOURS ADDED');
-        addEvent([_parameters['28'], _parameters['29']]);
+        updateMotoHours(_parameters['28'].toInt(), _parameters['29'].toInt());
         _parameters.clear();
-      } else
+      } else {
+        pause();
         fetchMotoHours(); // prolly clear the parameters again here
+      }
     });
   }
 

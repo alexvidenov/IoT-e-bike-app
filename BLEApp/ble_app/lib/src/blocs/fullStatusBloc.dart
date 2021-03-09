@@ -9,7 +9,6 @@ import 'package:ble_app/src/utils/ADCToTemp.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusBarGraphModel.dart';
-import 'package:rxdart/streams.dart';
 
 @injectable
 class FullStatusBloc extends StateBloc<FullStatus, FullLogModel>
@@ -21,10 +20,6 @@ class FullStatusBloc extends StateBloc<FullStatus, FullLogModel>
   final tempConverter = TemperatureConverter();
 
   int _uploadTimer = 0;
-
-  ValueStream<List<double>> get motoHoursRx => _motoHoursTracker.stream;
-
-  ValueStream<bool> get fetchedMotoHours =>_motoHoursTracker.isReady.stream;
 
   FullStatusBloc(this._repository, this._motoHoursTracker) : super();
 

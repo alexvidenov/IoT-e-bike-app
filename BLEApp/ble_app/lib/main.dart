@@ -87,7 +87,7 @@ class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
       onData: (endpoint) {
         switch (endpoint) {
           case Endpoint.AuthScreen:
-            $<PageManager>().openBleAuth();
+            //$<PageManager>().openBleAuth();
             break;
           case Endpoint.DevicesScreen:
             $<PageManager>().openDevicesListScreen();
