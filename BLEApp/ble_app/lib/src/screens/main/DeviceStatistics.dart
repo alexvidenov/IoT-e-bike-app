@@ -268,6 +268,10 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
                 height: 10,
                 width: 10,
                 markerVisibility: TrackballVisibilityMode.visible)),
+        zoomPanBehavior: ZoomPanBehavior(
+            enablePinching: true,
+            enableSelectionZooming: true,
+            enablePanning: true),
       );
 
   List<SplineSeries<LogModel, DateTime>> _getDefaultLineSeries(
