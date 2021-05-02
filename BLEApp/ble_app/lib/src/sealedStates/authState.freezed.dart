@@ -143,6 +143,7 @@ class _$_Authenticated implements _Authenticated {
   int get hashCode =>
       runtimeType.hashCode ^ const DeepCollectionEquality().hash(userId);
 
+  @JsonKey(ignore: true)
   @override
   _$AuthenticatedCopyWith<_Authenticated> get copyWith =>
       __$AuthenticatedCopyWithImpl<_Authenticated>(this, _$identity);
@@ -214,6 +215,7 @@ abstract class _Authenticated implements AuthState {
   const factory _Authenticated(String userId) = _$_Authenticated;
 
   String get userId;
+  @JsonKey(ignore: true)
   _$AuthenticatedCopyWith<_Authenticated> get copyWith;
 }
 
@@ -271,6 +273,7 @@ class _$_FailedToAuthenticate implements _FailedToAuthenticate {
   int get hashCode =>
       runtimeType.hashCode ^ const DeepCollectionEquality().hash(reason);
 
+  @JsonKey(ignore: true)
   @override
   _$FailedToAuthenticateCopyWith<_FailedToAuthenticate> get copyWith =>
       __$FailedToAuthenticateCopyWithImpl<_FailedToAuthenticate>(
@@ -344,6 +347,7 @@ abstract class _FailedToAuthenticate implements AuthState {
       _$_FailedToAuthenticate;
 
   NotAuthenticatedReason get reason;
+  @JsonKey(ignore: true)
   _$FailedToAuthenticateCopyWith<_FailedToAuthenticate> get copyWith;
 }
 

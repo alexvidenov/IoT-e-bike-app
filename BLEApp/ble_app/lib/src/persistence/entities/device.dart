@@ -19,11 +19,11 @@ class Device extends Model {
   @ColumnInfo(name: 'changed_parameters', nullable: true)
   final String parametersToChange; // changed via FCM
 
-  const Device({
-    @required String deviceId,
-    @required this.name,
-    @required this.isSuper,
+  const Device(
+    String id,
+    this.name,
+    this.isSuper, {
     this.parametersToChange,
     this.macAddress,
-  }) : super(id: deviceId);
+  }) : super(id: id);
 }

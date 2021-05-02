@@ -63,10 +63,12 @@ class CurrentRow extends StatelessWidget {
                                 .toInt()
                             : 0,
                         size: 50,
-                        maxValue:
-                            (bloc.getParameters().value.maxCutoffChargeCurrent *
-                                    10)
-                                .toInt(),
+                        maxValue: (bloc
+                                    .getParameters()
+                                    .value
+                                    .maxCutoffChargeCurrent * // abstract in value instead of calculating it every time
+                                10)
+                            .toInt(),
                         backgroundColor: Colors.black,
                         progressColor: CCColor,
                         animatedDuration: const Duration(milliseconds: 300),

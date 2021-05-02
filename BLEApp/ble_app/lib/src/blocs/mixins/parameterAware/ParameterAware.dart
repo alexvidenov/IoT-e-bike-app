@@ -15,5 +15,12 @@ mixin ParameterAware implements ParameterAwareInterface {
   DeviceParameters get currentParams => _holder.params;
 
   @override
-  set currentParams(DeviceParameters parameters) => _holder.setParameters(parameters);
+  set currentParams(DeviceParameters parameters) =>
+      _holder.setParameters(parameters);
+
+  double get totalVoltage =>
+      currentParams.cellCount * currentParams.balanceCellVoltage;
+
+  double get minVoltage =>
+      currentParams.cellCount * currentParams.minCellVoltage;
 }

@@ -44,8 +44,16 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
 
   DevicesBloc(this._deviceRepository, this._dbManager);
 
-  _handlePickedDevice(BleDevice bleDevice) =>
-      _deviceRepository.pickDevice(bleDevice);
+  _handlePickedDevice(BleDevice bleDevice) async {
+    final device = await _dbManager.fetchDeviceByMac(bleDevice.id);
+    if (device != null) {
+      _deviceRepository.deviceSerialNumber = device.id;
+      print("id is ${device.id}");
+      _deviceRepository.deviceMacAddress = device.macAddress;
+      print("DEVICE NAME IS: ${device.name}, ${device.macAddress}");
+    }
+    _deviceRepository.pickDevice(bleDevice);
+  }
 
   void init() async {
     if (await _checkPermissions()) {

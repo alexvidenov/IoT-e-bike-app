@@ -1,54 +1,13 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/CurrentContext.dart';
+import 'package:ble_app/src/utils/locationUtils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:jiffy/jiffy.dart';
 
 import 'LocationCachingManager.dart';
 import 'RxObject.dart';
-
-import 'dart:math';
-
-class MathUtil {
-  static num toRadians(num degrees) => degrees / 180.0 * pi;
-
-  static num hav(num x) => sin(x * 0.5) * sin(x * 0.5);
-
-  static num arcHav(num x) => 2 * asin(sqrt(x));
-
-  static num havDistance(num lat1, num lat2, num dLng) =>
-      hav(lat1 - lat2) + hav(dLng) * cos(lat1) * cos(lat2);
-}
-
-class SphericalUtil {
-  static const num earthRadius = 6371009.0;
-
-  static num computeLength(List<LatLng> path) {
-    if (path.length < 2) {
-      return 0;
-    }
-
-    final prev = path.first;
-    var prevLat = MathUtil.toRadians(prev.latitude);
-    var prevLng = MathUtil.toRadians(prev.longitude);
-
-    final length = path.fold<num>(0.0, (value, point) {
-      final lat = MathUtil.toRadians(point.latitude);
-      final lng = MathUtil.toRadians(point.longitude);
-      value += distanceRadians(prevLat, prevLng, lat, lng);
-      prevLat = lat;
-      prevLng = lng;
-
-      return value;
-    });
-
-    return length * earthRadius;
-  }
-
-  static num distanceRadians(num lat1, num lng1, num lat2, num lng2) =>
-      MathUtil.arcHav(MathUtil.havDistance(lat1, lat2, lng1 - lng2));
-}
 
 @lazySingleton
 class LocationTracker with CurrentContext, LocationCachingManager {
@@ -64,7 +23,8 @@ class LocationTracker with CurrentContext, LocationCachingManager {
   LocationTracker() {
     isRecordingRx.addEvent(false);
     isShowingCachedRoute.addEvent(false);
-    _setupRoutes();
+    print("SETTING UP ROUTES");
+    // setupRoutes();
     Timer.periodic(Duration(seconds: 30), (timer) {
       _memoizedDistance += SphericalUtil.computeLength(_calculatedCoordinates);
       _calculatedCoordinates.clear();
@@ -72,7 +32,7 @@ class LocationTracker with CurrentContext, LocationCachingManager {
     });
   }
 
-  Future<void> _setupRoutes() async => await openRoutesDB();
+  Future<void> setupRoutesDB() async => await openRoutesDB();
 
   final List<LatLng> _calculatedCoordinates = [];
 
@@ -112,8 +72,15 @@ class LocationTracker with CurrentContext, LocationCachingManager {
   void addCoordsForCalculate(double latitude, double longitude) =>
       _calculatedCoordinates.add(LatLng(latitude, longitude));
 
+  void loadCachedRoutes() =>
+      cachedRoutesStream.then((stream) => stream.listen((event) {
+            print('Cached routes event : $event');
+            routesRx.addEvent(event);
+          }));
+
   void loadCoordinates(List<LatLng> coords) {
     print('LOADING COORDINATES');
+    _visibleCoordinates.clear();
     _visibleCoordinates.addAll(coords);
     isShowingCachedRoute.addEvent(true);
   }

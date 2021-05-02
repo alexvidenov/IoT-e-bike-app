@@ -124,6 +124,7 @@ class _$_Fetched implements _Fetched {
   int get hashCode =>
       runtimeType.hashCode ^ const DeepCollectionEquality().hash(model);
 
+  @JsonKey(ignore: true)
   @override
   _$FetchedCopyWith<_Fetched> get copyWith =>
       __$FetchedCopyWithImpl<_Fetched>(this, _$identity);
@@ -183,6 +184,7 @@ abstract class _Fetched implements ParameterFetchState {
   const factory _Fetched(DeviceParameters model) = _$_Fetched;
 
   DeviceParameters get model;
+  @JsonKey(ignore: true)
   _$FetchedCopyWith<_Fetched> get copyWith;
 }
 

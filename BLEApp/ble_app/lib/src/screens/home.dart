@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/OutputControlBloc.dart';
-import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/navigationBloc.dart';
 import 'package:ble_app/src/blocs/shortStatusBloc.dart';
 import 'package:ble_app/src/blocs/fullStatusBloc.dart';
@@ -54,6 +53,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // Have a global handler here that will check periodically if there is no communication
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _hasDisconnected = false;
@@ -65,29 +65,26 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> get _pages => <Widget>[
         DeviceScreen(widget._shortStatusBloc, widget._locationBloc),
         FullStatusScreen(widget._fullStatusBloc),
-        MapPage(widget._locationBloc),
+        MapPage(widget._locationBloc, false),
       ];
 
   int _currentTab = 0;
 
   final _pageController = PageController();
 
-  Widget _buildPageView() {
-    return PageView(
-      controller: _pageController,
-      onPageChanged: (index) {
-        pageChanged(index);
-      },
-      children: _pages,
-    );
-  }
+  Widget _buildPageView() => PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          pageChanged(index);
+        },
+        children: _pages,
+      );
 
   void _handlePageChange(int index) {
     print('INDEX NOW IS $index');
     switch (index) {
       case 0:
         widget._fullStatusBloc.pause();
-        widget._shortStatusBloc.create();
         widget._shortStatusBloc.resume();
         break;
       case 1:
@@ -97,7 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
       case 2:
         widget._fullStatusBloc.pause();
-        widget._shortStatusBloc.create();
         widget._shortStatusBloc.resume();
         break;
     }
@@ -175,48 +171,55 @@ class _HomeScreenState extends State<HomeScreen> {
                 actions: <Widget>[
                   StreamBuilder<OutputsState>(
                     stream: widget._controlBloc.stream,
-                    initialData: OutputsState.Off,
                     builder: (_, snapshot) {
-                      Text text = snapshot.data == OutputsState.On
-                          ? Text('Locked',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  letterSpacing: 1.3))
-                          : Text('Unlocked',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  letterSpacing: 1.3));
-                      final function = (func) async {
-                        widget._repository.cancel();
-                        await Future.delayed(
-                            Duration(milliseconds: 150), () => func());
-                        Future.delayed(Duration(milliseconds: 80),
-                            () => widget._repository.resume());
-                      };
-                      final funcToPass = snapshot.data == OutputsState.On
-                          ? () => widget._controlBloc.off()
-                          : () => widget._controlBloc.on();
-                      return OutlinedButton(
-                        child: text,
-                        onPressed: () => function(funcToPass),
-                        style: ElevatedButton.styleFrom(
-                          side: BorderSide(
-                              width: 5.0,
-                              color: snapshot.data == OutputsState.Off
-                                  ? Colors.green
-                                  : Colors.redAccent),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
+                      if (snapshot.connectionState == ConnectionState.active) {
+                        final Text text = snapshot.data == OutputsState.On
+                            ? Text('Locked',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    letterSpacing: 1.3))
+                            : Text('Unlocked',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    letterSpacing: 1.3));
+                        final function = (func) async {
+                          widget._repository.cancel();
+                          await Future.delayed(
+                              Duration(milliseconds: 150), () => func());
+                          Future.delayed(Duration(milliseconds: 80),
+                              () => widget._repository.resume());
+                        };
+                        final funcToPass = snapshot.data == OutputsState.On
+                            ? () => widget._controlBloc.off()
+                            : () => widget._controlBloc.on();
+                        return OutlinedButton(
+                          child: text,
+                          onPressed: () => function(funcToPass),
+                          style: ElevatedButton.styleFrom(
+                            side: BorderSide(
+                                width: 5.0,
+                                color: snapshot.data == OutputsState.Off
+                                    ? Colors.green
+                                    : Colors.redAccent),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      } else
+                        return Container(
+                          child: Center(
+                            child: Text('Loading state'),
+                          ),
+                        );
                     },
                   )
                 ],
               ),
-              drawer: NavigationDrawer($(), $(), $<Auth>().signOut),
+              drawer: NavigationDrawer($(), $(), $<Auth>().signOut,
+                  isOffline: false),
               body: StreamListener<DeviceConnectionState>(
                 stream: widget._deviceBloc.connectionState,
                 onData: (state) {

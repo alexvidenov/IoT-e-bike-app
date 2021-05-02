@@ -11,8 +11,9 @@ class CachedRouteChosenNotification extends Notification {
 
 class MapPage extends StatefulWidget {
   final LocationBloc _locationBloc;
+  final bool _isOffline;
 
-  MapPage(this._locationBloc);
+  MapPage(this._locationBloc, this._isOffline);
 
   @override
   _MapPageState createState() => _MapPageState();
@@ -49,163 +50,173 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   void initState() {
     super.initState();
     widget._locationBloc.loadCachedRoutes();
+    widget._locationBloc.isOffline = widget._isOffline;
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: Stack(alignment: Alignment.topRight, children: [
-          StreamBuilder<bool>(
-            stream: widget._locationBloc.isShowingRoute,
-            initialData: false,
-            builder: (_, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                final value = snapshot.data;
-                print('value: $value');
-                return snapshot.data
-                    ? IconButton(
-                        icon: Icon(
-                          Icons.clear,
-                          size: 40,
-                          color: Colors.red,
-                        ),
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Scaffold(
+      body: Stack(alignment: Alignment.topRight, children: [
+        StreamBuilder<bool>(
+          stream: widget._locationBloc.isShowingRoute,
+          initialData: false,
+          builder: (_, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              final value = snapshot.data;
+              print('value: $value');
+              return snapshot.data
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.clear,
+                        size: 40,
                         color: Colors.red,
-                        onPressed: () =>
-                            widget._locationBloc.removeCachedRoute(),
-                      )
-                    : Container();
-              } else
-                return Container();
-            },
-          ),
-          StreamBuilder<LocationState>(
-            stream: widget._locationBloc.stream,
-            builder: (_, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                final marker = widget._locationBloc
+                      ),
+                      color: Colors.red,
+                      onPressed: () =>
+                          widget._locationBloc.removeVisibleCachedRoute(),
+                    )
+                  : Container();
+            } else
+              return Container();
+          },
+        ),
+        StreamBuilder<LocationState>(
+          stream: widget._locationBloc.stream,
+          builder: (_, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              Marker marker;
+              Circle circle;
+              if (snapshot.data.locationData != null) {
+                marker = widget._locationBloc
                     .generateNewMarker(snapshot.data.locationData);
-                final circle = widget._locationBloc
+                circle = widget._locationBloc
                     .generateNewCircle(snapshot.data.locationData);
-                return GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onLongPress: () => {}, // NOTIFICATIONS,
-                  child: GoogleMap(
-                    mapType: MapType.normal,
-                    initialCameraPosition: widget._locationBloc.initialLocation,
-                    zoomControlsEnabled: false,
-                    markers: Set.of((marker != null) ? [marker] : []),
-                    circles: Set.of((circle != null) ? [circle] : []),
-                    polylines: snapshot.data.polylines ?? Set.of([]),
-                    onMapCreated: (controller) =>
-                        widget._locationBloc.controller = controller,
-                  ),
-                );
-              } else
-                return Container();
-            },
-          )
-        ]),
-        floatingActionButton: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            StreamBuilder<bool>(
-              stream: widget._locationBloc.isRecording,
-              initialData: false,
-              builder: (_, snapshot) => FloatingActionButton.extended(
-                label: snapshot.data
-                    ? Text('Stop recording',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.lightBlue))
-                    : Text('Record route',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.redAccent)),
-                icon: Icon(snapshot.data
-                    ? Icons.pause_circle_filled_outlined
-                    : Icons.add_location_rounded),
-                onPressed: snapshot.data
-                    ? () {
-                        widget._locationBloc.stopRecording();
-                        _showDialogToSaveRoute(context);
-                      }
-                    : () => widget._locationBloc.startRecording(),
-                heroTag: null,
-              ),
+              }
+              print("RENDERING GOOGLE MAP");
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onLongPress: () => {}, // NOTIFICATIONS,
+                child: GoogleMap(
+                  mapType: MapType.normal,
+                  initialCameraPosition: widget._locationBloc.initialLocation,
+                  zoomControlsEnabled: true,
+                  markers: Set.of((marker != null) ? [marker] : []),
+                  circles: Set.of((circle != null) ? [circle] : []),
+                  polylines: snapshot.data.polylines ?? Set.of([]),
+                  onMapCreated: (controller) =>
+                      widget._locationBloc.controller = controller,
+                ),
+              );
+            } else
+              return Container();
+          },
+        )
+      ]),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          StreamBuilder<bool>(
+            stream: widget._locationBloc.isRecording,
+            initialData: false,
+            builder: (_, snapshot) => FloatingActionButton.extended(
+              label: snapshot.data
+                  ? Text('Stop recording',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.lightBlue))
+                  : Text('Record route',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.redAccent)),
+              icon: Icon(snapshot.data
+                  ? Icons.pause_circle_filled_outlined
+                  : Icons.add_location_rounded),
+              onPressed: snapshot.data
+                  ? () {
+                      widget._locationBloc.stopRecording();
+                      _showDialogToSaveRoute(context);
+                    }
+                  : () => widget._locationBloc.startRecording(),
+              heroTag: null,
             ),
-            const SizedBox(
-              height: 15,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          FloatingActionButton.extended(
+            label: Text(
+              'View routes',
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.lightGreenAccent),
             ),
-            FloatingActionButton.extended(
-              label: Text(
-                'View routes',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.lightGreenAccent),
-              ),
-              icon: Icon(Icons.album_rounded),
-              onPressed: () => showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (_) => DraggableScrollableSheet(
-                      expand: false,
-                      builder: (_, controller) =>
-                          NotificationListener<CachedRouteChosenNotification>(
-                            onNotification: (notification) {
-                              widget._locationBloc
-                                  .loadCachedRoute(notification.fileName);
-                              return true;
-                            },
-                            child: SingleChildScrollView(
-                              controller: controller,
-                              child: Card(
-                                elevation: 12.0,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24)),
-                                margin: const EdgeInsets.all(0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(
-                                        height: 12,
+            icon: Icon(Icons.album_rounded),
+            onPressed: () => showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (_) => DraggableScrollableSheet(
+                    expand: false,
+                    builder: (_, controller) =>
+                        NotificationListener<CachedRouteChosenNotification>(
+                          onNotification: (notification) {
+                            widget._locationBloc
+                                .loadCachedRoute(notification.fileName);
+                            Navigator.of(context).pop();
+                            return true;
+                          },
+                          child: SingleChildScrollView(
+                            controller: controller,
+                            child: Card(
+                              elevation: 12.0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24)),
+                              margin: const EdgeInsets.all(0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                child: Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    BottomSheetHeader(),
+                                    const SizedBox(height: 16),
+                                    LastRoutesHeader(),
+                                    const SizedBox(height: 16),
+                                    Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: GridView.count(
+                                        physics: ScrollPhysics(),
+                                        padding: const EdgeInsets.all(0),
+                                        crossAxisCount: 2,
+                                        mainAxisSpacing: 12,
+                                        crossAxisSpacing: 12,
+                                        shrinkWrap: true,
+                                        children: [
+                                          ...widget._locationBloc.routes.value
+                                              .map((e) => LastRouteView(
+                                                    model: e,
+                                                  )),
+                                        ],
                                       ),
-                                      BottomSheetHeader(),
-                                      const SizedBox(height: 16),
-                                      LastRoutesHeader(),
-                                      const SizedBox(height: 16),
-                                      Padding(
-                                        padding: const EdgeInsets.all(16),
-                                        child: GridView.count(
-                                          physics: ScrollPhysics(),
-                                          padding: const EdgeInsets.all(0),
-                                          crossAxisCount: 2,
-                                          mainAxisSpacing: 12,
-                                          crossAxisSpacing: 12,
-                                          shrinkWrap: true,
-                                          children: [
-                                            ...widget._locationBloc.routes.value
-                                                .map((e) => LastRouteView(
-                                                      model: e,
-                                                    )),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          ))),
-              heroTag: null,
-            )
-          ],
-        ),
-      );
+                          ),
+                        ))),
+            heroTag: null,
+          )
+        ],
+      ),
+    );
+  }
 
   @override
   bool get wantKeepAlive => true;

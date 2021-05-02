@@ -11,12 +11,13 @@ class ConnectionSettingsScreen extends StatelessWidget {
   final BluetoothAuthBloc _authBloc;
   final SettingsBloc _settingsBloc;
 
-  final _writeController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _editDeviceNameController = TextEditingController();
 
   ConnectionSettings _connectionSettings;
 
-  ConnectionSettingsScreen(
-      this._deviceRepository, this._settingsBloc, this._authBloc) {
+  ConnectionSettingsScreen(this._deviceRepository, this._settingsBloc,
+      this._authBloc) {
     _listenToConnectionSettingsChanges();
     if (_settingsBloc.isPasswordRemembered())
       _connectionSettings = ConnectionSettings.AutoPassword;
@@ -31,7 +32,8 @@ class ConnectionSettingsScreen extends StatelessWidget {
           .listen((event) => _connectionSettings = event);
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) =>
+      Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           brightness: Brightness.dark,
@@ -49,12 +51,19 @@ class ConnectionSettingsScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   ListTile(
                     leading: Icon(Icons.lock_outline, color: Colors.black),
                     title: Text("Change password"),
                     trailing: Icon(Icons.keyboard_arrow_right),
                     onTap: () => _presentDialog(context),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.lock_outline, color: Colors.black),
+                    title: Text("Change device name"),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    onTap: () => _renameDevice(context),
                   ),
                 ],
               ),
@@ -74,34 +83,37 @@ class ConnectionSettingsScreen extends StatelessWidget {
             _generateListTileStreamBuilder(
                 value: ConnectionSettings.AutoConnect,
                 title: 'Auto connect',
-                onChanged: (_) => _settingsBloc
-                    .setAutoConnect(_deviceRepository.pickedDevice.value.id),
+                onChanged: (_) =>
+                    _settingsBloc
+                        .setAutoConnect(
+                        _deviceRepository.pickedDevice.value.id),
                 secondary: Icon(Icons.bluetooth_connected)),
             _generateListTileStreamBuilder(
               value: ConnectionSettings.AutoPassword,
               title: 'Remember my password',
-              onChanged: (_) => _settingsBloc
-                  .setAutoPassword(_deviceRepository.pickedDevice.value.id),
+              onChanged: (_) =>
+                  _settingsBloc
+                      .setAutoPassword(_deviceRepository.pickedDevice.value.id),
             ),
           ],
         ),
       );
 
-  Widget _generateListTileStreamBuilder(
-          {@required ConnectionSettings value,
-          @required String title,
-          @required Function onChanged,
-          Widget secondary}) =>
+  Widget _generateListTileStreamBuilder({@required ConnectionSettings value,
+    @required String title,
+    @required Function onChanged,
+    Widget secondary}) =>
       StreamBuilder(
         stream: _settingsBloc.connectionSettingsChanged,
-        builder: (_, __) => RadioListTile<ConnectionSettings>(
-          activeColor: Colors.lightBlueAccent,
-          secondary: secondary ?? null,
-          value: value,
-          title: Text(title),
-          onChanged: onChanged,
-          groupValue: _connectionSettings,
-        ),
+        builder: (_, __) =>
+            RadioListTile<ConnectionSettings>(
+              activeColor: Colors.lightBlueAccent,
+              secondary: secondary ?? null,
+              value: value,
+              title: Text(title),
+              onChanged: onChanged,
+              groupValue: _connectionSettings,
+            ),
       );
 
   Future<void> _presentDialog(BuildContext widgetContext) async {
@@ -111,17 +123,43 @@ class ConnectionSettingsScreen extends StatelessWidget {
         return AlertDialog(
           title: Text("Enter new password"),
           content: TextField(
-            controller: _writeController,
+            controller: _passwordController,
           ),
           actions: <Widget>[
             FlatButton(
               child: Text("Confirm"),
               onPressed: () {
                 _deviceRepository.cancel();
-                _authBloc.changePassword(_writeController.value.text);
+                _authBloc.changePassword(_passwordController.value.text);
                 Future.delayed(Duration(milliseconds: 80),
-                    () => _deviceRepository.resume());
-                _settingsBloc.setPassword(_writeController.value.text);
+                        () => _deviceRepository.resume());
+                _settingsBloc.setPassword(_passwordController.value.text);
+                Navigator.of(context).pop(false);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _renameDevice(BuildContext widgetContext) async {
+    await showDialog(
+      context: widgetContext,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Enter your new device name"),
+          content: TextField(
+            controller: _editDeviceNameController,
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Confirm"),
+              onPressed: () {
+                _deviceRepository.cancel();
+                _authBloc.changeDeviceName(_editDeviceNameController.value.text);
+                Future.delayed(Duration(milliseconds: 80),
+                        () => _deviceRepository.resume());
                 Navigator.of(context).pop(false);
               },
             ),

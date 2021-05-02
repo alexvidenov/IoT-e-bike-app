@@ -46,7 +46,7 @@ class FullStatusBloc extends StateBloc<FullStatus, FullLogModel>
 
   void initMotoTimers() => _motoHoursTracker.init();
 
-  void pauseMotoTimers() => _motoHoursTracker.pauseTimer();
+  void pauseMotoTimers() => _motoHoursTracker.cancelTimer();
 
   @override
   pause() {

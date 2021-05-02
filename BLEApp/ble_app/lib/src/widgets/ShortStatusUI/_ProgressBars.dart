@@ -141,18 +141,30 @@ class ProgressColumns extends StatelessWidget {
                     fontSize: 20.0,
                     fontFamily: 'Europe_Ext'),
               ),
-              Text(
-                // TODO: calculate that too
-                "65 %",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25.0,
-                    fontFamily: 'Europe_Ext'),
-              ),
+              StreamBuilder<StatusState<ShortStatus>>(
+                  stream: this.shortStatusBloc.stream,
+                  builder: (_, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.active) {
+                      //final percentage = _calculatePercentageFromCurrentVoltage(
+                      // snapshot.data.model.totalVoltage);
+                      return Text(
+                        '${_calculatePercentageFromCurrentVoltage(snapshot.data.model.totalVoltage).toStringAsFixed(1)} %',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25.0,
+                            fontFamily: 'Europe_Ext'),
+                      );
+                    } else
+                      return Container();
+                  })
             ],
           )
         ],
       );
+
+  double _calculatePercentageFromCurrentVoltage(double voltage) =>
+      ((voltage - shortStatusBloc.minVoltage) * 100) /
+      (shortStatusBloc.totalVoltage - shortStatusBloc.minVoltage);
 }

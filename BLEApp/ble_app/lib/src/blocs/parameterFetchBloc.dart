@@ -20,6 +20,8 @@ class ParameterFetchBloc
 
   DeviceParameters _model;
 
+  int _retryCounter = 0;
+
   @override
   create() async {
     super.create();
@@ -55,11 +57,12 @@ extension FetchParams on ParameterFetchBloc {
     for (var i = 23; i < 27; i++) await _querySingleParam('R$i\r');
     await _querySingleParam('R28\r');
     await _querySingleParam('R29\r');
+    await _querySingleParam('R50\r'); // final int cell count
     Future.delayed(Duration(milliseconds: 150), () async {
-      if (_parameters.keys.length >= 19) {
+      if (_parameters.keys.length >= 20) {
         final entity = DeviceParameters(
             id: curDeviceId,
-            cellCount: _parameters['00'].toInt(),
+            cellCount: _parameters['50'].toInt(),
             maxCellVoltage: _parameters['01'] / 100,
             maxRecoveryVoltage: _parameters['02'] / 100,
             balanceCellVoltage: _parameters['03'] / 100,
@@ -85,8 +88,13 @@ extension FetchParams on ParameterFetchBloc {
         setLocalParameters(entity);
         cacheParameters();
         addEvent(ParameterFetchState.fetched(entity));
-      } else
-        queryParameters();
+      } else {
+        _retryCounter++;
+        if (_retryCounter == 3) {
+          // addEvent that says the fetch was incomplete. And offer restart.
+        }
+        queryParameters(); // FIXME: Instead of looping forever, abort after three iterations here
+      }
     });
   }
 
@@ -99,8 +107,10 @@ extension FetchParams on ParameterFetchBloc {
         print('MOTO HOURS ADDED');
         updateMotoHours(_parameters['28'].toInt(), _parameters['29'].toInt());
         addEvent(ParameterFetchState.fetched(_model));
-      } else
-        queryMotoHours(); // prolly clear the parameters again here
+      } else {
+        _parameters.clear();
+        queryMotoHours();
+      }
     });
   }
 

@@ -21,11 +21,14 @@ class LocationState {
 @injectable
 class LocationBloc extends Bloc<LocationState, LocationData> {
   final Location _location = Location();
+
   LocationTracker _locationTracker;
 
   LocationBloc(this._locationTracker);
 
   GoogleMapController _controller;
+
+  bool _isOffline = false;
 
   static final CameraPosition _initialLocation = CameraPosition(
     // prolly save the latest seen location in shared prefs(aka in dispose())
@@ -51,18 +54,20 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
   set controller(GoogleMapController controller) =>
       this._controller = controller;
 
+  set isOffline(bool isOffline) => this._isOffline = isOffline;
+
   Circle generateNewCircle(LocationData locationData) => Circle(
       circleId: CircleId("currentPositionCircle"),
-      radius: locationData.accuracy,
+      radius: locationData?.accuracy,
       zIndex: 1,
       strokeColor: Colors.blue,
-      center: LatLng(locationData.latitude, locationData.longitude),
+      center: LatLng(locationData?.latitude, locationData?.longitude),
       fillColor: Colors.blue.withAlpha(70));
 
   Marker generateNewMarker(LocationData locationData) => Marker(
         markerId: MarkerId("currentPositionMarker"),
-        position: LatLng(locationData.latitude, locationData.longitude),
-        rotation: locationData.heading,
+        position: LatLng(locationData?.latitude, locationData?.longitude),
+        rotation: locationData?.heading,
         draggable: false,
         zIndex: 2,
         flat: true,
@@ -75,37 +80,44 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
     try {
       final location = await _location.getLocation();
 
+      print("ADDING CURRENT LOCATION");
+
       addEvent(LocationState(location));
 
       streamSubscription = _location.onLocationChanged.listen((locData) {
-        print('ON LOCATION CHANGED');
-        final lat = locData.latitude;
-        final long = locData.longitude;
-        speedRx.addEvent(locData.speed);
-        _locationTracker.addCoordsForCalculate(lat, long);
-        if (_controller != null) {
-          _controller.animateCamera(CameraUpdate.newCameraPosition(
-              CameraPosition(
-                  bearing: 192.8334901395799,
-                  target: LatLng(lat, long),
-                  tilt: 0,
-                  zoom: 18.00)));
+        if (!_isOffline) {
+          print('ON LOCATION CHANGED CALLED');
+          final lat = locData.latitude;
+          final long = locData.longitude;
+          speedRx.addEvent(locData
+              .speed); // FIXME: don't do anything if this is not bigger than 2.0
+          _locationTracker.addCoordsForCalculate(lat, long);
+          if (_controller != null &&
+              !_locationTracker.isShowingCachedRoute.value) {
+            _controller.animateCamera(CameraUpdate.newCameraPosition(
+                CameraPosition(
+                    bearing: 192.8334901395799,
+                    target: LatLng(lat, long),
+                    tilt: 0,
+                    zoom: 18.00)));
+          }
+          final shouldShowPolyline = _locationTracker.isRecordingRx.value ||
+              _locationTracker.isShowingCachedRoute.value;
+          if (_locationTracker.isRecordingRx.value) {
+            print('ADDING COORDINATES');
+            _locationTracker.addVisibleCoords(lat, long);
+          }
+          addEvent(LocationState(
+              locData, // FIXME online -> offline => can't add new events
+              polylines: Set.of(shouldShowPolyline
+                  ? [
+                      Polyline(
+                          polylineId: PolylineId('firstRoute'),
+                          points: _locationTracker.visibleCoords,
+                          width: 8)
+                    ]
+                  : [])));
         }
-        final shouldShowPolyline = _locationTracker.isRecordingRx.value ||
-            _locationTracker.isShowingCachedRoute.value;
-        if (_locationTracker.isRecordingRx.value) {
-          print('ADDING COORDINATES');
-          _locationTracker.addVisibleCoords(lat, long);
-        }
-        addEvent(LocationState(locData,
-            polylines: Set.of(shouldShowPolyline
-                ? [
-                    Polyline(
-                        polylineId: PolylineId('firstRoute'),
-                        points: _locationTracker.visibleCoords,
-                        width: 8)
-                  ]
-                : [])));
       });
     } on PlatformException catch (e) {
       if (e.code == 'PERMISSION_DENIED') {
@@ -121,18 +133,32 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
 
   void renameFile(String fileName) => _locationTracker.renameFile(fileName);
 
-  void loadCachedRoute(String fileTimeStamp) =>
-      _locationTracker.loadCoordinates(routes.value
-          .firstWhere((route) => route.startedAt == fileTimeStamp)
-          .coordinates);
+  void loadCachedRoute(String fileTimeStamp) {
+    final coords = routes.value
+        .firstWhere((route) => route.startedAt == fileTimeStamp)
+        .coordinates;
+    if (coords.isNotEmpty) {
+      _locationTracker.loadCoordinates(coords);
+      addEvent(LocationState(null, // NULL WON'T WORK HERE
+          polylines: Set.of([
+            Polyline(
+                polylineId: PolylineId('firstRoute'),
+                points: _locationTracker.visibleCoords,
+                width: 8)
+          ])));
+      _controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+          bearing: 192.8334901395799,
+          target: coords.first,
+          tilt: 0,
+          zoom: 18.00)));
+    }
+  }
 
-  void removeCachedRoute() => _locationTracker.clearLoadedCoordinates();
+  void removeVisibleCachedRoute() => _locationTracker.clearLoadedCoordinates();
 
-  void loadCachedRoutes() => _locationTracker.cachedRoutesStream
-      .then((stream) => stream.listen((event) {
-            print('Cached routes event : $event');
-            _locationTracker.routesRx.addEvent(event);
-          }));
+  void loadCachedRoutes() => _locationTracker
+      .setupRoutesDB()
+      .then((_) => _locationTracker.loadCachedRoutes());
 
   @override
   resume() {
@@ -143,6 +169,7 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
   @override
   dispose() {
     logger.wtf('Closing stream in Location Bloc');
+    removeVisibleCachedRoute();
     super.dispose();
   }
 }

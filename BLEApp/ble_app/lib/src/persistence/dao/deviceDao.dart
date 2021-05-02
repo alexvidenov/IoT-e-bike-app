@@ -22,13 +22,16 @@ abstract class DeviceDao extends Dao<Device> {
   @Query('SELECT * FROM devices WHERE id = :deviceId')
   Future<Device> fetchDevice(String deviceId);
 
+  @Query('SELECT * FROM devices WHERE mac = :mac')
+  Future<Device> fetchDeviceByMac(String mac);
+
   @Query(
       'UPDATE devices SET parametersToChange = :parameters WHERE id = :deviceId')
   Future<void> updateParametersToChange(String parameters, String deviceId);
 
-  @Query('UPDATE devices SET macAddress = :macAddress WHERE id = :deviceId')
-  Future<void> setMacAddress(String macAddress, String deviceId);
+  @Query('UPDATE devices SET device_name = :newName WHERE id = :deviceId')
+  Future<void> updateDeviceName(String newName, String deviceId);
 
-  @Query('UPDATE devices SET name = :newName WHERE id = :deviceId')
-  Future<void> renameDevice(String newName, String deviceId);
+  @Query('UPDATE devices SET mac = :mac WHERE id = :deviceId')
+  Future<void> setMacAddress(String macAddress, String deviceId);
 }

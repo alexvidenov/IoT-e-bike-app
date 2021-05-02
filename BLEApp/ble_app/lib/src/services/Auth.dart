@@ -1,3 +1,4 @@
+import 'package:ble_app/src/persistence/entities/deviceState.dart';
 import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ class Auth {
 
   Future<AuthState> signInAnonymously() {
     _dbManager.insertAnonymousUser();
-    _dbManager.insertAnonymousDevice();
+    // _dbManager.insertAnonymousDevice(); // bro, WHY AM I DOING THAT HERE ??
     _isAnonymous = true;
     _localAuthState.addEvent(AuthState.authenticated('0000'));
     return Future.value(AuthState.authenticated('0000'));
@@ -79,6 +80,8 @@ class Auth {
             print('ELEMENT FETCHED $element');
             if (!(await _dbManager.deviceExists(element.key.id))) {
               await _dbManager.insertDevice(element.key);
+              await _dbManager.insertDeviceState(DeviceState(
+                  deviceNumber: element.key.id, isBatteryOn: false));
               await _dbManager.insertParameters(element.value);
             }
             await _dbManager.insertUserWithDevice(user.uid, element.key.id);
@@ -123,12 +126,15 @@ class Auth {
               (MapEntry<Device, DeviceParameters> element) async {
             await FirestoreDatabase(uid: _userId, deviceId: element.key.id)
                 .addUserAsOwnerOfDevice();
-            if (!await (_dbManager.deviceExists(element.key.id))) {
+            final serialNumber = element.key.id;
+            if (!await (_dbManager.deviceExists(serialNumber))) {
               await _dbManager.insertDevice(element.key);
+              await _dbManager.insertDeviceState(
+                  DeviceState(deviceNumber: serialNumber, isBatteryOn: false));
               await _dbManager.insertParameters(element.value);
             }
             print('ELEMENT FETCHED $element');
-            await _dbManager.insertUserWithDevice(_userId, element.key.id);
+            await _dbManager.insertUserWithDevice(_userId, serialNumber);
           });
           return AuthState.authenticated(user.uid);
         } else {
@@ -147,7 +153,7 @@ class Auth {
   Future<void> signOut() async {
     if (_isAnonymous) {
       _isAnonymous = false;
-      _dbManager.deleteAnonymousUser();
+      _dbManager.deleteAnonymousUser(); // here, delete the associated devices as well since now it's not working. (delete from user devices where userId == 0000)
       _localAuthState.addEvent(AuthState.loggedOut());
     } else {
       await _auth.signOut();

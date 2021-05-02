@@ -171,6 +171,8 @@ class ParameterListenerBloc
     _successful = false;
     _timeout();
     _repository.writeToCharacteristic('W000$node' + '0$reminderValue\r');
+    Future.delayed(Duration(milliseconds: 80),
+        () => _repository.writeToCharacteristic('W45$value\r'));
     currentKey = '00';
     this.currentValue = value;
   }
@@ -182,7 +184,7 @@ class ParameterListenerBloc
           {String reminderValue = '3'}) =>
       _programNumOfCells(value, node: 2, reminderValue: reminderValue);
 
-  void _timeout() => Future.delayed(Duration(milliseconds: 900), () {
+  _timeout() => Future.delayed(Duration(milliseconds: 900), () {
         if (!_successful) addEvent(ParameterChangeStatus.Unsuccessful);
       });
 

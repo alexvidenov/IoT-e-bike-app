@@ -37,13 +37,15 @@ class MotoHoursTracker extends ParameterAwareBloc<void, String> {
     });
   }
 
-  void pauseTimer() => _timer.cancel();
+  void cancelTimer() => _timer.cancel();
 
   Future<void> _querySingleParam(String command) async => await Future.delayed(
       Duration(milliseconds: 80),
       () => _repository.writeToCharacteristic(command));
 
   Future<void> fetchMotoHours() async {
+    // TODO: execute a callback to the full status to pause its subscription (?)
+    streamSubscription.cancel();
     create();
     _repository.cancel();
     print('FETCHING MOTO HOURS' + DateTime.now().toString());
@@ -59,7 +61,7 @@ class MotoHoursTracker extends ParameterAwareBloc<void, String> {
         _parameters.clear();
       } else {
         pause();
-        fetchMotoHours(); // prolly clear the parameters again here
+        fetchMotoHours(); // prolly clear the parameters again here. FIXME this is eternal
       }
     });
   }

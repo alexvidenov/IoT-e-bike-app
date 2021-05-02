@@ -219,6 +219,7 @@ class _$_BTNotAuthenticated implements _BTNotAuthenticated {
   int get hashCode =>
       runtimeType.hashCode ^ const DeepCollectionEquality().hash(reason);
 
+  @JsonKey(ignore: true)
   @override
   _$BTNotAuthenticatedCopyWith<_BTNotAuthenticated> get copyWith =>
       __$BTNotAuthenticatedCopyWithImpl<_BTNotAuthenticated>(this, _$identity);
@@ -279,5 +280,6 @@ abstract class _BTNotAuthenticated implements BTAuthState {
       _$_BTNotAuthenticated;
 
   BTNotAuthenticatedReason get reason;
+  @JsonKey(ignore: true)
   _$BTNotAuthenticatedCopyWith<_BTNotAuthenticated> get copyWith;
 }

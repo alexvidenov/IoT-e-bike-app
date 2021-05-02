@@ -1,12 +1,13 @@
 import 'package:ble_app/main.dart';
-import 'package:ble_app/src/blocs/DeviceStatisticsBloc.dart';
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/screens/main/googleMapsPage.dart';
+import 'package:ble_app/src/screens/offline/OfflineHome.dart';
 import 'package:ble_app/src/screens/serviceContactScreen.dart';
 import 'package:ble_app/src/screens/authentication/authenticationWrapper.dart';
 import 'package:ble_app/src/screens/authentication/bleAuthenticationPage.dart';
 import 'package:ble_app/src/screens/devicesListScreen.dart';
-import 'package:ble_app/src/screens/entrypoints/Mode.dart';
+import 'package:ble_app/src/screens/entrypoints/AuthAction.dart';
 import 'package:ble_app/src/screens/entrypoints/Root.dart';
 import 'package:ble_app/src/screens/entrypoints/WelcomeScreen.dart';
 import 'package:ble_app/src/screens/home.dart';
@@ -39,7 +40,7 @@ class PageManager {
     ),
   ];
 
-  void openWelcomeScreen(Function(Mode) func) {
+  void openWelcomeScreen(Function(AuthAction) func) {
     _pages.add(MaterialPage(child: Welcome(func: func), key: Key('Welcome')));
     pages.addEvent(_pagesList);
   }
@@ -95,12 +96,13 @@ class PageManager {
     pages.addEvent(_pagesList);
   }
 
-  void openAuthWrapper(Function(Mode) func) {
+  void openAuthWrapper(bool shouldShowLogin, Function(AuthAction) func) {
     _pages.removeWhere((page) =>
         page.key != const Key('AuthWrapper') &&
         page.key != const Key('MainPage'));
     _pages.add(MaterialPage(
-        child: AuthenticationWrapper($()), key: Key('AuthWrapper')));
+        child: AuthenticationWrapper($(), shouldShowLogin),
+        key: Key('AuthWrapper')));
     _pages.insert(_pages.length - 1,
         MaterialPage(child: Welcome(func: func), key: Key('Welcome')));
     pages.addEvent(_pagesList);
@@ -128,6 +130,11 @@ class PageManager {
   void openReportScreen() {
     _pages.add(MaterialPage(
         child: ServiceChatScreen($()), key: Key('ErrorReportScreen')));
+    pages.addEvent(_pagesList);
+  }
+
+  void openOfflineHome() {
+    _pages.add(MaterialPage(child: OfflineHome($()), key: Key('OfflineHome')));
     pages.addEvent(_pagesList);
   }
 

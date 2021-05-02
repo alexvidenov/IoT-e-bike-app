@@ -31,6 +31,7 @@ mixin _$StatusState<T extends BaseModel> {
   BatteryState get state;
   T get model;
 
+  @JsonKey(ignore: true)
   $StatusStateCopyWith<T, StatusState<T>> get copyWith;
 }
 
@@ -126,6 +127,7 @@ class _$Status<T extends BaseModel> with BaseStatus<T> implements Status<T> {
       const DeepCollectionEquality().hash(state) ^
       const DeepCollectionEquality().hash(model);
 
+  @JsonKey(ignore: true)
   @override
   $StatusCopyWith<T, Status<T>> get copyWith =>
       _$StatusCopyWithImpl<T, Status<T>>(this, _$identity);
@@ -140,5 +142,6 @@ abstract class Status<T extends BaseModel>
   @override
   T get model;
   @override
+  @JsonKey(ignore: true)
   $StatusCopyWith<T, Status<T>> get copyWith;
 }

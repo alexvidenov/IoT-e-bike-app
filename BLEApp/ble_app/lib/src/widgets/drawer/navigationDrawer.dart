@@ -10,8 +10,10 @@ class NavigationDrawer extends StatelessWidget {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
   final _LogOutListener _onLogout;
+  final bool isOffline;
 
-  const NavigationDrawer(this._prefsBloc, this._deviceBloc, this._onLogout);
+  const NavigationDrawer(
+      this._prefsBloc, this._deviceBloc, this._onLogout, {this.isOffline});
 
   @override
   Widget build(BuildContext context) => Drawer(
@@ -24,25 +26,27 @@ class NavigationDrawer extends StatelessWidget {
                 icon: Icons.bluetooth,
                 text: 'Connection Settings',
                 onTap: () => $<PageManager>().openConnectionSettings()),
-            _createDrawerItem(
-                icon: Icons.battery_charging_full_sharp,
-                text: 'Battery Settings',
-                onTap: () => $<PageManager>().openDeviceSettings()),
+            if (!isOffline)
+              _createDrawerItem(
+                  icon: Icons.battery_charging_full_sharp,
+                  text: 'Battery Settings',
+                  onTap: () => $<PageManager>().openDeviceSettings()),
             _createDrawerItem(
                 icon: Icons.assessment,
                 text: 'Statistics',
                 onTap: () => $<PageManager>().openDeviceStatistics()),
             Divider(),
-            ListTile(
-              title: const Text('Disconnect',
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                      fontFamily: 'Europe_Ext')),
-              onTap: () =>
-                  Navigator.of(context, rootNavigator: true).maybePop(),
-            ),
+            if (!isOffline)
+              ListTile(
+                title: const Text('Disconnect',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                        fontFamily: 'Europe_Ext')),
+                onTap: () =>
+                    Navigator.of(context, rootNavigator: true).maybePop(),
+              ),
             ListTile(
                 title: const Text('Logout',
                     style: TextStyle(

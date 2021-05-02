@@ -35,15 +35,24 @@ class SpeedometerWithCurrent extends StatelessWidget {
                         stream: locationBloc.speedRx.stream,
                         builder: (context, snapshot) {
                           final speed = snapshot.data;
-                          String speedInKMH = '0.0';
+                          var speedInKMH = '0.0';
                           if (speed != null && speed > 2.0) {
-                            speedInKMH = (speed * 3.6).toStringAsFixed(2);
+                            speedInKMH = (speed * 3.6).toStringAsFixed(1);
                           }
-                          return Text(speedInKMH,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 56));
+                          return Row(
+                            children: [
+                              Text('${speedInKMH[0]}' + '${speedInKMH[1]}',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 56)),
+                              Text('${speedInKMH[2]}',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 30))
+                            ],
+                          );
                         }),
                     const Text('km/h',
                         style: TextStyle(

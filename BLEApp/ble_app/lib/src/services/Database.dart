@@ -1,7 +1,6 @@
 import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
-import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -27,22 +26,6 @@ class FirestoreDatabase {
   DocumentReference get _deviceIdGenerator =>
       _firestore.collection('deviceId').doc('currentId');
 
-  Future<void> uploadDevice(
-      {String macAddress,
-      bool isSuperDevice = false,
-      Map<String, dynamic> parameters}) async {
-    _device.set({
-      'MAC': macAddress,
-      'createdAt': FieldValue.serverTimestamp(),
-      'isSuper': isSuperDevice,
-      'name': BluetoothUtils.defaultBluetoothDeviceName,
-      'parameters': parameters ?? {},
-      'userIds': []
-    });
-    //final lastDeviceId = (await _deviceIdGenerator.get()).get('id');
-    //_deviceIdGenerator.update({'id': lastDeviceId + 1});
-  }
-
   Future<MapEntry<Device, DeviceParameters>> fetchDeviceWithParameters(
       {String id}) async {
     // Should accepts list of ids (register three devices at once is possible for example) )
@@ -52,10 +35,11 @@ class FirestoreDatabase {
       print('DEVICE IS IS $id2');
       return MapEntry(
           Device(
-              deviceId: id ?? this.deviceId,
-              macAddress: device.get('MAC'),
-              name: device.get('name'),
-              isSuper: device.get('isSuper')),
+            id ?? this.deviceId,
+            device.get('name'),
+            device.get('isSuper'),
+            macAddress: device.get('MAC'),
+          ),
           DeviceParameters.fromMap(device.get('parameters')));
     } else
       return null; // here the bloc calling this DB service should emit state saying that the device number is wrong

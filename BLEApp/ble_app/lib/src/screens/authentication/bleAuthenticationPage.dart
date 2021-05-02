@@ -42,6 +42,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   @override
   void initState() {
     super.initState();
+    print('INIT STATE CALLED');
     widget._deviceBloc.stopScan(); // this is not needed for sure
     widget._authBloc.create();
     _listenToAuthBloc();
@@ -66,6 +67,8 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
             btAuthenticated: () {
               this._verificationNotifier.add(true);
               _isAuthenticated = true;
+              widget._authBloc
+                  .setMacAddress(widget._deviceBloc.device.value.id);
               widget._authBloc.pause();
               $<PageManager>().openParameters();
             },
@@ -73,7 +76,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
                 message: reason.toString(), action: 'TRY AGAIN'));
       });
 
-  _retry() => Future.delayed(Duration(seconds: 1), () {
+  _retry() => Future.delayed(Duration(seconds: 2), () {
         if (_isAuthenticated == false)
           _showLockScreen(
             context,
@@ -85,8 +88,6 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
               semanticsLabel: 'Cancel',
             ),
           );
-        //_presentDialog(context,
-        //message: 'Wrong password', action: 'Try again');
       });
 
   _showLockScreen(BuildContext context,
@@ -164,6 +165,20 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.lightBlueAccent,
+          actions: [
+            RaisedButton(
+                color: Colors.transparent,
+                child: Text('Switch offline mode',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        letterSpacing: 2,
+                        fontFamily: 'Europe_Ext')),
+                onPressed: () => $<PageManager>().openOfflineHome()),
+          ],
+        ),
         body: Container(
           color: Colors.black,
           child: StreamBuilder<DeviceConnectionState>(
