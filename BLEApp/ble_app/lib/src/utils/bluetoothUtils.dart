@@ -1,6 +1,3 @@
-import 'package:ble_app/src/blocs/deviceBloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
-
 abstract class BluetoothUtils {
   // for HM-10 BLE module
   static const String SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";

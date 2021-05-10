@@ -3,7 +3,6 @@ import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
 import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/services/Storage.dart';
 import 'package:injectable/injectable.dart';
-import 'package:jiffy/jiffy.dart';
 
 enum StatisticsType { Voltage, Charge, Discharge, Temperature }
 

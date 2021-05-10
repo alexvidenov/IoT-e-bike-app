@@ -9,18 +9,29 @@ abstract class DeviceDao extends Dao<Device> {
             INNER JOIN users_devices u ON u.user_id = :userId
             GROUP BY d.id
          ''')
-  Future<List<Device>> fetchDevices(String userId);
+  Future<List<Device>> fetchUserDevices(String userId);
+
+  @Query('''DELETE FROM devices 
+            WHERE id IN (
+              SELECT id
+              FROM devices d
+              INNER JOIN users_devices u ON u.user_id = :userId
+            )
+         ''')
+  Future<void> deleteUserDevices(String userId);
 
   @Query('''SELECT *
             FROM devices d
             INNER JOIN users_devices u ON u.user_id = :userId AND d.id = :deviceId
             GROUP BY d.id
          ''')
-  Future<Device> fetchUserDevice(
-      String deviceId, String userId); // rename to fetch user device
+  Future<Device> fetchUserDevice(String deviceId, String userId);
 
   @Query('SELECT * FROM devices WHERE id = :deviceId')
   Future<Device> fetchDevice(String deviceId);
+
+  @Query('SELECT * FROM devices WHERE id = :deviceId')
+  Stream<Device> fetchDeviceAsStream(String deviceId);
 
   @Query('SELECT * FROM devices WHERE mac = :mac')
   Future<Device> fetchDeviceByMac(String mac);

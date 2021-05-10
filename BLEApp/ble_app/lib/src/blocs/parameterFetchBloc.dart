@@ -28,13 +28,13 @@ class ParameterFetchBloc
     addEvent(ParameterFetchState.fetching());
     final params = await parametersAsFuture();
     _model = params;
+    _listen();
     if (params != null) {
       setLocalParameters(params);
       queryMotoHours();
     } else {
       queryParameters();
     }
-    _listen();
   }
 
   void _listen() => streamSubscription =
@@ -99,16 +99,20 @@ extension FetchParams on ParameterFetchBloc {
   }
 
   Future<void> queryMotoHours() async {
+    _parameters.clear();
     await _querySingleParam('R28\r');
     await _querySingleParam('R29\r');
     Future.delayed(Duration(milliseconds: 150), () {
       print('KEYS ARE: ' + _parameters.keys.length.toString());
-      if (_parameters.keys.length >= 3) {
+      if (_parameters.length >= 2) {
         print('MOTO HOURS ADDED');
-        updateMotoHours(_parameters['28'].toInt(), _parameters['29'].toInt());
-        addEvent(ParameterFetchState.fetched(_model));
+        if (_parameters['28'] != null && _parameters['29'] != null) {
+          updateMotoHours(_parameters['28'].toInt(), _parameters['29'].toInt());
+          addEvent(ParameterFetchState.fetched(_model));
+        } else {
+          queryMotoHours();
+        }
       } else {
-        _parameters.clear();
         queryMotoHours();
       }
     });

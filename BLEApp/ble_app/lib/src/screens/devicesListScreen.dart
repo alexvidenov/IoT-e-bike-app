@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:ble_app/src/blocs/devicesBloc.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
-import 'package:ble_app/src/screens/routeAware.dart';
+import 'package:ble_app/src/screens/base/BlocLifecycleAware.dart';
 import 'package:flutter/material.dart';
 
 typedef _DeviceTapListener = void Function();
@@ -10,7 +10,7 @@ typedef _DeviceTapListener = void Function();
 typedef _LogOutListener = Future<void> Function();
 
 // ignore: must_be_immutable
-class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
+class DevicesListScreen extends BlocLifecycleAwareWidget<DevicesBloc> {
   final DevicesBloc _devicesBloc;
   final _LogOutListener _onLogout;
 

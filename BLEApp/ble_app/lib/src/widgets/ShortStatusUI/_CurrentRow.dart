@@ -31,12 +31,6 @@ class CurrentRow extends StatelessWidget {
           if (shortStatus.data.state == BatteryState.OverCharge) {
             CCColor = Colors.red;
           }
-          int charge =
-              bloc.getParameters().value.maxCutoffChargeCurrent.toInt();
-          int discharge =
-              bloc.getParameters().value.maxCutoffDischargeCurrent.toInt();
-          print('DISCHARGE MAX IS $discharge');
-          print('CHARGE MAX IS $charge');
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -45,7 +39,7 @@ class CurrentRow extends StatelessWidget {
                 children: <Widget>[
                   Container(
                     width: MediaQuery.of(context).size.width * 0.2,
-                    height: 30,
+                    height: 20,
                     decoration: const BoxDecoration(
                         color: Colors.black26,
                         shape: BoxShape.rectangle,
@@ -58,10 +52,7 @@ class CurrentRow extends StatelessWidget {
                     child: RotatedBox(
                       quarterTurns: 2,
                       child: FAProgressBar(
-                        currentValue: current > 0
-                            ? (current * 10) //currentCharge
-                                .toInt()
-                            : 0,
+                        currentValue: current > 0 ? (current * 10).toInt() : 0,
                         size: 50,
                         maxValue: (bloc
                                     .getParameters()
@@ -93,7 +84,7 @@ class CurrentRow extends StatelessWidget {
                   Container(
                     width: MediaQuery.of(context).size.width *
                         0.4, // experimental values
-                    height: 30,
+                    height: 20,
                     decoration: const BoxDecoration(
                         color: Colors.black26,
                         shape: BoxShape.rectangle,
@@ -154,7 +145,7 @@ class CurrentRow extends StatelessWidget {
                     ],
                   )
                 ],
-              )
+              ),
             ],
           );
         } else

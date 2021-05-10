@@ -1,7 +1,7 @@
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/RxObject.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/screens/main/googleMapsPage.dart';
+import 'package:ble_app/src/screens/main/status/fullStatusPage.dart';
 import 'package:ble_app/src/screens/offline/OfflineHome.dart';
 import 'package:ble_app/src/screens/serviceContactScreen.dart';
 import 'package:ble_app/src/screens/authentication/authenticationWrapper.dart';
@@ -14,10 +14,15 @@ import 'package:ble_app/src/screens/home.dart';
 import 'package:ble_app/src/screens/main/DeviceStatistics.dart';
 import 'package:ble_app/src/screens/parameterFetchScreen.dart';
 import 'package:ble_app/src/screens/settings/BatterySettings.dart';
-import 'package:ble_app/src/screens/settings/settingsPage.dart';
+import 'package:ble_app/src/screens/settings/ConnectionSettingsScreen.dart';
+import 'package:ble_app/src/screens/settings/SettingViewsHolder.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+
+mixin OnPagePopped {
+  void onPagePop(Key pageKey);
+}
 
 @lazySingleton
 class PageManager {
@@ -25,13 +30,19 @@ class PageManager {
 
   GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
 
+  OnPagePopped _onPagePopped;
+
   PageManager() {
     pages.addEvent(_pages);
   }
 
+  set onPagePopped(OnPagePopped onPagePopped) => _onPagePopped = onPagePopped;
+
   final pages = RxObject<List<Page>>();
 
   List<Page> get _pagesList => List.unmodifiable(_pages);
+
+  BuildContext get context => _navigatorKey.currentState.context;
 
   final List<Page> _pages = [
     MaterialPage(
@@ -91,8 +102,7 @@ class PageManager {
     _pages.removeAt(_pages.length - 1);
     _pages.removeAt(_pages.length - 1);
     _pages.add(MaterialPage(
-        child: HomeScreen($(), $(), $(), $(), $(), $(), $()),
-        key: Key('Home')));
+        child: Home($(), $(), $(), $(), $(), $(), $()), key: Key('Home')));
     pages.addEvent(_pagesList);
   }
 
@@ -108,22 +118,21 @@ class PageManager {
     pages.addEvent(_pagesList);
   }
 
-  void openDeviceSettings() {
+  void openSettings() {
     _pages.add(MaterialPage(
-        child: BatterySettingsScreen($(), $()), key: Key('BatterySettings')));
-    pages.addEvent(_pagesList);
-  }
-
-  void openConnectionSettings() {
-    _pages.add(MaterialPage(
-        child: ConnectionSettingsScreen($(), $(), $()),
-        key: Key('ConnectionSettings')));
+        child: SettingViewsHolder(), key: Key('SettingViewsHolder')));
     pages.addEvent(_pagesList);
   }
 
   void openDeviceStatistics() {
     _pages.add(MaterialPage(
         child: DeviceStatisticsScreen($()), key: Key('DeviceStatistics')));
+    pages.addEvent(_pagesList);
+  }
+
+  void openFullStatus() {
+    _pages.add(MaterialPage(
+        child: FullStatusScreen($()), key: Key('FullStatusScreen')));
     pages.addEvent(_pagesList);
   }
 
@@ -134,12 +143,14 @@ class PageManager {
   }
 
   void openOfflineHome() {
-    _pages.add(MaterialPage(child: OfflineHome($()), key: Key('OfflineHome')));
+    _pages.add(
+        MaterialPage(child: OfflineHome($(), $()), key: Key('OfflineHome')));
     pages.addEvent(_pagesList);
   }
 
   void didPop(Page page, dynamic result) {
     _pages.remove(page);
+    _onPagePopped?.onPagePop(page.key);
     pages.addEvent(_pagesList);
   }
 }

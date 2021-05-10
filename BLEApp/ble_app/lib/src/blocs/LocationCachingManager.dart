@@ -1,24 +1,8 @@
 import 'package:ble_app/src/blocs/CurrentContext.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/modules/dataClasses/routeFileModel.dart';
 import 'package:ble_app/src/persistence/SembastDatabase.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-class RouteFileModel {
-  final String name;
-  final String startedAt;
-  final String finishedAt;
-  final double lengthInKilometers;
-  final double wastedPowerInWh; // TODO: calculate this one
-  final List<LatLng> coordinates;
-
-  const RouteFileModel(
-      {this.name,
-      this.coordinates,
-      this.startedAt,
-      this.finishedAt,
-      this.lengthInKilometers,
-      this.wastedPowerInWh});
-}
 
 mixin LocationCachingManager on CurrentContext {
   final _sembastDB = $<SembastDatabase>();
@@ -27,16 +11,19 @@ mixin LocationCachingManager on CurrentContext {
     _sembastDB.createRouteFile(curUserId, curDeviceId, initialTimeStamp);
   }
 
-  void updateCachedLocation(
-      String fileName, List<LatLng> coordinates, String finishedAt, num length) {
+  void updateCachedLocation(String fileName, List<LatLng> coordinates,
+      String finishedAt, num length) {
     _sembastDB.updateCoordinatesRouteFile(curUserId, curDeviceId, fileName,
         coordinates: coordinates, finishedAt: finishedAt, length: length);
   }
 
-  void renameCachedLocation(String fileTimeStamp, String newFileName) {
-    _sembastDB.renameRecording(
-        curUserId, curDeviceId, fileTimeStamp, newFileName);
-  }
+  Future<RouteFileModel> renameCachedLocation(
+          String fileTimeStamp, String newFileName) async =>
+      await _sembastDB.renameRecording(
+          curUserId, curDeviceId, fileTimeStamp, newFileName);
+
+  Future deleteRouteFile(String fileTimeStamp) =>
+      _sembastDB.deleteRecording(fileTimeStamp);
 
   Future<Stream<List<RouteFileModel>>> get cachedRoutesStream =>
       _sembastDB.cachedRoutesStream(curUserId, curDeviceId);

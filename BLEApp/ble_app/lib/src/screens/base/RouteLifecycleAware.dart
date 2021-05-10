@@ -1,35 +1,32 @@
-import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:flutter/material.dart';
 
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
-@optionalTypeArgs
-abstract class RouteAwareWidget<T extends Bloc> extends StatefulWidget {
+abstract class RouteLifecycleAwareWidget extends StatefulWidget {
   Widget buildWidget(BuildContext context);
 
-  final T bloc;
+  void onCreate() {}
 
-  onCreate() {}
+  void onPause() {}
 
-  onPause() {}
+  void onResume() {}
 
-  onResume() {}
+  void onDestroy() {}
 
-  onDestroy() {}
+  void didUpdate() {}
 
-  didUpdate() {}
-
-  const RouteAwareWidget({@required this.bloc});
+  const RouteLifecycleAwareWidget();
 
   @override
-  _RouteAwareWidgetState createState() => _RouteAwareWidgetState();
+  RouteLifecycleAwareWidgetState createState() =>
+      RouteLifecycleAwareWidgetState();
 }
 
-class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
+class RouteLifecycleAwareWidgetState<T extends RouteLifecycleAwareWidget>
+    extends State<T> with RouteAware {
   @override
   initState() {
     super.initState();
-    widget.bloc.create();
     widget.onCreate();
   }
 
@@ -46,7 +43,6 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   @override
   didPush() {
     super.didPush();
-    widget.bloc.resume();
     widget.onResume();
     print('DID PUSH');
   }
@@ -54,28 +50,19 @@ class _RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   @override
   didPushNext() {
     super.didPushNext();
-    widget.bloc.pause();
     widget.onPause();
-  }
-
-  @override
-  didPop() {
-    super.didPop();
-    widget.bloc.dispose();
   }
 
   @override
   didPopNext() {
     super.didPopNext();
     print('DID POP NEXT');
-    widget.bloc.resume();
     widget.onResume();
   }
 
   @override
   dispose() {
     routeObserver.unsubscribe(this);
-    widget.bloc.dispose();
     widget.onDestroy();
     super.dispose();
   }

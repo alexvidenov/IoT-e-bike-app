@@ -16,7 +16,8 @@ class ShortStatusBloc extends StateBloc<ShortStatus, ShortLogmodel> {
 
   int _uploadTimer = 0;
 
-  ShortStatusBloc(this._repository) : super();
+  ShortStatusBloc(this._repository)
+      : super(); // TODO: inject something to determine whether to collect user data or not (?)
 
   @override
   pause() {

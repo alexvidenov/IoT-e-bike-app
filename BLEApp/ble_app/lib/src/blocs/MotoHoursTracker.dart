@@ -45,7 +45,7 @@ class MotoHoursTracker extends ParameterAwareBloc<void, String> {
 
   Future<void> fetchMotoHours() async {
     // TODO: execute a callback to the full status to pause its subscription (?)
-    streamSubscription.cancel();
+    streamSubscription?.cancel();
     create();
     _repository.cancel();
     print('FETCHING MOTO HOURS' + DateTime.now().toString());

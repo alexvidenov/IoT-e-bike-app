@@ -1,6 +1,7 @@
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/LocationTracker.dart';
 import 'package:ble_app/src/blocs/RxObject.dart';
+import 'package:ble_app/src/modules/dataClasses/routeFileModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -8,8 +9,6 @@ import 'package:injectable/injectable.dart';
 import 'package:location/location.dart';
 import 'package:ble_app/src/blocs/bloc.dart';
 import 'package:rxdart/rxdart.dart';
-
-import 'LocationCachingManager.dart';
 
 class LocationState {
   final LocationData locationData;
@@ -39,6 +38,8 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
 
   ValueStream<List<RouteFileModel>> get routes =>
       _locationTracker.routesRx.stream;
+
+  final currentRouteSelected = RxObject<RouteFileModel>();
 
   final speedRx = RxObject<double>();
 
@@ -89,9 +90,15 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
           print('ON LOCATION CHANGED CALLED');
           final lat = locData.latitude;
           final long = locData.longitude;
-          speedRx.addEvent(locData
-              .speed); // FIXME: don't do anything if this is not bigger than 2.0
-          _locationTracker.addCoordsForCalculate(lat, long);
+          final speed = locData.speed * 3.6; // km / h
+          print('SPEED RIGHT IS BRO: $speed');
+          if (speed >= 4.0) {
+            // don't add up coords if speed is not more than 4 km/h.
+            _locationTracker.addCoordsForCalculate(lat, long);
+            speedRx.addEvent(speed);
+          } else {
+            speedRx.addEvent(0.0);
+          }
           if (_controller != null &&
               !_locationTracker.isShowingCachedRoute.value) {
             _controller.animateCamera(CameraUpdate.newCameraPosition(
@@ -107,8 +114,7 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
             print('ADDING COORDINATES');
             _locationTracker.addVisibleCoords(lat, long);
           }
-          addEvent(LocationState(
-              locData, // FIXME online -> offline => can't add new events
+          addEvent(LocationState(locData,
               polylines: Set.of(shouldShowPolyline
                   ? [
                       Polyline(
@@ -131,15 +137,26 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
 
   void stopRecording() => _locationTracker.stopRecording();
 
-  void renameFile(String fileName) => _locationTracker.renameFile(fileName);
+  Future renameFile(String fileName, {String previousTimeStamp}) =>
+      _locationTracker
+          .renameFile(fileName, previousTimeStamp: previousTimeStamp)
+          .then((renamed) {
+        if (currentRouteSelected.value.startedAt == renamed.startedAt) {
+          currentRouteSelected.addEvent(renamed);
+        }
+      });
+
+  Future deleteFile(String timeStamp) async =>
+      await _locationTracker.deleteFile(timeStamp);
 
   void loadCachedRoute(String fileTimeStamp) {
-    final coords = routes.value
-        .firstWhere((route) => route.startedAt == fileTimeStamp)
-        .coordinates;
+    final file =
+        routes.value.firstWhere((route) => route.startedAt == fileTimeStamp);
+    currentRouteSelected.addEvent(file);
+    final coords = file.coordinates;
     if (coords.isNotEmpty) {
       _locationTracker.loadCoordinates(coords);
-      addEvent(LocationState(null, // NULL WON'T WORK HERE
+      addEvent(LocationState(null,
           polylines: Set.of([
             Polyline(
                 polylineId: PolylineId('firstRoute'),
@@ -154,7 +171,10 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
     }
   }
 
-  void removeVisibleCachedRoute() => _locationTracker.clearLoadedCoordinates();
+  void removeVisibleCachedRoute() {
+    _locationTracker.clearLoadedCoordinates();
+    addEvent(LocationState(null, polylines: Set.of([])));
+  }
 
   void loadCachedRoutes() => _locationTracker
       .setupRoutesDB()
@@ -170,6 +190,7 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
   dispose() {
     logger.wtf('Closing stream in Location Bloc');
     removeVisibleCachedRoute();
+    _locationTracker.disposeTimer();
     super.dispose();
   }
 }

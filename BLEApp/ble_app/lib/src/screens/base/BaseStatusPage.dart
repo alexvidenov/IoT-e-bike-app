@@ -1,29 +1,21 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:ble_app/src/blocs/PageManager.dart';
-import 'package:ble_app/src/blocs/fullStatusBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
+import 'package:ble_app/src/screens/base/KeepAliveWidget.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
-import 'package:ble_app/src/widgets/FullStatusUI/VoltagesBarChart.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 import 'package:flutter/material.dart';
 
-class FullStatusScreen extends StatefulWidget {
-  final FullStatusBloc fullStatusBloc;
+abstract class BaseStatusPage extends KeepAliveWidget {
+  final VoidCallback onTap;
 
-  const FullStatusScreen(this.fullStatusBloc);
+  const BaseStatusPage({this.onTap});
 
   @override
-  _FullStatusScreenState createState() => _FullStatusScreenState();
-}
-
-class _FullStatusScreenState extends State<FullStatusScreen>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
+  Widget buildWidget(BuildContext context) {
     AwesomeDialog dialog;
     return GestureDetector(
-        onTap: () => {}, // TODO: notifications to home
+        onTap: onTap,
         child: NotificationListener<ServiceNotification>(
           onNotification: (notification) {
             if (notification.isStateGone) {
@@ -32,7 +24,7 @@ class _FullStatusScreenState extends State<FullStatusScreen>
             } else {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 dialog = AwesomeDialog(
-                    context: $<PageManager>().navigatorKey.currentState.context,
+                    context: $<PageManager>().context,
                     useRootNavigator: true,
                     dialogType: DialogType.WARNING,
                     headerAnimationLoop: false,
@@ -71,10 +63,9 @@ class _FullStatusScreenState extends State<FullStatusScreen>
             }
             return true;
           },
-          child: VoltagesBarChart(this.widget.fullStatusBloc),
+          child: buildContent(context),
         ));
   }
 
-  @override
-  bool get wantKeepAlive => true;
+  Widget buildContent(BuildContext context);
 }

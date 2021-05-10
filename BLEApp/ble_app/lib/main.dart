@@ -9,7 +9,7 @@ import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/persistence/SembastDatabase.dart';
 import 'package:ble_app/src/persistence/localDatabase.dart';
 import 'package:ble_app/src/screens/entrypoints/Root.dart';
-import 'package:ble_app/src/screens/routeAware.dart';
+import 'package:ble_app/src/screens/base/BlocLifecycleAware.dart';
 import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/services/CloudMessaging.dart';
 import 'package:ble_app/src/services/Storage.dart';
@@ -78,7 +78,7 @@ void main() async {
   $.isReady<LocalDatabase>().then((_) => runApp(RootPage($())));
 }
 
-class BleApp extends RouteAwareWidget<EntryEndpointBloc> {
+class BleApp extends BlocLifecycleAwareWidget<EntryEndpointBloc> {
   const BleApp(EntryEndpointBloc endpointBloc) : super(bloc: endpointBloc);
 
   @override

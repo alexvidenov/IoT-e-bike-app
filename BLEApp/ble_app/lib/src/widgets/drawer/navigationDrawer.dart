@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/settingsBloc.dart';
@@ -6,14 +8,33 @@ import 'package:flutter/material.dart';
 
 typedef _LogOutListener = Future<void> Function();
 
-class NavigationDrawer extends StatelessWidget {
+class NavigationDrawer extends StatefulWidget {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
+  final Stream<bool> _authorizedToAccessParameters;
   final _LogOutListener _onLogout;
   final bool isOffline;
+  final bool isAnonymous;
+  final VoidCallback onSwitchedToFull;
+  final VoidCallback resumedToHome;
 
-  const NavigationDrawer(
-      this._prefsBloc, this._deviceBloc, this._onLogout, {this.isOffline});
+  const NavigationDrawer(this._prefsBloc, this._deviceBloc, this._onLogout,
+      this._authorizedToAccessParameters,
+      {this.isOffline,
+      this.isAnonymous,
+      this.onSwitchedToFull,
+      this.resumedToHome});
+
+  @override
+  _NavigationDrawerState createState() => _NavigationDrawerState();
+}
+
+class _NavigationDrawerState extends State<NavigationDrawer> with OnPagePopped {
+  @override
+  void initState() {
+    super.initState();
+    $<PageManager>().onPagePopped = this;
+  }
 
   @override
   Widget build(BuildContext context) => Drawer(
@@ -23,41 +44,53 @@ class NavigationDrawer extends StatelessWidget {
             _createHeader(),
             Divider(),
             _createDrawerItem(
-                icon: Icons.bluetooth,
-                text: 'Connection Settings',
-                onTap: () => $<PageManager>().openConnectionSettings()),
-            if (!isOffline)
+                icon: Icons.settings_rounded,
+                text: 'Settings',
+                onTap: () => $<PageManager>().openSettings()),
+            if (!widget.isAnonymous)
               _createDrawerItem(
-                  icon: Icons.battery_charging_full_sharp,
-                  text: 'Battery Settings',
-                  onTap: () => $<PageManager>().openDeviceSettings()),
-            _createDrawerItem(
-                icon: Icons.assessment,
-                text: 'Statistics',
-                onTap: () => $<PageManager>().openDeviceStatistics()),
+                  icon: Icons.assessment,
+                  text: 'Statistics',
+                  onTap: () => $<PageManager>().openDeviceStatistics()),
             Divider(),
+            _createDrawerItem(
+                icon: Icons.battery_charging_full_sharp,
+                text: 'Bat. status',
+                onTap: () {
+                  widget.onSwitchedToFull();
+                  $<PageManager>().openFullStatus();
+                }),
+            /*
             if (!isOffline)
-              ListTile(
-                title: const Text('Disconnect',
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                        fontFamily: 'Europe_Ext')),
+              StreamBuilder<bool>(
+                  initialData: false,
+                  stream: this._authorizedToAccessParameters,
+                  builder: (_, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.active &&
+                        snapshot.data == true) {
+                      return _createDrawerItem(
+                          icon: Icons.battery_charging_full_sharp,
+                          text: 'Battery Settings',
+                          onTap: () => $<PageManager>().openDeviceSettings());
+                    } else
+                      return Container();
+                  }),
+
+             */
+            _createDrawerItem(
+                icon: Icons.bluetooth_disabled,
+                text: 'Disconnect',
                 onTap: () =>
-                    Navigator.of(context, rootNavigator: true).maybePop(),
-              ),
-            ListTile(
-                title: const Text('Logout',
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                        fontFamily: 'Europe_Ext')),
-                onTap: () => _onLogout().then((_) async {
-                      _prefsBloc.clearUserPrefs();
-                      _deviceBloc.disconnect();
+                    Navigator.of(context, rootNavigator: true).maybePop()),
+            Divider(),
+            _createDrawerItem(
+                icon: Icons.logout,
+                text: 'Logout',
+                onTap: () => () => widget._onLogout().then((_) async {
+                      widget._prefsBloc.clearUserPrefs();
+                      widget._deviceBloc.disconnect();
                     })),
+            Divider(),
             ListTile(
                 title: const Text('Contact us',
                     style: TextStyle(
@@ -113,4 +146,12 @@ class NavigationDrawer extends StatelessWidget {
         ),
         onTap: onTap,
       );
+
+  @override
+  void onPagePop(Key pageKey) {
+    if (pageKey == const Key('FullStatusScreen')) {
+      print('POPPED FULL STATUS');
+      widget.resumedToHome();
+    }
+  }
 }

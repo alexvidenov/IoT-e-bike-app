@@ -16,13 +16,17 @@ class AuthBloc {
       _auth.signInWithEmailAndPassword(email, password);
 
   Future<AuthState> signUpWithEmailAndPassword(
-          {String email, String password, List<String> deviceIds, bool isSuperuser}) =>
-      _auth.signUpWithEmailAndPassword(email, password,
-          deviceIds: deviceIds);
+          {String email,
+          String password,
+          List<String> deviceIds,
+          bool isSuperuser}) =>
+      _auth.signUpWithEmailAndPassword(email, password, deviceIds: deviceIds);
 
   Future<AuthState> signInAnonymously() => _auth.signInAnonymously();
 
   String get userId => _auth.getCurrentUserId();
+
+  bool get anonymous => _auth.isAnonymous;
 
   Future<void> logout() async => await _auth.signOut();
 

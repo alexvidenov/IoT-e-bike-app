@@ -65,7 +65,7 @@ class ProgressColumns extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              Text(
+              const Text(
                 "Temp.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -145,8 +145,6 @@ class ProgressColumns extends StatelessWidget {
                   stream: this.shortStatusBloc.stream,
                   builder: (_, snapshot) {
                     if (snapshot.connectionState == ConnectionState.active) {
-                      //final percentage = _calculatePercentageFromCurrentVoltage(
-                      // snapshot.data.model.totalVoltage);
                       return Text(
                         '${_calculatePercentageFromCurrentVoltage(snapshot.data.model.totalVoltage).toStringAsFixed(1)} %',
                         textAlign: TextAlign.center,

@@ -1,11 +1,8 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:ble_app/src/blocs/deviceBloc.dart';
 import 'package:ble_app/src/blocs/parameterListenerBloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
-import 'package:ble_app/src/screens/routeAware.dart';
-import 'package:ble_app/src/services/Database.dart';
+import 'package:ble_app/src/screens/base/BlocLifecycleAware.dart';
 import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 
@@ -105,7 +102,8 @@ class CalibrateTile extends StatelessWidget {
       );
 }
 
-class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
+class BatterySettingsScreen
+    extends BlocLifecycleAwareKeepAliveWidget<ParameterListenerBloc> {
   final ParameterListenerBloc _parameterListenerBloc;
   final DeviceRepository _repository;
 
@@ -152,256 +150,266 @@ class BatterySettingsScreen extends RouteAwareWidget<ParameterListenerBloc> {
   }
 
   @override
-  Widget buildWidget(BuildContext context) => StreamListener(
-      stream: _parameterListenerBloc.stream,
-      onData: (status) {
-        switch (status) {
-          case ParameterChangeStatus.Successful:
-            _showDialog(context, true);
-            break;
-          case ParameterChangeStatus.Unsuccessful:
-            _showDialog(context, false);
-            break;
-        }
-      },
-      child: Scaffold(
-          appBar: AppBar(
-            brightness: Brightness.dark,
-            title: const Text('Battery Settings'),
-            backgroundColor: Colors.transparent,
-          ),
-          body: SingleChildScrollView(
-              child: StreamBuilder<DeviceParameters>(
-            stream: _parameterListenerBloc.parameters,
-            initialData: bloc.currentParams,
-            builder: (_, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    _CardParameter(
-                      17,
-                      '44',
-                      'Serial number',
-                      '',
-                      '',
-                      (_, __) async => {},
-                      parameterValueAsString: _repository.deviceSerialNumber,
-                    ),
-                    _CardParameter(
-                      0,
-                      '00',
-                      'Cell Num',
-                      'Number of active cells',
-                      '',
-                      (_, __) async => {},
-                      parameterValue: snapshot.data.cellCount ?? 4,
-                    ),
-                    _CardParameter(
-                      1,
-                      '01',
-                      'V Max',
-                      'Max cell voltage',
-                      'V',
-                      completion,
-                      parameterValue: (snapshot.data.maxCellVoltage) ?? 4.28,
-                    ),
-                    _CardParameter(
-                      2,
-                      '02',
-                      'V MaxR',
-                      'Max recovery voltage',
-                      'V',
-                      completion,
-                      parameterValue:
-                          (snapshot.data.maxRecoveryVoltage) ?? 4.15,
-                    ),
-                    _CardParameter(
-                      3,
-                      '03',
-                      'V Bal',
-                      'Balance cell voltage',
-                      'V',
-                      completion,
-                      parameterValue:
-                          (snapshot.data.balanceCellVoltage) ?? 4.20,
-                    ),
-                    _CardParameter(
-                      4,
-                      '04',
-                      'VMin',
-                      'Min cell voltage',
-                      'V',
-                      completion,
-                      parameterValue: (snapshot.data.minCellVoltage) ?? 2.80,
-                    ),
-                    _CardParameter(
-                      5,
-                      '05',
-                      'VMinR',
-                      'Min cell recovery voltage',
-                      'V',
-                      completion,
-                      parameterValue:
-                          (snapshot.data.minCellRecoveryVoltage) ?? 3.10,
-                    ),
-                    _CardParameter(
-                      6,
-                      '06',
-                      'VULOW',
-                      'Ultra low cell voltage',
-                      'V',
-                      completion,
-                      parameterValue: (snapshot.data.ultraLowCellVoltage) ?? 2,
-                    ),
-                    _CardParameter(
-                      7,
-                      '12',
-                      'IDMax1',
-                      'Max limited discharge current',
-                      'A',
-                      completion,
-                      parameterValue:
-                          (snapshot.data.maxTimeLimitedDischargeCurrent) ?? 20,
-                    ),
-                    _CardParameter(
-                      8,
-                      '13',
-                      'IDMax2',
-                      'Max cut-off discharge current',
-                      'A',
-                      completion,
-                      parameterValue:
-                          (snapshot.data.maxCutoffDischargeCurrent) ?? 25,
-                    ),
-                    _CardParameter(
-                      9,
-                      '14',
-                      'Id max 1 time',
-                      'Max current time-limit period',
-                      's',
-                      completion,
-                      parameterValue:
-                          snapshot.data.maxCurrentTimeLimitPeriod ?? 10,
-                    ),
-                    _CardParameter(
-                      10,
-                      '15',
-                      'ICMax',
-                      'Max cut-off charge current',
-                      'A',
-                      completion,
-                      parameterValue:
-                          (snapshot.data.maxCutoffChargeCurrent) ?? 8,
-                    ),
-                    _CardParameter(
-                      11,
-                      '16',
-                      'I Thr Count',
-                      'Moto-hours current threshold',
-                      'A',
-                      completion,
-                      parameterValue:
-                          (snapshot.data.motoHoursCounterCurrentThreshold) ??
-                              40,
-                    ),
-                    _CardParameter(
-                      12,
-                      '17',
-                      'I Max c-off Time ',
-                      'Max cut-off time period',
-                      's',
-                      completion,
-                      parameterValue:
-                          snapshot.data.currentCutOffTimerPeriod ?? 5,
-                    ),
-                    _CardParameter(
-                      13,
-                      '23',
-                      'T Max',
-                      'Max temperature cut-off',
-                      '°C',
-                      completion,
-                      parameterValue:
-                          (snapshot.data.maxCutoffTemperature) ?? 240,
-                    ),
-                    _CardParameter(
-                      14,
-                      '24',
-                      'T MaxR',
-                      'Max temperature recovery ',
-                      '°C',
-                      completion,
-                      parameterValue:
-                          snapshot.data.maxTemperatureRecovery ?? 530,
-                    ),
-                    _CardParameter(
-                      15,
-                      '25',
-                      'T MinR',
-                      'Min temperature recovery',
-                      '°C',
-                      completion,
-                      parameterValue:
-                          snapshot.data.minTemperatureRecovery ?? 1680,
-                    ),
-                    _CardParameter(
-                      16,
-                      '26',
-                      'T Min',
-                      'Min temperature cut-off',
-                      '°C',
-                      completion,
-                      parameterValue:
-                          snapshot.data.minCutoffTemperature ?? 2480,
-                    ),
-                  ],
-                );
-              } else
-                return Container();
-            },
-          )),
-          floatingActionButton: Builder(
-            builder: (context) => FloatingActionButton(
-                elevation: 7,
-                child: Icon(Icons.build),
-                onPressed: () => showModalBottomSheet(
-                    context: context,
-                    builder: (_) => Wrap(
-                          children: [
-                            Container(
-                              child: Container(
-                                decoration: new BoxDecoration(
-                                    color: Color(0xFF737373),
-                                    borderRadius: new BorderRadius.only(
-                                        topLeft: const Radius.circular(25.0),
-                                        topRight: const Radius.circular(25.0))),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    CalibrateTile(
-                                        18,
-                                        'Cal. V',
-                                        'Voltage calibrate',
-                                        () => _parameterListenerBloc
-                                            .calibrateVoltage()),
-                                    CalibrateTile(
-                                        19,
-                                        'Cal. C',
-                                        'Charge calibrate',
-                                        () => _parameterListenerBloc
-                                            .calibrateCharge()),
-                                    CalibrateTile(
-                                        20,
-                                        'Cal. D',
-                                        'Discharge calibrate',
-                                        () => _parameterListenerBloc
-                                            .calibrateDischarge()),
-                                  ],
+  Widget buildWidget(BuildContext context) {
+    print('BUILDING BATTERY SETTINGS BROOOO');
+    return StreamListener(
+        stream: _parameterListenerBloc.stream,
+        onData: (status) {
+          switch (status) {
+            case ParameterChangeStatus.Successful:
+              _showDialog(context, true);
+              break;
+            case ParameterChangeStatus.Unsuccessful:
+              _showDialog(context, false);
+              break;
+          }
+        },
+        child: Scaffold(
+            appBar: AppBar( // TODO extract this damn appBar somewhere
+              brightness: Brightness.dark,
+              iconTheme: IconThemeData(color: Colors.black),
+              title: const Text(
+                'Battery Settings',
+                style: TextStyle(color: Colors.black),
+              ),
+              backgroundColor: Colors.transparent,
+            ),
+            body: SingleChildScrollView(
+                child: StreamBuilder<DeviceParameters>(
+              stream: _parameterListenerBloc.parameters,
+              initialData: bloc.currentParams,
+              builder: (_, snapshot) {
+                if (snapshot.connectionState == ConnectionState.active) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      _CardParameter(
+                        17,
+                        '44',
+                        'Serial number',
+                        '',
+                        '',
+                        (_, __) async => {},
+                        parameterValueAsString: _repository.deviceSerialNumber,
+                      ),
+                      _CardParameter(
+                        0,
+                        '00',
+                        'Cell Num',
+                        'Number of active cells',
+                        '',
+                        (_, __) async => {},
+                        parameterValue: snapshot.data.cellCount ?? 4,
+                      ),
+                      _CardParameter(
+                        1,
+                        '01',
+                        'V Max',
+                        'Max cell voltage',
+                        'V',
+                        completion,
+                        parameterValue: (snapshot.data.maxCellVoltage) ?? 4.28,
+                      ),
+                      _CardParameter(
+                        2,
+                        '02',
+                        'V MaxR',
+                        'Max recovery voltage',
+                        'V',
+                        completion,
+                        parameterValue:
+                            (snapshot.data.maxRecoveryVoltage) ?? 4.15,
+                      ),
+                      _CardParameter(
+                        3,
+                        '03',
+                        'V Bal',
+                        'Balance cell voltage',
+                        'V',
+                        completion,
+                        parameterValue:
+                            (snapshot.data.balanceCellVoltage) ?? 4.20,
+                      ),
+                      _CardParameter(
+                        4,
+                        '04',
+                        'VMin',
+                        'Min cell voltage',
+                        'V',
+                        completion,
+                        parameterValue: (snapshot.data.minCellVoltage) ?? 2.80,
+                      ),
+                      _CardParameter(
+                        5,
+                        '05',
+                        'VMinR',
+                        'Min cell recovery voltage',
+                        'V',
+                        completion,
+                        parameterValue:
+                            (snapshot.data.minCellRecoveryVoltage) ?? 3.10,
+                      ),
+                      _CardParameter(
+                        6,
+                        '06',
+                        'VULOW',
+                        'Ultra low cell voltage',
+                        'V',
+                        completion,
+                        parameterValue:
+                            (snapshot.data.ultraLowCellVoltage) ?? 2,
+                      ),
+                      _CardParameter(
+                        7,
+                        '12',
+                        'IDMax1',
+                        'Max limited discharge current',
+                        'A',
+                        completion,
+                        parameterValue:
+                            (snapshot.data.maxTimeLimitedDischargeCurrent) ??
+                                20,
+                      ),
+                      _CardParameter(
+                        8,
+                        '13',
+                        'IDMax2',
+                        'Max cut-off discharge current',
+                        'A',
+                        completion,
+                        parameterValue:
+                            (snapshot.data.maxCutoffDischargeCurrent) ?? 25,
+                      ),
+                      _CardParameter(
+                        9,
+                        '14',
+                        'Id max 1 time',
+                        'Max current time-limit period',
+                        's',
+                        completion,
+                        parameterValue:
+                            snapshot.data.maxCurrentTimeLimitPeriod ?? 10,
+                      ),
+                      _CardParameter(
+                        10,
+                        '15',
+                        'ICMax',
+                        'Max cut-off charge current',
+                        'A',
+                        completion,
+                        parameterValue:
+                            (snapshot.data.maxCutoffChargeCurrent) ?? 8,
+                      ),
+                      _CardParameter(
+                        11,
+                        '16',
+                        'I Thr Count',
+                        'Moto-hours current threshold',
+                        'A',
+                        completion,
+                        parameterValue:
+                            (snapshot.data.motoHoursCounterCurrentThreshold) ??
+                                40,
+                      ),
+                      _CardParameter(
+                        12,
+                        '17',
+                        'I Max c-off Time ',
+                        'Max cut-off time period',
+                        's',
+                        completion,
+                        parameterValue:
+                            snapshot.data.currentCutOffTimerPeriod ?? 5,
+                      ),
+                      _CardParameter(
+                        13,
+                        '23',
+                        'T Max',
+                        'Max temperature cut-off',
+                        '°C',
+                        completion,
+                        parameterValue:
+                            (snapshot.data.maxCutoffTemperature) ?? 240,
+                      ),
+                      _CardParameter(
+                        14,
+                        '24',
+                        'T MaxR',
+                        'Max temperature recovery ',
+                        '°C',
+                        completion,
+                        parameterValue:
+                            snapshot.data.maxTemperatureRecovery ?? 530,
+                      ),
+                      _CardParameter(
+                        15,
+                        '25',
+                        'T MinR',
+                        'Min temperature recovery',
+                        '°C',
+                        completion,
+                        parameterValue:
+                            snapshot.data.minTemperatureRecovery ?? 1680,
+                      ),
+                      _CardParameter(
+                        16,
+                        '26',
+                        'T Min',
+                        'Min temperature cut-off',
+                        '°C',
+                        completion,
+                        parameterValue:
+                            snapshot.data.minCutoffTemperature ?? 2480,
+                      ),
+                    ],
+                  );
+                } else
+                  return Container();
+              },
+            )),
+            floatingActionButton: Builder(
+              builder: (context) => FloatingActionButton(
+                  elevation: 7,
+                  child: Icon(Icons.build),
+                  onPressed: () => showModalBottomSheet(
+                      context: context,
+                      builder: (_) => Wrap(
+                            children: [
+                              Container(
+                                child: Container(
+                                  decoration: new BoxDecoration(
+                                      color: Color(0xFF737373),
+                                      borderRadius: new BorderRadius.only(
+                                          topLeft: const Radius.circular(25.0),
+                                          topRight:
+                                              const Radius.circular(25.0))),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CalibrateTile(
+                                          18,
+                                          'Cal. V',
+                                          'Voltage calibrate',
+                                          () => _parameterListenerBloc
+                                              .calibrateVoltage()),
+                                      CalibrateTile(
+                                          19,
+                                          'Cal. C',
+                                          'Charge calibrate',
+                                          () => _parameterListenerBloc
+                                              .calibrateCharge()),
+                                      CalibrateTile(
+                                          20,
+                                          'Cal. D',
+                                          'Discharge calibrate',
+                                          () => _parameterListenerBloc
+                                              .calibrateDischarge()),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            )
-                          ],
-                        ))),
-          )));
+                              )
+                            ],
+                          ))),
+            )));
+  }
 }

@@ -33,16 +33,15 @@ class LocalDatabaseManager with CurrentContext {
 
   void deleteAnonymousUser() => _userDao.deleteUser('anonymous');
 
+  void deleteAnonymousUserDevices() => _deviceDao.deleteUserDevices('0000');
+
   void insertDevice(Device device) => _deviceDao.insertEntity(device);
 
   void insertDeviceState(DeviceState state) =>
       _deviceStateDao.insertEntity(state);
 
-  void updateDeviceState(DeviceState state) {
-    print("UPDATING DEVICE STATE : ${state.isBatteryOn}");
-    _deviceStateDao.updateEntity(state);
-    // _deviceStateDao.updateDeviceState(curDeviceId, isOn);
-  }
+  void updateDeviceState(DeviceState state) =>
+      _deviceStateDao.updateEntity(state);
 
   void insertUserWithDevice(String userId, String deviceId) =>
       _userDevicesDao.insertEntity(UserDevices(userId, deviceId));
@@ -68,11 +67,14 @@ class LocalDatabaseManager with CurrentContext {
   Future<Device> fetchDevice() async =>
       await _deviceDao.fetchDevice(this.curDeviceId);
 
+  Stream<Device> fetchDeviceAsStream() =>
+      _deviceDao.fetchDeviceAsStream(this.curDeviceId);
+
   Future<Device> fetchDeviceByMac(String mac) async =>
       await _deviceDao.fetchDeviceByMac(mac);
 
   Future<List<Device>> fetchDevicesForCurrentUser() async =>
-      await _deviceDao.fetchDevices(curUserId);
+      await _deviceDao.fetchUserDevices(curUserId);
 
   Stream<DeviceParameters> fetchParameters() =>
       _parametersDao.fetchDeviceParametersAsStream(curDeviceId);

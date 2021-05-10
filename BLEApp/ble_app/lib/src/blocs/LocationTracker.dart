@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/CurrentContext.dart';
+import 'package:ble_app/src/modules/dataClasses/routeFileModel.dart';
 import 'package:ble_app/src/utils/locationUtils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
@@ -13,6 +14,8 @@ import 'RxObject.dart';
 class LocationTracker with CurrentContext, LocationCachingManager {
   final isRecordingRx = RxObject<bool>();
 
+  Timer _distanceTimer;
+
   double _memoizedDistance =
       0; // Should refresh that value on disconnect. Optional  (make it a setting or some shit)
 
@@ -24,8 +27,7 @@ class LocationTracker with CurrentContext, LocationCachingManager {
     isRecordingRx.addEvent(false);
     isShowingCachedRoute.addEvent(false);
     print("SETTING UP ROUTES");
-    // setupRoutes();
-    Timer.periodic(Duration(seconds: 30), (timer) {
+    _distanceTimer = Timer.periodic(Duration(seconds: 30), (timer) {
       _memoizedDistance += SphericalUtil.computeLength(_calculatedCoordinates);
       _calculatedCoordinates.clear();
       distanceRx.addEvent(_memoizedDistance);
@@ -63,8 +65,14 @@ class LocationTracker with CurrentContext, LocationCachingManager {
     _visibleCoordinates.clear();
   }
 
-  void renameFile(String fileName) =>
-      renameCachedLocation(_currentFilename, fileName);
+  Future<RouteFileModel> renameFile(String fileName,
+      {String previousTimeStamp}) async {
+    final routeFile = await renameCachedLocation(
+        previousTimeStamp ?? _currentFilename, fileName);
+    return routeFile;
+  }
+
+  Future deleteFile(String timeStamp) => deleteRouteFile(timeStamp);
 
   void addVisibleCoords(double latitude, double longitude) =>
       _visibleCoordinates.add(LatLng(latitude, longitude));
@@ -89,4 +97,6 @@ class LocationTracker with CurrentContext, LocationCachingManager {
     _visibleCoordinates.clear();
     isShowingCachedRoute.addEvent(false);
   }
+
+  void disposeTimer() => _distanceTimer.cancel();
 }

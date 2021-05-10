@@ -219,7 +219,7 @@ class _$UserDao extends UserDao {
 
 class _$DeviceDao extends DeviceDao {
   _$DeviceDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database),
+      : _queryAdapter = QueryAdapter(database, changeListener),
         _deviceInsertionAdapter = InsertionAdapter(
             database,
             'devices',
@@ -229,7 +229,8 @@ class _$DeviceDao extends DeviceDao {
                   'isSuper': item.isSuper ? 1 : 0,
                   'changed_parameters': item.parametersToChange,
                   'id': item.id
-                }),
+                },
+            changeListener),
         _deviceUpdateAdapter = UpdateAdapter(
             database,
             'devices',
@@ -240,7 +241,8 @@ class _$DeviceDao extends DeviceDao {
                   'isSuper': item.isSuper ? 1 : 0,
                   'changed_parameters': item.parametersToChange,
                   'id': item.id
-                }),
+                },
+            changeListener),
         _deviceDeletionAdapter = DeletionAdapter(
             database,
             'devices',
@@ -251,7 +253,8 @@ class _$DeviceDao extends DeviceDao {
                   'isSuper': item.isSuper ? 1 : 0,
                   'changed_parameters': item.parametersToChange,
                   'id': item.id
-                });
+                },
+            changeListener);
 
   final sqflite.DatabaseExecutor database;
 
@@ -266,7 +269,7 @@ class _$DeviceDao extends DeviceDao {
   final DeletionAdapter<Device> _deviceDeletionAdapter;
 
   @override
-  Future<List<Device>> fetchDevices(String userId) async {
+  Future<List<Device>> fetchUserDevices(String userId) async {
     return _queryAdapter.queryList(
         'SELECT * FROM devices d INNER JOIN users_devices u ON u.user_id = ? GROUP BY d.id',
         arguments: <dynamic>[userId],
@@ -274,6 +277,13 @@ class _$DeviceDao extends DeviceDao {
             row['device_name'] as String, (row['isSuper'] as int) != 0,
             parametersToChange: row['changed_parameters'] as String,
             macAddress: row['mac'] as String));
+  }
+
+  @override
+  Future<void> deleteUserDevices(String userId) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM devices WHERE id IN ( SELECT id FROM devices d INNER JOIN users_devices u ON u.user_id = ? )',
+        arguments: <dynamic>[userId]);
   }
 
   @override
@@ -291,6 +301,18 @@ class _$DeviceDao extends DeviceDao {
   Future<Device> fetchDevice(String deviceId) async {
     return _queryAdapter.query('SELECT * FROM devices WHERE id = ?',
         arguments: <dynamic>[deviceId],
+        mapper: (Map<String, dynamic> row) => Device(row['id'] as String,
+            row['device_name'] as String, (row['isSuper'] as int) != 0,
+            parametersToChange: row['changed_parameters'] as String,
+            macAddress: row['mac'] as String));
+  }
+
+  @override
+  Stream<Device> fetchDeviceAsStream(String deviceId) {
+    return _queryAdapter.queryStream('SELECT * FROM devices WHERE id = ?',
+        arguments: <dynamic>[deviceId],
+        queryableName: 'devices',
+        isView: false,
         mapper: (Map<String, dynamic> row) => Device(row['id'] as String,
             row['device_name'] as String, (row['isSuper'] as int) != 0,
             parametersToChange: row['changed_parameters'] as String,

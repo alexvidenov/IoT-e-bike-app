@@ -52,7 +52,6 @@ class Auth {
 
   Future<AuthState> signInAnonymously() {
     _dbManager.insertAnonymousUser();
-    // _dbManager.insertAnonymousDevice(); // bro, WHY AM I DOING THAT HERE ??
     _isAnonymous = true;
     _localAuthState.addEvent(AuthState.authenticated('0000'));
     return Future.value(AuthState.authenticated('0000'));
@@ -153,7 +152,8 @@ class Auth {
   Future<void> signOut() async {
     if (_isAnonymous) {
       _isAnonymous = false;
-      _dbManager.deleteAnonymousUser(); // here, delete the associated devices as well since now it's not working. (delete from user devices where userId == 0000)
+      _dbManager.deleteAnonymousUserDevices();
+      _dbManager.deleteAnonymousUser();
       _localAuthState.addEvent(AuthState.loggedOut());
     } else {
       await _auth.signOut();
@@ -173,6 +173,8 @@ extension UserStatus on Auth {
       Rx.merge([_onAuthStateChanged, _onLocalAuthStateChanged]);
 
   String getCurrentUserId() => _isAnonymous ? '0000' : _auth.currentUser?.uid;
+
+  bool get isAnonymous => _isAnonymous;
 }
 
 extension AuthExceptionHandler on Auth {

@@ -1,4 +1,5 @@
 import 'package:ble_app/src/blocs/LocationCachingManager.dart';
+import 'package:ble_app/src/modules/dataClasses/routeFileModel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
@@ -63,31 +64,26 @@ class SembastDatabase {
         merge: true);
   }
 
-  void renameRecording(
-      String userId, String deviceId, String fileTimeStamp, String newName) {
-    _coordinatesStore
-        .record(fileTimeStamp)
-        .put(_routesDB, {'name': newName}, merge: true);
-  }
+  Future<RouteFileModel> renameRecording(String userId, String deviceId,
+          String fileTimeStamp, String newName) async =>
+      RouteFileModel.fromJson(await _coordinatesStore
+          .record(fileTimeStamp)
+          .put(_routesDB, {'name': newName}, merge: true));
+
+  Future deleteRecording(String timeStamp) =>
+      _coordinatesStore.record(timeStamp).delete(_routesDB);
 
   Future<Stream<List<RouteFileModel>>> cachedRoutesStream(
           String userId, String deviceId) async =>
       (await _coordinatesStore.query(
               finder: Finder(
-                  filter: Filter.and(
-                      [Filter.equals('userId', userId), Filter.equals('deviceId', deviceId)]))))
+                  filter: Filter.and([
+        Filter.equals('userId', userId),
+        Filter.equals('deviceId', deviceId)
+      ]))))
           .onSnapshots(_routesDB)
-          .map((snap) => snap
-              .map((e) => RouteFileModel(
-                  name: e['name'],
-                  startedAt: e['startedAt'],
-                  finishedAt: e['finishedAt'],
-                  lengthInKilometers: e['length'],
-                  wastedPowerInWh: e['consumed'],
-                  coordinates: (e['coordinates'] as List<dynamic>)
-                      .map((c) => LatLng.fromJson(c))
-                      .toList()))
-              .toList());
+          .map((snap) =>
+              snap.map((e) => RouteFileModel.fromJson(e.value)).toList());
 
   void setUserLogData(String json) =>
       _userDataStore.record('userLogs').put(_userDataDB, {'userLogs': json});

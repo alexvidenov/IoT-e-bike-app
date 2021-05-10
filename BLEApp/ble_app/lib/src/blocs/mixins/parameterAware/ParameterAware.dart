@@ -23,4 +23,7 @@ mixin ParameterAware implements ParameterAwareInterface {
 
   double get minVoltage =>
       currentParams.cellCount * currentParams.minCellVoltage;
+
+  double get totalPower =>
+      currentParams.maxCutoffDischargeCurrent * this.totalVoltage;
 }

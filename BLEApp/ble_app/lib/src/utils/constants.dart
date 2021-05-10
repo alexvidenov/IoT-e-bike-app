@@ -20,3 +20,9 @@ final kBoxDecorationStyle = BoxDecoration(
     ),
   ],
 );
+
+
+abstract class Constants{
+  static const int MAX_TEMPERATURE = 65;
+
+}
