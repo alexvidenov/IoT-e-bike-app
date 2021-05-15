@@ -8,19 +8,18 @@ extension BLEScanMethods on DevicesBloc {
       print('SCAN RESULT NAME: ${scanResult.advertisementData.localName}');
       final bleDevice = BleDevice(peripheral: scanResult.peripheral);
       if (scanResult.advertisementData.localName != null &&
-          ((bleDevices.isNotEmpty &&
-                  !(bleDevices.singleWhere((d) {
-                        print(
-                            'D IN LIST ID: ${d.id}...SCANNED ID: ${bleDevice.id}');
-                        return d.id == bleDevice.id;
-                      }) !=
-                      null)) ||
+          ((bleDevices.isNotEmpty && !_deviceExists(mac: bleDevice.id)) ||
               bleDevices.isEmpty)) {
         print("adding scanned devices");
         bleDevices.add(bleDevice);
         _visibleDevicesController.add(bleDevices.sublist(0));
       }
     });
+  }
+
+  bool _deviceExists({String mac}) {
+    final exists = bleDevices.where((d) => d.id == mac);
+    return exists.isNotEmpty;
   }
 
   _loadDevicesFromCache() async {
