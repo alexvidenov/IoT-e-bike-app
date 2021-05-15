@@ -1,29 +1,28 @@
 import 'package:ble_app/main.dart';
-import 'package:ble_app/src/blocs/LocationTracker.dart';
-import 'package:ble_app/src/blocs/RxObject.dart';
+import 'package:ble_app/src/blocs/WattCollector.dart';
+import 'package:ble_app/src/blocs/location/LocationTracker.dart';
+import 'package:ble_app/src/blocs/base/RxObject.dart';
 import 'package:ble_app/src/modules/dataClasses/routeFileModel.dart';
+import 'package:ble_app/src/sealedStates/LocationState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
+import 'package:intl/intl.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:location/location.dart';
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/base/bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
-class LocationState {
-  final LocationData locationData;
-  final Set<Polyline> polylines;
-
-  const LocationState(this.locationData, {this.polylines});
-}
-
 @injectable
-class LocationBloc extends Bloc<LocationState, LocationData> {
+class LocationBloc extends Bloc<LocationState, LocationData>
+    with OnWattHoursCalculated {
   final Location _location = Location();
 
-  LocationTracker _locationTracker;
+  final LocationTracker _locationTracker;
+  final WattCollector _wattCollector;
 
-  LocationBloc(this._locationTracker);
+  LocationBloc(this._locationTracker, this._wattCollector);
 
   GoogleMapController _controller;
 
@@ -78,6 +77,7 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
   @override
   create() async {
     logger.wtf('CREATING IN LOCATION BLOC');
+    _wattCollector.onWattHoursCalculated = this;
     try {
       final location = await _location.getLocation();
 
@@ -133,15 +133,27 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
     }
   }
 
-  void startRecording() => _locationTracker.startRecording();
+  void startRecording() {
+    _locationTracker.startRecording();
+    _wattCollector.startTrack();
+  }
 
-  void stopRecording() => _locationTracker.stopRecording();
+  void stopRecording() {
+    _locationTracker.stopRecording().then((model) {
+      final started =
+          Jiffy(DateFormat.yMMMd().add_jm().parse(model.startedAt)).dateTime;
+      final finished =
+          Jiffy(DateFormat.yMMMd().add_jm().parse(model.finishedAt)).dateTime;
+      final Duration trackDuration = finished.difference(started);
+      _wattCollector.finishTrack(trackDuration.inMinutes.toDouble());
+    });
+  }
 
   Future renameFile(String fileName, {String previousTimeStamp}) =>
       _locationTracker
           .renameFile(fileName, previousTimeStamp: previousTimeStamp)
           .then((renamed) {
-        if (currentRouteSelected.value.startedAt == renamed.startedAt) {
+        if (currentRouteSelected?.value?.startedAt == renamed.startedAt) {
           currentRouteSelected.addEvent(renamed);
         }
       });
@@ -193,4 +205,8 @@ class LocationBloc extends Bloc<LocationState, LocationData> {
     _locationTracker.disposeTimer();
     super.dispose();
   }
+
+  @override
+  void onWattHoursCalculated(double wattHours) => _locationTracker
+      .addWattPerHourForRoute(double.parse(wattHours.toStringAsFixed(2)));
 }

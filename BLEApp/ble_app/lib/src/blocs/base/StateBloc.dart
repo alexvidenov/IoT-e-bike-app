@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/DataCachingManager.dart';
+import 'package:ble_app/src/persistence/cachingManagers/DataCachingManager.dart';
 import 'package:ble_app/src/blocs/stateTracker.dart';
 import 'package:ble_app/src/blocs/OutputControlBloc.dart';
-import 'package:ble_app/src/blocs/RxObject.dart';
-import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
+import 'package:ble_app/src/blocs/base/RxObject.dart';
+import 'package:ble_app/src/blocs/base/ParameterAwareBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/dataClasses/BaseModel.dart';
 import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';

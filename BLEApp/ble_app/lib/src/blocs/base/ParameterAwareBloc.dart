@@ -1,10 +1,10 @@
-import 'package:ble_app/src/blocs/CurrentContext.dart';
+import 'package:ble_app/src/blocs/mixins/CurrentContext.dart';
 import 'package:ble_app/src/blocs/mixins/parameterAware/ParameterAware.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 
-import '../bloc.dart';
+import 'bloc.dart';
 
 abstract class ParameterAwareBloc<T, S> extends Bloc<T, S>
     with ParameterAware, CurrentContext {

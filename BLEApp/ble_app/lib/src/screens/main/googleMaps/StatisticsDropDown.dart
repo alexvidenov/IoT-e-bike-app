@@ -109,58 +109,76 @@ class _StatisticsDropDownState extends State<StatisticsDropDown>
                     child: Column(
                       children: [
                         _buildSingleStatistic(
-                            widget._routeFileModel?.startedAt ?? ''),
+                          title: widget._routeFileModel?.name ?? '',
+                        ),
                         Divider(
                           color: Colors.grey.shade300,
                           height: 1,
                         ),
                         _buildSingleStatistic(
-                            widget._routeFileModel?.name ?? ''),
+                          title: widget._routeFileModel?.startedAt ?? '',
+                        ),
                         Divider(
                           color: Colors.grey.shade300,
                           height: 1,
                         ),
                         _buildSingleStatistic(
-                            widget._routeFileModel?.finishedAt ?? ''),
+                          title: widget._routeFileModel?.finishedAt ?? '',
+                        ),
                         Divider(
                           color: Colors.grey.shade300,
                           height: 1,
                         ),
                         _buildSingleStatistic(
-                            widget._routeFileModel?.consumed?.toString() ?? ''),
+                            title:
+                                widget._routeFileModel?.consumed?.toString() ??
+                                    '',
+                            description: 'Consumed power'),
                         Divider(
                           color: Colors.grey.shade300,
                           height: 1,
                         ),
                         _buildSingleStatistic(
-                            widget._routeFileModel?.length?.toString() ?? ''),
+                            title: widget._routeFileModel?.length?.toString() ??
+                                '',
+                            description: 'Track length'),
                       ],
                     ))),
           ],
         ),
       );
 
-  Widget _buildSingleStatistic(String title) => Padding(
+  Widget _buildSingleStatistic({String title, String description}) => Padding(
         padding: const EdgeInsets.only(left: 26.0, top: 5, bottom: 5),
         child: Row(
           children: <Widget>[
             Expanded(
               flex: 1,
               child: Container(
-                padding: const EdgeInsets.only(top: 20),
-                decoration: BoxDecoration(
-                  border: Border(
-                      top: BorderSide(color: Colors.grey[200], width: 1)),
-                ),
-                child: Text(title,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14),
-                    maxLines: 3,
-                    textAlign: TextAlign.start,
-                    overflow: TextOverflow.ellipsis),
-              ),
+                  padding: const EdgeInsets.only(top: 20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                        top: BorderSide(color: Colors.grey[200], width: 1)),
+                  ),
+                  child: Column(children: [
+                    if (description != null)
+                      Text(description + ": ",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14),
+                          maxLines: 3,
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.ellipsis),
+                    Text(title,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14),
+                        maxLines: 3,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis),
+                  ])),
             ),
           ],
         ),

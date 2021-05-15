@@ -11,7 +11,6 @@ typedef _LogOutListener = Future<void> Function();
 class NavigationDrawer extends StatefulWidget {
   final SettingsBloc _prefsBloc;
   final DeviceBloc _deviceBloc;
-  final Stream<bool> _authorizedToAccessParameters;
   final _LogOutListener _onLogout;
   final bool isOffline;
   final bool isAnonymous;
@@ -19,7 +18,6 @@ class NavigationDrawer extends StatefulWidget {
   final VoidCallback resumedToHome;
 
   const NavigationDrawer(this._prefsBloc, this._deviceBloc, this._onLogout,
-      this._authorizedToAccessParameters,
       {this.isOffline,
       this.isAnonymous,
       this.onSwitchedToFull,
@@ -60,23 +58,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> with OnPagePopped {
                   widget.onSwitchedToFull();
                   $<PageManager>().openFullStatus();
                 }),
-            /*
-            if (!isOffline)
-              StreamBuilder<bool>(
-                  initialData: false,
-                  stream: this._authorizedToAccessParameters,
-                  builder: (_, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.active &&
-                        snapshot.data == true) {
-                      return _createDrawerItem(
-                          icon: Icons.battery_charging_full_sharp,
-                          text: 'Battery Settings',
-                          onTap: () => $<PageManager>().openDeviceSettings());
-                    } else
-                      return Container();
-                  }),
-
-             */
+            Divider(),
             _createDrawerItem(
                 icon: Icons.bluetooth_disabled,
                 text: 'Disconnect',

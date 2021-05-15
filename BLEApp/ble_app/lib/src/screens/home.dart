@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/NavDrawerBloc.dart';
+import 'package:ble_app/src/blocs/IsSuperBloc.dart';
 import 'package:ble_app/src/blocs/OutputControlBloc.dart';
-import 'package:ble_app/src/blocs/navigationBloc.dart';
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
-import 'package:ble_app/src/blocs/fullStatusBloc.dart';
-import 'package:ble_app/src/blocs/locationBloc.dart';
+import 'package:ble_app/src/blocs/PageManager.dart';
+import 'package:ble_app/src/blocs/status/shortStatusBloc.dart';
+import 'package:ble_app/src/blocs/status/fullStatusBloc.dart';
+import 'package:ble_app/src/blocs/location/locationBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/screens/base/PageViewWidget.dart';
 import 'package:ble_app/src/screens/main/status/fullStatusPage.dart';
@@ -40,7 +40,7 @@ class Home extends PageViewWidget {
   final ShortStatusBloc _shortStatusBloc;
   final LocationBloc _locationBloc;
 
-  final NavDrawerBloc _navDrawerBloc;
+  final IsSuperBloc _navDrawerBloc;
 
   const Home(
       this._prefsBloc,
@@ -112,7 +112,6 @@ class Home extends PageViewWidget {
         $(),
         $(),
         $<Auth>().signOut,
-        _navDrawerBloc.authorizedToAccessParams,
         isOffline: false,
         isAnonymous: _navDrawerBloc.isAnonymous,
         onSwitchedToFull: _shortStatusBloc.pause,

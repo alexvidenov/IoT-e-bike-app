@@ -6,7 +6,7 @@ import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 
-import 'bloc.dart';
+import 'base/bloc.dart';
 
 part 'blocExtensions/DetermineEndpoint.dart';
 

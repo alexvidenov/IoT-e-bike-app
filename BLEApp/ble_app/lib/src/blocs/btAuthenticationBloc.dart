@@ -1,5 +1,5 @@
 import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/base/bloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/persistence/entities/deviceState.dart';
 import 'package:ble_app/src/persistence/entities/device.dart';

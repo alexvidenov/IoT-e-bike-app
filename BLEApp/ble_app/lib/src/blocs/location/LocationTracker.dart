@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/CurrentContext.dart';
+import 'package:ble_app/src/blocs/mixins/CurrentContext.dart';
 import 'package:ble_app/src/modules/dataClasses/routeFileModel.dart';
 import 'package:ble_app/src/utils/locationUtils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:jiffy/jiffy.dart';
 
-import 'LocationCachingManager.dart';
-import 'RxObject.dart';
+import '../../persistence/cachingManagers/LocationCachingManager.dart';
+import '../base/RxObject.dart';
 
 @lazySingleton
 class LocationTracker with CurrentContext, LocationCachingManager {
@@ -54,15 +54,15 @@ class LocationTracker with CurrentContext, LocationCachingManager {
     createCoordinatesFile(_currentFilename);
   }
 
-  void stopRecording() {
+  Future<RouteFileModel> stopRecording() {
     isRecordingRx.addEvent(false);
-    updateCachedLocation(
+    _visibleCoordinates.clear();
+    return updateCachedLocation(
         _currentFilename,
         _visibleCoordinates,
         Jiffy().yMMMdjm,
         num.parse((SphericalUtil.computeLength(visibleCoords) / 1000)
             .toStringAsFixed(3)));
-    _visibleCoordinates.clear();
   }
 
   Future<RouteFileModel> renameFile(String fileName,
@@ -71,6 +71,9 @@ class LocationTracker with CurrentContext, LocationCachingManager {
         previousTimeStamp ?? _currentFilename, fileName);
     return routeFile;
   }
+
+  void addWattPerHourForRoute(double watts) =>
+      updateWattPerHour(_currentFilename, watts);
 
   Future deleteFile(String timeStamp) => deleteRouteFile(timeStamp);
 

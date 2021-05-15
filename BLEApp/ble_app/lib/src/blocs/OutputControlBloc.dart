@@ -1,10 +1,10 @@
-import 'package:ble_app/src/blocs/CurrentContext.dart';
+import 'package:ble_app/src/blocs/mixins/CurrentContext.dart';
 import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/persistence/entities/deviceState.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:injectable/injectable.dart';
 
-import 'bloc.dart';
+import 'base/bloc.dart';
 
 enum OutputsState { On, Off }
 

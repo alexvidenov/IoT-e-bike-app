@@ -3,8 +3,8 @@ import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
 import 'package:flutter/material.dart';
 
-import 'package:ble_app/src/blocs/locationBloc.dart';
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/blocs/location/locationBloc.dart';
+import 'package:ble_app/src/blocs/status/shortStatusBloc.dart';
 import 'package:ble_app/src/widgets/progressBars/speedometer.dart';
 import 'package:ble_app/src/widgets/ShortStatusUI/_CurrentRow.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
@@ -31,7 +31,7 @@ class SpeedometerWithCurrent extends StatelessWidget {
               Speedometer(speedSource: locationBloc.speedRx.stream),
               Padding(
                   padding: EdgeInsets.only(
-                    top: 60,
+                    top: 40,
                   ),
                   child: Column(
                     children: <Widget>[

@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/CurrentContext.dart';
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/base/bloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
@@ -12,7 +11,6 @@ import 'package:location/location.dart';
 import 'package:location_permissions/location_permissions.dart' as locationPerm;
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
-import 'package:location_permissions/location_permissions.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../persistence/LocalDatabaseManager.dart';

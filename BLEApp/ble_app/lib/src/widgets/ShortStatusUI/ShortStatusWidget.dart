@@ -1,11 +1,10 @@
-import 'package:ble_app/src/blocs/locationBloc.dart';
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/blocs/location/locationBloc.dart';
+import 'package:ble_app/src/blocs/status/shortStatusBloc.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
 import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 
 import '_BottomProgressText.dart';
 import '_ProgressBars.dart';
@@ -90,7 +89,7 @@ class ShortStatusUI extends StatelessWidget {
                     shortStatusBloc: _shortStatusBloc,
                     locationBloc: _locationBloc),
                 const SizedBox(
-                  height: 50,
+                  height: 70,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,

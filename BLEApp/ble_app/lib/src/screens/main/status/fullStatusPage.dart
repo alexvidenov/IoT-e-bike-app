@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/fullStatusBloc.dart';
+import 'package:ble_app/src/blocs/status/fullStatusBloc.dart';
 import 'package:ble_app/src/screens/base/BlocLifecycleAware.dart';
 import 'package:ble_app/src/widgets/FullStatusUI/VoltagesBarChart.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/CurrentContext.dart';
+import 'package:ble_app/src/blocs/mixins/CurrentContext.dart';
 import 'package:ble_app/src/persistence/dao/deviceDao.dart';
 import 'package:ble_app/src/persistence/dao/deviceStateDao.dart';
 import 'package:ble_app/src/persistence/dao/parametersDao.dart';

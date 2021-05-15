@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
+import 'package:ble_app/src/blocs/base/ParameterAwareBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:injectable/injectable.dart';
 

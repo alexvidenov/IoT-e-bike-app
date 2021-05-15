@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/fullStatusBloc.dart';
+import 'package:ble_app/src/blocs/status/fullStatusBloc.dart';
 import 'package:ble_app/src/modules/dataClasses/fullStatusModel.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
@@ -154,17 +154,17 @@ class VoltagesBarChart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 StreamBuilder<double>(
-                    stream: _fullStatusBloc.delta1Holder.stream,
+                    stream: _fullStatusBloc.deltaHolder.stream,
                     builder: (_, model) => ProgressText(
-                        title: 'ΔV1Cell',
+                        title: 'ΔV cell',
                         content: model.connectionState == ConnectionState.active
                             ? ((model.data != null ? (model.data / 100) : '-'))
                                 .toString()
                             : '-')),
                 StreamBuilder<double>(
-                  stream: _fullStatusBloc.delta2Holder.stream,
+                  stream: _fullStatusBloc.deltaMaxHolder.stream,
                   builder: (_, model) => ProgressText(
-                    title: 'ΔV2 Cell',
+                    title: 'ΔV cell max',
                     content: model.connectionState == ConnectionState.active
                         ? ((model.data != null ? (model.data / 100) : '-'))
                             .toString()
@@ -188,9 +188,7 @@ class VoltagesBarChart extends StatelessWidget {
                       } else {
                         _chartData = _chartData
                             .map((e) => FullStatusDataModel(
-                                x: e.x,
-                                y: 0,
-                                color: Colors.transparent)) // MAP TO NULL
+                                x: e.x, y: 0, color: Colors.transparent))
                             .toList();
                       }
                       return getBarChart();

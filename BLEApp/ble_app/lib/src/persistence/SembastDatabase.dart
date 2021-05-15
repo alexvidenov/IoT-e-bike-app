@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/LocationCachingManager.dart';
+import 'package:ble_app/src/persistence/cachingManagers/LocationCachingManager.dart';
 import 'package:ble_app/src/modules/dataClasses/routeFileModel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
@@ -51,18 +51,25 @@ class SembastDatabase {
     });
   }
 
-  void updateCoordinatesRouteFile(
-      String userId, String deviceId, String fileTimeStamp,
-      {List<LatLng> coordinates, String finishedAt, num length}) {
-    _coordinatesStore.record(fileTimeStamp).put(
-        _routesDB,
-        {
-          'coordinates': coordinates.map((c) => c.toJson()).toList(),
-          'finishedAt': finishedAt,
-          'length': length
-        },
-        merge: true);
-  }
+  void updateWattPerHour(String fileTimeStamp, {double wattsPerHour}) =>
+      _coordinatesStore.record(fileTimeStamp).put(
+          _routesDB,
+          {
+            'consumed': wattsPerHour,
+          },
+          merge: true);
+
+  Future<RouteFileModel> updateCoordinatesRouteFile(
+          String userId, String deviceId, String fileTimeStamp,
+          {List<LatLng> coordinates, String finishedAt, num length}) async =>
+      RouteFileModel.fromJson(await _coordinatesStore.record(fileTimeStamp).put(
+          _routesDB,
+          {
+            'coordinates': coordinates.map((c) => c.toJson()).toList(),
+            'finishedAt': finishedAt,
+            'length': length
+          },
+          merge: true));
 
   Future<RouteFileModel> renameRecording(String userId, String deviceId,
           String fileTimeStamp, String newName) async =>

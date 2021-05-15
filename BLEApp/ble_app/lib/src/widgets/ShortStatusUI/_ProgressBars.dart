@@ -1,5 +1,5 @@
-import 'package:ble_app/src/blocs/locationBloc.dart';
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/blocs/location/locationBloc.dart';
+import 'package:ble_app/src/blocs/status/shortStatusBloc.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
@@ -146,7 +146,7 @@ class ProgressColumns extends StatelessWidget {
                   builder: (_, snapshot) {
                     if (snapshot.connectionState == ConnectionState.active) {
                       return Text(
-                        '${_calculatePercentageFromCurrentVoltage(snapshot.data.model.totalVoltage).toStringAsFixed(1)} %',
+                        '${_calculatePercentageFromCurrentVoltage(snapshot.data.model.totalVoltage).toStringAsFixed(0)} %',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,

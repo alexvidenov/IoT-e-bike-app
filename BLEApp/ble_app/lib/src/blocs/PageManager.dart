@@ -1,5 +1,5 @@
 import 'package:ble_app/main.dart';
-import 'package:ble_app/src/blocs/RxObject.dart';
+import 'package:ble_app/src/blocs/base/RxObject.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/main/status/fullStatusPage.dart';
 import 'package:ble_app/src/screens/offline/OfflineHome.dart';
@@ -23,6 +23,8 @@ import 'package:injectable/injectable.dart';
 mixin OnPagePopped {
   void onPagePop(Key pageKey);
 }
+
+enum CurrentPage { ShortStatus, FullStatus, Map }
 
 @lazySingleton
 class PageManager {

@@ -1,11 +1,11 @@
+import 'package:ble_app/src/blocs/IsSuperBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/screens/base/PageViewWidget.dart';
+import 'package:ble_app/src/screens/settings/BatterySettingsWrapper.dart';
 import 'package:ble_app/src/screens/settings/ConnectionSettingsScreen.dart';
 import 'package:ble_app/src/screens/settings/DeviceSettingsScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-
-import 'BatterySettings.dart';
 
 class SettingViewsHolder extends PageViewWidget {
   @override
@@ -47,6 +47,6 @@ class SettingViewsHolder extends PageViewWidget {
   List<Widget> get pages => [
         ConnectionSettingsScreen(),
         DeviceSettingsScreen(),
-        BatterySettingsScreen($(), $()),
+        BatterySettingsWrapper($<IsSuperBloc>().authorizedToAccessParams),
       ];
 }

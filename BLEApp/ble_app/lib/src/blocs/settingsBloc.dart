@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/RxObject.dart';
+import 'package:ble_app/src/blocs/base/RxObject.dart';
 import 'package:ble_app/src/blocs/sharedPrefsService.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';

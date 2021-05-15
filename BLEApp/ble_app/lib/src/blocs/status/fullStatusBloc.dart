@@ -1,5 +1,5 @@
 import 'package:ble_app/src/blocs/MotoHoursTracker.dart';
-import 'package:ble_app/src/blocs/StateBloc.dart';
+import 'package:ble_app/src/blocs/base/StateBloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/blocs/mixins/DeltaHolder.dart';
 import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
@@ -79,7 +79,7 @@ class FullStatusBloc extends StateBloc<FullStatus, FullLogModel>
 
     int temperature;
 
-    List<String> splitObject = rawData.split('  ');
+    final List<String> splitObject = rawData.split('  ');
     for (int i = splitObject.length - 1; i >= 0; i--) {
       List<String> splitInner = splitObject[i].split(' ');
       for (int j = 0; j < splitInner.length; j++) {
@@ -111,36 +111,29 @@ class FullStatusBloc extends StateBloc<FullStatus, FullLogModel>
       final lowestValue = fullStatus
           .reduce((value, element) => value.y < element.y ? value : element);
 
-      final diff = maxValue.y - lowestValue.y;
+      deltaCounter++;
+
       current = current / 100;
-      final threshold = getParameters().value.motoHoursCounterCurrentThreshold;
-      final delta2Threshold =
+
+      final diff = maxValue.y - lowestValue.y;
+      tempDelta += diff;
+
+      final maxDeltaThreshold =
           getParameters().value.maxTimeLimitedDischargeCurrent / 2;
-      print('delta2Threshold is $delta2Threshold');
-      print('CURRENT IS $current');
-      if (current < threshold && (current >= -0.01 && current <= 0.01)) {
-        // FIXME: find a way to optimize this without the signs..
-        delta1 += diff;
-        deltaCounter++;
-        if (deltaCounter == 4) {
-          final deltaEvent = delta1 / 4;
-          lastDelta = deltaEvent;
-          delta1Holder.addEvent(deltaEvent);
-          delta1 = 0;
-          deltaCounter = 0;
+
+      if (-current > maxDeltaThreshold) {
+        if (lastDelta > maxDelta) {
+          maxDelta = lastDelta;
+          deltaMaxHolder.addEvent(maxDelta);
         }
-      } else if (current < -delta2Threshold && current < 0) {
-        deltaCounter++;
-        print('WORKING BOY, c: $deltaCounter');
-        delta2 += diff;
-        if (deltaCounter == 4) {
-          print('ADDING DELTA2 EVENT');
-          final deltaEvent = delta2 / 4;
-          lastDelta = deltaEvent;
-          delta2Holder.addEvent(deltaEvent);
-          delta2 = 0;
-          deltaCounter = 0;
-        }
+      }
+
+      if (deltaCounter == 4) {
+        final deltaEvent = tempDelta / 4;
+        lastDelta = deltaEvent;
+        deltaHolder.addEvent(deltaEvent);
+        tempDelta = 0;
+        deltaCounter = 0;
       }
     }
 

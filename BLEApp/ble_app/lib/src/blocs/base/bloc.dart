@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/RxObject.dart';
+import 'package:ble_app/src/blocs/base/RxObject.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';

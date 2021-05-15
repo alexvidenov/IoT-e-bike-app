@@ -1,5 +1,6 @@
-import 'package:ble_app/src/blocs/locationBloc.dart';
+import 'package:ble_app/src/blocs/location/locationBloc.dart';
 import 'package:ble_app/src/screens/main/googleMaps/StatisticsDropDown.dart';
+import 'package:ble_app/src/sealedStates/LocationState.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 

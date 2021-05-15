@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/base/bloc.dart';
 import 'package:ble_app/src/screens/base/RouteLifecycleAware.dart';
 import 'package:flutter/material.dart';
 

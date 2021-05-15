@@ -3,7 +3,7 @@ import 'package:ble_app/src/widgets/ShortStatusUI/ShortStatusWidget.dart';
 import 'package:injectable/injectable.dart';
 import 'dart:async';
 
-import 'RxObject.dart';
+import 'base/RxObject.dart';
 
 enum ServiceState { LossComm, SC, ULV, Undetermined }
 

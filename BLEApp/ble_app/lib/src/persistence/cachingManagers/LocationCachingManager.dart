@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/CurrentContext.dart';
+import 'package:ble_app/src/blocs/mixins/CurrentContext.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/dataClasses/routeFileModel.dart';
 import 'package:ble_app/src/persistence/SembastDatabase.dart';
@@ -11,9 +11,13 @@ mixin LocationCachingManager on CurrentContext {
     _sembastDB.createRouteFile(curUserId, curDeviceId, initialTimeStamp);
   }
 
-  void updateCachedLocation(String fileName, List<LatLng> coordinates,
-      String finishedAt, num length) {
-    _sembastDB.updateCoordinatesRouteFile(curUserId, curDeviceId, fileName,
+  void updateWattPerHour(String fileName, double watts) =>
+      _sembastDB.updateWattPerHour(fileName, wattsPerHour: watts);
+
+  Future<RouteFileModel> updateCachedLocation(String fileName,
+      List<LatLng> coordinates, String finishedAt, num length) {
+    return _sembastDB.updateCoordinatesRouteFile(
+        curUserId, curDeviceId, fileName,
         coordinates: coordinates, finishedAt: finishedAt, length: length);
   }
 

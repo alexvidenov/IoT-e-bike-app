@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ble_app/src/blocs/RxObject.dart';
+import 'package:ble_app/src/blocs/base/RxObject.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:ble_app/src/utils/dataParser.dart';

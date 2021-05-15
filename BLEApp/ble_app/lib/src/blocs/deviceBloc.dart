@@ -14,7 +14,7 @@ class DeviceBloc {
   final BleManager _bleManager = BleManager();
   final DeviceRepository _deviceRepository;
 
-  BehaviorSubject<bool> _isDeviceReadyController; // TODO: replace with RxObject
+  BehaviorSubject<bool> _isDeviceReadyController;
 
   Stream<bool> get deviceReady => _isDeviceReadyController.stream;
 
@@ -47,11 +47,13 @@ class DeviceBloc {
 
   stopScan() => _bleManager.stopPeripheralScan();
 
-  void _observeConnectionState() => device.listen((bleDevice) => bleDevice.peripheral
+  void _observeConnectionState() => device.listen((bleDevice) => bleDevice
+      .peripheral
       .observeConnectionState(
           emitCurrentValue: true, completeOnDisconnect: false)
-      .listen((state) => _connectionEvent
-          .add(DeviceConnectionState.normalBTState(state: state)))); // FIXME: find why this thing fires CONNECTED two times
+      .listen((state) => _connectionEvent.add(DeviceConnectionState.normalBTState(
+          state:
+              state)))); // FIXME: find why this thing fires CONNECTED two times
 
   dispose() async {
     logger.wtf('Closing stream in DeviceBloc');

@@ -2,7 +2,7 @@ import 'package:ble_app/src/persistence/entities/deviceState.dart';
 import 'package:ble_app/src/persistence/entities/device.dart';
 import 'package:ble_app/src/persistence/entities/deviceParameters.dart';
 import 'package:flutter/material.dart';
-import 'package:ble_app/src/blocs/RxObject.dart';
+import 'package:ble_app/src/blocs/base/RxObject.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/persistence/LocalDatabaseManager.dart';
 import 'package:ble_app/src/persistence/entities/user.dart' as localUser;

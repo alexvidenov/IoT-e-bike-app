@@ -5,10 +5,15 @@ extension BLEScanMethods on DevicesBloc {
     await _loadDevicesFromCache(); // after loading these, ignore scanned devices that have mac that is already in the list
     _scanSubscription = _bleManager.startPeripheralScan(
         uuids: [BluetoothUtils.SERVICE_UUID]).listen((scanResult) {
+      print('SCAN RESULT NAME: ${scanResult.advertisementData.localName}');
       final bleDevice = BleDevice(peripheral: scanResult.peripheral);
       if (scanResult.advertisementData.localName != null &&
           ((bleDevices.isNotEmpty &&
-                  !(bleDevices.singleWhere((d) => d.id == bleDevice.id) !=
+                  !(bleDevices.singleWhere((d) {
+                        print(
+                            'D IN LIST ID: ${d.id}...SCANNED ID: ${bleDevice.id}');
+                        return d.id == bleDevice.id;
+                      }) !=
                       null)) ||
               bleDevices.isEmpty)) {
         print("adding scanned devices");
@@ -28,6 +33,9 @@ extension BLEScanMethods on DevicesBloc {
           .where((e) => e.id != null)
           .toList();
       print("adding cached devices");
+      cachedDevices.forEach((element) {
+        print('${element.name} : ${element.id}');
+      });
       bleDevices.addAll(cachedDevices);
       _visibleDevicesController.add(bleDevices.sublist(0));
     }

@@ -1,5 +1,5 @@
-import 'package:ble_app/src/blocs/RxObject.dart';
-import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
+import 'package:ble_app/src/blocs/base/RxObject.dart';
+import 'package:ble_app/src/blocs/base/ParameterAwareBloc.dart';
 import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/services/Storage.dart';
 import 'package:injectable/injectable.dart';
