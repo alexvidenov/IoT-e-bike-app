@@ -22,9 +22,9 @@ class Speedometer extends StatelessWidget {
                     labelOffset: 15,
                     axisLineStyle: AxisLineStyle(
                         thicknessUnit: GaugeSizeUnit.factor,
-                        thickness: 0.15,
+                        thickness: 0.2,
                         color: Color.fromARGB(100, 107, 97, 97)),
-                    radiusFactor: 0.9,
+                    radiusFactor: 0.85,
                     minimum: 0,
                     showTicks: false,
                     maximum: 70,

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/devicesBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/prefs/settingsBloc.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';

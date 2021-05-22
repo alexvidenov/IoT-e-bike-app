@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/prefs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 
 import 'package:ble_app/src/sealedStates/btAuthState.dart';

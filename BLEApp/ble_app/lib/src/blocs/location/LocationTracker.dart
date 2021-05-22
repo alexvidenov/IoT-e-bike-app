@@ -54,15 +54,16 @@ class LocationTracker with CurrentContext, LocationCachingManager {
     createCoordinatesFile(_currentFilename);
   }
 
-  Future<RouteFileModel> stopRecording() {
+  Future<RouteFileModel> stopRecording() async {
     isRecordingRx.addEvent(false);
-    _visibleCoordinates.clear();
-    return updateCachedLocation(
+    final model = await updateCachedLocation(
         _currentFilename,
         _visibleCoordinates,
         Jiffy().yMMMdjm,
         num.parse((SphericalUtil.computeLength(visibleCoords) / 1000)
             .toStringAsFixed(3)));
+    _visibleCoordinates.clear();
+    return model;
   }
 
   Future<RouteFileModel> renameFile(String fileName,

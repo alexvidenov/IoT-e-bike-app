@@ -15,7 +15,7 @@ import 'package:ble_app/src/services/Auth.dart';
 import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/prefs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/widgets/drawer/navigationDrawer.dart';
 import 'package:flutter/services.dart';

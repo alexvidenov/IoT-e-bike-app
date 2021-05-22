@@ -3,7 +3,7 @@ import 'package:ble_app/src/screens/base/KeepAliveWidget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/prefs/settingsBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 
 abstract class BaseSettingScreen extends KeepAliveWidget {

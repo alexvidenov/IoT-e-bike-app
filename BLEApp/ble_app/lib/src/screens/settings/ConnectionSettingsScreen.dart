@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/prefs/settingsBloc.dart';
 import 'package:ble_app/src/screens/base/BaseSettingScreen.dart';
 import 'package:flutter/material.dart';
 

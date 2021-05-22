@@ -1,6 +1,6 @@
 import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/authBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/prefs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/sealedStates/authState.dart';
 import 'package:flutter/material.dart';

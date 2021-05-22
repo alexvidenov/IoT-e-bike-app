@@ -122,7 +122,7 @@ class LocationBloc extends Bloc<LocationState, LocationData>
                           points: _locationTracker.visibleCoords,
                           width: 8)
                     ]
-                  : [])));
+                  : const [])));
         }
       });
     } on PlatformException catch (e) {

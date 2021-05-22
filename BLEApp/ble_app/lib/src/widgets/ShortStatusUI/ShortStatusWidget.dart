@@ -89,7 +89,7 @@ class ShortStatusUI extends StatelessWidget {
                     shortStatusBloc: _shortStatusBloc,
                     locationBloc: _locationBloc),
                 const SizedBox(
-                  height: 70,
+                  height: 40,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,

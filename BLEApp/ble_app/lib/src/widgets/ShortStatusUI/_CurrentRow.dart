@@ -82,8 +82,7 @@ class CurrentRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    width: MediaQuery.of(context).size.width *
-                        0.4, // experimental values
+                    width: MediaQuery.of(context).size.width * 0.4,
                     height: 20,
                     decoration: const BoxDecoration(
                         color: Colors.black26,

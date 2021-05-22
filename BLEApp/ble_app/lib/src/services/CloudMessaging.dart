@@ -108,7 +108,5 @@ class CloudMessaging {
       },
       onBackgroundMessage: backgroundMessageHandler);
 
-  // TODO: request permissions
-
   Future<String> getToken() async => await _fcm.getToken();
 }
