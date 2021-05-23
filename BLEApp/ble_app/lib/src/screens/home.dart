@@ -4,11 +4,9 @@ import 'package:ble_app/src/blocs/IsSuperBloc.dart';
 import 'package:ble_app/src/blocs/OutputControlBloc.dart';
 import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/status/shortStatusBloc.dart';
-import 'package:ble_app/src/blocs/status/fullStatusBloc.dart';
 import 'package:ble_app/src/blocs/location/locationBloc.dart';
 import 'package:ble_app/src/repositories/DeviceRepository.dart';
 import 'package:ble_app/src/screens/base/PageViewWidget.dart';
-import 'package:ble_app/src/screens/main/status/fullStatusPage.dart';
 import 'package:ble_app/src/screens/main/googleMaps/googleMapsPage.dart';
 import 'package:ble_app/src/sealedStates/deviceConnectionState.dart';
 import 'package:ble_app/src/services/Auth.dart';
@@ -43,13 +41,14 @@ class Home extends PageViewWidget {
   final IsSuperBloc _navDrawerBloc;
 
   const Home(
-      this._prefsBloc,
-      this._deviceBloc,
-      this._repository,
-      this._controlBloc,
-      this._shortStatusBloc,
-      this._locationBloc,
-      this._navDrawerBloc);
+    this._prefsBloc,
+    this._deviceBloc,
+    this._repository,
+    this._controlBloc,
+    this._shortStatusBloc,
+    this._locationBloc,
+    this._navDrawerBloc,
+  );
 
   @override
   AppBar buildAppBar(BuildContext context) {
@@ -145,14 +144,19 @@ class Home extends PageViewWidget {
   @override
   List<Widget> get pages => [
         DeviceScreen(_shortStatusBloc, _locationBloc),
-        MapPage(_locationBloc, false),
+        MapPage(
+          _locationBloc,
+          false,
+        ),
       ];
 
   @override
   PageViewWidgetState<PageViewWidget> createState() => _HomeState();
 }
 
-class _HomeState extends PageViewWidgetState<Home> {
+class _HomeState extends PageViewWidgetState<Home>
+    with OnShouldLockPageViewScroll {
+  // THIS MIXIN SHOULD BE DELEGATED THROUGH THE LOCATION BLOC SOMEHOW. (IN INIT STATE HERE, SETUP LISTENER)
   bool _hasDisconnected = false;
 
   bool _isDisconnectManual = false;
@@ -249,6 +253,13 @@ class _HomeState extends PageViewWidgetState<Home> {
           false);
 
   @override
+  void shouldScroll(bool shouldScroll) {
+    if (mounted) {
+      refreshWithShouldScroll(shouldScroll: shouldScroll);
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
     widget._controlBloc.create();
@@ -256,6 +267,7 @@ class _HomeState extends PageViewWidgetState<Home> {
         .create(); // Necessary cuz we don't get the PageView callback at first.
     widget._shortStatusBloc.resume();
     widget._locationBloc.create();
+    widget._locationBloc.onShouldLockPageViewScroll = this;
     _setOrientation();
   }
 

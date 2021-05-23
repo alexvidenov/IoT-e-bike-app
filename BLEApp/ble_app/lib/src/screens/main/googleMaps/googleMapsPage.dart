@@ -1,4 +1,5 @@
 import 'package:ble_app/src/blocs/location/locationBloc.dart';
+import 'package:ble_app/src/screens/base/PageViewWidget.dart';
 import 'package:ble_app/src/screens/main/googleMaps/StatisticsDropDown.dart';
 import 'package:ble_app/src/sealedStates/LocationState.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class MapPage extends StatefulWidget {
   final LocationBloc _locationBloc;
   final bool _isOffline;
 
-  MapPage(this._locationBloc, this._isOffline);
+  const MapPage(this._locationBloc, this._isOffline);
 
   @override
   _MapPageState createState() => _MapPageState();
@@ -129,15 +130,14 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                       child: Padding(
                         padding: EdgeInsets.only(right: 10),
                         child: IconButton(
-                          icon: Icon(
-                            Icons.clear,
-                            size: 60,
+                            icon: Icon(
+                              Icons.clear,
+                              size: 60,
+                              color: Colors.red,
+                            ),
                             color: Colors.red,
-                          ),
-                          color: Colors.red,
-                          onPressed: () =>
-                              widget._locationBloc.removeVisibleCachedRoute(),
-                        ),
+                            onPressed: () => widget._locationBloc
+                                .removeVisibleCachedRoute()),
                       ),
                     )
                   : Container();

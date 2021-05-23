@@ -20,7 +20,7 @@ class WattMeter extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.55,
             child: SfRadialGauge(
               enableLoadingAnimation: true,
-              animationDuration: 500,
+              animationDuration: 330,
               axes: <RadialAxis>[
                 _CustomAxis(
                     labelOffset: 15,
@@ -31,17 +31,17 @@ class WattMeter extends StatelessWidget {
                     radiusFactor: 0.95,
                     minimum: 0,
                     showTicks: false,
-                    maximum: _shortStatusBloc.totalPower,
+                    maximum: _shortStatusBloc.totalPower * 10,
                     pointers: [
                       RangePointer(
                           value: ((snapshot.data.model.current *
                                   snapshot.data.model.totalVoltage) *
-                              -1),
+                              -10),
                           width: 0.07,
                           sizeUnit: GaugeSizeUnit.factor,
-                          animationDuration: 500,
+                          animationDuration: 330,
                           color: Colors.deepPurple,
-                          animationType: AnimationType.easeOutBack,
+                          animationType: AnimationType.ease,
                           enableAnimation: true)
                     ])
               ],
@@ -67,6 +67,7 @@ class _CustomAxis extends RadialAxis {
   }) : super(
           pointers: pointers ?? <GaugePointer>[],
           minimum: minimum,
+          interval: 10,
           maximum: maximum,
           showTicks: showTicks ?? true,
           showLabels: false,

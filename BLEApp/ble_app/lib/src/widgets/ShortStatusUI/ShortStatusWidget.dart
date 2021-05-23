@@ -108,31 +108,38 @@ class ShortStatusUI extends StatelessWidget {
                                 -snapshot.data.model.current >
                                     _shortStatusBloc.currentParams
                                         .motoHoursCounterCurrentThreshold) {
-                              text = (watts / currentSpeed).toStringAsFixed(1) +
-                                  'Wh/km';
+                              text = (watts / currentSpeed).toStringAsFixed(1);
                             } else
                               text = ' - ';
                             return ProgressText(
-                                title: 'Inst Cons', content: text);
+                              title: 'Inst Cons',
+                              content: text,
+                              measurementUnit: 'wh / km',
+                            );
                           } else
                             return ProgressText(
-                                title: 'Inst Cons', content: ' - ');
+                              title: 'Inst Cons',
+                              content: ' - ',
+                              measurementUnit: 'wh / km',
+                            );
                         }),
                     const Divider(),
                     StreamBuilder<double>(
                       stream: _locationBloc.kilometres,
                       builder: (_, snapshot) => ProgressText(
-                          title: 'Trip Dist',
-                          content:
-                              snapshot.connectionState == ConnectionState.active
-                                  ? ((snapshot.data / 1000).toStringAsFixed(2) +
-                                      'km')
-                                  : ' - '),
+                        title: 'Trip Dist',
+                        content:
+                            snapshot.connectionState == ConnectionState.active
+                                ? ((snapshot.data / 1000).toStringAsFixed(2))
+                                : ' - ',
+                        measurementUnit: 'km',
+                      ),
                     ),
                     const Divider(),
                     ProgressText(
                       title: "Rem Dist",
-                      content: "20 km",
+                      content: "20",
+                      measurementUnit: 'km',
                     ) // this
                   ],
                 )

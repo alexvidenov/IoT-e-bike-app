@@ -2,6 +2,10 @@ import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
+mixin OnShouldLockPageViewScroll {
+  void shouldScroll(bool shouldScroll);
+}
+
 abstract class PageViewWidget extends StatefulWidget {
   List<Widget> get pages;
 
@@ -26,6 +30,8 @@ class PageViewWidgetState<T extends PageViewWidget> extends State<T> {
 
   final pageController = PageController();
 
+  bool _shouldScroll = true;
+
   List<Widget> _cachedWidgets = [];
 
   void _pageChanged(int index) {
@@ -33,7 +39,13 @@ class PageViewWidgetState<T extends PageViewWidget> extends State<T> {
     setState(() => _currentTab = index);
   }
 
+  void refreshWithShouldScroll({bool shouldScroll}) =>
+      setState(() => _shouldScroll = shouldScroll);
+
   Widget _buildPageView() => PageView.builder(
+        physics: _shouldScroll
+            ? const ScrollPhysics()
+            : const NeverScrollableScrollPhysics(),
         scrollDirection: Axis.horizontal,
         controller: pageController,
         onPageChanged: (index) => _pageChanged(index),
@@ -109,4 +121,7 @@ class PageViewWidgetState<T extends PageViewWidget> extends State<T> {
   StreamListener listener<T>(Widget child) => null;
 
   Future<bool> onWillPop(BuildContext context) => Future.value(true);
+
+  @override
+  void shouldScroll(bool shouldScroll) {}
 }

@@ -9,7 +9,7 @@ class IsSuperBloc with CurrentContext {
   const IsSuperBloc(this._db);
 
   Stream<bool> get authorizedToAccessParams =>
-      _db.fetchDeviceAsStream().map((d) => d.isSuper);
+      _db.fetchDeviceAsStream().map((d) => !d.isSuper);
 
   bool get isAnonymous => anonymous;
 }

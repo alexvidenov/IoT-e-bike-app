@@ -15,11 +15,9 @@ mixin LocationCachingManager on CurrentContext {
       _sembastDB.updateWattPerHour(fileName, wattsPerHour: watts);
 
   Future<RouteFileModel> updateCachedLocation(String fileName,
-      List<LatLng> coordinates, String finishedAt, num length) {
-    return _sembastDB.updateCoordinatesRouteFile(
-        curUserId, curDeviceId, fileName,
-        coordinates: coordinates, finishedAt: finishedAt, length: length);
-  }
+          List<LatLng> coordinates, String finishedAt, num length) =>
+      _sembastDB.updateCoordinatesRouteFile(curUserId, curDeviceId, fileName,
+          coordinates: coordinates, finishedAt: finishedAt, length: length);
 
   Future<RouteFileModel> renameCachedLocation(
           String fileTimeStamp, String newFileName) async =>

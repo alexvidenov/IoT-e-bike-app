@@ -3,6 +3,7 @@ import 'package:ble_app/src/blocs/WattCollector.dart';
 import 'package:ble_app/src/blocs/location/LocationTracker.dart';
 import 'package:ble_app/src/blocs/base/RxObject.dart';
 import 'package:ble_app/src/modules/dataClasses/routeFileModel.dart';
+import 'package:ble_app/src/screens/base/PageViewWidget.dart';
 import 'package:ble_app/src/sealedStates/LocationState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,8 @@ import 'package:rxdart/rxdart.dart';
 class LocationBloc extends Bloc<LocationState, LocationData>
     with OnWattHoursCalculated {
   final Location _location = Location();
+
+  OnShouldLockPageViewScroll onShouldLockPageViewScroll;
 
   final LocationTracker _locationTracker;
   final WattCollector _wattCollector;
@@ -167,6 +170,7 @@ class LocationBloc extends Bloc<LocationState, LocationData>
     currentRouteSelected.addEvent(file);
     final coords = file.coordinates;
     if (coords.isNotEmpty) {
+      onShouldLockPageViewScroll?.shouldScroll(false);
       _locationTracker.loadCoordinates(coords);
       addEvent(LocationState(null,
           polylines: Set.of([
@@ -183,8 +187,9 @@ class LocationBloc extends Bloc<LocationState, LocationData>
     }
   }
 
-  void removeVisibleCachedRoute() {
+  void removeVisibleCachedRoute({bool calledFromDispose = false}) {
     _locationTracker.clearLoadedCoordinates();
+    if (!calledFromDispose) onShouldLockPageViewScroll?.shouldScroll(true);
     addEvent(LocationState(null, polylines: Set.of([])));
   }
 
@@ -201,7 +206,7 @@ class LocationBloc extends Bloc<LocationState, LocationData>
   @override
   dispose() {
     logger.wtf('Closing stream in Location Bloc');
-    removeVisibleCachedRoute();
+    removeVisibleCachedRoute(calledFromDispose: true);
     _locationTracker.disposeTimer();
     super.dispose();
   }
