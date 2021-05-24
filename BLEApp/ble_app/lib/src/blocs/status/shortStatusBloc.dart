@@ -46,7 +46,7 @@ class ShortStatusBloc extends StateBloc<ShortStatus, ShortLogmodel>
   @override
   create() {
     logger.wtf('CREATING IN SHORT STATUS BLOC');
-    _wattCollector.onTrackStarted = this;
+    _wattCollector?.onTrackStarted = this;
     loadData();
     streamSubscription = _repository.characteristicValueStream.listen((event) {
       if ('${event[1]}' == '1') {
@@ -94,15 +94,18 @@ class ShortStatusBloc extends StateBloc<ShortStatus, ShortLogmodel>
   void onTrackStarted() {
     _shouldCollectWatts = true;
     _wattCollectionTimer = Timer.periodic(Duration(minutes: 1), (_) {
-      _wattCollector.watts +=
-          (_collectedWatts.reduce((a, b) => a + b) / _collectedWatts.length);
+      if (_collectedWatts.isNotEmpty) {
+        _wattCollector.watts +=
+            (_collectedWatts.reduce((a, b) => a + b) / _collectedWatts.length);
+        _collectedWatts.clear();
+      }
     });
   }
 
   @override
-  void onTrackFinished(double hours) {
+  void onTrackFinished(double minutes) {
     _shouldCollectWatts = false;
-    final wattsPerHour = _wattCollector.watts / hours;
+    final wattsPerHour = _wattCollector.watts / minutes;
     _wattCollector.onWattHoursCalculated.onWattHoursCalculated(wattsPerHour);
     _collectedWatts.clear();
     _wattCollector.watts = 0;

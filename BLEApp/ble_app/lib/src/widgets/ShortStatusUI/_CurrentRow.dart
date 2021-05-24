@@ -37,52 +37,59 @@ class CurrentRow extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.2,
-                    height: 20,
-                    decoration: const BoxDecoration(
-                        color: Colors.black26,
-                        shape: BoxShape.rectangle,
-                        boxShadow: const [
-                          BoxShadow(
-                              color: Colors.white,
-                              blurRadius: 5.0,
-                              spreadRadius: 5.0),
-                        ]),
-                    child: RotatedBox(
-                      quarterTurns: 2,
-                      child: FAProgressBar(
-                        currentValue: current > 0 ? (current * 10).toInt() : 0,
-                        size: 50,
-                        maxValue: (bloc
-                                    .getParameters()
-                                    .value
-                                    .maxCutoffChargeCurrent * // abstract in value instead of calculating it every time
-                                10)
-                            .toInt(),
-                        backgroundColor: Colors.black,
-                        progressColor: CCColor,
-                        animatedDuration: const Duration(milliseconds: 300),
-                        direction: Axis.horizontal,
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      height: 20,
+                      decoration: const BoxDecoration(
+                          color: Colors.black26,
+                          shape: BoxShape.rectangle,
+                          boxShadow: const [
+                            BoxShadow(
+                                color: Colors.white,
+                                blurRadius: 5.0,
+                                spreadRadius: 5.0),
+                          ]),
+                      child: RotatedBox(
+                        quarterTurns: 2,
+                        child: FAProgressBar(
+                          currentValue:
+                              current > 0 ? (current * 10).toInt() : 0,
+                          size: 50,
+                          maxValue: (bloc
+                                      .getParameters()
+                                      .value
+                                      .maxCutoffChargeCurrent * // abstract in value instead of calculating it every time
+                                  10)
+                              .toInt(),
+                          backgroundColor: Colors.black,
+                          progressColor: CCColor,
+                          animatedDuration: const Duration(milliseconds: 300),
+                          direction: Axis.horizontal,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
                   const Text("Chg",
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       style: TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25.0,
+                          fontSize: 20.0,
                           letterSpacing: 1.5)),
+                  const SizedBox(height: 10),
                 ],
               ),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.4,
+                    width: MediaQuery.of(context).size.width / 2,
                     height: 20,
                     decoration: const BoxDecoration(
                         color: Colors.black26,
@@ -117,32 +124,44 @@ class CurrentRow extends StatelessWidget {
                       direction: Axis.horizontal,
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
                   Row(
                     children: <Widget>[
-                      Text((current).toStringAsFixed(2) + 'A',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25.0,
-                              letterSpacing: 1.5,
-                              fontFamily: 'Europe_Ext')),
-                      const SizedBox(
-                        width: 20,
+                      Padding(
+                        padding: const EdgeInsets.only(right: 50),
+                        child: Row(
+                          children: [
+                            Text((current).toStringAsFixed(2),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 30.0,
+                                    letterSpacing: 1.5,
+                                    fontFamily: 'Europe_Ext')),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            const Text('A',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25.0,
+                                    letterSpacing: 1.5,
+                                    fontFamily: 'Europe_Ext')),
+                          ],
+                        ),
                       ),
-                      const Text(
+                      Text(
                         "Dch",
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         style: TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25.0,
+                            fontSize: 20.0,
                             letterSpacing: 1.5,
                             fontFamily: 'Europe_Ext'),
-                      )
+                      ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ],

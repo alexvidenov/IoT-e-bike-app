@@ -7,10 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:ble_app/src/blocs/location/locationBloc.dart';
 import 'package:ble_app/src/blocs/status/shortStatusBloc.dart';
 import 'package:ble_app/src/widgets/progressBars/speedometer.dart';
-import 'package:ble_app/src/widgets/ShortStatusUI/_CurrentRow.dart';
-import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 
 import '../progressBars/speedometer.dart';
+import '_CurrentRow.dart';
 
 class SpeedometerWithCurrent extends StatelessWidget {
   final LocationBloc locationBloc;
@@ -48,7 +47,7 @@ class SpeedometerWithCurrent extends StatelessWidget {
                           Text('${power.truncate()}',
                               style: TextStyle(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.bold,
                                   fontSize: 50)),
                           const SizedBox(
                             width: 10,
@@ -82,12 +81,12 @@ class SpeedometerWithCurrent extends StatelessWidget {
                                 Text('${speed[0]}' + '${speed[1]}',
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.bold,
                                         fontSize: 56)),
                                 Text('${speed[2]}',
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.bold,
                                         fontSize: 30))
                               ],
                             );
@@ -95,14 +94,13 @@ class SpeedometerWithCurrent extends StatelessWidget {
                       const Text('km/h',
                           style: TextStyle(
                               color: Colors.white,
-                              fontWeight: FontWeight.w300,
+                              fontWeight: FontWeight.normal,
                               fontSize: 25)),
                     ],
                   ))
             ],
           ),
           const SizedBox(height: 30,),
-          CurrentRow(bloc: this.shortStatusBloc),
         ],
       );
 }

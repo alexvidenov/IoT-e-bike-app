@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 mixin OnTrackStarted {
   void onTrackStarted();
 
-  void onTrackFinished(double trackedHours);
+  void onTrackFinished(double trackedMinutes);
 }
 
 mixin OnWattHoursCalculated {

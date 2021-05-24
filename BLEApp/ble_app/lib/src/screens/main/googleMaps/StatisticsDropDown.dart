@@ -106,50 +106,65 @@ class _StatisticsDropDownState extends State<StatisticsDropDown>
                             offset: Offset(0, 4))
                       ],
                     ),
-                    child: Column(
-                      children: [
-                        _buildSingleStatistic(
-                          title: widget._routeFileModel?.name ?? '',
-                        ),
-                        Divider(
-                          color: Colors.grey.shade300,
-                          height: 1,
-                        ),
-                        _buildSingleStatistic(
-                          title: widget._routeFileModel?.startedAt ?? '',
-                        ),
-                        Divider(
-                          color: Colors.grey.shade300,
-                          height: 1,
-                        ),
-                        _buildSingleStatistic(
-                          title: widget._routeFileModel?.finishedAt ?? '',
-                        ),
-                        Divider(
-                          color: Colors.grey.shade300,
-                          height: 1,
-                        ),
-                        _buildSingleStatistic(
-                            title:
-                                widget._routeFileModel?.consumed?.toString() ??
+                    child: widget._routeFileModel != null
+                        ? Column(
+                            children: [
+                              _buildSingleStatistic(
+                                description: 'Route name',
+                                title: widget._routeFileModel.name ?? '',
+                              ),
+                              Divider(
+                                color: Colors.grey.shade300,
+                                height: 1,
+                              ),
+                              _buildSingleStatistic(
+                                description: 'Start time',
+                                title: widget._routeFileModel.startedAt ?? '',
+                              ),
+                              Divider(
+                                color: Colors.grey.shade300,
+                                height: 1,
+                              ),
+                              _buildSingleStatistic(
+                                description: 'Stop time',
+                                title: widget._routeFileModel.finishedAt ?? '',
+                              ),
+                              Divider(
+                                color: Colors.grey.shade300,
+                                height: 1,
+                              ),
+                              _buildSingleStatistic(
+                                description: 'Track length',
+                                title:
+                                    (widget._routeFileModel.length.toString() +
+                                            ' km') ??
+                                        '',
+                              ),
+                              Divider(
+                                color: Colors.grey.shade300,
+                                height: 1,
+                              ),
+                              _buildSingleStatistic(
+                                description: 'Consumed power',
+                                title: (widget._routeFileModel.consumed
+                                            .toString() +
+                                        ' wh') ??
                                     '',
-                            description: 'Consumed power'),
-                        Divider(
-                          color: Colors.grey.shade300,
-                          height: 1,
-                        ),
-                        _buildSingleStatistic(
-                            title: widget._routeFileModel?.length?.toString() ??
-                                '',
-                            description: 'Track length'),
-                      ],
-                    ))),
+                              ),
+                            ],
+                          )
+                        : Center(
+                            child: Text(
+                              'No route loaded',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ))),
           ],
         ),
       );
 
   Widget _buildSingleStatistic({String title, String description}) => Padding(
-        padding: const EdgeInsets.only(left: 26.0, top: 5, bottom: 5),
+        padding: const EdgeInsets.only(left: 20.0, top: 5, bottom: 5),
         child: Row(
           children: <Widget>[
             Expanded(
@@ -166,7 +181,7 @@ class _StatisticsDropDownState extends State<StatisticsDropDown>
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w400,
-                              fontSize: 14),
+                              fontSize: 15),
                           maxLines: 3,
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.ellipsis),
@@ -174,7 +189,7 @@ class _StatisticsDropDownState extends State<StatisticsDropDown>
                         style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w400,
-                            fontSize: 14),
+                            fontSize: 20),
                         maxLines: 3,
                         textAlign: TextAlign.start,
                         overflow: TextOverflow.ellipsis),

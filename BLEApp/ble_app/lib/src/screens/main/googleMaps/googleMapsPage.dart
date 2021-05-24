@@ -152,7 +152,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                 heightFactor: 1.0,
                 alignment: Alignment.topLeft,
                 child: Container(
-                    width: MediaQuery.of(context).size.width * 0.4,
+                    width: MediaQuery.of(context).size.width * 0.5,
                     child: Padding(
                       padding: EdgeInsets.only(top: 10, left: 10),
                       child: StatisticsDropDown(snapshot.data),

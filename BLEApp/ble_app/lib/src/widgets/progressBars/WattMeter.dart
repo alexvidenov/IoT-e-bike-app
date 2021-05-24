@@ -27,7 +27,7 @@ class WattMeter extends StatelessWidget {
                     axisLineStyle: AxisLineStyle(
                         thicknessUnit: GaugeSizeUnit.factor,
                         thickness: 0.06,
-                        color: Color.fromARGB(100, 107, 97, 97)),
+                        color: const Color.fromARGB(100, 107, 97, 97)),
                     radiusFactor: 0.95,
                     minimum: 0,
                     showTicks: false,
@@ -36,11 +36,11 @@ class WattMeter extends StatelessWidget {
                       RangePointer(
                           value: ((snapshot.data.model.current *
                                   snapshot.data.model.totalVoltage) *
-                              -10),
+                              -10).abs(),
                           width: 0.07,
                           sizeUnit: GaugeSizeUnit.factor,
                           animationDuration: 330,
-                          color: Colors.deepPurple,
+                          color: Color.fromARGB(255, 255, 253, 0),
                           animationType: AnimationType.ease,
                           enableAnimation: true)
                     ])

@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 
 class ProgressText extends StatelessWidget {
   final String title, content, measurementUnit;
+  final bool compact;
 
-  const ProgressText({this.title, this.content, this.measurementUnit});
+  const ProgressText({
+    @required this.title,
+    this.content,
+    this.measurementUnit,
+    this.compact = false,
+  });
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -20,15 +26,15 @@ class ProgressText extends StatelessWidget {
                   fontFamily: 'Europe_Ext'),
             ),
             Text(
-              content,
+              content ?? '',
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 47.0,
+                  fontSize: compact ? 25.0 : 47.0,
                   fontFamily: 'Europe_Ext'),
             ),
             Text(
-              measurementUnit,
+              measurementUnit ?? '',
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w400,

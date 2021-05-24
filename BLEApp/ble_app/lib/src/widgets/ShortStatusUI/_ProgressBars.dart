@@ -45,7 +45,7 @@ class ProgressColumns extends StatelessWidget {
                                       .toInt()
                                       .toString(),
                                   style: TextStyle(
-                                      fontWeight: FontWeight.normal,
+                                      fontWeight: FontWeight.bold,
                                       fontSize: 28,
                                       color: Colors.white));
                             } else
@@ -70,7 +70,6 @@ class ProgressColumns extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
                     fontSize: 20.0,
                     fontFamily: 'Europe_Ext'),
               ),
@@ -79,7 +78,6 @@ class ProgressColumns extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
                     fontSize: 20.0,
                     fontFamily: 'Europe_Ext'),
               ),
@@ -110,7 +108,7 @@ class ProgressColumns extends StatelessWidget {
                               return Text(
                                 voltageText,
                                 style: TextStyle(
-                                    fontWeight: FontWeight.normal,
+                                    fontWeight: FontWeight.bold,
                                     fontSize: 28,
                                     color: Colors.white),
                               );
@@ -137,8 +135,8 @@ class ProgressColumns extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
                     fontSize: 20.0,
+                    fontWeight: FontWeight.normal,
                     fontFamily: 'Europe_Ext'),
               ),
               StreamBuilder<StatusState<ShortStatus>>(

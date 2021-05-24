@@ -15,9 +15,9 @@ class LastRoutesHeader extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text("Saved routes",
+          const Text("Saved routes",
               style: TextStyle(fontSize: 22, color: Colors.black45)),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Container(
             height: 24,
             width: 24,

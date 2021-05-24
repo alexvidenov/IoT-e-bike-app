@@ -7,6 +7,7 @@ import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 
 import '_BottomProgressText.dart';
+import '_CurrentRow.dart';
 import '_ProgressBars.dart';
 
 class ServiceNotification extends Notification {
@@ -30,7 +31,7 @@ class ShortStatusUI extends StatelessWidget {
           SliverFillRemaining(
             hasScrollBody: false,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 StreamListener<ServiceNotification>(
                   stream: _shortStatusBloc.serviceRx.stream,
@@ -88,6 +89,7 @@ class ShortStatusUI extends StatelessWidget {
                 ProgressColumns(
                     shortStatusBloc: _shortStatusBloc,
                     locationBloc: _locationBloc),
+                CurrentRow(bloc: _shortStatusBloc),
                 const SizedBox(
                   height: 40,
                 ),
@@ -112,7 +114,7 @@ class ShortStatusUI extends StatelessWidget {
                             } else
                               text = ' - ';
                             return ProgressText(
-                              title: 'Inst Cons',
+                              title: 'Inst. Cons',
                               content: text,
                               measurementUnit: 'wh / km',
                             );

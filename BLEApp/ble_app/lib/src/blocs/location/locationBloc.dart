@@ -189,6 +189,7 @@ class LocationBloc extends Bloc<LocationState, LocationData>
 
   void removeVisibleCachedRoute({bool calledFromDispose = false}) {
     _locationTracker.clearLoadedCoordinates();
+    currentRouteSelected.addEvent(null);
     if (!calledFromDispose) onShouldLockPageViewScroll?.shouldScroll(true);
     addEvent(LocationState(null, polylines: Set.of([])));
   }
