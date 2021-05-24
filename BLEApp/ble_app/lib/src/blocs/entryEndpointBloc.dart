@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:ble_app/src/blocs/devicesBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/prefs/settingsBloc.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
 
-import 'bloc.dart';
+import 'base/bloc.dart';
 
 part 'blocExtensions/DetermineEndpoint.dart';
 
@@ -32,5 +32,5 @@ class EntryEndpointBloc extends Bloc<Endpoint, Endpoint> {
   create() => _determineEndpoint();
 
   @override
-  pause() => _devicePickedSubscription.cancel();
+  pause() => _devicePickedSubscription?.cancel();
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/blocs/status/shortStatusBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 

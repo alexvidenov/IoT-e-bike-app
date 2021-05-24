@@ -1,5 +1,5 @@
-import 'package:ble_app/src/blocs/CurrentContext.dart';
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/mixins/CurrentContext.dart';
+import 'package:ble_app/src/blocs/base/bloc.dart';
 import 'package:ble_app/src/services/Database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';

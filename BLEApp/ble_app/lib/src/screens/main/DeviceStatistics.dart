@@ -45,29 +45,48 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
           children: [
             StreamBuilder<List<bool>>(
               stream: widget._deviceStatisticsBloc.toggleButtonsStateRx.stream,
-              initialData: [true, true, true],
+              initialData:
+                  widget._deviceStatisticsBloc.toggleButtonsStateRx.value,
               builder: (_, snapshot) {
                 if (snapshot.connectionState == ConnectionState.active) {
                   return ToggleButtons(
-                    selectedColor: Colors.redAccent,
+                    borderWidth: 5,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(25),
+                        bottomRight: Radius.circular(25)),
+                    color: Colors.greenAccent,
+                    selectedColor: Colors.amberAccent,
+                    fillColor: Colors.purple,
+                    splashColor: Colors.lightBlue,
+                    highlightColor: Colors.lightBlue,
+                    borderColor: Colors.white,
                     disabledColor: Colors.blueGrey,
+                    disabledBorderColor: Colors.blueGrey,
+                    focusColor: Colors.red,
                     children: [
                       Text(
-                        'Voltage',
+                        '   V   ',
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
-                        'Current',
+                        '   Ch   ',
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
-                        'Temperature',
+                        '   Dch   ',
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        '   T   ',
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.w700,
@@ -96,6 +115,9 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
                 builder: (_, snapshot) {
                   if (snapshot.connectionState == ConnectionState.active) {
                     _chartData = snapshot.data.logs;
+                    _chartData.forEach((element) {
+                      print(element.toJson().toString());
+                    });
                     return _getDefaultLineChart(
                         interval: 5, types: snapshot.data.types);
                   } else
@@ -246,28 +268,49 @@ class _DeviceStatisticsScreenState extends State<DeviceStatisticsScreen> {
                 height: 10,
                 width: 10,
                 markerVisibility: TrackballVisibilityMode.visible)),
+        zoomPanBehavior: ZoomPanBehavior(
+            enablePinching: true,
+            enableSelectionZooming: true,
+            enablePanning: true),
       );
 
   List<SplineSeries<LogModel, DateTime>> _getDefaultLineSeries(
           {List<StatisticsType> types}) =>
-      types
-          .map(
-            (e) => SplineSeries<LogModel, DateTime>(
-                dataSource: _chartData,
-                xValueMapper: (LogModel model, _) =>
-                    DateTime.parse(model.timeStamp),
-                yValueMapper: (LogModel model, _) {
-                  switch (e) {
-                    case StatisticsType.Voltage:
-                      return model.voltage;
-                    case StatisticsType.Current:
-                      return model.current;
-                    case StatisticsType.Temperature:
-                      return model.temp;
-                    default:
-                      return 0.0;
-                  }
-                }),
-          )
-          .toList();
+      types.map((e) {
+        Color color;
+        switch (e) {
+          case StatisticsType.Voltage:
+            color = Colors.red;
+            break;
+          case StatisticsType.Charge:
+            color = Colors.green;
+            break;
+          case StatisticsType.Discharge:
+            color = Colors.lightBlueAccent;
+            break;
+          case StatisticsType.Temperature:
+            color = Colors.orange;
+            break;
+        }
+        return SplineSeries<LogModel, DateTime>(
+            dataSource: _chartData,
+            xValueMapper: (model, _) => DateTime.parse(model.timeStamp),
+            yValueMapper: (model, _) {
+              switch (e) {
+                case StatisticsType.Voltage:
+                  return model.voltage;
+                case StatisticsType.Charge:
+                  final current = model.current;
+                  return current > 0 ? current : 0.0;
+                case StatisticsType.Discharge:
+                  final current = model.current;
+                  return current < 0 ? -current : 0.0;
+                case StatisticsType.Temperature:
+                  return model.temp;
+                default:
+                  return 0.0;
+              }
+            },
+            color: color);
+      }).toList();
 }

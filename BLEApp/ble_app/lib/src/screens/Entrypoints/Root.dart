@@ -1,13 +1,13 @@
 import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/authBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/prefs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/sealedStates/authState.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
 import '../../listeners/authStateListener.dart';
-import 'Mode.dart';
+import 'AuthAction.dart';
 
 class RootPage extends StatelessWidget {
   final PageManager _manager;
@@ -91,6 +91,8 @@ class _DetermineEndpointWidgetState extends State<DetermineEndpointWidget>
 
   bool isFirstTime = false;
 
+  bool isLogin = true;
+
   @override
   initState() {
     super.initState();
@@ -98,16 +100,26 @@ class _DetermineEndpointWidgetState extends State<DetermineEndpointWidget>
     if (widget._settingsBloc.isFirstTime()) isFirstTime = true;
   }
 
-  void _chosen(Mode mode) {
-    if (mode == Mode.Account)
-      setState(() {
+  void _chosen(AuthAction mode) {
+    switch (mode) {
+      case AuthAction.Login:
+        setState(() {
+          isFirstTime = false;
+          isLogin = true;
+          currAuthState = AuthState.loggedOut();
+        });
+        break;
+      case AuthAction.Register:
+        setState(() {
+          isFirstTime = false;
+          isLogin = false;
+          currAuthState = AuthState.loggedOut();
+        });
+        break;
+      case AuthAction.Incognito:
         isFirstTime = false;
-        currAuthState = AuthState.loggedOut();
-      });
-    else if (mode == Mode.Incognito) {
-      isFirstTime = false;
-      print('BRO');
-      widget._auth.signInAnonymously();
+        print('First time');
+        widget._auth.signInAnonymously();
     }
   }
 
@@ -126,8 +138,8 @@ class _DetermineEndpointWidgetState extends State<DetermineEndpointWidget>
         currAuthState.maybeWhen(
             authenticated: (_) => WidgetsBinding.instance
                 .addPostFrameCallback((_) => $<PageManager>().openBleApp()),
-            loggedOut: () => WidgetsBinding.instance.addPostFrameCallback(
-                (_) => $<PageManager>().openAuthWrapper(this._chosen)),
+            loggedOut: () => WidgetsBinding.instance.addPostFrameCallback((_) =>
+                $<PageManager>().openAuthWrapper(this.isLogin, this._chosen)),
             fetchingUserInformation: () => {},
             orElse: () => {});
         return Center(child: CircularProgressIndicator());

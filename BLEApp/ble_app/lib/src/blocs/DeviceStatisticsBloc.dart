@@ -1,10 +1,10 @@
-import 'package:ble_app/src/blocs/RxObject.dart';
-import 'package:ble_app/src/blocs/blocExtensions/ParameterAwareBloc.dart';
+import 'package:ble_app/src/blocs/base/RxObject.dart';
+import 'package:ble_app/src/blocs/base/ParameterAwareBloc.dart';
 import 'package:ble_app/src/modules/jsonClasses/logFileModel.dart';
 import 'package:ble_app/src/services/Storage.dart';
 import 'package:injectable/injectable.dart';
 
-enum StatisticsType { Voltage, Current, Temperature }
+enum StatisticsType { Voltage, Charge, Discharge, Temperature }
 
 class DeviceStatisticsState {
   final List<StatisticsType> types;
@@ -23,19 +23,18 @@ class DeviceStatisticsBloc
 
   final nameFetchRx = RxObject<List<String>>();
 
-  final toggleButtonsState = [true, true, true];
+  final toggleButtonsState = [true, true, true, true];
 
   final toggleButtonsStateRx = RxObject<List<bool>>();
 
   DeviceStatisticsBloc() : super() {
-    toggleButtonsStateRx.addEvent([true, true, true]);
+    toggleButtonsStateRx.addEvent([true, true, true, true]);
   }
 
   Future<List<LogModel>> fetchAll() async => await _storage.downloadAll();
 
-  Future<void> fetchOne(int index) async => await _storage
-      .downloadOne(_logFiles.elementAt(index))
-      .then((log) => addEvent(
+  Future<void> fetchOne(int index) =>
+      _storage.downloadOne(_logFiles.elementAt(index)).then((log) => addEvent(
           DeviceStatisticsState(types: _getCurrentTypes(), logs: log)));
 
   Future<List<String>> fetchFileNames() async =>

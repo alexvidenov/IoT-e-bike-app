@@ -1,5 +1,5 @@
-import 'package:ble_app/src/blocs/locationBloc.dart';
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/blocs/location/locationBloc.dart';
+import 'package:ble_app/src/blocs/status/shortStatusBloc.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
@@ -45,7 +45,7 @@ class ProgressColumns extends StatelessWidget {
                                       .toInt()
                                       .toString(),
                                   style: TextStyle(
-                                      fontWeight: FontWeight.normal,
+                                      fontWeight: FontWeight.bold,
                                       fontSize: 28,
                                       color: Colors.white));
                             } else
@@ -65,12 +65,11 @@ class ProgressColumns extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              Text(
+              const Text(
                 "Temp.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
                     fontSize: 20.0,
                     fontFamily: 'Europe_Ext'),
               ),
@@ -79,7 +78,6 @@ class ProgressColumns extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
                     fontSize: 20.0,
                     fontFamily: 'Europe_Ext'),
               ),
@@ -110,7 +108,7 @@ class ProgressColumns extends StatelessWidget {
                               return Text(
                                 voltageText,
                                 style: TextStyle(
-                                    fontWeight: FontWeight.normal,
+                                    fontWeight: FontWeight.bold,
                                     fontSize: 28,
                                     color: Colors.white),
                               );
@@ -137,22 +135,32 @@ class ProgressColumns extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
                     fontSize: 20.0,
+                    fontWeight: FontWeight.normal,
                     fontFamily: 'Europe_Ext'),
               ),
-              Text(
-                // TODO: calculate that too
-                "65 %",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25.0,
-                    fontFamily: 'Europe_Ext'),
-              ),
+              StreamBuilder<StatusState<ShortStatus>>(
+                  stream: this.shortStatusBloc.stream,
+                  builder: (_, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.active) {
+                      return Text(
+                        '${_calculatePercentageFromCurrentVoltage(snapshot.data.model.totalVoltage).toStringAsFixed(0)} %',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25.0,
+                            fontFamily: 'Europe_Ext'),
+                      );
+                    } else
+                      return Container();
+                  })
             ],
           )
         ],
       );
+
+  double _calculatePercentageFromCurrentVoltage(double voltage) =>
+      ((voltage - shortStatusBloc.minVoltage) * 100) /
+      (shortStatusBloc.totalVoltage - shortStatusBloc.minVoltage);
 }

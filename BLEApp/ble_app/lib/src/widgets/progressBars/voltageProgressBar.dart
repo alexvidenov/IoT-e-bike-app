@@ -1,4 +1,4 @@
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/blocs/status/shortStatusBloc.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:flutter/material.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
@@ -34,12 +34,9 @@ class VoltageProgressBar extends StatelessWidget {
                       color: Colors.white, blurRadius: 7.0, spreadRadius: 8.0),
                 ]),
             child: FAProgressBar(
-              currentValue: voltage.toInt(),
-              maxValue: 60,
-              // ((bloc.getParameters().maxRecoveryVoltage) ~/ 100),
-              // remove this logic from here
-              // 60
-              animatedDuration: const Duration(milliseconds: 300),
+              currentValue: ((voltage - bloc.minVoltage) * 100).toInt(),
+              maxValue: ((bloc.totalVoltage - bloc.minVoltage) * 100).toInt(),
+              animatedDuration: const Duration(milliseconds: 200),
               direction: Axis.vertical,
               verticalDirection: VerticalDirection.up,
               backgroundColor: Colors.black87,

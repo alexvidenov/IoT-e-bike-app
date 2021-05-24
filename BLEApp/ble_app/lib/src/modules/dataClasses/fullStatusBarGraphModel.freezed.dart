@@ -33,6 +33,7 @@ mixin _$FullStatusDataModel {
   double get y;
   Color get color;
 
+  @JsonKey(ignore: true)
   $FullStatusDataModelCopyWith<FullStatusDataModel> get copyWith;
 }
 
@@ -137,6 +138,7 @@ class _$_FullStatusDataModel implements _FullStatusDataModel {
       const DeepCollectionEquality().hash(y) ^
       const DeepCollectionEquality().hash(color);
 
+  @JsonKey(ignore: true)
   @override
   _$FullStatusDataModelCopyWith<_FullStatusDataModel> get copyWith =>
       __$FullStatusDataModelCopyWithImpl<_FullStatusDataModel>(
@@ -154,5 +156,6 @@ abstract class _FullStatusDataModel implements FullStatusDataModel {
   @override
   Color get color;
   @override
+  @JsonKey(ignore: true)
   _$FullStatusDataModelCopyWith<_FullStatusDataModel> get copyWith;
 }

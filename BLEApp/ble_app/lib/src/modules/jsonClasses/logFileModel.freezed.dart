@@ -96,6 +96,7 @@ mixin _$LogModel {
     @required TResult orElse(),
   });
   Map<String, dynamic> toJson();
+  @JsonKey(ignore: true)
   $LogModelCopyWith<LogModel> get copyWith;
 }
 
@@ -214,6 +215,7 @@ class _$ShortLogmodel implements ShortLogmodel {
       const DeepCollectionEquality().hash(current) ^
       const DeepCollectionEquality().hash(temp);
 
+  @JsonKey(ignore: true)
   @override
   $ShortLogmodelCopyWith<ShortLogmodel> get copyWith =>
       _$ShortLogmodelCopyWithImpl<ShortLogmodel>(this, _$identity);
@@ -298,6 +300,7 @@ abstract class ShortLogmodel implements LogModel {
   @override
   int get temp;
   @override
+  @JsonKey(ignore: true)
   $ShortLogmodelCopyWith<ShortLogmodel> get copyWith;
 }
 
@@ -397,6 +400,7 @@ class _$FullLogModel implements FullLogModel {
       const DeepCollectionEquality().hash(temp) ^
       const DeepCollectionEquality().hash(delta);
 
+  @JsonKey(ignore: true)
   @override
   $FullLogModelCopyWith<FullLogModel> get copyWith =>
       _$FullLogModelCopyWithImpl<FullLogModel>(this, _$identity);
@@ -483,5 +487,6 @@ abstract class FullLogModel implements LogModel {
   int get temp;
   double get delta;
   @override
+  @JsonKey(ignore: true)
   $FullLogModelCopyWith<FullLogModel> get copyWith;
 }

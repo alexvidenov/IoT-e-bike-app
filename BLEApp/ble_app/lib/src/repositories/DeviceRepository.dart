@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ble_app/src/blocs/RxObject.dart';
+import 'package:ble_app/src/blocs/base/RxObject.dart';
 import 'package:ble_app/src/utils/bluetoothUtils.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
 import 'package:ble_app/src/utils/dataParser.dart';
@@ -46,6 +46,7 @@ class DeviceRepository {
 
   pickDevice(BleDevice bleDevice) async {
     _bleDevice = bleDevice;
+    print('PICKED DEVICE');
     _deviceController.add(_bleDevice);
   }
 

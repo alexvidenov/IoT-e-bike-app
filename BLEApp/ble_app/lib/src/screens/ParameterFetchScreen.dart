@@ -1,14 +1,14 @@
 import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
-import 'package:ble_app/src/blocs/parameterFetchBloc.dart';
+import 'package:ble_app/src/blocs/parameters/parameterFetchBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
-import 'package:ble_app/src/screens/routeAware.dart';
+import 'package:ble_app/src/screens/base/BlocLifecycleAware.dart';
 import 'package:ble_app/src/sealedStates/parameterFetchState.dart';
 import 'package:ble_app/src/utils/StreamListener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 
-class ParameterFetchScreen extends RouteAwareWidget<ParameterFetchBloc> {
+class ParameterFetchScreen extends BlocLifecycleAwareWidget<ParameterFetchBloc> {
   const ParameterFetchScreen(
       ParameterFetchBloc _deviceParameterBloc, this._deviceBloc)
       : super(bloc: _deviceParameterBloc);
@@ -56,9 +56,9 @@ class ParameterFetchScreen extends RouteAwareWidget<ParameterFetchBloc> {
             onData: (state) {
               state.when(
                   fetched: (_) {
-                    dialog.dismiss();
-                    WidgetsBinding.instance.addPostFrameCallback(
-                        (_) => $<PageManager>().openHome());
+                    dialog?.dismiss();
+                    Future.delayed(Duration(milliseconds: 400),
+                        () => $<PageManager>().openHome());
                   },
                   fetching: () => dialog.show());
             },

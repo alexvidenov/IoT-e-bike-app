@@ -1,61 +1,103 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/devicesBloc.dart';
-import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
-import 'package:ble_app/src/screens/routeAware.dart';
+import 'package:ble_app/src/screens/base/BlocLifecycleAware.dart';
 import 'package:flutter/material.dart';
-import 'package:location_permissions/location_permissions.dart' as locationPerm;
-import 'package:location/location.dart';
 
 typedef _DeviceTapListener = void Function();
 
 typedef _LogOutListener = Future<void> Function();
 
-class DevicesListScreen extends RouteAwareWidget<DevicesBloc> {
+// ignore: must_be_immutable
+class DevicesListScreen extends BlocLifecycleAwareWidget<DevicesBloc> {
   final DevicesBloc _devicesBloc;
   final _LogOutListener _onLogout;
 
-  const DevicesListScreen(DevicesBloc devicesBloc, this._onLogout)
+  StreamSubscription _deviceSubscription;
+
+  bool _openedFirst = true;
+
+  DevicesListScreen(DevicesBloc devicesBloc, this._onLogout)
       : this._devicesBloc = devicesBloc,
         super(bloc: devicesBloc);
 
   @override
-  Widget buildWidget(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Bluetooth devices'),
-        actions: [
-          PopupMenuButton(
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                  child: ListTile(
-                      leading: Icon(Icons.logout),
-                      title: Text('Logout'),
-                      onTap: () async => await _onLogout())),
-              PopupMenuItem(
-                  child: ListTile(
-                      leading: Icon(Icons.create), title: Text('Add device')))
-              // This will open modal bottom sheet
-            ],
-          )
-        ],
-      ),
-      body: StreamBuilder<List<BleDevice>>(
-        initialData: _devicesBloc.visibleDevices.value,
-        stream: _devicesBloc.visibleDevices,
-        builder: (_, snapshot) => RefreshIndicator(
-          onRefresh: _devicesBloc.refresh,
-          child: _DevicesList(_devicesBloc, snapshot.data),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.search),
-        onPressed: () => _devicesBloc.refresh(),
-      ),
-    );
+  onPause() {
+    super.onPause();
+    _deviceSubscription?.pause();
   }
+
+  @override
+  didUpdate() {
+    super.didUpdate();
+    print('RESUME IN DEVICES LIST SCREEN');
+    _deviceSubscription?.resume();
+    if (!_openedFirst) // gets called only when we go back to that screen from somewhere else
+      _devicesBloc.refresh();
+    else
+      _openedFirst = false;
+  }
+
+  Future<bool> _onWillPop(context) => showDialog(
+      context: context,
+      builder: (context) =>
+          AlertDialog(
+            title: Text('Are you sure?',
+                style: TextStyle(fontFamily: 'Europe_Ext')),
+            content: Text('Are you sure you want to logout?',
+                style: TextStyle(fontFamily: 'Europe_Ext')),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text('No')),
+              FlatButton(
+                  onPressed: () async {
+                    await _onLogout();
+                    Navigator.of(context).pop(true);
+                  },
+                  child: Text('Yes')),
+            ],
+          ) ??
+          false);
+
+  @override
+  Widget buildWidget(BuildContext context) => WillPopScope(
+        onWillPop: () => _onWillPop(context),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Bluetooth devices'),
+            actions: [
+              PopupMenuButton(
+                itemBuilder: (_) => [
+                  PopupMenuItem(
+                      child: ListTile(
+                          leading: Icon(Icons.logout),
+                          title: Text('Logout'),
+                          onTap: () async => await _onLogout())),
+                  PopupMenuItem(
+                      child: ListTile(
+                          leading: Icon(Icons.create),
+                          title: Text('Add device')))
+                  // This will open modal bottom sheet
+                ],
+              )
+            ],
+          ),
+          body: StreamBuilder<List<BleDevice>>(
+            initialData: _devicesBloc.visibleDevices.value,
+            stream: _devicesBloc.visibleDevices,
+            builder: (_, snapshot) => RefreshIndicator(
+              onRefresh: _devicesBloc.refresh,
+              child: _DevicesList(_devicesBloc, snapshot.data),
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.search),
+            onPressed: () => _devicesBloc.refresh(),
+          ),
+        ),
+      );
 }
 
 class _DevicesList extends ListView {

@@ -5,17 +5,24 @@ import 'package:flutter/material.dart';
 
 class AuthenticationWrapper extends StatefulWidget {
   final AuthBloc _authBloc;
+  final bool _shouldShowLogin;
 
-  const AuthenticationWrapper(this._authBloc);
+  const AuthenticationWrapper(this._authBloc, this._shouldShowLogin);
 
   @override
   _AuthenticationWrapperState createState() => _AuthenticationWrapperState();
 }
 
 class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
-  bool isLogin = true;
+  bool isLogin;
 
   _toggleView() => setState(() => isLogin = !isLogin);
+
+  @override
+  void initState() {
+    super.initState();
+    isLogin = widget._shouldShowLogin;
+  }
 
   @override
   Widget build(BuildContext context) => isLogin

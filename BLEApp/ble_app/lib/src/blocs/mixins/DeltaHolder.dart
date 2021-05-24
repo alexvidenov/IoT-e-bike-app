@@ -1,11 +1,11 @@
-import '../RxObject.dart';
+import '../base/RxObject.dart';
 
 mixin DeltaCalculation {
-  final delta1Holder = RxObject<double>();
-  final delta2Holder = RxObject<double>();
+  final deltaHolder = RxObject<double>();
+  final deltaMaxHolder = RxObject<double>();
 
-  double delta1 = 0;
-  double delta2 = 0;
+  double tempDelta = 0;
+  double maxDelta = 0;
 
   double lastDelta = 0;
 

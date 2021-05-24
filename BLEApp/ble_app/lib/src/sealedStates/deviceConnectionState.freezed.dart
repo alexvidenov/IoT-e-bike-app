@@ -129,6 +129,7 @@ class _$_NormalBTState implements _NormalBTState {
   int get hashCode =>
       runtimeType.hashCode ^ const DeepCollectionEquality().hash(state);
 
+  @JsonKey(ignore: true)
   @override
   _$NormalBTStateCopyWith<_NormalBTState> get copyWith =>
       __$NormalBTStateCopyWithImpl<_NormalBTState>(this, _$identity);
@@ -189,6 +190,7 @@ abstract class _NormalBTState implements DeviceConnectionState {
       _$_NormalBTState;
 
   PeripheralConnectionState get state;
+  @JsonKey(ignore: true)
   _$NormalBTStateCopyWith<_NormalBTState> get copyWith;
 }
 
@@ -245,6 +247,7 @@ class _$_BLEException implements _BLEException {
   int get hashCode =>
       runtimeType.hashCode ^ const DeepCollectionEquality().hash(e);
 
+  @JsonKey(ignore: true)
   @override
   _$BLEExceptionCopyWith<_BLEException> get copyWith =>
       __$BLEExceptionCopyWithImpl<_BLEException>(this, _$identity);
@@ -304,5 +307,6 @@ abstract class _BLEException implements DeviceConnectionState {
   const factory _BLEException({BleError e}) = _$_BLEException;
 
   BleError get e;
+  @JsonKey(ignore: true)
   _$BLEExceptionCopyWith<_BLEException> get copyWith;
 }

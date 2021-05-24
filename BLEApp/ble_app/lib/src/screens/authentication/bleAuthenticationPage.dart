@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:ble_app/src/blocs/PageManager.dart';
 import 'package:ble_app/src/blocs/btAuthenticationBloc.dart';
 import 'package:ble_app/src/blocs/deviceBloc.dart';
-import 'package:ble_app/src/blocs/settingsBloc.dart';
+import 'package:ble_app/src/blocs/prefs/settingsBloc.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 
 import 'package:ble_app/src/sealedStates/btAuthState.dart';
@@ -42,9 +42,11 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
   @override
   void initState() {
     super.initState();
+    print('INIT STATE CALLED');
     widget._deviceBloc.stopScan(); // this is not needed for sure
     widget._authBloc.create();
-    widget._deviceBloc.connect().then((_) => _listenToAuthBloc());
+    _listenToAuthBloc();
+    widget._deviceBloc.connect();
     _handleBLEError();
   }
 
@@ -59,12 +61,14 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
     _streamSubscriptionAuth.cancel();
   }
 
-  _listenToAuthBloc() =>
+  void _listenToAuthBloc() =>
       _streamSubscriptionAuth = widget._authBloc.stream.listen((event) {
         event.when(
             btAuthenticated: () {
               this._verificationNotifier.add(true);
               _isAuthenticated = true;
+              widget._authBloc
+                  .setMacAddress(widget._deviceBloc.device.value.id);
               widget._authBloc.pause();
               $<PageManager>().openParameters();
             },
@@ -72,7 +76,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
                 message: reason.toString(), action: 'TRY AGAIN'));
       });
 
-  _retry() => Future.delayed(Duration(seconds: 1), () {
+  _retry() => Future.delayed(Duration(seconds: 2), () {
         if (_isAuthenticated == false)
           _showLockScreen(
             context,
@@ -84,8 +88,6 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
               semanticsLabel: 'Cancel',
             ),
           );
-        //_presentDialog(context,
-        //message: 'Wrong password', action: 'Try again');
       });
 
   _showLockScreen(BuildContext context,
@@ -109,6 +111,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
           //_verificationNotifier.add(true);
           widget._settingsBloc.setPassword(pin);
           widget._authBloc.authenticate(pin);
+          print('AUTHENTICATING BOY: ' + DateTime.now().toString());
           _retry();
           //Navigator.of(context, rootNavigator: true).pop();
         },
@@ -162,6 +165,20 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.lightBlueAccent,
+          actions: [
+            RaisedButton(
+                color: Colors.transparent,
+                child: Text('Switch offline mode',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        letterSpacing: 2,
+                        fontFamily: 'Europe_Ext')),
+                onPressed: () => $<PageManager>().openOfflineHome()),
+          ],
+        ),
         body: Container(
           color: Colors.black,
           child: StreamBuilder<DeviceConnectionState>(
@@ -175,6 +192,7 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
                     case PeripheralConnectionState.connected:
                       _connected = true;
                       if (widget._settingsBloc.isPasswordRemembered()) {
+                        print('PASSWORD REMEMBERED');
                         widget._deviceBloc.deviceReady.listen((event) {
                           if (event) {
                             final password = widget._settingsBloc.getPassword();
@@ -199,7 +217,6 @@ class _BLEAuthenticationScreenState extends State<BLEAuthenticationScreen> {
                       return Container();
                       break;
                     case PeripheralConnectionState.connecting:
-                      print('CONNECTING IN BLE');
                       return Center(child: CircularProgressIndicator());
                     case PeripheralConnectionState.disconnected:
                       return _generateMessageWidget('disconnected');

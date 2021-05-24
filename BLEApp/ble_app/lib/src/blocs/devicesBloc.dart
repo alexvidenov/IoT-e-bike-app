@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:ble_app/src/blocs/CurrentContext.dart';
-import 'package:ble_app/src/blocs/bloc.dart';
+import 'package:ble_app/src/blocs/base/bloc.dart';
 import 'package:ble_app/main.dart';
 import 'package:ble_app/src/di/serviceLocator.dart';
 import 'package:ble_app/src/modules/BleDevice.dart';
@@ -12,7 +11,6 @@ import 'package:location/location.dart';
 import 'package:location_permissions/location_permissions.dart' as locationPerm;
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:injectable/injectable.dart';
-import 'package:location_permissions/location_permissions.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../persistence/LocalDatabaseManager.dart';
@@ -44,8 +42,16 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
 
   DevicesBloc(this._deviceRepository, this._dbManager);
 
-  _handlePickedDevice(BleDevice bleDevice) =>
-      _deviceRepository.pickDevice(bleDevice);
+  _handlePickedDevice(BleDevice bleDevice) async {
+    final device = await _dbManager.fetchDeviceByMac(bleDevice.id);
+    if (device != null) {
+      _deviceRepository.deviceSerialNumber = device.id;
+      print("id is ${device.id}");
+      _deviceRepository.deviceMacAddress = device.macAddress;
+      print("DEVICE NAME IS: ${device.name}, ${device.macAddress}");
+    }
+    _deviceRepository.pickDevice(bleDevice);
+  }
 
   void init() async {
     if (await _checkPermissions()) {
@@ -72,10 +78,8 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
         return false;
     } else if (!await Location().serviceEnabled()) {
       return Location().requestService();
-      ;
     }
     return true;
-    ;
   }
 
   Future<void> _checkBluetooth() async {
@@ -86,8 +90,8 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
   @override
   create() {
     streamSubscription = stream.listen(_handlePickedDevice);
-    _pickedDevicesSubscription = this.pickedDevice.listen((device) {
-      if (device != null) {
+    this.pickedDevice.listen((event) {
+      if (event != null) {
         $<PageManager>().openBleAuth();
       }
     });
@@ -95,7 +99,7 @@ class DevicesBloc extends Bloc<BleDevice, BleDevice> {
 
   @override
   pause() {
-    _pickedDevicesSubscription.pause();
+    _pickedDevicesSubscription?.pause();
     _stopScan();
   }
 

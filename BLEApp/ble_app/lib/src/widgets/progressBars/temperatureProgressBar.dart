@@ -1,6 +1,7 @@
-import 'package:ble_app/src/blocs/shortStatusBloc.dart';
+import 'package:ble_app/src/blocs/status/shortStatusBloc.dart';
 import 'package:ble_app/src/sealedStates/BatteryState.dart';
 import 'package:ble_app/src/sealedStates/statusState.dart';
+import 'package:ble_app/src/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
@@ -10,8 +11,7 @@ import 'package:ble_app/src/modules/dataClasses/shortStatusModel.dart';
 // otherwise -> green
 
 class TemperatureProgressBar extends StatelessWidget {
-  final ShortStatusBloc
-      bloc; // TODO: actually pass only the necessary stream here
+  final ShortStatusBloc bloc;
 
   const TemperatureProgressBar({@required this.bloc});
 
@@ -47,7 +47,7 @@ class TemperatureProgressBar extends StatelessWidget {
                 ]),
             child: FAProgressBar(
               currentValue: temperature,
-              maxValue: 65,
+              maxValue: Constants.MAX_TEMPERATURE,
               animatedDuration: const Duration(milliseconds: 300),
               direction: Axis.vertical,
               verticalDirection: VerticalDirection.up,

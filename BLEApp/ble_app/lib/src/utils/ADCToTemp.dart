@@ -39,7 +39,6 @@ class TemperatureConverter {
     final twoNearest = kdTree.nearest({'adcValue': adcValue}, 2); // 909 745
     final nearest = twoNearest.first; // 909
     final secondNearest = twoNearest.elementAt(1);
-    //print(nearest);
     final diffCoeff =
         (((nearest[0]['adcValue'] - secondNearest[0]['adcValue']) as int)
                 .abs() ~/
@@ -55,10 +54,9 @@ class TemperatureConverter {
   }
 
   int adcFromTemp(int tempInC) {
-    // 37
-    final twoNearest = kdTree2.nearest({'tempInC': tempInC}, 2); // 35 40
-    final nearest = twoNearest.first; // 35
-    final secondNearest = twoNearest.elementAt(1); // 40
+    final twoNearest = kdTree2.nearest({'tempInC': tempInC}, 2);
+    final nearest = twoNearest.first;
+    final secondNearest = twoNearest.elementAt(1);
     print(nearest);
     final diffCoeff =
         (((nearest[0]['adcValue'] - secondNearest[0]['adcValue']) as int)

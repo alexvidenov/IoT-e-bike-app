@@ -68,10 +68,12 @@ class _$LocalDatabase extends LocalDatabase {
 
   UserDevicesDao _userDevicesDaoInstance;
 
+  DeviceStateDao _deviceStateDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 4,
+      version: 6,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
       },
@@ -93,6 +95,8 @@ class _$LocalDatabase extends LocalDatabase {
             'CREATE TABLE IF NOT EXISTS `parameters` (`cellCount` INTEGER, `maxCellVoltage` REAL, `maxRecoveryVoltage` REAL, `balanceCellVoltage` REAL, `minCellVoltage` REAL, `minCellRecoveryVoltage` REAL, `ultraLowCellVoltage` REAL, `maxTimeLimitedDischargeCurrent` REAL, `maxCutoffDischargeCurrent` REAL, `maxCurrentTimeLimitPeriod` INTEGER, `maxCutoffChargeCurrent` REAL, `motoHoursCounterCurrentThreshold` REAL, `currentCutOffTimerPeriod` INTEGER, `maxCutoffTemperature` INTEGER, `maxTemperatureRecovery` INTEGER, `minTemperatureRecovery` INTEGER, `minCutoffTemperature` INTEGER, `motoHoursChargeCounter` INTEGER, `motoHoursDischargeCounter` INTEGER, `id` TEXT, FOREIGN KEY (`id`) REFERENCES `devices` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `users_devices` (`user_id` TEXT NOT NULL, `device_id` TEXT NOT NULL, FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`user_id`, `device_id`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `device_states` (`is_on` INTEGER, `id` TEXT, FOREIGN KEY (`id`) REFERENCES `devices` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -119,6 +123,12 @@ class _$LocalDatabase extends LocalDatabase {
   UserDevicesDao get userDevicesDao {
     return _userDevicesDaoInstance ??=
         _$UserDevicesDao(database, changeListener);
+  }
+
+  @override
+  DeviceStateDao get deviceStateDao {
+    return _deviceStateDaoInstance ??=
+        _$DeviceStateDao(database, changeListener);
   }
 }
 
@@ -209,7 +219,7 @@ class _$UserDao extends UserDao {
 
 class _$DeviceDao extends DeviceDao {
   _$DeviceDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database),
+      : _queryAdapter = QueryAdapter(database, changeListener),
         _deviceInsertionAdapter = InsertionAdapter(
             database,
             'devices',
@@ -219,7 +229,8 @@ class _$DeviceDao extends DeviceDao {
                   'isSuper': item.isSuper ? 1 : 0,
                   'changed_parameters': item.parametersToChange,
                   'id': item.id
-                }),
+                },
+            changeListener),
         _deviceUpdateAdapter = UpdateAdapter(
             database,
             'devices',
@@ -230,7 +241,8 @@ class _$DeviceDao extends DeviceDao {
                   'isSuper': item.isSuper ? 1 : 0,
                   'changed_parameters': item.parametersToChange,
                   'id': item.id
-                }),
+                },
+            changeListener),
         _deviceDeletionAdapter = DeletionAdapter(
             database,
             'devices',
@@ -241,7 +253,8 @@ class _$DeviceDao extends DeviceDao {
                   'isSuper': item.isSuper ? 1 : 0,
                   'changed_parameters': item.parametersToChange,
                   'id': item.id
-                });
+                },
+            changeListener);
 
   final sqflite.DatabaseExecutor database;
 
@@ -256,15 +269,21 @@ class _$DeviceDao extends DeviceDao {
   final DeletionAdapter<Device> _deviceDeletionAdapter;
 
   @override
-  Future<List<Device>> fetchDevices(String userId) async {
+  Future<List<Device>> fetchUserDevices(String userId) async {
     return _queryAdapter.queryList(
         'SELECT * FROM devices d INNER JOIN users_devices u ON u.user_id = ? GROUP BY d.id',
         arguments: <dynamic>[userId],
-        mapper: (Map<String, dynamic> row) => Device(
-            name: row['device_name'] as String,
-            isSuper: (row['isSuper'] as int) != 0,
+        mapper: (Map<String, dynamic> row) => Device(row['id'] as String,
+            row['device_name'] as String, (row['isSuper'] as int) != 0,
             parametersToChange: row['changed_parameters'] as String,
             macAddress: row['mac'] as String));
+  }
+
+  @override
+  Future<void> deleteUserDevices(String userId) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM devices WHERE id IN ( SELECT id FROM devices d INNER JOIN users_devices u ON u.user_id = ? )',
+        arguments: <dynamic>[userId]);
   }
 
   @override
@@ -272,9 +291,8 @@ class _$DeviceDao extends DeviceDao {
     return _queryAdapter.query(
         'SELECT * FROM devices d INNER JOIN users_devices u ON u.user_id = ? AND d.id = ? GROUP BY d.id',
         arguments: <dynamic>[deviceId, userId],
-        mapper: (Map<String, dynamic> row) => Device(
-            name: row['device_name'] as String,
-            isSuper: (row['isSuper'] as int) != 0,
+        mapper: (Map<String, dynamic> row) => Device(row['id'] as String,
+            row['device_name'] as String, (row['isSuper'] as int) != 0,
             parametersToChange: row['changed_parameters'] as String,
             macAddress: row['mac'] as String));
   }
@@ -283,9 +301,30 @@ class _$DeviceDao extends DeviceDao {
   Future<Device> fetchDevice(String deviceId) async {
     return _queryAdapter.query('SELECT * FROM devices WHERE id = ?',
         arguments: <dynamic>[deviceId],
-        mapper: (Map<String, dynamic> row) => Device(
-            name: row['device_name'] as String,
-            isSuper: (row['isSuper'] as int) != 0,
+        mapper: (Map<String, dynamic> row) => Device(row['id'] as String,
+            row['device_name'] as String, (row['isSuper'] as int) != 0,
+            parametersToChange: row['changed_parameters'] as String,
+            macAddress: row['mac'] as String));
+  }
+
+  @override
+  Stream<Device> fetchDeviceAsStream(String deviceId) {
+    return _queryAdapter.queryStream('SELECT * FROM devices WHERE id = ?',
+        arguments: <dynamic>[deviceId],
+        queryableName: 'devices',
+        isView: false,
+        mapper: (Map<String, dynamic> row) => Device(row['id'] as String,
+            row['device_name'] as String, (row['isSuper'] as int) != 0,
+            parametersToChange: row['changed_parameters'] as String,
+            macAddress: row['mac'] as String));
+  }
+
+  @override
+  Future<Device> fetchDeviceByMac(String mac) async {
+    return _queryAdapter.query('SELECT * FROM devices WHERE mac = ?',
+        arguments: <dynamic>[mac],
+        mapper: (Map<String, dynamic> row) => Device(row['id'] as String,
+            row['device_name'] as String, (row['isSuper'] as int) != 0,
             parametersToChange: row['changed_parameters'] as String,
             macAddress: row['mac'] as String));
   }
@@ -299,17 +338,16 @@ class _$DeviceDao extends DeviceDao {
   }
 
   @override
-  Future<void> setMacAddress(String macAddress, String deviceId) async {
+  Future<void> updateDeviceName(String newName, String deviceId) async {
     await _queryAdapter.queryNoReturn(
-        'UPDATE devices SET macAddress = ? WHERE id = ?',
-        arguments: <dynamic>[macAddress, deviceId]);
+        'UPDATE devices SET device_name = ? WHERE id = ?',
+        arguments: <dynamic>[newName, deviceId]);
   }
 
   @override
-  Future<void> renameDevice(String newName, String deviceId) async {
-    await _queryAdapter.queryNoReturn(
-        'UPDATE devices SET name = ? WHERE id = ?',
-        arguments: <dynamic>[newName, deviceId]);
+  Future<void> setMacAddress(String macAddress, String deviceId) async {
+    await _queryAdapter.queryNoReturn('UPDATE devices SET mac = ? WHERE id = ?',
+        arguments: <dynamic>[macAddress, deviceId]);
   }
 
   @override
@@ -551,5 +589,89 @@ class _$UserDevicesDao extends UserDevicesDao {
   Future<void> insertList(List<UserDevices> entities) async {
     await _userDevicesInsertionAdapter.insertList(
         entities, OnConflictStrategy.replace);
+  }
+}
+
+class _$DeviceStateDao extends DeviceStateDao {
+  _$DeviceStateDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database),
+        _deviceStateInsertionAdapter = InsertionAdapter(
+            database,
+            'device_states',
+            (DeviceState item) => <String, dynamic>{
+                  'is_on': item.isBatteryOn == null
+                      ? null
+                      : (item.isBatteryOn ? 1 : 0),
+                  'id': item.id
+                }),
+        _deviceStateUpdateAdapter = UpdateAdapter(
+            database,
+            'device_states',
+            ['id'],
+            (DeviceState item) => <String, dynamic>{
+                  'is_on': item.isBatteryOn == null
+                      ? null
+                      : (item.isBatteryOn ? 1 : 0),
+                  'id': item.id
+                }),
+        _deviceStateDeletionAdapter = DeletionAdapter(
+            database,
+            'device_states',
+            ['id'],
+            (DeviceState item) => <String, dynamic>{
+                  'is_on': item.isBatteryOn == null
+                      ? null
+                      : (item.isBatteryOn ? 1 : 0),
+                  'id': item.id
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<DeviceState> _deviceStateInsertionAdapter;
+
+  final UpdateAdapter<DeviceState> _deviceStateUpdateAdapter;
+
+  final DeletionAdapter<DeviceState> _deviceStateDeletionAdapter;
+
+  @override
+  Future<DeviceState> fetchDeviceState(String deviceId) async {
+    return _queryAdapter.query('SELECT * FROM device_states WHERE id = ?',
+        arguments: <dynamic>[deviceId],
+        mapper: (Map<String, dynamic> row) => DeviceState(
+            isBatteryOn:
+                row['is_on'] == null ? null : (row['is_on'] as int) != 0));
+  }
+
+  @override
+  Future<void> updateDeviceState(String deviceId, bool isOn) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE device_states SET is_on = ? WHERE id = ?',
+        arguments: <dynamic>[deviceId, isOn == null ? null : (isOn ? 1 : 0)]);
+  }
+
+  @override
+  Future<void> insertEntity(DeviceState entity) async {
+    await _deviceStateInsertionAdapter.insert(
+        entity, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> insertList(List<DeviceState> entities) async {
+    await _deviceStateInsertionAdapter.insertList(
+        entities, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> updateEntity(DeviceState entity) async {
+    await _deviceStateUpdateAdapter.update(entity, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteEntity(DeviceState entity) async {
+    await _deviceStateDeletionAdapter.delete(entity);
   }
 }
