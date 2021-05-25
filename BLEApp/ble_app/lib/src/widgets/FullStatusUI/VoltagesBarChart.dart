@@ -187,12 +187,12 @@ class VoltagesBarChart extends StatelessWidget {
             builder: (_, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
                 return Wrap(
-                  spacing: MediaQuery.of(context).size.width * 0.1,
+                  spacing: MediaQuery.of(context).size.width * 0.05,
                   runSpacing: 5.0,
                   direction: Axis.horizontal,
                   children: [
                     ...snapshot.data.model.fullStatus.map((f) => Text(
-                          '${f.x} -> ${(f.y / 100).toStringAsFixed(2)} V',
+                          '${f.x} -> ${(f.y / 100).toStringAsFixed(2)}',
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         )),
                   ],

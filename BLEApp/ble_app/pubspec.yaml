@@ -57,6 +57,7 @@ dependencies:
   jiffy: ^3.0.1
   intl: ^0.16.0
   dio: ^3.0.10
+  phoenix_socket: ^0.4.11
   logger: ^0.9.4
   bubble: ^1.1.9+1
 

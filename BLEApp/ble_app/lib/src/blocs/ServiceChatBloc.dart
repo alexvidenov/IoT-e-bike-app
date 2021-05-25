@@ -1,22 +1,28 @@
 import 'package:ble_app/src/blocs/mixins/CurrentContext.dart';
 import 'package:ble_app/src/blocs/base/bloc.dart';
-import 'package:ble_app/src/services/Database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
+import 'package:phoenix_socket/phoenix_socket.dart';
 
 @injectable
-class ServiceChatBloc
-    extends Bloc<List<MapEntry<String, String>>, List<DocumentSnapshot>>
-    with CurrentContext {
-  @override
-  create() => streamSubscription =
-      FirestoreDatabase(uid: curUserId, deviceId: curDeviceId)
-          .lastMessages()
-          .listen((event) => addEvent(event
-              .map((snap) => MapEntry(snap.get('from') as String, snap.get('message') as String))
-              .toList()));
+class ServiceChatBloc extends Bloc<void, void> with CurrentContext {
+  final _socket = PhoenixSocket('ws://192.168.0.107:4000/socket/websocket');
 
-  void sendMessage(String message) =>
-      FirestoreDatabase(uid: curUserId, deviceId: curDeviceId)
-          .sendMessage(message);
+  @override
+  create() async {
+    await _socket.connect();
+    await setupChannel();
+  }
+
+  Future<void> setupChannel() async {
+    final channel = _socket.addChannel(topic: 'room:lobby');
+
+    channel.messages.listen((message) {
+      if (message.event == PhoenixChannelEvent.custom('shout')) {
+        print('SHOUTING: ' + message.payload['test']);
+      }
+      print('MESSAGE: ${message.payload}');
+    });
+
+    await channel.join().future.then((value) => print('PUSH: ${value}'));
+  }
 }

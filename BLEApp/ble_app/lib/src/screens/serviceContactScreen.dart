@@ -35,7 +35,7 @@ class _ServiceChatScreenState extends State<ServiceChatScreen> {
             children: [
               Column(
                 children: [
-                  buildMessages(),
+                  //buildMessages(),
                   inputField(),
                 ],
               )
@@ -76,6 +76,7 @@ class _ServiceChatScreenState extends State<ServiceChatScreen> {
       width: double.infinity,
       height: 100.0);
 
+  /*
   Widget buildMessages() => Flexible(
         child: StreamBuilder<List<MapEntry<String, String>>>(
           stream: widget._serviceChatBloc.stream,
@@ -98,6 +99,8 @@ class _ServiceChatScreenState extends State<ServiceChatScreen> {
           },
         ),
       );
+
+  */
 
   Widget buildItem(String from, String message) {
     if (from == widget._serviceChatBloc.curUserId) {
@@ -144,7 +147,7 @@ class _ServiceChatScreenState extends State<ServiceChatScreen> {
     if (message.trim() != '') {
       _messagesController.clear();
       message = message.trim();
-      widget._serviceChatBloc.sendMessage(message);
+      //  widget._serviceChatBloc.sendMessage(message);
       _scrollController.animateTo(0.0,
           duration: Duration(milliseconds: 300), curve: Curves.easeOut);
     }
